@@ -23,6 +23,7 @@ INSTALL_REQUIRES = [
     "rwth-CD-colors",
     "matplotlib",
     "attrs>=22.2.0",
+    "agentlib>=0.6.0"
     # "agentlib @ git+https://git-ce.rwth-aachen.de/ebc/projects/ebc_acs0017_bmwi_agent/agents_python/agentlib#egg=agentlib",
 ]
 

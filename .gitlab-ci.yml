@@ -1,101 +1,49 @@
 stages:
-  - test
-  - doc
-  - code_quality
-  - build
-  - deploy
+ - test
+ - doc
+ - code_quality
+ - build
+ - release
+ - deploy
 
 variables:
   EXCLUDE_PYTHON: 37, 38
+  COVERAGE_TYPE: "NotDymola"
+  PAGES_BRANCH: main
+  PYTHON_VERSION: "registry.git.rwth-aachen.de/ebc/ebc_all/gitlab_ci/templates:python_3.9"
+  PYTHON_PACKAGE_NAME: "agentlib-mpc"
   TEST_PATH: tests
   TEST_ENGINE: "PYTEST"
+  GIT_REPO: "RWTH-EBC/AgentLib-MPC"
 
 
 include:
   #pylint
-  - project: 'ebc/ebc-general/templates/gitlab-ci'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/code-quality/pylint.gitlab-ci.yml'
   #sphinxdoc
-  - project: 'ebc/ebc-general/templates/gitlab-ci'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/doc/sphinxdoc.gitlab-ci.yml'
   # pages
-  - project: 'ebc/ebc-general/templates/gitlab-ci'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'pages/gl-pages.gitlab-ci.yml'
   # pytest & coverage
-  - project: 'ebc/ebc-general/templates/gitlab-ci'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/tests/tests.gitlab-ci.yml'
     # Checks the build for pypi
-  - project: 'ebc/ebc-general/templates/gitlab-ci'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/build/build.gitlab-ci.yml'
-  # examples conversion
-#  - project: 'ebc/ebc-general/templates/gitlab-ci'
-#    file: 'python/examples/examples.gitlab-ci.yml'
-
-.before_script_template: &before_definition
-  before_script:
-    - pip install --upgrade pip
-    # adds the private key to access the agentlib (agentlib has matching deploy-key)
-    - 'which ssh-agent || ( apt-get update -qy && apt-get install openssh-client -qqy )'
-    - eval `ssh-agent -s`
-    - echo "${AGENTLIB_ACCESS}" | tr -d '\r' | ssh-add - > /dev/null # add ssh ke
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-    # end adding key
-    - test -e requirements.txt && pip install -r requirements.txt || echo no requirements to install
-    - test -e setup.py && pip install -e . || echo no setup.py found
-    - pip install pytest
-
-
-.before_script_sphinx: &before_definition_sphinx
-  before_script:
-    #- source activate python39
-    - pip install --upgrade pip
-    # adds the private key to access the agentlib (agentlib has matching deploy-key)
-    - 'which ssh-agent || ( apt-get update -qy && apt-get install openssh-client -qqy )'
-    - eval `ssh-agent -s`
-    - echo "${AGENTLIB_ACCESS}" | tr -d '\r' | ssh-add - > /dev/null # add ssh ke
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-    # end adding key
-    - test -e requirements.txt && pip install -r requirements.txt || echo no requirements to install
-    - test -e setup.py && pip install -e . || echo no setup.py found
-    - pip install sphinx anybadge
-    - pip install m2r2
-    - pip install sphinx-material
-    - pip install autodoc_pydantic
-    - pip install sphinx-rtd-theme
-
-
-python_37:
-  <<: *before_definition
-
-
-python_38:
-  <<: *before_definition
-
-
-python_39:
-  <<: *before_definition
-
-python_310:
-  <<: *before_definition
-
-python_311:
-  <<: *before_definition
-
-sphinxdoc:
-  <<: *before_definition_sphinx
-
-#coverage:
-#  <<: *before_definition39
+  - template: Dependency-Scanning.gitlab-ci.yml
+  - template: SAST.gitlab-ci.yml
 
 
 run_example:
-  <<: *before_definition
   image: registry.git.rwth-aachen.de/ebc/ebc_all/gitlab_ci/templates:python_3.9
   stage: test
+  before_script:
+    - pip install --upgrade pip
+    - test -e requirements.txt && pip install -r requirements.txt || echo no requirements to install
+    - test -e setup.py && pip install -e . || echo no setup.py found
   script:
     - python ci/run_examples.py
   rules:
