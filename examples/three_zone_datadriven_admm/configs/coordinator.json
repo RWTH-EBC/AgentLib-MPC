@@ -1,0 +1,26 @@
+{
+  "id": "Coordinator",
+  "modules": [
+    {
+      "module_id": "admm_coordinator",
+      "type": "agentlib_mpc.admm_coordinator",
+      "prediction_horizon": 24,
+      "time_step": 1800,
+      "penalty_factor": 1,
+      "timeout": 0.3,
+      "admm_iter_max": 50,
+      "registration_period": 5,
+      "abs_tol": 0.05,
+      "rel_tol": 0.05,
+      "primal_tol": 0.04,
+      "dual_tol": 0.04,
+      "use_relative_tolerances": false,
+      "save_solve_stats": true,
+      "solve_stats_file": "results//residuals.csv"
+    },
+    {
+      "module_id": "AgComCool",
+      "type": "local_broadcast"
+    }
+  ]
+}

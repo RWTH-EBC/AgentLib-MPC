@@ -1,0 +1,63 @@
+{
+  "module_id": "rlt",
+  "type": "simulator",
+  "model": {
+    "type": {
+      "file": "models/rlt_model.py",
+      "class_name": "RLT"
+    },
+    "parameters": [
+      {
+        "name": "mDot_max",
+        "value": 0.075
+      }
+    ]
+  },
+  "t_sample": 60,
+  "save_results": true,
+  "update_inputs_on_callback": false,
+  "outputs": [
+    {
+      "name": "mDot_out_1",
+      "value": 298.16,
+      "alias": "_mDot_1"
+    },
+        {
+      "name": "mDot_out_2",
+      "value": 298.16,
+      "alias": "_mDot_2"
+    },
+        {
+      "name": "mDot_out_3",
+      "value": 298.16,
+      "alias": "_mDot_3"
+    },
+        {
+      "name": "mDot_out_4",
+      "value": 298.16,
+      "alias": "_mDot_4"
+    }
+  ],
+  "inputs": [
+    {
+      "name": "mDot_1",
+      "value": 0.01,
+      "source": {"agent_id": "rlt", "module_id": "admm_module"}
+    },
+        {
+      "name": "mDot_2",
+      "value": 0.01,
+      "source": {"agent_id": "rlt", "module_id": "admm_module"}
+    },
+        {
+      "name": "mDot_3",
+      "value": 0.01,
+      "source": {"agent_id": "rlt", "module_id": "admm_module"}
+    },
+        {
+      "name": "mDot_4",
+      "value": 0.01,
+      "source": {"agent_id": "rlt", "module_id": "admm_module"}
+    }
+  ]
+}

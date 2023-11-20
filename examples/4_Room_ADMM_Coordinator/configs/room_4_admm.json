@@ -1,0 +1,83 @@
+{
+  "id": "room_4",
+  "modules": [
+    "configs/local_broadcast.json",
+    {
+      "module_id": "admm_module",
+      "type": "agentlib_mpc.admm_coordinated",
+      "optimization_backend": {
+        "type": "casadi_admm",
+        "model": {
+          "type": {
+            "file": "models/room_model.py",
+            "class_name": "CaCooledRoom"
+          }
+        },
+        "solver": {
+          "name": "ipopt",
+          "options": {
+            "ipopt.print_level": 0
+          }
+        },
+        "results_file": "results//admm_opt_4.csv"
+      },
+      "prediction_horizon": 10,
+      "time_step": 120,
+      "penalty_factor": 100,
+      "max_iterations": 40,
+      "coordinator": {
+        "agent_id": "Coordinator",
+        "module_id": "admm_coordinator"
+      },
+      "parameters": [
+        {
+          "name": "q_T",
+          "value": 1
+        },
+        {
+          "name": "q_mDot",
+          "value": 1
+        }
+      ],
+      "inputs": [
+        {
+          "name": "d",
+          "value": 10
+        },
+        {
+          "name": "T_set",
+          "value": 296
+        },
+        {
+          "name": "T_upper",
+          "value": 303.15
+        },
+        {
+          "name": "T_in",
+          "value": 290.15
+        }
+      ],
+      "controls": [
+      ],
+      "states": [
+        {
+          "name": "T",
+          "value": 303,
+          "ub": 303.15,
+          "lb": 288.15,
+          "alias": "T_sim_4",
+          "source": "Simulation"
+        }
+      ],
+      "couplings": [
+        {
+          "name": "mDot",
+          "value": 0.02,
+          "ub": 0.05,
+          "lb": 0,
+          "alias": "mDot4_coupling"
+        }
+      ]
+    }
+  ]
+}

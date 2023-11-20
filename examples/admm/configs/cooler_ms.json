@@ -1,0 +1,61 @@
+{
+  "id": "Cooler",
+  "modules": [
+    {
+      "module_id": "admm_module",
+      "type": "agentlib_mpc.admm",
+      "optimization_backend": {
+        "type": "casadi_admm",
+        "model": {
+          "type": {
+            "file": "models/ca_cooler_model.py",
+            "class_name": "CaCooler"
+          }
+        },
+        "solver": {
+          "name": "ipopt",
+          "options": {
+            "ipopt.print_level": 0
+          }
+        },
+        "discretization_options": {
+          "method":"multiple_shooting"
+        },
+        "results_file": "cooler_res.csv"
+      },
+      "coordinator": {
+        "agent_id": "Coordinator",
+        "module_id": "admm_coordinator"
+      },
+      "time_step": 240,
+      "prediction_horizon": 10,
+      "max_iterations": 20,
+      "parameters": [
+        {
+          "name": "r_mDot",
+          "value": 1
+        }
+      ],
+      "inputs": [
+      ],
+      "controls": [
+        {
+          "name": "mDot",
+          "value": 0.02,
+          "ub": 0.1,
+          "lb": 0
+        }
+      ],
+      "states": [
+      ],
+      "couplings": [
+        {
+          "name": "mDot_out",
+          "alias": "mDotCoolAir",
+          "value": 0.05
+        }
+      ]
+    },
+    "configs/communicators/cooler_mqtt.json"
+  ]
+}

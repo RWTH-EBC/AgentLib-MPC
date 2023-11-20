@@ -1,0 +1,27 @@
+FROM python:3.9-slim
+
+# Build this file from parent directory
+# Parent directory should include:
+# agentlib_mpc
+# agentlib https://git-ce.rwth-aachen.de/ebc/projects/ebc_acs0017_bmwi_agent/agents_python/agentlib
+# clonemapy https://github.com/sogno-platform/clonemapy
+
+# RUN apt add git
+RUN apt-get update -y && apt-get install git -y
+# Set workdir
+WORKDIR /mpc
+# Insall the agentlib
+COPY clonemapy clonemapy
+RUN pip install ./clonemapy
+COPY agentlib/requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+COPY agentlib/setup.py setup.py
+COPY agentlib agentlib
+RUN pip install -e agentlib
+
+COPY agentlib_mpc agentlib_mpc
+RUN pip install -e agentlib_mpc
+
+ENV PYTHONPATH=.
+
+CMD ["python", "-u", "agentlib/agentlib/modules/communicator/clonemap.py"]

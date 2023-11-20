@@ -1,0 +1,44 @@
+{
+    "config":{
+        "name":"test",
+        "agentsperagency":1,
+        "mqtt":{
+            "active":true
+        },
+        "df":{
+            "active":false
+        },
+        "logger":{
+            "active":true,
+            "msg":true,
+            "app":true,
+            "status":true,
+            "debug":true
+        }
+    },
+    "imagegroups":[
+        {
+            "config": {
+                "image":"mpcimage"
+            },
+            "agents":[
+                {
+                    "nodeid":0,
+                    "name":"myMPCAgent",
+                    "type":"test",
+                    "custom": "{\"id\": \"myMPCAgent\",\"modules\": [{\"module_id\": \"Ag1Com\", \"type\": \"clonemap\", \"subscriptions\":[\"myMPCAgent\"], \"log_level\": \"DEBUG\"},{\"module_id\": \"myMPC\",\"type\": \"agentlib_mpc.mpc\",\"optimization_backend\": {\"type\": \"casadi\",\"model\": {\"type\": {\"file\": \"agentlib_mpc/examples/one_room_mpc/physical/simple_mpc.py\", \"class_name\": \"MyCasadiModel\"}},\"discretization_options\": {\"collocation_order\": 2,\"collocation_method\": \"legendre\"},\"solver\": {\"name\": \"ipopt\"},\"results_file\": \"results/mpc.csv\",\"save_results\": true},\"time_step\": 300,\"prediction_horizon\": 15,\"parameters\": [{\"name\": \"s_T\", \"value\": 3},{\"name\": \"r_mDot\", \"value\": 1}],\"inputs\": [{\"name\": \"load\", \"value\": 150},{\"name\": \"T_upper\", \"value\": 295.15},{\"name\": \"T_in\", \"value\": 290.15}],\"controls\": [{\"name\": \"mDot\", \"value\": 0.02, \"ub\": 0.05, \"lb\": 0}],\"states\": [{\"name\": \"T\", \"value\": 298.16, \"ub\": 303.15, \"lb\": 288.15}]}]}"
+                },
+                {
+                    "nodeid":0,
+                    "name":"SimAgent",
+                    "type":"test",
+                    "custom":"{\"id\": \"SimAgent\",\"modules\": [{\"module_id\": \"Ag2Com\", \"type\": \"clonemap\", \"subscriptions\":[\"myMPCAgent\"], \"log_level\": \"DEBUG\"},{\"module_id\": \"room\",\"type\": \"simulator\",\"model\": {\"type\": {\"file\": \"agentlib_mpc/examples/one_room_mpc/physical/simple_mpc.py\", \"class_name\": \"MyCasadiModel\"},\"states\": [{\"name\": \"T\", \"value\": 298.16}]},\"t_sample\": 10,\"update_inputs_on_callback\": false,\"save_results\": true,\"outputs\": [{\"name\": \"T_out\", \"value\": 298, \"alias\": \"T\"}],\"inputs\": [{\"name\": \"mDot\", \"value\": 0.02, \"alias\": \"mDot\"}]}]}"
+                }
+            ]
+        }
+    ],
+    "graph":{
+        "node":null,
+        "edge":null
+    }
+}

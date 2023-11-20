@@ -1,0 +1,204 @@
+{
+  "id": "myPredictorAgent",
+  "modules": [
+    {
+      "module_id": "Ag2Com",
+      "type": "local_broadcast"
+    },
+   {
+      "module_id": "predictor1",
+      "type": {
+        "file": "custom_modules/predictor.py",
+        "class_name": "PredictorModule"
+      },
+      "parameters": [
+        {
+          "name": "sampling_time",
+          "value": 1800
+        },
+        {
+          "name": "prediction_length",
+          "value": 48
+        },
+        {
+          "name": "comfort_interval",
+          "value": 14400
+        },
+        {
+          "name": "comfort_low_upper",
+          "value": 294.15
+        },
+        {
+          "name": "comfort_high_lower",
+          "value": 294.15
+        },
+        {
+          "name": "comfort_high_upper",
+          "value": 294.15
+        },
+        {
+          "name": "comfort_low_lower",
+          "value": 294.15
+        },
+        {
+          "name": "max_disturbance",
+          "value": 200
+        },
+        {
+          "name": "daystart",
+          "value": 6
+        },
+        {
+          "name": "dayend",
+          "value": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "load_prediction",
+          "alias": "load_prediction1"
+        },
+        {
+          "name": "Q_solar",
+          "alias": "Q_solar_pred1"
+        },
+        {
+          "name": "T_amb_pred",
+          "alias": "T_amb_pred1"
+        },
+        {
+          "name": "set_point_schedule_high",
+          "value": 298,
+          "alias": "T_upper1"
+        },
+        {
+          "name": "set_point_schedule_low",
+          "value": 298,
+          "alias": "T_lower1"
+        }
+      ]
+    },
+    {
+      "module_id": "predictor2",
+      "type": {
+        "file": "custom_modules/predictor.py",
+        "class_name": "PredictorModule"
+      },
+      "parameters": [
+        {
+          "name": "sampling_time",
+          "value": 1800
+        },
+        {
+          "name": "prediction_length",
+          "value": 48
+        },
+        {
+          "name": "comfort_interval",
+          "value": 14400
+        },
+        {
+          "name": "comfort_low_upper",
+          "value": 296.15
+        },
+        {
+          "name": "comfort_high_lower",
+          "value": 294.15
+        },
+        {
+          "name": "max_disturbance",
+          "value": 300
+        },
+        {
+          "name": "daystart",
+          "value": 8
+        },
+        {
+          "name": "dayend",
+          "value": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "load_prediction",
+          "alias": "load_prediction_2"
+        },
+        {
+          "name": "Q_solar",
+          "alias": "Q_solar_pred2"
+        },
+        {
+          "name": "T_amb_pred",
+          "alias": "T_amb_pred2"
+        },
+        {
+          "name": "set_point_schedule_high",
+          "value": 298,
+          "alias": "T_upper2"
+        },
+        {
+          "name": "set_point_schedule_low",
+          "value": 298,
+          "alias": "T_lower2"
+        }
+      ]
+    },
+    {
+      "module_id": "predictor3",
+      "type": {
+        "file": "custom_modules/predictor.py",
+        "class_name": "PredictorModule"
+      },
+      "parameters": [
+        {
+          "name": "sampling_time",
+          "value": 1800
+        },
+        {
+          "name": "prediction_length",
+          "value": 48
+        },
+        {
+          "name": "comfort_interval",
+          "value": 14400
+        },
+        {
+          "name": "max_disturbance",
+          "value": 350
+        },
+        {
+          "name": "daystart",
+          "value": 6
+        },
+        {
+          "name": "dayend",
+          "value": 18
+        }
+      ],
+      "outputs": [
+        {
+          "name": "load_prediction",
+          "alias": "load_prediction3"
+        },
+        {
+          "name": "Q_solar",
+          "alias": "Q_solar_pred3"
+        },
+        {
+          "name": "T_amb_pred",
+          "alias": "T_amb_pred3"
+        },
+        {
+          "name": "set_point_schedule_high",
+          "value": 298,
+          "alias": "T_upper3"
+        },
+        {
+          "name": "set_point_schedule_low",
+          "value": 298,
+          "alias": "T_lower3"
+        }
+      ]
+    }
+  ]
+}

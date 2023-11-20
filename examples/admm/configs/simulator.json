@@ -1,0 +1,38 @@
+{
+  "id": "Simulation",
+  "modules": [
+    {
+      "module_id": "simulator",
+      "type": "simulator",
+      "model": {
+        "type": {
+          "file": "models/simulation_model.py",
+          "class_name": "FullModel"
+        },
+        "states": [
+          {
+            "name": "T_0",
+            "value": 298.16
+          }
+        ]
+      },
+      "t_sample": 15,
+      "save_results": true,
+      "outputs": [
+        {
+          "name": "T_0_out",
+          "value": 298.16,
+          "alias": "T_0"
+        }
+      ],
+      "inputs": [
+        {
+          "name": "mDot_0",
+          "value": 0.02,
+          "alias": "mDot"
+        }
+      ]
+    },
+    "configs/communicators/simulator_mqtt.json"
+  ]
+}

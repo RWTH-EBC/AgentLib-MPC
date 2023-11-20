@@ -1,0 +1,83 @@
+{
+  "id": "CooledRoom",
+  "modules": [
+        "configs/communicators/cooled_room_mqtt.json",
+    {
+      "module_id": "admm_module",
+      "type": "agentlib_mpc.admm",
+      "optimization_backend": {
+        "type": "casadi_admm",
+        "model": {
+          "type": {
+            "file": "models/ca_room_model.py",
+            "class_name": "CaCooledRoom"
+          }
+        },
+        "solver": {
+          "name": "ipopt",
+          "options": {
+            "ipopt.print_level": 0
+          }
+        },
+        "discretization_options": {
+          "method":"multiple_shooting"
+        },
+        "results_file": "admm_opt.csv"
+      },
+      "time_step": 240,
+      "prediction_horizon": 10,
+      "max_iterations": 20,
+      "coordinator": {
+        "agent_id": "Coordinator",
+        "module_id": "admm_coordinator"
+      },
+      "parameters": [
+        {
+          "name": "q_T_0",
+          "value": 1
+        },
+        {
+          "name": "s_T_0",
+          "value": 0
+        }
+      ],
+      "inputs": [
+        {
+          "name": "d_0",
+          "value": 150
+        },
+        {
+          "name": "T_0_set",
+          "value": 294.55
+        },
+        {
+          "name": "T_0_upper",
+          "value": 296.15
+        },
+        {
+          "name": "T_in",
+          "value": 290.15
+        }
+      ],
+      "controls": [
+      ],
+      "states": [
+        {
+          "name": "T_0",
+          "value": 298.16,
+          "ub": 303.15,
+          "lb": 288.15
+        }
+      ],
+      "couplings": [
+        {
+          "name": "mDot_0",
+          "alias": "mDotCoolAir",
+          "value": 0.05,
+          "ub": 0.1,
+          "lb": 0
+        }
+      ]
+    }
+  ]
+}

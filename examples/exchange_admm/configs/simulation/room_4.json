@@ -1,0 +1,48 @@
+{
+  "module_id": "room_4",
+  "type": "simulator",
+  "model": {
+    "type": {
+      "file": "models/room_model.py",
+      "class_name": "CaCooledRoomSim"
+    },
+    "states": [
+      {
+        "name": "T",
+        "value": 303
+      }
+    ],
+    "parameters": [
+      {
+        "name": "cZ",
+        "value": 60000
+      }
+    ]
+  },
+  "t_sample": 60,
+  "save_results": true,
+  "update_inputs_on_callback": false,
+  "outputs": [
+    {
+      "name": "T_out",
+      "value": 298.16,
+      "alias": "T_sim_4"
+    }
+  ],
+  "inputs": [
+    {
+      "name": "mDot",
+      "alias": "mDot_4",
+      "value": 0.02,
+      "source": "room_4"
+    },
+    {
+      "name": "d",
+      "value": 10
+    },
+    {
+      "name": "T_in",
+      "value": 290
+    }
+  ]
+}

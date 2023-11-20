@@ -1,0 +1,49 @@
+{
+  "module_id": "room_3",
+  "type": "simulator",
+  "model": {
+    "type": {
+      "file": "models/room_model.py",
+      "class_name": "CaCooledRoomSim"
+    },
+    "states": [
+      {
+        "name": "T",
+        "value": 301
+      }
+    ],
+    "parameters": [
+      {
+        "name": "cZ",
+        "value": 60000
+      }
+    ]
+  },
+  "t_sample": 60,
+  "save_results": true,
+  "result_filename": "results//sim_room3.csv",
+  "update_inputs_on_callback": false,
+  "outputs": [
+    {
+      "name": "T_out",
+      "value": 298.16,
+      "alias": "T_sim_3"
+    }
+  ],
+  "inputs": [
+    {
+      "name": "mDot",
+      "alias": "mDot_3",
+      "value": 0.02,
+      "source": "rlt"
+    },
+    {
+      "name": "d",
+      "value": 50
+    },
+    {
+      "name": "T_in",
+      "value": 290
+    }
+  ]
+}
