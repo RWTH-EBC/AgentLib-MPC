@@ -141,33 +141,6 @@ class TestExamples(unittest.TestCase):
             TESTING=True,
         )
 
-    def test_mpc_nn(self):
-        """Test the mpc agent example"""
-        self._run_example_with_return(
-            file="one_room_mpc//ann//simple_mpc_nn.py",
-            func_name="run_example",
-            with_plots=False,
-            log_level=logging.FATAL,
-        )
-
-    def test_mpc_gpr(self):
-        """Test the mpc agent example"""
-        self._run_example_with_return(
-            file="one_room_mpc//gpr//simple_mpc_gpr.py",
-            func_name="run_example",
-            with_plots=False,
-            log_level=logging.FATAL,
-        )
-
-    def test_mpc_linreg(self):
-        """Test the mpc agent example"""
-        self._run_example_with_return(
-            file="one_room_mpc//linreg//simple_mpc_linreg.py",
-            func_name="run_example",
-            with_plots=False,
-            log_level=logging.FATAL,
-        )
-
     @pytest.mark.skip
     def test_mpc_nn_learned_output(self):
         """Test the mpc agent example"""

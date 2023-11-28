@@ -12,14 +12,6 @@ from agentlib.utils import custom_injection
 empty_mark = Mark("", [], {})
 
 
-def by_slow_marker(item):
-    return item.get_closest_marker("slow", default=empty_mark)
-
-
-def pytest_collection_modifyitems(items):
-    items.sort(key=by_slow_marker, reverse=False)
-
-
 @pytest.fixture
 def model_type():
     file = Path(Path(__file__).parent, "fixtures//casadi_test_model.py")
