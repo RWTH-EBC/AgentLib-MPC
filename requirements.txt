@@ -1,21 +1,21 @@
-agentlib @ git+ssh://git@git-ce.rwth-aachen.de/ebc/projects/ebc_acs0017_bmwi_agent/agents_python/agentlib#egg=agentlib
+#agentlib @ git+ssh://git@git-ce.rwth-aachen.de/ebc/projects/ebc_acs0017_bmwi_agent/agents_python/agentlib#egg=agentlib
 numpy
 pandas>=1.5.3
 scipy>=1.10.0
 simpy>=4.0.1
 pydantic>=2.0
-aenum>=3.1.11
 setuptools>=67.2.0
 casadi>=3.5.5
 pre-commit>=3.0.4
 pytest>=7.2.1
 matplotlib>=3.6.3
-keras[ann]>=2.11.0
-tensorflow[ann]>=2.11.0
+keras[ml]>=2.11.0
+tensorflow[ml]>=2.11.0
 rwth-CD-colors
 rapidfuzz>=2.13.7
 attrs>=22.2.0
-scikit-learn>=1.2.2
+scikit-learn[ml]>=1.2.2
+orjson>=3.9.5
 
 # Building the docs
 sphinx>=6.1.3
@@ -23,3 +23,7 @@ m2r2>=0.3.3.post2
 autodoc_pydantic>=1.8.0
 sphinx-material
 # agentlib~=0.3.1
+
+# development
+pre-commit>=2.17.0
+pytest>=7.0.1

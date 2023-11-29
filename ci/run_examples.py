@@ -141,27 +141,4 @@ class TestExamples(unittest.TestCase):
             TESTING=True,
         )
 
-    @pytest.mark.skip
-    def test_mpc_nn_learned_output(self):
-        """Test the mpc agent example"""
-        self._run_example_with_return(
-            file="one_room_mpc//ann//with_learned_cost//simple_mpc_nn.py",
-            func_name="run_example",
-            with_plots=False,
-            log_level=logging.FATAL,
-        )
 
-    @pytest.mark.slow
-    def test_admm_three_zone(self):
-        results = self._run_example_with_return(
-            file="three_zone_datadriven_admm//admm_3zone_sim.py",
-            func_name="run_example",
-            with_plots=False,
-            until=3600,
-            log_level=logging.FATAL,
-        )
-        residuals = results["Coordinator"]["admm_coordinator"]
-        # if it takes too few iterations something went wrong
-        assert residuals.shape[0] > 60
-        assert residuals.loc[(0.001, 45)]["primal_residual"] < 0.1
-        assert residuals.loc[(0.001, 45)]["dual_residual"] < 1

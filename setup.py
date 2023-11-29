@@ -16,14 +16,12 @@ INSTALL_REQUIRES = [
     "simpy>=4.0.1",
     "pydantic>=1.10.4",
     "casadi>=3.5.5",
-    "aenum>=2.2.4",
-    "pre-commit>=2.17.0",
-    "pytest>=7.0.1",
     "matplotlib>=3.5.1",
     "rwth-CD-colors",
     "matplotlib",
     "attrs>=22.2.0",
-    "agentlib>=0.6.0"
+    "agentlib>=0.6.0",
+    'orjson>=3.9.5'
     # "agentlib @ git+https://git-ce.rwth-aachen.de/ebc/projects/ebc_acs0017_bmwi_agent/agents_python/agentlib#egg=agentlib",
 ]
 
