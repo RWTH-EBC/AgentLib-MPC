@@ -93,7 +93,7 @@ def sample(
         values = trajectory.values
     else:
         raise TypeError(
-            f"Passed trajectory of type '{type(trajectory)}' " f"cannot be sampled."
+            f"Passed trajectory of type '{type(trajectory)}' cannot be sampled."
         )
     target_grid = np.array(grid) + current
 
@@ -115,12 +115,6 @@ def sample(
     if target_grid[0] >= source_grid[-1]:
         # return the last value of the trajectory if requested sample
         # starts out of range
-        logger.warning(
-            f"Latest value of source grid %s is older than "
-            f"current time (%s. Returning latest value anyway.",
-            source_grid[-1],
-            current,
-        )
         return [values[-1]] * target_grid_length
 
     # determine whether the target grid lies within the available source grid, and
@@ -135,6 +129,14 @@ def sample(
     number_of_missing_new_entries: int = target_grid_length - np.count_nonzero(
         source_is_recent_enough
     )
+    if number_of_missing_new_entries > 0 or number_of_missing_old_entries > 0:
+        logger.debug(
+            "Available data for interpolation is not sufficient. Missing "
+            f"{number_of_missing_new_entries} of recent data, and missing "
+            f"{number_of_missing_old_entries} of old data.,"
+        )
+
+
     # shorten target interpolation grid by extra points that go above or below
     # available data range
     target_grid = target_grid[source_is_recent_enough * source_is_old_enough]

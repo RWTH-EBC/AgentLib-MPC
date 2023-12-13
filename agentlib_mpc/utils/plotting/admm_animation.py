@@ -47,7 +47,7 @@ def animate_full(
 
     for label, line in lines.items():
         data_for_iter = admm_at_time_step(
-            data=data[label],
+            data=pd.DataFrame(data[label]),
             time_step=time_step,
             iteration=i,
         ).dropna()

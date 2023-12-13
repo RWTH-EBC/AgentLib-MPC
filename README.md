@@ -10,3 +10,9 @@ This is a plugin for the AgentLib.
 Includes functions for modeling with Casadi, and using those models in nonlinear MPC, central and distributed (based on ADMM).
 
 See examples and the tutorial in the docs.
+
+## Acknowledgments
+
+We gratefully acknowledge the financial support by Federal Ministry \\ for Economic Affairs and Climate Action (BMWK), promotional reference 03ET1495A.
+
+<img src="./docs/source/images/BMWK_logo.png" alt="BMWK" width="200"/>

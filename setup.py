@@ -22,7 +22,7 @@ INSTALL_REQUIRES = [
     "attrs>=22.2.0",
     "agentlib>=0.6.0",
     'orjson>=3.9.5'
-    # "agentlib @ git+https://git-ce.rwth-aachen.de/ebc/projects/ebc_acs0017_bmwi_agent/agents_python/agentlib#egg=agentlib",
+    'agentlib >= 0.6.0',
 ]
 
 setuptools.setup(

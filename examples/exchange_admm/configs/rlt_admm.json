@@ -13,8 +13,10 @@
             "class_name": "RLT"
           }
         },
-                "discretization": {"method": "multiple_shooting"},
-"solver": {
+        "discretization_options": {
+          "method": "collocation"
+        },
+        "solver": {
           "name": "ipopt",
           "options": {
             "ipopt.print_level": 0
@@ -22,7 +24,7 @@
         },
         "results_file": "results//admm_opt_rlt.csv"
       },
-            "coordinator": {
+      "coordinator": {
         "agent_id": "Coordinator",
         "module_id": "admm_coordinator"
       },

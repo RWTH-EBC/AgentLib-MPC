@@ -1,10 +1,9 @@
 import logging
 import platform
 from pathlib import Path
-from typing import Callable, Type, Optional
+from typing import Type, Optional
 
 import casadi as ca
-import pandas as pd
 import pydantic
 from agentlib.core.errors import ConfigurationError
 
@@ -97,7 +96,7 @@ class CasADiBackend(OptimizationBackend):
     discretization_types: dict[DiscretizationMethod, Type[DiscretizationT]]
     discretization: DiscretizationT
     _supported_models = {"CasadiModel": CasadiModel}
-    config_type = CasadiBackendConfig
+    config: CasadiBackendConfig
 
     def setup_optimization(self, var_ref: mpc_datamodels.VariableReference):
         """
