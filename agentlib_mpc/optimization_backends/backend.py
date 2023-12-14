@@ -1,25 +1,20 @@
 import abc
 from datetime import datetime
 import logging
-import os.path
 from pathlib import Path
-from typing import Dict, Union, List, Callable, TypeVar, Optional, get_type_hints
+from typing import Dict, Union, Callable, TypeVar, Optional, get_type_hints
 
-import numpy as np
 import pandas as pd
 import pydantic
 from agentlib.core.errors import ConfigurationError
 from pydantic_core.core_schema import FieldValidationInfo
-from scipy import interpolate
 
 from agentlib.utils import custom_injection
 from agentlib.core import AgentVariable, Model
 from agentlib_mpc.data_structures import mpc_datamodels
 from agentlib_mpc.data_structures.mpc_datamodels import (
-    stats_path,
-    DiscretizationOptions,
+    stats_path, Results,
 )
-from agentlib_mpc.optimization_backends.casadi_.core.discretization import Results
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +23,6 @@ ModelT = TypeVar("ModelT", bound=Model)
 
 class BackendConfig(pydantic.BaseModel):
     model: dict
-    discretization_options: DiscretizationOptions
     name: Optional[str] = None
     results_file: Optional[Path] = pydantic.Field(default=None)
     save_results: Optional[bool] = pydantic.Field(validate_default=True, default=None)
@@ -150,7 +144,7 @@ class OptimizationBackend(abc.ABC):
             )
         return model
 
-    def save_result_df(
+    def save_results(
         self,
         results: Results,
         now: float = 0,
@@ -233,7 +227,7 @@ class ADMMBackend(OptimizationBackend):
         """Returns the grid on which the coupling variables are discretized."""
         raise NotImplementedError
 
-    def save_result_df(
+    def save_results(
         self,
         results: Results,
         now: float = 0,

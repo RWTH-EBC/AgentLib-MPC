@@ -1,6 +1,7 @@
+import abc
 import dataclasses
 from pathlib import Path
-from typing import List, Union, TypeVar
+from typing import List, Union, TypeVar, Protocol
 from itertools import chain
 
 import attrs
@@ -21,24 +22,6 @@ class InitStatus(str, Enum):
     pre_module_init = auto()
     during_update = auto()
     ready = auto()
-
-
-class DiscretizationOptions(pydantic.BaseModel):
-    """Class defining the options to discretize an MPC. Can be extended for different
-    optimization implementations."""
-
-    model_config = ConfigDict(extra="allow")
-
-    time_step: float = pydantic.Field(
-        default=60,
-        ge=0,
-        description="Time step of the MPC.",
-    )
-    prediction_horizon: int = pydantic.Field(
-        default=5,
-        ge=0,
-        description="Prediction horizon of the MPC.",
-    )
 
 
 @dataclasses.dataclass
@@ -142,3 +125,38 @@ def stats_path(path: Union[Path, str]) -> Path:
 
 
 MPCValue = Union[int, float, list[Union[int, float]], pd.Series, np.ndarray]
+
+
+@abc.ABC
+class Results(abc.ABC):
+    """Specifies the optimization results. Should be returned from the backend to the
+    mpc. Used in the mpc for further processing and inter agent communication, and for
+    saving. Holds the discretized full results over the prediction horizon, as well as
+     the solve stats."""
+    columns: pd.MultiIndex
+    stats: dict
+    variable_grid_indices: dict[str, list[int]]
+    _variable_name_to_index: dict[str, int] = None
+
+    def __getitem__(self, item: str) -> np.ndarray:
+        return self.df[item]
+
+    @abc.abstractmethod
+    @property
+    def df(self) -> pd.DataFrame:
+        raise NotImplementedError
+
+    def write_columns(self, file: Path):
+        """Write an empty results file with the correct columns."""
+        df = pd.DataFrame(columns=self.columns)
+        df.to_csv(file)
+
+    def write_stats_columns(self, file: Path):
+        """Write an empty stats file with the correct columns."""
+        line = f""",{",".join(self.stats)}\n"""
+        with open(file, "w") as f:
+            f.write(line)
+
+    def stats_line(self, index: str) -> str:
+        """Create a line, that should be appended to the stats file."""
+        return f""""{index}",{",".join(map(str, self.stats.values()))}\n"""

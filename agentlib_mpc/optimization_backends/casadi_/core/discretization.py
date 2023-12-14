@@ -24,14 +24,15 @@ from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
     OptimizationVariable,
 )
 from agentlib_mpc.optimization_backends.casadi_.core.system import System
+from agentlib_mpc.data_structures import mpc_datamodels
 
 
 CasadiVariableList = Union[list[ca.MX], ca.MX]
 
 
 @dataclasses.dataclass
-class Results:
-    matrix: ca.MX
+class Results(mpc_datamodels.Results):
+    matrix: ca.DM
     grid: list[float]
     columns: pd.MultiIndex
     stats: dict
