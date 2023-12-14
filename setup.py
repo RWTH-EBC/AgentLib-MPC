@@ -21,7 +21,7 @@ INSTALL_REQUIRES = [
     "matplotlib",
     "attrs>=22.2.0",
     "agentlib>=0.6.0",
-    'orjson>=3.9.5'
+    'orjson>=3.9.5',
     'agentlib >= 0.6.0',
 ]
 
