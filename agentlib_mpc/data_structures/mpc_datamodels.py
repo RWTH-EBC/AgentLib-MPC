@@ -132,7 +132,7 @@ class Results(abc.ABC):
     """Specifies the optimization results. Should be returned from the backend to the
     mpc. Used in the mpc for further processing and inter agent communication, and for
     saving. Holds the discretized full results over the prediction horizon, as well as
-     the solve stats."""
+    the solve stats."""
     columns: pd.MultiIndex
     stats: dict
     variable_grid_indices: dict[str, list[int]]
