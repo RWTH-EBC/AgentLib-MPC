@@ -151,7 +151,7 @@ AGENT_MPC = {
             ],
             "controls": [{"name": "mDot", "value": 0.02, "ub": 0.05, "lb": 0}],
             "states": [
-                {"name": "T", "value": 298.16, "ub": 303.15, "shared": True, "lb": 288.15, "alias": "T", "source": "SimAgent"}
+                {"name": "T", "value": 298.16, "ub": 303.15, "lb": 288.15, "alias": "T", "source": "SimAgent"}
             ],
         },
     ],
@@ -236,5 +236,5 @@ def run_example_clonemap():
 
 
 if __name__ == "__main__":
-    run_example(with_plots=True, until=3600)
+    run_example(with_plots=True, until=3600, log_level=logging.INFO)
     # run_example_clonemap()

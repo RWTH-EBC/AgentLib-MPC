@@ -127,7 +127,6 @@ def stats_path(path: Union[Path, str]) -> Path:
 MPCValue = Union[int, float, list[Union[int, float]], pd.Series, np.ndarray]
 
 
-@abc.ABC
 class Results(abc.ABC):
     """Specifies the optimization results. Should be returned from the backend to the
     mpc. Used in the mpc for further processing and inter agent communication, and for
@@ -139,10 +138,9 @@ class Results(abc.ABC):
     _variable_name_to_index: dict[str, int] = None
 
     def __getitem__(self, item: str) -> np.ndarray:
-        return self.df[item]
+        return self.df()[item]
 
     @abc.abstractmethod
-    @property
     def df(self) -> pd.DataFrame:
         raise NotImplementedError
 

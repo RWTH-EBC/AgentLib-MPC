@@ -176,7 +176,7 @@ class OptimizationBackend(abc.ABC):
             results.write_columns(res_file)
             results.write_stats_columns(stats_path(res_file))
 
-        df = results.df
+        df = results.df()
         df.index = list(map(lambda x: str((now, x)), df.index))
         with open(res_file, "a") as f:
             df.to_csv(f, mode="a", header=False)
@@ -267,7 +267,7 @@ class ADMMBackend(OptimizationBackend):
             results.write_columns(res_file)
             results.write_stats_columns(stats_path(res_file))
 
-        df = results.df
+        df = results.df()
         df.index = list(map(lambda x: str((now, self.it, x)), df.index))
         self.results.append(df)
 

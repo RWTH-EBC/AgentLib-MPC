@@ -10,6 +10,8 @@ from typing import Union, List, NamedTuple
 
 import casadi as ca
 from enum import Enum
+
+import pydantic
 from pydantic import ConfigDict, Field, BaseModel
 
 from agentlib_mpc.data_structures import mpc_datamodels
@@ -59,9 +61,18 @@ class Integrators(str, Enum):
     rk = "rk"  # runge-kutta
 
 
-class CasadiDiscretizationOptions(mpc_datamodels.DiscretizationOptions):
+class CasadiDiscretizationOptions(BaseModel):
     model_config = ConfigDict(extra="forbid")
-
+    time_step: float = Field(
+        default=60,
+        ge=0,
+        description="Time step of the MPC.",
+    )
+    prediction_horizon: int = Field(
+        default=5,
+        ge=0,
+        description="Prediction horizon of the MPC.",
+    )
     method: DiscretizationMethod = DiscretizationMethod.collocation
     collocation_order: int = Field(default=3, ge=1, le=9)
     collocation_method: CollocationMethod = CollocationMethod.legendre
@@ -150,8 +161,8 @@ class SolverFactory:
             "record_time": True,
             "ipopt.max_iter": 100,
             "ipopt.tol": 0.00001,
-            "ipopt.acceptable_tol": 1,
-            "ipopt.acceptable_constr_viol_tol": 1,
+            "ipopt.acceptable_tol": 1e-2,
+            "ipopt.acceptable_constr_viol_tol": 1e-2,
             "ipopt.acceptable_iter": 3,
             "ipopt.acceptable_compl_inf_tol": 1,
             "ipopt.print_level": 0,

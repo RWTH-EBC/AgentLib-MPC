@@ -1,7 +1,6 @@
 """Holds classes that implement different transcriptions of the OCP"""
 import abc
 import dataclasses
-from functools import cached_property
 from pathlib import Path
 from typing import TypeVar, Union, Callable, Optional
 
@@ -37,7 +36,8 @@ class Results(mpc_datamodels.Results):
     columns: pd.MultiIndex
     stats: dict
     variable_grid_indices: dict[str, list[int]]
-    _variable_name_to_index: dict[str, int] = None
+    _variable_name_to_index: Optional[dict[str, int]] = None
+    _df: Optional[pd.DataFrame] = None
 
     def __post_init__(self):
         self._variable_name_to_index = self.variable_lookup()
@@ -60,9 +60,10 @@ class Results(mpc_datamodels.Results):
                 lookup[label[1]] = index
         return lookup
 
-    @cached_property
     def df(self) -> pd.DataFrame:
-        return pd.DataFrame(self.matrix, index=self.grid, columns=self.columns)
+        if self._df is None:
+            self._df = pd.DataFrame(self.matrix, index=self.grid, columns=self.columns)
+        return self._df
 
     def write_columns(self, file: Path):
         df = pd.DataFrame(columns=self.columns)
