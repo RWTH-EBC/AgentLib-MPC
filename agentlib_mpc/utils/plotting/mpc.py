@@ -83,7 +83,15 @@ def plot_mpc(
 
         time = time / TIME_CONVERSION[convert_to]
         if plot_actual_values:
-            actual_values[time] = prediction.loc[0]
+            try:
+                actual_values[time] = prediction.loc[0]
+            except KeyError:
+                raise ValueError(
+                    "Could not plot actual values for this series. It is possible, that"
+                    " the grid defined for this series does not specify the 0 entry. "
+                    "This could be the case for algebraic outputs, or coupling "
+                    "variables in ADMM."
+                )
         # add time to index after appending first value to actual values, so the key 0
         # always works
         prediction.index = (prediction.index + time) / TIME_CONVERSION[convert_to]
@@ -115,6 +123,45 @@ def plot_mpc(
             actual_series.plot(
                 ax=ax, color="black", linewidth=1.5, drawstyle="steps-post"
             )
+
+
+def plot_admm(
+    series: pd.Series,
+    ax: plt.Axes,
+    plot_actual_values: bool = True,
+    plot_predictions: bool = False,
+    step: bool = False,
+    convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds",
+):
+    """
+
+    Args:
+        series: A column of the MPC results Dataframe
+        ax: which Axes to plot on
+        plot_actual_values: whether the closed loop actual values at the start of each
+         optimization should be plotted (default True)
+        plot_predictions: whether all predicted trajectories should be plotted
+        step:
+        convert_to: Will convert the index of the returned series to the specified unit
+         (seconds, minutes, hours, days)
+
+    Returns:
+
+    """
+    grid = series.index.get_level_values(2).unique()
+    tail_length = len(grid[grid >= 0])
+    series_final_predictions = series.groupby(level=0).tail(tail_length).droplevel(1)
+    return plot_mpc(
+        series=series_final_predictions,
+        ax=ax,
+        plot_actual_values=plot_actual_values,
+        plot_predictions=plot_predictions,
+        step=step,
+        convert_to=convert_to,
+    )
+
+
+
 
 
 if __name__ == "__main__":

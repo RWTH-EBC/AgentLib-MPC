@@ -1,6 +1,7 @@
 import itertools
 import logging
 from typing import Union, Iterable
+from numbers import Real
 
 import numpy as np
 import pandas as pd
@@ -44,7 +45,7 @@ def sample_values_to_target_grid(
 
 
 def sample(
-    trajectory: Union[float, int, pd.Series, list[Union[float, int]]],
+    trajectory: Union[Real, pd.Series, list[Real], dict[Real, Real]],
     grid: Union[list, np.ndarray],
     current: float = 0,
     method: str = "linear",
@@ -55,9 +56,8 @@ def sample(
     Args:
         trajectory:  The trajectory to be sampled. Scalars will be
             expanded onto the grid. Lists need to exactly match the provided
-            grid. Otherwise, a list of tuples is accepted with the form (
-            timestamp, value). A dict with the keys 'grid' and 'value' is also
-            accepted.
+            grid. Otherwise, a pandas Series is accepted with the timestamp as index. A
+             dict with the keys as time stamps is also accepted.
         current: start time of requested trajectory
         grid: target interpolation grid in seconds in relative terms (i.e.
             starting from 0 usually)
@@ -91,6 +91,9 @@ def sample(
     if isinstance(trajectory, pd.Series):
         source_grid = np.array(trajectory.index)
         values = trajectory.values
+    elif isinstance(trajectory, dict):
+        source_grid = np.array(list(trajectory))
+        values = np.array(list(trajectory.values()))
     else:
         raise TypeError(
             f"Passed trajectory of type '{type(trajectory)}' cannot be sampled."
