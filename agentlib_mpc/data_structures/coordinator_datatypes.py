@@ -1,6 +1,6 @@
 import dataclasses
 from dataclasses import dataclass, asdict
-from aenum import Enum
+from enum import Enum
 
 import numpy as np
 
