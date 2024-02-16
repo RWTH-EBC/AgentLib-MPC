@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 # put your license file here
 # import os
-# os.environ['GRB_LICENSE_FILE'] = r'C:\Users\ses\gurobi.lic'
+os.environ['GRB_LICENSE_FILE'] = r'C:\Users\ses\gurobi.lic'
 
 # script variables
 ub = 295.15
@@ -159,8 +159,8 @@ AGENT_MPC = {
                     "collocation_method": "radau",
                 },
                 "solver": {
-                    "name": "bonmin",
-                    # "name": "gurobi",
+                    # "name": "bonmin",
+                    "name": "gurobi",
                 },
                 "results_file": "results//mpc.csv",
                 "save_results": True,

@@ -47,7 +47,7 @@ class CoordinatedADMM(MiniEmployee, ADMM):
                 answer = adt.AgentToCoordinator(
                     local_trajectory=guesses, local_exchange_trajectory=ex_guess
                 )
-                self.set(cdt.REGISTRATION_A2C, answer.to_json_bytes())
+                self.set(cdt.REGISTRATION_A2C, answer.to_json())
             yield self.env.timeout(timeout)
 
     def registration_callback(self, variable: AgentVariable):
@@ -71,7 +71,7 @@ class CoordinatedADMM(MiniEmployee, ADMM):
         )
 
         self._registered_coordinator = variable.source
-        self.set(cdt.REGISTRATION_A2C, answer.to_json_bytes())
+        self.set(cdt.REGISTRATION_A2C, answer.to_json())
 
     def get_new_measurement(self):
         """
@@ -154,7 +154,7 @@ class CoordinatedADMM(MiniEmployee, ADMM):
             local_trajectory=cons_traj, local_exchange_trajectory=exchange_traj
         )
         self.logger.debug("Sent optimal solution.")
-        self.set(name=cdt.OPTIMIZATION_A2C, value=opt_return.to_json_bytes())
+        self.set(name=cdt.OPTIMIZATION_A2C, value=opt_return.to_json())
 
     def _finish_optimization(self):
         """

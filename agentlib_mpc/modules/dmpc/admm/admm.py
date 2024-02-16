@@ -628,7 +628,7 @@ class ADMM(DistributedMPC):
             updated_value = updated_value.tolist()
             # Set value to data_broker
             self._admm_variables[coupling.multiplier].value = updated_value
-            self.logger.info("Updated lambda_%s = %s", coupling.name, updated_value)
+            self.logger.debug("Updated lambda_%s = %s", coupling.name, updated_value)
 
         for exchange in self.var_ref.exchange:
             # Get current lambda value:
@@ -646,7 +646,7 @@ class ADMM(DistributedMPC):
             updated_value = updated_value.tolist()
             # Set value to data_broker
             self._admm_variables[exchange.multiplier].value = updated_value
-            self.logger.info("Updated lambda_%s = %s", exchange.name, updated_value)
+            self.logger.debug("Updated lambda_%s = %s", exchange.name, updated_value)
 
     def get_results(self) -> Optional[pd.DataFrame]:
         """Read the results that were saved from the optimization backend and

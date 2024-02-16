@@ -336,11 +336,11 @@ class StructuredValue:
     """Base Class to specify the structure of an AgentVariable Value. It will
     be efficiently sent and deserialized."""
 
-    def to_json_bytes(self) -> bytes:
+    def to_json(self) -> str:
         """Serialize self to json bytes, can be used by the communicator."""
         return orjson.dumps(
             self, option=orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_SERIALIZE_DATACLASS
-        )
+        ).decode()
 
     @classmethod
     def from_json(cls, data: bytes):

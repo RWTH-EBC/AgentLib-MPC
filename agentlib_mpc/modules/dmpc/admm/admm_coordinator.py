@@ -515,7 +515,7 @@ class ADMMCoordinator(Coordinator):
             message = AgentVariable(
                 name=cdt.OPTIMIZATION_C2A,
                 source=self.source,
-                value=coordi_to_agent.to_json_bytes(),
+                value=coordi_to_agent.to_json(),
                 shared=True,
             )
             send(message)
