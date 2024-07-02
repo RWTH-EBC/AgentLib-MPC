@@ -13,8 +13,8 @@
             "class_name": "RLT"
           }
         },
-        "discretization_options": {
-          "method": "collocation"
+        "discretization": {
+          "method": "multiple_shooting"
         },
         "solver": {
           "name": "ipopt",

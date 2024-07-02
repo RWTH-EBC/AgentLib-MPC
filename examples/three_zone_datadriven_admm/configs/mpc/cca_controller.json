@@ -1,0 +1,108 @@
+{
+  "id": "Temp_Controller",
+  "modules": [
+    "configs/communicators/local_broadcast.json",
+    {
+      "module_id": "admm_module",
+      "type": "agentlib_mpc.admm_coordinated",
+      "optimization_backend": {
+        "type": "casadi_admm",
+        "model": {
+          "type": {
+            "file": "models/CCA.py",
+            "class_name": "TempController"
+          }
+        },
+        "solver": {
+          "name": "ipopt",
+          "options": {
+            "ipopt.print_level": 0
+          }
+        },
+        "discretization_options": {
+          "method":"multiple_shooting"
+        },
+        "results_file": "results//tempcontroller_res.csv"
+      },
+      "coordinator": {
+        "agent_id": "Coordinator",
+        "module_id": "admm_coordinator"
+      },
+      "time_step": 1800,
+      "prediction_horizon": 24,
+      "max_iterations": 40,
+      "parameters": [
+        {
+          "name": "r_T_v",
+          "value": 1
+        }
+      ],
+      "inputs": [
+        {
+          "name": "mDot_0",
+          "value": 0.1
+        }
+      ],
+      "controls": [
+        {
+          "name": "T_v",
+          "value": 294.15,
+          "ub": 308,
+          "lb": 285
+        }
+      ],
+      "outputs": [
+        {
+          "name": "W1",
+          "value": 0,
+          "ub": 100000,
+          "lb": -100000
+        },
+        {
+          "name": "W2",
+          "value": 0,
+          "ub": 100000,
+          "lb": -100000
+        },
+        {
+          "name": "W3",
+          "value": 0,
+          "ub": 100000,
+          "lb": -100000
+        }
+      ],
+      "couplings": [
+        {
+          "name": "T_v_out",
+          "alias": "T_coupling1",
+          "value": 294.15
+        },
+        {
+          "name": "T_r1",
+          "alias": "T_rucklauf1",
+          "value": 294.15
+        },
+        {
+          "name": "T_v_out2",
+          "alias": "T_coupling2",
+          "value": 294.15
+        },
+        {
+          "name": "T_r2",
+          "alias": "T_rucklauf2",
+          "value": 294.15
+        },
+        {
+          "name": "T_v_out3",
+          "alias": "T_coupling3",
+          "value": 294.15
+        },
+        {
+          "name": "T_r3",
+          "alias": "T_rucklauf3",
+          "value": 294.15
+        }
+      ]
+    }
+  ]
+}

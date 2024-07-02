@@ -5,7 +5,7 @@ from typing import Literal
 import keras.callbacks
 import pandas as pd
 import pydantic
-from enum import Enum
+from aenum import Enum
 from agentlib.core.errors import ConfigurationError
 from pydantic import BaseModel
 from pydantic_core.core_schema import FieldValidationInfo

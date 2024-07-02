@@ -107,4 +107,4 @@ def run_example(
 
 
 if __name__ == "__main__":
-    run_example(with_plots=True, until=1800, cleanup=False, log_level=logging.WARNING)
+    run_example(with_plots=True, until=1800, cleanup=True, log_level=logging.WARNING)

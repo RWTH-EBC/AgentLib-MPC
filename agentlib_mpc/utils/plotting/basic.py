@@ -8,7 +8,6 @@ from typing import Tuple, Callable, TypedDict, Annotated
 import matplotlib
 from matplotlib import pyplot as plt
 from matplotlib.ticker import AutoMinorLocator
-from rwth_colors import colors
 
 
 logger = logging.getLogger(__name__)

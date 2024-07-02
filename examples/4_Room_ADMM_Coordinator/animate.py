@@ -24,8 +24,8 @@ def customize_fig(fig: plt.Figure, ax: plt.Axes) -> (plt.Figure, plt.Axes):
 
 def main():
     try:
-        rooms = [analysis.load_admm(Path(f"results//admm_opt_{i}.csv")) for i in range(1, 5)]
-        rlt = analysis.load_admm(Path(f"results//admm_opt_rlt.csv"))["variable"]
+        rooms = [analysis.load_admm(Path(f"admm_opt_{i}.csv")) for i in range(1, 5)]
+        rlt = analysis.load_admm(Path(f"admm_opt_rlt.csv"))["variable"]
     except FileNotFoundError as e:
         raise FileNotFoundError(
             "Results files do not exist. Make sure you run 'admm_4rooms_coord_main.py'"

@@ -31,6 +31,7 @@ class CoordinatedADMM(MiniEmployee, ADMM):
     config: CoordinatedADMMConfig
 
     def __init__(self, *, config: dict, agent: Agent):
+        self._initial_setup = True  # flag to check that we don't compile ipopt twice
         super().__init__(config=config, agent=agent)
         self._optimization_inputs: Dict[str, AgentVariable] = {}
         self._create_coupling_alias_to_name_mapping()
@@ -61,7 +62,7 @@ class CoordinatedADMM(MiniEmployee, ADMM):
         )
         # global parameters to define optimisation problem
         value = cdt.RegistrationMessage(**variable.value)
-        if not value.source.matches(self.source):
+        if not value.agent_id == self.source.agent_id:
             return
         options = adt.ADMMParameters(**value.opts)
         self._set_admm_parameters(options=options)
@@ -72,6 +73,21 @@ class CoordinatedADMM(MiniEmployee, ADMM):
 
         self._registered_coordinator = variable.source
         self.set(cdt.REGISTRATION_A2C, answer.to_json())
+
+    def _after_config_update(self):
+        # use some hacks to set jit false for the first time this function is called
+        if (
+            self.config.optimization_backend.get("do_jit", False)
+            and self._initial_setup
+        ):
+            do_jit = True
+            self.config.optimization_backend["do_jit"] = False
+        else:
+            do_jit = False
+        super()._after_config_update()
+        if self._initial_setup:
+            self.config.optimization_backend["do_jit"] = do_jit
+            self._initial_setup = False
 
     def get_new_measurement(self):
         """
@@ -184,7 +200,6 @@ class CoordinatedADMM(MiniEmployee, ADMM):
             }
         )
         self.config = new_config_dict
-        self.optimization_backend.setup_optimization(var_ref=self.var_ref)
         self.logger.info("%s: Reinitialized optimization problem.", self.agent.id)
 
     def _initial_coupling_values(self) -> tuple[Dict[str, list], Dict[str, list]]:

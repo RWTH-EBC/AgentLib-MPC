@@ -52,10 +52,10 @@ agentlib\_mpc.optimization\_backends.casadi\_.full module
    :undoc-members:
    :show-inheritance:
 
-agentlib\_mpc.optimization\_backends.casadi\_.miqp module
+agentlib\_mpc.optimization\_backends.casadi\_.minlp module
 ---------------------------------------------------------
 
-.. automodule:: agentlib_mpc.optimization_backends.casadi_.miqp
+.. automodule:: agentlib_mpc.optimization_backends.casadi_.minlp
    :members:
    :undoc-members:
    :show-inheritance:

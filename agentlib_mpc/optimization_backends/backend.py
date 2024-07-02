@@ -1,20 +1,23 @@
 import abc
+import os
 from datetime import datetime
 import logging
 from pathlib import Path
-from typing import Dict, Union, Callable, TypeVar, Optional, get_type_hints
+from typing import Dict, Union, Callable, TypeVar, Optional
 
 import pandas as pd
 import pydantic
 from agentlib.core.errors import ConfigurationError
+from pydantic import ConfigDict
 from pydantic_core.core_schema import FieldValidationInfo
 
 from agentlib.utils import custom_injection
 from agentlib.core import AgentVariable, Model
 from agentlib_mpc.data_structures import mpc_datamodels
 from agentlib_mpc.data_structures.mpc_datamodels import (
-    stats_path, Results,
+    DiscretizationOptions,
 )
+from agentlib_mpc.data_structures.mpc_datamodels import Results
 
 logger = logging.getLogger(__name__)
 
@@ -23,9 +26,14 @@ ModelT = TypeVar("ModelT", bound=Model)
 
 class BackendConfig(pydantic.BaseModel):
     model: dict
+    discretization_options: DiscretizationOptions
     name: Optional[str] = None
     results_file: Optional[Path] = pydantic.Field(default=None)
     save_results: Optional[bool] = pydantic.Field(validate_default=True, default=None)
+    overwrite_result_file: Optional[bool] = pydantic.Field(
+        default=False, validate_default=True
+    )
+    model_config = ConfigDict(extra="forbid")
 
     @pydantic.field_validator("results_file")
     @classmethod
@@ -49,6 +57,28 @@ class BackendConfig(pydantic.BaseModel):
             )
         return save_results
 
+    @pydantic.field_validator("overwrite_result_file")
+    @classmethod
+    def check_overwrite(cls, overwrite_result_file: bool, info: FieldValidationInfo):
+        """Checks, whether the overwrite results sttings are valid, and deletes
+        existing result files if applicable."""
+        res_file = info.data.get("results_file")
+        if res_file and info.data["save_results"]:
+            if overwrite_result_file:
+                try:
+                    os.remove(res_file)
+                    os.remove(mpc_datamodels.stats_path(res_file))
+                except FileNotFoundError:
+                    pass
+            else:
+                if os.path.isfile(info.data["results_file"]):
+                    raise FileExistsError(
+                        f"Results file {res_file} already exists and will not be "
+                        f"overwritten automatically. Set 'overwrite_result_file' to "
+                        f"True to enable automatic overwrite it."
+                    )
+        return overwrite_result_file
+
 
 class OptimizationBackend(abc.ABC):
     """
@@ -60,10 +90,10 @@ class OptimizationBackend(abc.ABC):
 
     _supported_models: dict[str, ModelT] = {}
     mpc_backend_parameters = ("time_step", "prediction_horizon")
-    config: BackendConfig
+    config_type = BackendConfig
 
     def __init__(self, config: dict):
-        self.config = get_type_hints(type(self))["config"](**config)
+        self.config = self.config_type(**config)
         self.model: ModelT = self.model_from_config(self.config.model)
         self.var_ref: Optional[mpc_datamodels.VariableReference] = None
         self.cost_function: Optional[Callable] = None
@@ -144,46 +174,6 @@ class OptimizationBackend(abc.ABC):
             )
         return model
 
-    def save_results(
-        self,
-        results: Results,
-        now: float = 0,
-    ):
-        """
-        Save the results of `solve` into a dataframe at each time step.
-
-        Example results dataframe:
-
-        value_type               variable              ...     lower
-        variable                      T_0   T_0_slack  ... T_0_slack mDot_0
-        time_step                                      ...
-        2         0.000000     298.160000         NaN  ...       NaN    NaN
-                  101.431499   297.540944 -149.465942  ...      -inf    0.0
-                  450.000000   295.779780 -147.704779  ...      -inf    0.0
-                  798.568501   294.720770 -146.645769  ...      -inf    0.0
-        Args:
-            results:
-            now:
-
-        Returns:
-
-        """
-        if not self.config.save_results:
-            return
-
-        res_file = self.config.results_file
-        if not self.results_file_exists():
-            results.write_columns(res_file)
-            results.write_stats_columns(stats_path(res_file))
-
-        df = results.df()
-        df.index = list(map(lambda x: str((now, x)), df.index))
-        with open(res_file, "a") as f:
-            df.to_csv(f, mode="a", header=False)
-
-        with open(stats_path(res_file), "a") as f:
-            f.writelines(results.stats_line(str(now)))
-
     def get_lags_per_variable(self) -> dict[str, float]:
         """Returns the name of variables which include lags and their lag in seconds.
         The MPC module can use this information to save relevant past data of lagged
@@ -206,6 +196,15 @@ class OptimizationBackend(abc.ABC):
         self._created_file = True
         return False
 
+    def update_model_variables(self, current_vars: Dict[str, AgentVariable]):
+        """
+        Internal method to write current data_broker to model variables.
+        Only update values, not other module_types.
+        """
+        for inp in current_vars.values():
+            logger.debug(f"Updating model variable {inp.name}={inp.value}")
+            self.model.set(name=inp.name, value=inp.value)
+
 
 OptimizationBackendT = TypeVar("OptimizationBackendT", bound=OptimizationBackend)
 
@@ -214,78 +213,8 @@ class ADMMBackend(OptimizationBackend):
     """Base class for implementations of optimization backends for ADMM
     algorithms."""
 
-    def __init__(self, *args, **kwargs):
-        super(ADMMBackend, self).__init__(*args, **kwargs)
-        self.it: int = 0
-        self.results: list[pd.DataFrame] = []
-        self.now: float = 0
-        self.result_stats: list[str] = []
-
     @property
     @abc.abstractmethod
     def coupling_grid(self) -> list[float]:
         """Returns the grid on which the coupling variables are discretized."""
         raise NotImplementedError
-
-    def save_results(
-        self,
-        results: Results,
-        now: float = 0,
-    ):
-        """
-        Save the results of `solve` into a dataframe at each time step.
-
-        Example results dataframe:
-
-        value_type               variable              ...     lower
-        variable                      T_0   T_0_slack  ... T_0_slack mDot_0
-        time_step                                      ...
-        2         0.000000     298.160000         NaN  ...       NaN    NaN
-                  101.431499   297.540944 -149.465942  ...      -inf    0.0
-                  450.000000   295.779780 -147.704779  ...      -inf    0.0
-                  798.568501   294.720770 -146.645769  ...      -inf    0.0
-        Args:
-            results:
-            now:
-
-        Returns:
-
-        """
-        if not self.config.save_results:
-            return
-
-        res_file = self.config.results_file
-
-        if self.results_file_exists():
-            self.it += 1
-            if now != self.now:  # means we advanced to next step
-                self.it = 0
-                self.now = now
-        else:
-            self.it = 0
-            self.now = now
-            results.write_columns(res_file)
-            results.write_stats_columns(stats_path(res_file))
-
-        df = results.df()
-        df.index = list(map(lambda x: str((now, self.it, x)), df.index))
-        self.results.append(df)
-
-        # append solve stats
-        index = str((now, self.it))
-        self.result_stats.append(results.stats_line(index))
-
-        # save last results at the start of new sampling time, or if 1000 iterations
-        # are exceeded
-        if not (self.it == 0 or self.it % 1000 == 0):
-            return
-
-        with open(res_file, "a") as f:
-            for iteration_result in self.results:
-                # todo try saving numpy arrays
-                iteration_result.to_csv(f, mode="a", header=False)
-
-        with open(stats_path(res_file), "a") as f:
-            f.writelines(self.result_stats)
-        self.results = []
-        self.result_stats = []

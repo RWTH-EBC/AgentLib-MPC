@@ -59,7 +59,7 @@ class BaseSystem(System):
         )
         self.algebraics = OptimizationVariable.declare(
             denotation="z",
-            variables=model.algebraics + model.auxiliaries,
+            variables=model.auxiliaries,
             ref_list=[],
         )
         self.outputs = OptimizationVariable.declare(
@@ -89,7 +89,8 @@ class BaseSystem(System):
         )
 
         # dynamics
-        self.ode = model.system
+        ode = ca.vertcat(*[sta.ode for sta in model.get_states(var_ref.states)])
+        self.ode = ca.reshape(ode, -1, 1)
         self.cost_function = model.cost_func
         self.model_constraints = Constraint(
             function=ca.vertcat(*[c.function for c in model.get_constraints()]),
@@ -380,6 +381,8 @@ class DirectCollocation(Discretization):
             C=C,
             D=D,
         )
+
+
 
 
 class MultipleShooting(Discretization):

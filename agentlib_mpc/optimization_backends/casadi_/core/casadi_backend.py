@@ -1,13 +1,14 @@
 import logging
 import platform
 from pathlib import Path
-from typing import Type, Optional
+from typing import Callable, Type, Optional
 
 import casadi as ca
+import pandas as pd
 import pydantic
 from agentlib.core.errors import ConfigurationError
 
-from agentlib_mpc.data_structures.mpc_datamodels import MPCVariable
+from agentlib_mpc.data_structures.mpc_datamodels import MPCVariable, stats_path
 from agentlib_mpc.optimization_backends.casadi_.core import system
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
     OptimizationVariable,
@@ -96,7 +97,7 @@ class CasADiBackend(OptimizationBackend):
     discretization_types: dict[DiscretizationMethod, Type[DiscretizationT]]
     discretization: DiscretizationT
     _supported_models = {"CasadiModel": CasadiModel}
-    config: CasadiBackendConfig
+    config_type = CasadiBackendConfig
 
     def setup_optimization(self, var_ref: mpc_datamodels.VariableReference):
         """
@@ -126,7 +127,7 @@ class CasADiBackend(OptimizationBackend):
         # collect and format inputs
         mpc_inputs = self._get_current_mpc_inputs(agent_variables=current_vars, now=now)
         full_results = self.discretization.solve(mpc_inputs)
-        self.save_results(full_results, now=now)
+        self.save_result_df(full_results, now=now)
 
         return full_results
 
@@ -250,3 +251,42 @@ class CasADiBackend(OptimizationBackend):
         opts = self.config.discretization_options
         method = opts.method
         self.discretization = self.discretization_types[method](options=opts)
+
+    def save_result_df(
+        self,
+        results: Results,
+        now: float = 0,
+    ):
+        """
+        Save the results of `solve` into a dataframe at each time step.
+
+        Example results dataframe:
+
+        value_type               variable              ...     lower
+        variable                      T_0   T_0_slack  ... T_0_slack mDot_0
+        time_step                                      ...
+        2         0.000000     298.160000         NaN  ...       NaN    NaN
+                  101.431499   297.540944 -149.465942  ...      -inf    0.0
+                  450.000000   295.779780 -147.704779  ...      -inf    0.0
+                  798.568501   294.720770 -146.645769  ...      -inf    0.0
+        Args:
+            results:
+            now:
+
+        Returns:
+
+        """
+        if not self.config.save_results:
+            return
+
+        res_file = self.config.results_file
+        if not self.results_file_exists():
+            results.write_columns(res_file)
+            results.write_stats_columns(stats_path(res_file))
+
+        df = results.df
+        df.index = list(map(lambda x: str((now, x)), df.index))
+        df.to_csv(res_file, mode="a", header=False)
+
+        with open(stats_path(res_file), "a") as f:
+            f.writelines(results.stats_line(str(now)))

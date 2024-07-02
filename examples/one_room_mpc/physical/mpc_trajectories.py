@@ -332,10 +332,9 @@ predictor = {
                 {"name": "prediction_length", "value": 60 * 6},
             ],
             "outputs": [
-                {"name": "load_prediction", "value": {"0": 60}, "shared": True},
+                {"name": "load_prediction", "shared": True},
                 {
                     "name": "set_point_schedule",
-                    "value": {"0": 60},
                     "alias": "T_upper",
                     "shared": True,
                 },

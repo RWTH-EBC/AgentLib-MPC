@@ -11,7 +11,7 @@ from agentlib.core.errors import ConfigurationError
 
 from agentlib_mpc.data_structures.interpolation import InterpolationMethods
 from agentlib_mpc.optimization_backends.backend import OptimizationBackend
-from agentlib_mpc.utils.sampling import sample
+from agentlib_mpc.utils import sampling
 
 model_file = pathlib.Path(__file__).parent.joinpath("fixtures//casadi_test_model.py")
 
@@ -22,6 +22,7 @@ a = 1
 class TestSampling(unittest.TestCase):
     @unittest.skip
     def test_sample_datetime(self):
+        sample = sampling.sample
         my_index = [datetime.datetime(2020, 2, 11, i) for i in range(10)]
         my_values = range(10)
         traj = pd.Series(my_values, index=my_index)
@@ -72,7 +73,7 @@ class TestSampling(unittest.TestCase):
         self.assertTrue(np.allclose(np.array(res3), np.array(res3_true)))
 
     def test_get_scalar(self):
-        get1 = sample(
+        get1 = sampling.sample(
             trajectory=np.inf, current=200, grid=np.linspace(0, 50 * 60, 4)
         )
         self.assertEqual(get1, [np.inf] * 4)
@@ -81,16 +82,12 @@ class TestSampling(unittest.TestCase):
         sr = pd.Series([10, 12, 10, 12, 11], index=[0, 10, 20, 30, 40])
 
         # trajectory within
-        res = sample(
-            trajectory=sr, grid=[5, 12, 20, 28, 35], current=0
-        )
+        res = sampling.sample(trajectory=sr, grid=[5, 12, 20, 28, 35], current=0)
         res_true = [11.0, 11.6, 10.0, 11.6, 11.5]
         self.assertTrue(np.allclose(np.array(res), np.array(res_true)))
 
         # some extrapolation
-        res = sample(
-            trajectory=sr, grid=[5, 12, 20, 28, 35], current=30
-        )
+        res = sampling.sample(trajectory=sr, grid=[5, 12, 20, 28, 35], current=30)
         res_true = [11.5, 11, 11, 11, 11]
         self.assertTrue(np.allclose(np.array(res), np.array(res_true)))
 
@@ -99,14 +96,10 @@ class TestSampling(unittest.TestCase):
 
         # cannot process lists with length != grid length
         with self.assertRaises(ValueError):
-            _ = sample(
-                trajectory=traj, grid=[5, 12, 28, 35], current=0
-            )
+            _ = sampling.sample(trajectory=traj, grid=[5, 12, 28, 35], current=0)
 
         # return lists of same length
-        res = sample(
-            trajectory=traj, grid=[5, 12, 20, 28, 35], current=0
-        )
+        res = sampling.sample(trajectory=traj, grid=[5, 12, 20, 28, 35], current=0)
         self.assertEqual(traj, res)
 
     def test_previous_interpolation_method(self):
@@ -114,7 +107,7 @@ class TestSampling(unittest.TestCase):
         old_index = [0, 40, 50, 80, 200]
         traj = pd.Series(values, index=old_index)
 
-        res = sample(
+        res = sampling.sample(
             trajectory=traj,
             grid=[0, 15, 30, 45, 60, 75, 90, 105, 120],
             current=0,

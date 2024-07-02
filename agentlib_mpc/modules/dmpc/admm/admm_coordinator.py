@@ -36,7 +36,11 @@ class ADMMCoordinatorConfig(CoordinatorConfig):
         description="Penalty factor of the ADMM algorithm. Should be equal "
         "for all agents.",
     )
-    timeout: float = Field(title="timeout", default=0.1, description="timeout")
+    wait_time_on_start_iters: float = Field(
+        title="wait_on_start_iterations",
+        default=0.1,
+        description="wait_on_start_iterations",
+    )
     registration_period: float = Field(
         title="registration_period",
         default=5,
@@ -141,7 +145,7 @@ class ADMMCoordinator(Coordinator):
         self._coupling_variables: Dict[str, adt.ConsensusVariable] = {}
         self._exchange_variables: Dict[str, adt.ExchangeVariable] = {}
         self._agents_to_register = queue.Queue()
-        self.AgentDict: Dict[str, adt.AgentDictEntry] = {}
+        self.agent_dict: Dict[str, adt.AgentDictEntry] = {}
         self._registration_queue: queue.Queue = queue.Queue()
         self._registration_lock: threading.Lock = threading.Lock()
         self.penalty_parameter = self.config.penalty_factor
@@ -151,7 +155,9 @@ class ADMMCoordinator(Coordinator):
         self._primal_residuals_tracker: List[float] = []
         self._dual_residuals_tracker: List[float] = []
         self._penalty_tracker: List[float] = []
+        self._performance_tracker: List[float] = []
         self.start_algorithm_at: float = 0
+        self._performance_counter: float = time.perf_counter()
 
     def _realtime_process(self):
         """Starts a thread to run next to the environment (to prevent a long blocking
@@ -198,10 +204,11 @@ class ADMMCoordinator(Coordinator):
         # ------------------
         self.status = cdt.CoordinatorStatus.init_iterations
         self.start_algorithm_at = self.env.time
+        self._performance_counter = time.perf_counter()
         # maybe this will hold information instead of "True"
         self.set(cdt.START_ITERATION_C2A, True)
         # check for all_finished here
-        time.sleep(self.config.timeout)
+        time.sleep(self.config.wait_time_on_start_iters)
         if not list(self._agents_with_status(status=cdt.AgentStatus.ready)):
             self.logger.info(f"No Agents available at time {self.env.now}.")
             return  # if no agents registered return early
@@ -261,6 +268,7 @@ class ADMMCoordinator(Coordinator):
             # ------------------
             self.status = cdt.CoordinatorStatus.init_iterations
             self.start_algorithm_at = self.env.time
+            self._performance_counter = time.perf_counter()
             self.set(cdt.START_ITERATION_C2A, True)
             yield self._wait_non_rt()
             if not list(self._agents_with_status(status=cdt.AgentStatus.ready)):
@@ -341,7 +349,7 @@ class ADMMCoordinator(Coordinator):
     def _agents_with_status(self, status: cdt.AgentStatus) -> List[Source]:
         """Returns an iterator with all agents sources that are currently on
         this status."""
-        active_agents = [s for (s, a) in self.AgentDict.items() if a.status == status]
+        active_agents = [s for (s, a) in self.agent_dict.items() if a.status == status]
         return active_agents
 
     def _check_convergence(self, iteration) -> bool:
@@ -378,7 +386,7 @@ class ADMMCoordinator(Coordinator):
             flat_locals.extend(locs)
             flat_multipliers.extend(muls)
             flat_means.extend(var.mean_trajectory)
-            ...
+
         # primal_residual = np.concatenate(primal_residuals)
         # dual_residual = np.concatenate(dual_residuals)
 
@@ -390,6 +398,9 @@ class ADMMCoordinator(Coordinator):
         self._penalty_tracker.append(self.penalty_parameter)
         self._primal_residuals_tracker.append(prim_norm)
         self._dual_residuals_tracker.append(dual_norm)
+        self._performance_tracker.append(
+            time.perf_counter() - self._performance_counter
+        )
 
         self.logger.debug(
             "Finished iteration %s . \n Primal residual: %s \n Dual residual: " "%s",
@@ -442,12 +453,14 @@ class ADMMCoordinator(Coordinator):
                 "primal_residual": self._primal_residuals_tracker,
                 "dual_residual": self._dual_residuals_tracker,
                 "penalty_parameter": self._penalty_tracker,
+                "wall_time": self._performance_tracker,
             },
             index=index,
         )
         self._penalty_tracker = []
         self._dual_residuals_tracker = []
         self._primal_residuals_tracker = []
+        self._performance_tracker = []
         path.parent.mkdir(exist_ok=True, parents=True)
         stats.to_csv(path_or_buf=path, header=header, mode="a")
 
@@ -471,12 +484,11 @@ class ADMMCoordinator(Coordinator):
         Returns:
 
         """
-        send = self.agent.data_broker.send_variable
 
         # create an iterator for all agents which are ready for this round
         active_agents: [str, adt.AgentDictEntry] = (
             (s, a)
-            for (s, a) in self.AgentDict.items()
+            for (s, a) in self.agent_dict.items()
             if a.status == cdt.AgentStatus.ready
         )
 
@@ -512,20 +524,14 @@ class ADMMCoordinator(Coordinator):
 
             # send values
             agent.status = cdt.AgentStatus.busy
-            message = AgentVariable(
-                name=cdt.OPTIMIZATION_C2A,
-                source=self.source,
-                value=coordi_to_agent.to_json(),
-                shared=True,
-            )
-            send(message)
+            self.set(cdt.OPTIMIZATION_C2A, coordi_to_agent.to_json())
 
     def register_agent(self, variable: AgentVariable):
         """Registers the agent, after it sent its initial guess with correct
         vector length."""
         value = adt.AgentToCoordinator.from_json(variable.value)
         src = variable.source
-        ag_dict_entry = self.AgentDict[variable.source]
+        ag_dict_entry = self.agent_dict[variable.source]
 
         # loop over coupling variables of this agent
         for alias, traj in value.local_trajectory.items():
@@ -573,7 +579,7 @@ class ADMMCoordinator(Coordinator):
             coup_var = self._exchange_variables[alias]
             coup_var.local_trajectories[source] = trajectory
 
-        self.AgentDict[variable.source].status = cdt.AgentStatus.ready
+        self.agent_dict[variable.source].status = cdt.AgentStatus.ready
         self.received_variable.set()
 
     def _send_parameters_to_agent(self, variable: AgentVariable):
@@ -585,14 +591,14 @@ class ADMMCoordinator(Coordinator):
         )
 
         message = cdt.RegistrationMessage(
-            source=variable.source, opts=asdict(admm_parameters)
+            agent_id=variable.source.agent_id, opts=asdict(admm_parameters)
         )
         self.set(cdt.REGISTRATION_C2A, asdict(message))
 
     def registration_callback(self, variable: AgentVariable):
         self.logger.debug(f"receiving {variable.name} from {variable.source}")
-        if not (variable.source in self.AgentDict):
-            self.AgentDict[variable.source] = adt.AgentDictEntry(
+        if not (variable.source in self.agent_dict):
+            self.agent_dict[variable.source] = adt.AgentDictEntry(
                 name=variable.source,
                 status=cdt.AgentStatus.pending,
             )
@@ -603,7 +609,7 @@ class ADMMCoordinator(Coordinator):
             )
             return
         # complete registration of pending agents
-        if self.AgentDict[variable.source].status is cdt.AgentStatus.pending:
+        if self.agent_dict[variable.source].status is cdt.AgentStatus.pending:
             self.register_agent(variable=variable)
 
     def _sequential_registration_callback(self, variable: AgentVariable):
@@ -620,11 +626,11 @@ class ADMMCoordinator(Coordinator):
 
     def _initial_registration(self, variable: AgentVariable):
         """Handles initial registration of a variable. If it is unknown, add it to
-        the AgentDict and send it the global parameters. If it is sending its
+        the agent_dict and send it the global parameters. If it is sending its
         confirmation with initial trajectories,
         refer to the actual registration function."""
-        if not (variable.source in self.AgentDict):
-            self.AgentDict[variable.source] = adt.AgentDictEntry(
+        if not (variable.source in self.agent_dict):
+            self.agent_dict[variable.source] = adt.AgentDictEntry(
                 name=variable.source,
                 status=cdt.AgentStatus.pending,
             )
@@ -635,7 +641,7 @@ class ADMMCoordinator(Coordinator):
             )
 
         # complete registration of pending agents
-        elif self.AgentDict[variable.source].status is cdt.AgentStatus.pending:
+        elif self.agent_dict[variable.source].status is cdt.AgentStatus.pending:
             self.register_agent(variable=variable)
 
     def _handle_registrations(self):

@@ -1,6 +1,8 @@
 import casadi as ca
+import pandas as pd
 
 from agentlib_mpc.data_structures.casadi_utils import DiscretizationMethod, Integrators
+from agentlib_mpc.data_structures.mpc_datamodels import stats_path
 from agentlib_mpc.models.casadi_model import CasadiModel, CasadiInput, CasadiParameter
 from agentlib_mpc.data_structures import admm_datatypes
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
@@ -13,6 +15,7 @@ from agentlib_mpc.optimization_backends.casadi_.basic import (
     CasADiBaseBackend,
 )
 from agentlib_mpc.optimization_backends.backend import ADMMBackend
+from agentlib_mpc.optimization_backends.casadi_.core.discretization import Results
 from agentlib_mpc.optimization_backends.casadi_.full import FullSystem
 
 
@@ -300,6 +303,75 @@ class CasADiADMMBackend(CasADiBaseBackend, ADMMBackend):
     }
     system: CasadiADMMSystem
 
+    def __init__(self, config: dict):
+        super().__init__(config)
+        self.results: list[pd.DataFrame] = []
+        self.result_stats: list[str] = []
+        self.it: int = 0
+        self.now: float = 0
+
     @property
     def coupling_grid(self):
         return self.discretization.grid(self.system.multipliers)
+
+    def save_result_df(
+        self,
+        results: Results,
+        now: float = 0,
+    ):
+        """
+        Save the results of `solve` into a dataframe at each time step.
+
+        Example results dataframe:
+
+        value_type               variable              ...     lower
+        variable                      T_0   T_0_slack  ... T_0_slack mDot_0
+        time_step                                      ...
+        2         0.000000     298.160000         NaN  ...       NaN    NaN
+                  101.431499   297.540944 -149.465942  ...      -inf    0.0
+                  450.000000   295.779780 -147.704779  ...      -inf    0.0
+                  798.568501   294.720770 -146.645769  ...      -inf    0.0
+        Args:
+            results:
+            now:
+
+        Returns:
+
+        """
+        if not self.config.save_results:
+            return
+
+        res_file = self.config.results_file
+
+        if self.results_file_exists():
+            self.it += 1
+            if now != self.now:  # means we advanced to next step
+                self.it = 0
+                self.now = now
+        else:
+            self.it = 0
+            self.now = now
+            results.write_columns(res_file)
+            results.write_stats_columns(stats_path(res_file))
+
+        df = results.df
+        df.index = list(map(lambda x: str((now, self.it, x)), df.index))
+        self.results.append(df)
+
+        # append solve stats
+        index = str((now, self.it))
+        self.result_stats.append(results.stats_line(index))
+
+        # save last results at the start of new sampling time, or if 1000 iterations
+        # are exceeded
+        if not (self.it == 0 or self.it % 1000 == 0):
+            return
+
+        with open(res_file, "a", newline="") as f:
+            for iteration_result in self.results:
+                iteration_result.to_csv(f, mode="a", header=False)
+
+        with open(stats_path(res_file), "a") as f:
+            f.writelines(self.result_stats)
+        self.results = []
+        self.result_stats = []

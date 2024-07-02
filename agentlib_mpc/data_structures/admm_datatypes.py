@@ -343,7 +343,7 @@ class StructuredValue:
         ).decode()
 
     @classmethod
-    def from_json(cls, data: bytes):
+    def from_json(cls, data: str):
         return cls(**orjson.loads(data))
 
 

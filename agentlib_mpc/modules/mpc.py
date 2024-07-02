@@ -1,4 +1,5 @@
 """Holds the base class for MPCs."""
+
 import os
 from typing import Tuple, Dict, Optional
 
@@ -13,7 +14,11 @@ from agentlib.core.errors import OptionalDependencyError, ConfigurationError
 from agentlib.utils import custom_injection
 from pydantic_core.core_schema import FieldValidationInfo
 
-from agentlib_mpc.data_structures.mpc_datamodels import VariableReference, InitStatus
+from agentlib_mpc.data_structures.mpc_datamodels import (
+    VariableReference,
+    InitStatus,
+    Results,
+)
 from agentlib_mpc.optimization_backends import backend_types, uninstalled_backend_types
 from agentlib_mpc.optimization_backends.backend import (
     OptimizationBackend,
@@ -71,6 +76,10 @@ class BaseMPCConfig(BaseModuleConfig):
         default=[],
         description="List of all differential states of the MPC. The "
         "entries can define the boundaries and the source for the measurements",
+    )
+    set_outputs: bool = Field(
+        default=False,
+        description="Sets the full output time series to the data broker.",
     )
     shared_variable_fields: list[str] = ["outputs", "controls"]
 
@@ -147,15 +156,6 @@ class BaseMPC(BaseModule):
             f"All model inputs must be declared in the MPC config. Model "
             f"variable(s) '{unassigned_model_variables['inputs']}' is/are free."
         )
-
-        # construct the optimization problem
-        try:
-            self._init_optimization()
-        except (RuntimeError, ValueError) as err:
-            raise ConfigurationError(
-                f"The optimization backend of Agent {self.source} could not "
-                f"finish its setup!"
-            ) from err
 
     def _setup_optimization_backend(self) -> OptimizationBackendT:
         """Performs the setup of the optimization_backend, keeps track of status"""
@@ -319,8 +319,9 @@ class BaseMPC(BaseModule):
 
         # Set variables in data_broker
         self.set_actuation(result)
+        self.set_output(result)
 
-    def set_actuation(self, solution):
+    def set_actuation(self, solution: Results):
         """Takes the solution from optimization backend and sends the first
         step to AgentVariables."""
         self.logger.info("Sending optimal control values to data_broker.")
@@ -328,6 +329,17 @@ class BaseMPC(BaseModule):
             # take the first entry of the control trajectory
             actuation = solution[control][0]
             self.set(control, actuation)
+
+    def set_output(self, solution: Results):
+        """Takes the solution from optimization backend and sends it to AgentVariables."""
+        # Output must be defined in the conig as "type"="pd.Series"
+        if not self.config.set_outputs:
+            return
+        self.logger.info("Sending optimal output values to data_broker.")
+        df = solution.df
+        for output in self.var_ref.outputs:
+            series = df.variable[output]
+            self.set(output, series)
 
     def get_results(self) -> Optional[pd.DataFrame]:
         """Read the results that were saved from the optimization backend and
@@ -341,11 +353,27 @@ class BaseMPC(BaseModule):
             self.logger.info("No results were saved .")
             return None
         try:
-            results, _ = self.read_results_file(results_file)
-            return results
+            result, stat = self.read_results_file(results_file)
+            self.warn_for_missed_solves(stat)
+            return result
         except FileNotFoundError:
             self.logger.error("Results file %s was not found.", results_file)
             return None
+
+    def warn_for_missed_solves(self, stats):
+        """
+        Read the solver information from the optimization
+        Returns:
+            Warning if solver fails
+        """
+        if stats["success"].all():
+            return
+        failures = ~stats["success"]
+        failure_indices = failures[failures].index.tolist()
+        self.logger.warning(
+            f"Warning: There were failed optimizations at the following times: "
+            f"{failure_indices}."
+        )
 
     @staticmethod
     def read_results_file(results_file: str) -> Tuple[pd.DataFrame, pd.DataFrame]:

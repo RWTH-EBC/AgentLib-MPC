@@ -71,6 +71,6 @@ if __name__ == "__main__":
     run_example(
         with_plots=True,
         until=1800,
-        cleanup=False,
+        cleanup=True,
         log_level=logging.INFO,
     )

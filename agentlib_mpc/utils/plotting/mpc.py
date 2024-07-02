@@ -78,23 +78,16 @@ def plot_mpc(
     # the case of a state, this will give the measurement it worked with
     actual_values: dict[float, float] = {}
 
-    for i, (time, prediction) in enumerate(series.groupby(level=0)):
+    for i, (time_seconds, prediction) in enumerate(series.groupby(level=0)):
         prediction: pd.Series = prediction.dropna().droplevel(0)
 
-        time = time / TIME_CONVERSION[convert_to]
+        time_converted = time_seconds / TIME_CONVERSION[convert_to]
         if plot_actual_values:
-            try:
-                actual_values[time] = prediction.loc[0]
-            except KeyError:
-                raise ValueError(
-                    "Could not plot actual values for this series. It is possible, that"
-                    " the grid defined for this series does not specify the 0 entry. "
-                    "This could be the case for algebraic outputs, or coupling "
-                    "variables in ADMM."
-                )
-        # add time to index after appending first value to actual values, so the key 0
-        # always works
-        prediction.index = (prediction.index + time) / TIME_CONVERSION[convert_to]
+            actual_values[time_converted] = prediction.at[0]
+
+        prediction.index = (prediction.index + time_seconds) / TIME_CONVERSION[
+            convert_to
+        ]
 
         if plot_predictions:
             progress = i / number_of_predictions
@@ -159,15 +152,3 @@ def plot_admm(
         step=step,
         convert_to=convert_to,
     )
-
-
-
-
-
-if __name__ == "__main__":
-    mpc_res = load_mpc(
-        Path(r"D:\Repositories\agentlib_mpc\examples\one_room_mpc\trajectories_mpc.csv")
-    )
-    fig, axs = make_fig(style=Style(), rows=2)
-    plot_mpc(mpc_res["variable"]["mDot_0"], axs[0], plot_actual_values=True)
-    plt.show()

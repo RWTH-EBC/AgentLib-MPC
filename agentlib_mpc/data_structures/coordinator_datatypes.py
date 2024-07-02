@@ -1,6 +1,6 @@
 import dataclasses
 from dataclasses import dataclass, asdict
-from enum import Enum
+from aenum import Enum
 
 import numpy as np
 
@@ -75,7 +75,7 @@ class RegistrationMessage:
 
     status: AgentStatus = None
     opts: dict = None
-    source: Source = None
+    agent_id: str = None
     coupling: list = None
 
 

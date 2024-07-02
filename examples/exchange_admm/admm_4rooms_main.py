@@ -74,6 +74,6 @@ if __name__ == "__main__":
         with_plots=True,
         until=1800,
         start_pred=600,
-        cleanup=False,
+        cleanup=True,
         log_level=logging.INFO,
     )

@@ -33,9 +33,13 @@ backend_types = {
         import_path="agentlib_mpc.optimization_backends.casadi_.admm",
         class_name="CasADiADMMBackend",
     ),
-    "casadi_miqp": BackendImport(
-        import_path="agentlib_mpc.optimization_backends.casadi_.miqp",
-        class_name="CasADiMIQPBackend",
+    "casadi_minlp": BackendImport(
+        import_path="agentlib_mpc.optimization_backends.casadi_.minlp",
+        class_name="CasADiMINLPBackend",
+    ),
+    "casadi_cia": BackendImport(
+        import_path="agentlib_mpc.optimization_backends.casadi_.minlp_cia",
+        class_name="CasADiCIABackend",
     ),
     "casadi_nn": BackendImport(
         import_path="agentlib_mpc.optimization_backends.casadi_.casadi_nn",
@@ -44,6 +48,10 @@ backend_types = {
     "casadi_admm_nn": BackendImport(
         import_path="agentlib_mpc.optimization_backends.casadi_.casadi_admm_nn",
         class_name="CasADiADMMBackend_NN",
+    ),
+    "grampc": BackendImport(
+        import_path="agentlib_mpc.optimization_backends.grampc_.grampc_backend",
+        class_name="GrampcBackend",
     ),
 }
 

@@ -1,0 +1,45 @@
+{
+  "id": "PID",
+  "modules": [
+    {
+      "module_id": "pid",
+      "type": "pid",
+      "setpoint": {
+        "name": "setpoint",
+        "value": 295.15,
+        "alias": "T_set"
+      },
+      "Kp": 0.01,
+      "Ti": 1,
+      "input": {
+        "name": "u",
+        "value": 0,
+        "alias": "T"
+      },
+      "output": {
+        "name": "y",
+        "value": 0,
+        "alias": "mDot",
+        "shared": "True"
+      },
+      "lb": 0,
+      "ub": 0.05,
+      "reverse": true
+    },
+    {
+      "module_id": "set_points",
+      "type": "agentlib_mpc.set_point_generator",
+      "interval": 600,
+      "target_variable": {
+        "name": "T_set",
+        "alias": "T_set"
+      }
+    },
+    {
+      "type": "local",
+      "subscriptions": [
+        "Simulator"
+      ]
+    }
+  ]
+}

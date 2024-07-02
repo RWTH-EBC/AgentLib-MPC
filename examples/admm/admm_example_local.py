@@ -34,32 +34,22 @@ agent_configs = [
 ]
 
 
-def plot(results):
+def plot(results, start_pred=0):
     import matplotlib.pyplot as plt
-    from agentlib_mpc.utils.plotting.mpc import plot_admm
+    from agentlib_mpc.utils.analysis import admm_at_time_step
 
+    res_sim = results["Simulation"]["AgentLogger"]
     mpc_room_results = results["CooledRoom"]["admm_module"]
-    cooler_results = results["Cooler"]["admm_module"]
+
+    room_res = admm_at_time_step(
+        data=mpc_room_results, time_step=start_pred, iteration=-1
+    )
 
     fig, ax = plt.subplots(2, 1)
-    plot_admm(
-        series=mpc_room_results["variable"]["T_0"] - 273.15,
-        ax=ax[0],
-        plot_actual_values=True,
-        plot_predictions=True,
-    )
-    plot_admm(
-        series=cooler_results["variable"]["mDot"],
-        ax=ax[1],
-        plot_actual_values=True,
-        plot_predictions=True,
-    )
     ax[0].axhline(294.55, label="reference value", ls="--")
-    ax[0].set_ylabel("$T_{room}$ / °C")
-    ax[1].set_ylabel("$\dot{m}_{air}$ / kg/s")
-    ax[1].set_xlabel("simulation time / s")
-    ax[1].set_ylim([0, 0.06])
-    ax[1].set_xlim([0, 3600])
+    ax[0].plot(res_sim["T_0"], label="temperature")
+    ax[0].plot(room_res["variable"]["T_0"], label="temperature prediction")
+    ax[1].plot(res_sim["mDot"], label="air mass flow")
     ax[1].legend()
     ax[0].legend()
     plt.show()
@@ -107,11 +97,11 @@ def run_example(
 
     # assertion for unittest
     if testing:
-        cooledRoom_T = results["CooledRoom"]["AgentLogger"]["T_0"]
-        assert cooledRoom_T.iloc[0] > cooledRoom_T.iloc[-1]
+        cooledRoom_T = results["CooledRoom"]["AgentLogger"]["T_0"].dropna()
+        assert cooledRoom_T.iloc[0] > cooledRoom_T.iloc[0]
 
     return results
 
 
 if __name__ == "__main__":
-    run_example(with_plots=True, until=3600, cleanup=True)
+    run_example(with_plots=True, until=700, start_pred=0, cleanup=True)

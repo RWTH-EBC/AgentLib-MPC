@@ -19,12 +19,10 @@
             "ipopt.print_level": 0
           }
         },
-        "discretization_options": {
-          "method": "collocation"
-        },
-        "results_file": "results//admm_opt_4.csv"
+                "discretization": {"method": "multiple_shooting"},
+"results_file": "results//admm_opt_4.csv"
       },
-      "coordinator": {
+            "coordinator": {
         "agent_id": "Coordinator",
         "module_id": "admm_coordinator"
       },
@@ -61,7 +59,7 @@
         }
       ],
       "controls": [
-        {
+                        {
           "name": "mDot",
           "value": 0.02,
           "ub": 0.05,

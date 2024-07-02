@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 # put your license file here
 # import os
-os.environ['GRB_LICENSE_FILE'] = r'C:\Users\ses\gurobi.lic'
+# os.environ['GRB_LICENSE_FILE'] = r'C:\Users\ses\gurobi.lic'
 
 # script variables
 ub = 295.15
@@ -150,23 +150,23 @@ AGENT_MPC = {
         {"module_id": "Ag1Com", "type": "local_broadcast"},
         {
             "module_id": "myMPC",
-            "type": "agentlib_mpc.miqp_mpc",
+            "type": "agentlib_mpc.minlp_mpc",
             "optimization_backend": {
-                "type": "casadi_miqp",
+                "type": "casadi_minlp",
                 "model": {"type": {"file": __file__, "class_name": "MyCasadiModel"}},
                 "discretization_options": {
-                    "collocation_order": 1,
-                    "collocation_method": "radau",
+                    "collocation_order": 2,
+                    "collocation_method": "legendre",
                 },
                 "solver": {
-                    # "name": "bonmin",
-                    "name": "gurobi",
+                    "name": "bonmin",
+                    # "name": "gurobi",
                 },
                 "results_file": "results//mpc.csv",
                 "save_results": True,
             },
             "time_step": 300,
-            "prediction_horizon": 15,
+            "prediction_horizon": 10,
             "parameters": [
                 {"name": "s_T", "value": 3},
                 {"name": "r_cooling", "value": 1 / 3},
@@ -228,6 +228,7 @@ def run_example(with_plots=True, log_level=logging.INFO, until=10000):
 
         fig, ax = plt.subplots(3, 1, sharex=True)
         mpc_results = results["myMPCAgent"]["myMPC"]
+        fig.suptitle("Bonmin")
 
         plot_mpc(
             series=mpc_results["variable"]["T"] - 273.15,

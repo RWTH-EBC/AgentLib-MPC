@@ -137,7 +137,7 @@ def mpc_at_time_step(
     """
 
     # get the closest matching (outer) index matching the requested time step
-    data = perform_index_update(data, index_offset, admm=True)
+    data = perform_index_update(data, index_offset, admm=False)
     outer_index = data.index.get_level_values(0)
     idx = np.searchsorted(outer_index, time_step, side="left")
     if idx > 0 and (

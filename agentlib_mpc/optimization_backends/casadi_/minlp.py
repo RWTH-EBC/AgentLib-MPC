@@ -2,7 +2,7 @@ import casadi as ca
 import numpy as np
 
 from agentlib_mpc.data_structures.casadi_utils import DiscretizationMethod
-from agentlib_mpc.data_structures.mpc_datamodels import MIQPVariableReference
+from agentlib_mpc.data_structures.mpc_datamodels import MINLPVariableReference
 from agentlib_mpc.models.casadi_model import CasadiModel
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
     OptimizationVariable,
@@ -11,17 +11,17 @@ from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
 from agentlib_mpc.optimization_backends.casadi_ import basic
 from agentlib_mpc.optimization_backends.casadi_.core.casadi_backend import CasADiBackend
 
-# todo: All the names are miqp, but this is actually minlp capable
+# todo: All the names are minlp, but this is actually minlp capable
 
 
-class CasadiMIQPSystem(basic.BaseSystem):
+class CasadiMINLPSystem(basic.BaseSystem):
     binary_controls: OptimizationVariable
 
     def __init__(self):
         super().__init__()
         self.is_linear = False
 
-    def initialize(self, model: CasadiModel, var_ref: MIQPVariableReference):
+    def initialize(self, model: CasadiModel, var_ref: MINLPVariableReference):
         self.binary_controls = OptimizationVariable.declare(
             denotation="w",
             variables=model.get_inputs(var_ref.binary_controls),
@@ -30,9 +30,9 @@ class CasadiMIQPSystem(basic.BaseSystem):
             binary=True,
         )
         super().initialize(model=model, var_ref=var_ref)
-        self.is_linear = self._is_miqp()
+        self.is_linear = self._is_minlp()
 
-    def _is_miqp(self) -> bool:
+    def _is_minlp(self) -> bool:
 
         inputs = ca.vertcat(*(v.full_symbolic for v in self.variables))
         parameters = ca.vertcat(
@@ -63,7 +63,7 @@ class CasadiMIQPSystem(basic.BaseSystem):
 
 
 class DirectCollocation(basic.DirectCollocation):
-    def _discretize(self, sys: CasadiMIQPSystem):
+    def _discretize(self, sys: CasadiMINLPSystem):
         """
         Defines a direct collocation discretization.
         # pylint: disable=invalid-name
@@ -123,11 +123,11 @@ class DirectCollocation(basic.DirectCollocation):
             self.add_constraint(xk_end - xk)
 
 
-class CasADiMIQPBackend(CasADiBackend):
+class CasADiMINLPBackend(CasADiBackend):
     """
     Class doing optimization of ADMM subproblems with CasADi.
     """
 
-    system_type = CasadiMIQPSystem
+    system_type = CasadiMINLPSystem
     discretization_types = {DiscretizationMethod.collocation: DirectCollocation}
-    system: CasadiMIQPSystem
+    system: CasadiMINLPSystem

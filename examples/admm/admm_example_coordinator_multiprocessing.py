@@ -92,7 +92,7 @@ def run_example(
         conf_dicts.append(conf_dict)
 
     env_config = {"rt": True, "factor": 0.08, "t_sample": 60}
-    broker = MultiProcessingBroker(config={"port": 40_000})
+    broker = MultiProcessingBroker(config={"port": 32300})
     mas = MultiProcessingMAS(
         agent_configs=conf_dicts,
         env=env_config,
@@ -114,5 +114,5 @@ if __name__ == "__main__":
         until=1200,
         start_pred=600,
         cleanup=True,
-        log_level=logging.DEBUG,
+        log_level=logging.INFO,
     )

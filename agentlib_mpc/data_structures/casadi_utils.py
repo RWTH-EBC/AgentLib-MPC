@@ -9,9 +9,7 @@ from pathlib import Path
 from typing import Union, List, NamedTuple
 
 import casadi as ca
-from enum import Enum
-
-import pydantic
+from aenum import Enum
 from pydantic import ConfigDict, Field, BaseModel
 
 from agentlib_mpc.data_structures import mpc_datamodels
@@ -61,18 +59,9 @@ class Integrators(str, Enum):
     rk = "rk"  # runge-kutta
 
 
-class CasadiDiscretizationOptions(BaseModel):
+class CasadiDiscretizationOptions(mpc_datamodels.DiscretizationOptions):
     model_config = ConfigDict(extra="forbid")
-    time_step: float = Field(
-        default=60,
-        ge=0,
-        description="Time step of the MPC.",
-    )
-    prediction_horizon: int = Field(
-        default=5,
-        ge=0,
-        description="Prediction horizon of the MPC.",
-    )
+
     method: DiscretizationMethod = DiscretizationMethod.collocation
     collocation_order: int = Field(default=3, ge=1, le=9)
     collocation_method: CollocationMethod = CollocationMethod.legendre
@@ -159,21 +148,19 @@ class SolverFactory:
             "verbose": False,
             "print_time": False,
             "record_time": True,
-            "ipopt.max_iter": 100,
-            "ipopt.tol": 0.00001,
-            "ipopt.acceptable_tol": 1e-2,
-            "ipopt.acceptable_constr_viol_tol": 1e-2,
-            "ipopt.acceptable_iter": 3,
-            "ipopt.acceptable_compl_inf_tol": 1,
-            "ipopt.print_level": 0,
-            # "ipopt.mu_init": 1e-3,
-            # "ipopt.mu_target": 1e-3,
-            # "ipopt.mu_strategy": "adaptive",
-            # "ipopt.mu_max": 1e-4,
-            # "ipopt.mu_min": 1e-4,
+            "ipopt": {
+                "max_iter": 100,
+                "tol": 1e-5,
+                "acceptable_tol": 0.1,
+                "acceptable_constr_viol_tol": 1,
+                "acceptable_iter": 5,
+                "acceptable_compl_inf_tol": 1,
+                "print_level": 0,
+            },
         }
-
+        ipopt_ = options.pop("ipopt", {})
         opts = {**default_opts, **options}
+        opts["ipopt"].update(ipopt_)
         solver = ca.nlpsol("mpc", "ipopt", nlp, opts)
         if not self.do_jit:
             return solver
@@ -250,6 +237,7 @@ def compile_ipopt_solver(bat_file: Path, name: str, optimizer: ca.Function) -> s
     if not name:
         name = f"nlp_{random.randint(10, 1000)}"
 
+    base_name = name
     file_name = f"{name}.c"
     file = Path(file_name)
     i = 0
@@ -262,7 +250,7 @@ def compile_ipopt_solver(bat_file: Path, name: str, optimizer: ca.Function) -> s
 
     with temporary_directory(c_dir):
         while file.exists():
-            name = f"{name}_{i}"
+            name = f"{base_name}_{i}"
             file_name = f"{name}.c"
             file = Path(file_name)
             i = i + 1

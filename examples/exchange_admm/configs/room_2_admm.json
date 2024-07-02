@@ -1,7 +1,7 @@
 {
   "id": "room_2",
   "modules": [
-    "configs/local_broadcast.json",
+        "configs/local_broadcast.json",
     {
       "module_id": "admm_module",
       "type": "agentlib_mpc.admm_local",
@@ -19,12 +19,10 @@
             "ipopt.print_level": 0
           }
         },
-        "discretization_options": {
-          "method": "collocation"
-        },
-        "results_file": "results//admm_opt_2.csv"
+                "discretization": {"method": "multiple_shooting"},
+"results_file": "results//admm_opt_2.csv"
       },
-      "coordinator": {
+            "coordinator": {
         "agent_id": "Coordinator",
         "module_id": "admm_coordinator"
       },
@@ -61,7 +59,7 @@
         }
       ],
       "controls": [
-        {
+                        {
           "name": "mDot",
           "value": 0.02,
           "ub": 0.05,
@@ -77,6 +75,7 @@
           "lb": 288.15,
           "alias": "T_sim_2",
           "source": "Simulation"
+
         }
       ],
       "exchange": [

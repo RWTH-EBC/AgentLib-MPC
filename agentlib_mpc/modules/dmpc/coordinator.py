@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 class CoordinatorConfig(BaseModuleConfig):
 
     maxIter: int = Field(default=10, description="Maximum number of iterations")
-    time_out: float = Field(
+    time_out_non_responders: float = Field(
         default=1, description="Maximum wait time for subsystems in seconds"
     )
     messages_in: AgentVariables = [
@@ -50,7 +50,7 @@ class Coordinator(BaseModule):
 
     def __init__(self, *, config: dict, agent: Agent):
         super().__init__(config=config, agent=agent)
-        self.AgentDict: Dict[Source, cdt.AgentDictEntry] = {}
+        self.agent_dict: Dict[Source, cdt.AgentDictEntry] = {}
         self.status: cdt.CoordinatorStatus = cdt.CoordinatorStatus.sleeping
         self.received_variable = threading.Event()
 
@@ -102,7 +102,7 @@ class Coordinator(BaseModule):
 
         """
         send = self.agent.data_broker.send_variable
-        for source, agent in self.AgentDict.items():
+        for source, agent in self.agent_dict.items():
             if agent.status == cdt.AgentStatus.ready:
                 value = agent.optimization_data.to_dict()
                 self.logger.debug("Sending to %s with source %s", agent.name, source)
@@ -142,9 +142,9 @@ class Coordinator(BaseModule):
 
         """
 
-        entry = self.AgentDict[variable.source]
+        entry = self.agent_dict[variable.source]
         entry.optimization_data = cdt.OptimizationData.from_dict(variable.value)
-        self.AgentDict[variable.source].status = cdt.AgentStatus.ready
+        self.agent_dict[variable.source].status = cdt.AgentStatus.ready
         self.received_variable.set()
 
     def init_iteration_callback(self, variable: AgentVariable):
@@ -166,7 +166,7 @@ class Coordinator(BaseModule):
             return
 
         try:
-            ag_dict_entry = self.AgentDict[variable.source]
+            ag_dict_entry = self.agent_dict[variable.source]
         except KeyError:
             # likely did not finish registration of an agent yet, but the agent
             # already has its end registered and responds to the init_iterations.
@@ -191,7 +191,7 @@ class Coordinator(BaseModule):
             True, if there are no busy agents, else False
 
         """
-        for src, ag_entry in self.AgentDict.items():
+        for src, ag_entry in self.agent_dict.items():
             if ag_entry.status is cdt.AgentStatus.busy:
                 return False
         return True
@@ -202,14 +202,16 @@ class Coordinator(BaseModule):
         )
         # use information in message to set up coordinator
 
-        if not (variable.source in self.AgentDict):  # add agent to dict
+        if not (variable.source in self.agent_dict):  # add agent to dict
             entry = cdt.AgentDictEntry(
                 name=variable.source,
                 status=AgentStatus.pending,
             )
-            self.AgentDict[variable.source] = entry
+            self.agent_dict[variable.source] = entry
             OptimOpts = {"Nhor": 10, "dt": 60}
-            message = RegistrationMessage(source=variable.source, opts=OptimOpts)
+            message = RegistrationMessage(
+                agent_id=variable.source.agent_id, opts=OptimOpts
+            )
             self.set(cdt.REGISTRATION_C2A, asdict(message))  # {"source" :
             # variable.source, "status" : True, "opts" : OptimOpts}
             self.logger.info(
@@ -219,14 +221,14 @@ class Coordinator(BaseModule):
         else:  # process ready-flag
             message = RegistrationMessage(**variable.value)
             if message.status == AgentStatus.standby:
-                self.AgentDict[variable.source].status = AgentStatus.standby  #
+                self.agent_dict[variable.source].status = AgentStatus.standby  #
                 # change from
                 # pending to ready
                 self.logger.info(
                     f"Coordinator successfully registered agent {variable.source}."
                 )
             else:
-                self.AgentDict.pop(variable.source)  # delete agent from dict
+                self.agent_dict.pop(variable.source)  # delete agent from dict
 
     def _wait_for_ready(
         self,
@@ -239,7 +241,7 @@ class Coordinator(BaseModule):
             # check exit conditions
             if self.all_finished:
                 count = 0
-                for ag in self.AgentDict.values():
+                for ag in self.agent_dict.values():
                     if ag.status == cdt.AgentStatus.ready:
                         count += 1
                 self.logger.info("Got variables from all (%s) agents.", count)
@@ -247,7 +249,7 @@ class Coordinator(BaseModule):
 
             # wait until a new item is put in the queue
 
-            if self.received_variable.wait(timeout=self.config.time_out):
+            if self.received_variable.wait(timeout=self.config.time_out_non_responders):
                 self.received_variable.clear()
             else:
                 self._deregister_slow_participants()
@@ -256,9 +258,12 @@ class Coordinator(BaseModule):
     def _deregister_slow_participants(self):
         """Sets all agents that are still busy to standby, so they won't be
         waited on again."""
-        for agent in self.AgentDict.values():
+        for agent in self.agent_dict.values():
             if agent.status == cdt.AgentStatus.busy:
                 agent.status = cdt.AgentStatus.standby
+                self.logger.info(
+                    "De-registered agent %s as it was too slow.", agent.name
+                )
 
 
 if __name__ == "__main__":

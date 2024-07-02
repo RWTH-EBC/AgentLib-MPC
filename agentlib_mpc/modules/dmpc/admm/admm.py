@@ -18,10 +18,10 @@ from agentlib.core import (
 from agentlib_mpc.data_structures.mpc_datamodels import MPCVariable
 from agentlib_mpc.modules.dmpc import DistributedMPC, DistributedMPCConfig
 from agentlib_mpc.optimization_backends.backend import ADMMBackend
-from agentlib.utils.validators import convert_to_list, is_list_of_agent_variables
+from agentlib.utils.validators import convert_to_list
 from agentlib_mpc.data_structures import mpc_datamodels
 import agentlib_mpc.data_structures.admm_datatypes as adt
-from agentlib_mpc.optimization_backends.casadi_.core.discretization import Results
+from agentlib_mpc.data_structures.mpc_datamodels import Results
 
 # noinspection PyArgumentList
 class ModuleStatus(Enum):
@@ -272,7 +272,7 @@ class ADMM(DistributedMPC):
         """
         self.logger.debug("Finished iteration no. %s.", admm_iter)
 
-        # check timeout
+        # check wait_on_start_iterations
         available_runtime = self.config.time_step - self.config.registration_period
         if self.env.now - start_iteration > available_runtime:
             self.logger.warning(
@@ -628,7 +628,7 @@ class ADMM(DistributedMPC):
             updated_value = updated_value.tolist()
             # Set value to data_broker
             self._admm_variables[coupling.multiplier].value = updated_value
-            self.logger.debug("Updated lambda_%s = %s", coupling.name, updated_value)
+            self.logger.info("Updated lambda_%s = %s", coupling.name, updated_value)
 
         for exchange in self.var_ref.exchange:
             # Get current lambda value:
@@ -646,7 +646,7 @@ class ADMM(DistributedMPC):
             updated_value = updated_value.tolist()
             # Set value to data_broker
             self._admm_variables[exchange.multiplier].value = updated_value
-            self.logger.debug("Updated lambda_%s = %s", exchange.name, updated_value)
+            self.logger.info("Updated lambda_%s = %s", exchange.name, updated_value)
 
     def get_results(self) -> Optional[pd.DataFrame]:
         """Read the results that were saved from the optimization backend and

@@ -101,6 +101,6 @@ if __name__ == "__main__":
         with_plots=True,
         until=1800,
         start_pred=0,
-        cleanup=False,
-        log_level=logging.DEBUG,
+        cleanup=True,
+        log_level=logging.INFO,
     )

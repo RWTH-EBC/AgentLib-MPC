@@ -169,7 +169,7 @@ class MiniEmployee(BaseModule):
         value = RegistrationMessage(**variable.value)
 
         # Decide if message from coordinator is for this agent
-        if not (value.source == self.source):
+        if not (value.agent_id == self.source.agent_id):
             return
 
         self.OptimOpts = value.opts

@@ -3,13 +3,13 @@ import logging
 from pydantic import field_validator, Field
 
 from agentlib_mpc.data_structures import mpc_datamodels
-from agentlib_mpc.data_structures.mpc_datamodels import MIQPVariableReference
+from agentlib_mpc.data_structures.mpc_datamodels import MINLPVariableReference
 from agentlib_mpc.modules.mpc import BaseMPCConfig, BaseMPC
 
 logger = logging.getLogger(__name__)
 
 
-class MIQPMPCConfig(BaseMPCConfig):
+class MINLPMPCConfig(BaseMPCConfig):
     """
     Pydantic data model for MPC configuration parser
     """
@@ -35,11 +35,11 @@ class MIQPMPCConfig(BaseMPCConfig):
         return binary_controls
 
 
-class MIQPMPC(BaseMPC):
-    config: MIQPMPCConfig
+class MINLPMPC(BaseMPC):
+    config: MINLPMPCConfig
 
     def _setup_var_ref(self) -> mpc_datamodels.VariableReferenceT:
-        return MIQPVariableReference.from_config(self.config)
+        return MINLPVariableReference.from_config(self.config)
 
     def assert_mpc_variables_are_in_model(self):
         """

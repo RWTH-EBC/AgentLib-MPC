@@ -1,11 +1,10 @@
 import itertools
 import logging
-from typing import Union, Iterable
+from typing import Union, Iterable, Sequence, List
 from numbers import Real
 
 import numpy as np
 import pandas as pd
-from scipy import interpolate
 
 from agentlib_mpc.data_structures.interpolation import InterpolationMethods
 
@@ -19,13 +18,11 @@ def sample_values_to_target_grid(
     method: Union[str, InterpolationMethods],
 ) -> list[float]:
     if method == InterpolationMethods.linear:
-        tck = interpolate.interp1d(x=original_grid, y=values, kind="linear")
-        return list(tck(target_grid))
+        return np.interp(target_grid, original_grid, values).tolist()
     elif method == InterpolationMethods.spline3:
         raise NotImplementedError("Spline interpolation is currently not supported")
     elif method == InterpolationMethods.previous:
-        tck = interpolate.interp1d(list(original_grid), values, kind="previous")
-        return list(tck(target_grid))
+        return interpolate_to_previous(target_grid, original_grid, values)
     elif method == InterpolationMethods.mean_over_interval:
         values = np.array(values)
         original_grid = np.array(original_grid)
@@ -96,7 +93,7 @@ def sample(
         values = np.array(list(trajectory.values()))
     else:
         raise TypeError(
-            f"Passed trajectory of type '{type(trajectory)}' cannot be sampled."
+            f"Passed trajectory of type '{type(trajectory)}' " f"cannot be sampled."
         )
     target_grid = np.array(grid) + current
 
@@ -118,6 +115,12 @@ def sample(
     if target_grid[0] >= source_grid[-1]:
         # return the last value of the trajectory if requested sample
         # starts out of range
+        logger.warning(
+            f"Latest value of source grid %s is older than "
+            f"current time (%s. Returning latest value anyway.",
+            source_grid[-1],
+            current,
+        )
         return [values[-1]] * target_grid_length
 
     # determine whether the target grid lies within the available source grid, and
@@ -132,14 +135,6 @@ def sample(
     number_of_missing_new_entries: int = target_grid_length - np.count_nonzero(
         source_is_recent_enough
     )
-    if number_of_missing_new_entries > 0 or number_of_missing_old_entries > 0:
-        logger.debug(
-            "Available data for interpolation is not sufficient. Missing "
-            f"{number_of_missing_new_entries} of recent data, and missing "
-            f"{number_of_missing_old_entries} of old data.,"
-        )
-
-
     # shorten target interpolation grid by extra points that go above or below
     # available data range
     target_grid = target_grid[source_is_recent_enough * source_is_old_enough]
@@ -164,3 +159,35 @@ def pairwise(iterable: Iterable):
     a, b = itertools.tee(iterable)
     next(b, None)
     return zip(a, b)
+
+
+def earliest_index(time, arr, stop, start=0):
+    """Helper function for interpolate_to_previous.
+    Finds the current index to which we should forwardfill."""
+    for i in range(start, stop):
+        if arr[i] > time:
+            return i - 1
+    return 0
+
+
+def interpolate_to_previous(
+    target_grid: Iterable[float],
+    original_grid: Iterable[float],
+    values: Sequence[float],
+) -> List[float]:
+    """Interpolates to previous value of original grid, i.e. a forward fill.
+
+    Stand-in for the following scipy code:
+    tck = interpolate.interp1d(list(original_grid), values, kind="previous")
+    result = list(tck(target_grid))
+    """
+    result = []
+    _grid_index = 0
+    stop = len(original_grid)
+    for target_point in target_grid:
+
+        _grid_index = earliest_index(
+            target_point, original_grid, stop, start=_grid_index
+        )
+        result.append(values[_grid_index])
+    return result

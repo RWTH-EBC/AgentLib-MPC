@@ -11,7 +11,7 @@ optimization_backends
         - VariableGroup.py
     - admm.py
     - basic.py
-    - miqp.py
+    - minlp.py
 ````
 
 The new casadi backend is not one large file and instead is made up from components, for which abstract base classes can be found in the core.
@@ -21,7 +21,7 @@ Much of the old backend is now in ``discretization.py``, where the optimal contr
 A backend always has a system that is fit for it (and a VariableReference, which defines the boundary between the agentlib and the optimization).
 Additionally, it can have multiple discretizations to choose from. Currently collocation is implemented.
 
-The actual implementations of the backend are currently ``admm.py``, ``basic.py``, ``miqp.py``.
+The actual implementations of the backend are currently ``admm.py``, ``basic.py``, ``minlp.py``.
 They define a system, discretizations and compose the final casadi_backend.
 The casadi_backend then has to be added to the ``__init__.py`` to be usable.
 

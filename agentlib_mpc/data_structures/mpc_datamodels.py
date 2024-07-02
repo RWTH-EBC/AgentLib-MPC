@@ -1,14 +1,13 @@
-import abc
 import dataclasses
 from pathlib import Path
-from typing import List, Union, TypeVar, Protocol
+from typing import List, Union, TypeVar, Protocol, Sequence
 from itertools import chain
 
 import attrs
 import numpy as np
 import pandas as pd
 import pydantic
-from enum import Enum, auto
+from aenum import Enum, auto
 from agentlib.core import AgentVariable
 from agentlib.core.module import BaseModuleConfigClass
 
@@ -22,6 +21,32 @@ class InitStatus(str, Enum):
     pre_module_init = auto()
     during_update = auto()
     ready = auto()
+
+
+class DiscretizationOptions(pydantic.BaseModel):
+    """Class defining the options to discretize an MPC. Can be extended for different
+    optimization implementations."""
+
+    model_config = ConfigDict(extra="allow")
+
+    time_step: float = pydantic.Field(
+        default=60,
+        ge=0,
+        description="Time step of the MPC.",
+    )
+    prediction_horizon: int = pydantic.Field(
+        default=5,
+        ge=0,
+        description="Prediction horizon of the MPC.",
+    )
+
+
+class Results(Protocol):
+
+    df: pd.DataFrame
+
+    def __getitem__(self, item: str) -> Sequence[float]:
+        ...
 
 
 @dataclasses.dataclass
@@ -71,7 +96,7 @@ class FullVariableReference(VariableReference):
 
 
 @dataclasses.dataclass
-class MIQPVariableReference(VariableReference):
+class MINLPVariableReference(VariableReference):
     binary_controls: List[str] = dataclasses.field(default_factory=list)
 
 
@@ -91,70 +116,15 @@ class MPCVariable(AgentVariable):
 
 MPCVariables = List[MPCVariable]
 
-#####################################################################
-#                       Soft Constraints                            #
-#####################################################################
-
-
-class SoftConstraintPrefix(str, Enum):
-    slack = "slack"
-    weight = "weight"
-    value = "value"
-
-
-def soft_constraint_naming(var: AgentVariable, *, prefix: str) -> str:
-    """Returns a variable name for generated variables for soft constraints."""
-    return f"{prefix}_{var.alias}_{var.source}"
-
-
-def sc_slack_name(var) -> str:
-    return soft_constraint_naming(var, prefix=SoftConstraintPrefix.slack)
-
-
-def sc_weight_name(var) -> str:
-    return soft_constraint_naming(var, prefix=SoftConstraintPrefix.weight)
-
-
-def sc_value_name(var) -> str:
-    return soft_constraint_naming(var, prefix=SoftConstraintPrefix.value)
-
 
 def stats_path(path: Union[Path, str]) -> Path:
     res_file = Path(path)
     return Path(res_file.parent, "stats_" + res_file.name)
 
 
+def cia_relaxed_results_path(path: Union[Path, str]) -> Path:
+    res_file = Path(path)
+    return Path(res_file.parent, "relaxed_" + res_file.name)
+
+
 MPCValue = Union[int, float, list[Union[int, float]], pd.Series, np.ndarray]
-
-
-class Results(abc.ABC):
-    """Specifies the optimization results. Should be returned from the backend to the
-    mpc. Used in the mpc for further processing and inter agent communication, and for
-    saving. Holds the discretized full results over the prediction horizon, as well as
-    the solve stats."""
-    columns: pd.MultiIndex
-    stats: dict
-    variable_grid_indices: dict[str, list[int]]
-    _variable_name_to_index: dict[str, int] = None
-
-    def __getitem__(self, item: str) -> np.ndarray:
-        return self.df()[item]
-
-    @abc.abstractmethod
-    def df(self) -> pd.DataFrame:
-        raise NotImplementedError
-
-    def write_columns(self, file: Path):
-        """Write an empty results file with the correct columns."""
-        df = pd.DataFrame(columns=self.columns)
-        df.to_csv(file)
-
-    def write_stats_columns(self, file: Path):
-        """Write an empty stats file with the correct columns."""
-        line = f""",{",".join(self.stats)}\n"""
-        with open(file, "w") as f:
-            f.write(line)
-
-    def stats_line(self, index: str) -> str:
-        """Create a line, that should be appended to the stats file."""
-        return f""""{index}",{",".join(map(str, self.stats.values()))}\n"""

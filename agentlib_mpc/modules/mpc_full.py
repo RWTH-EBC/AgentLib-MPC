@@ -1,11 +1,12 @@
 """Holds the class for full featured MPCs."""
 import numpy as np
 import pandas as pd
+import warnings
 from agentlib.core import AgentVariable
-from agentlib.utils.fuzzy_matching import fuzzy_match
 
 from agentlib_mpc.data_structures import mpc_datamodels
 from pydantic import Field, field_validator, FieldValidationInfo
+from rapidfuzz import process, fuzz
 
 from agentlib_mpc.modules.mpc import BaseMPCConfig, BaseMPC
 
@@ -32,13 +33,13 @@ class MPCConfig(BaseMPCConfig):
                 continue
 
             # raise error
-            matches = fuzzy_match(target=name, choices=controls)
+            matches = process.extract(query=name, choices=controls, scorer=fuzz.WRatio)
             matches = [m[0] for m in matches]
-            msg = (f"Tried to specify control change weight for {name}. However, "
-                   f"{name} is not in the set of control variables.")
-            if matches:
-                msg += f"Did you mean one of these? {', '.join(matches)}"
-            raise ValueError(msg)
+            raise ValueError(
+                f"Tried to specify control change weight for {name}. However, "
+                f"{name} is not in the set of control variables. Did you mean one "
+                f"of these? {', '.join(matches)}"
+            )
         return r_del_u
 
 

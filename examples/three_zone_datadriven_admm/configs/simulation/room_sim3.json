@@ -1,0 +1,89 @@
+{
+  "module_id": "roomsimulator3",
+  "type": "simulator",
+  "model": {
+    "type": {
+      "file": "models/simulation_model.py",
+      "class_name": "FullModel",
+      "dt": 60
+    },
+    "states": [
+      {
+        "name": "T_air",
+        "value": 294
+      },
+      {
+        "name": "T_CCA_0",
+        "value": 294.15
+      },
+      {
+        "name": "T_wall",
+        "value": 294.16
+      }
+    ]
+  },
+  "t_sample": 60,
+  "save_results": true,
+  "result_filename": "results//room_3_sim.csv",
+  "result_causalities": ["input", "output", "local", "parameter"],
+  "outputs": [
+    {
+      "name": "T_wall_out",
+      "value": 294.16
+    },
+    {
+      "name": "T_0_out",
+      "value": 294,
+      "alias": "T_air_sim3"
+    },
+    {
+      "name": "T_CCA_out",
+      "value": 294.15,
+      "alias": "T_CCA_0_sim3"
+    }
+  ],
+  "inputs": [
+    {
+      "name": "T_v",
+      "value": 294.15,
+      "alias": "T_v",
+      "source": "Temp_Controller"
+    },
+    {
+      "name": "T_ahu",
+      "value": 295,
+      "alias": "T_ahu3",
+      "source": "aircooler"
+    },
+    {
+      "name": "d",
+      "value": 0,
+      "alias": "load_measurement_3",
+      "source": "myPredictorAgent"
+    },
+    {
+      "name": "T_amb",
+      "value": 299,
+      "alias": "T_amb_measure3",
+      "source": "myPredictorAgent"
+    },
+    {
+      "name": "Q_rad",
+      "value": 0,
+      "alias": "Q_solar_3",
+      "source": "myPredictorAgent"
+    },
+    {
+      "name": "T_upper",
+      "value": 300,
+      "alias": "T_upperbound3",
+      "source": "myPredictorAgent"
+    },
+    {
+      "name": "T_lower",
+      "value": 290,
+      "alias": "T_lowerbound3",
+      "source": "myPredictorAgent"
+    }
+  ]
+}
