@@ -19,7 +19,7 @@
             "ipopt.print_level": 0
           }
         },
-                "discretization": {"method": "multiple_shooting"},
+                "discretization_options": {"method": "multiple_shooting"},
 "results_file": "results//admm_opt_3.csv"
       },
             "coordinator": {

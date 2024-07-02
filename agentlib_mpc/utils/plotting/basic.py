@@ -62,7 +62,6 @@ class FontDict(TypedDict):
 
 
 class Style:
-    # https://pypi.org/project/rwth-CD-colors/
     def __init__(self, use_tex: bool = False):
         self.font_dict: FontDict = {"fontsize": 11}
         self.use_tex = use_tex

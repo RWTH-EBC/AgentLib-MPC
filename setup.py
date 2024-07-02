@@ -17,7 +17,6 @@ INSTALL_REQUIRES = [
     "pydantic>=1.10.4",
     "casadi>=3.5.5",
     "matplotlib>=3.5.1",
-    "rwth-CD-colors",
     "matplotlib",
     "attrs>=22.2.0",
     "agentlib>=0.6.0",

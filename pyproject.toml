@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentlib_mpc"
+authors = [
+    { name = "Associates of the AGENT project", email = "AGENT.Projekt@eonerc.rwth-aachen.de" }
+]
+description = "Framework for development and execution of agents for control and simulation of energy systems."
+readme = "README.md"
+requires-python = ">=3.9"
+keywords = [
+    "agents", "mpc",
+    "control", "distributed",
+]
+license = { text = "BSD-3-Clause" }
+classifiers = [
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+]
+dependencies = [
+    "numpy>=1.17.4",
+    "pandas>=1.1.0",
+    "scipy>=1.5.2",
+    "simpy>=4.0.1",
+    "pydantic>=2.0.0",
+    "casadi>=3.5.5",
+    "matplotlib>=3.5.1",
+    "matplotlib",
+    "attrs>=22.2.0",
+    "agentlib>=0.6.0",
+    'orjson>=3.9.5',
+    'rapidfuzz>=1.7.0',
+    'agentlib>=0.8.0',
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+
+
+fmu = ['FMPy>=0.3.6']
+ml = ["keras>=2.6.0", "tensorflow>=2.6.0", "scikit-learn"]
+interactive = ['plotly>=5.20.0', 'dash>=2.16.1']
+full = ['agentlib_mpc[fmu,ml,interactive]', 'agentlib[full]']
+
+[package.urls]
+homepage = "https://github.com/RWTH-EBC/AgentLib_MPC"
+documentation = "https://github.com/RWTH-EBC/AgentLib_MPC"

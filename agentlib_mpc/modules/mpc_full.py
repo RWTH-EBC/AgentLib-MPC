@@ -1,7 +1,6 @@
 """Holds the class for full featured MPCs."""
 import numpy as np
 import pandas as pd
-import warnings
 from agentlib.core import AgentVariable
 
 from agentlib_mpc.data_structures import mpc_datamodels

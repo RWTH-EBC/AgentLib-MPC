@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Union, List, NamedTuple
 
 import casadi as ca
-from aenum import Enum
+from enum import Enum
 from pydantic import ConfigDict, Field, BaseModel
 
 from agentlib_mpc.data_structures import mpc_datamodels

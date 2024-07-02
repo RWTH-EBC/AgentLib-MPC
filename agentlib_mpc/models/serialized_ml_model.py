@@ -5,7 +5,7 @@ import subprocess
 
 import numpy as np
 
-from aenum import Enum
+from enum import Enum
 from copy import deepcopy
 from keras import Sequential
 from pathlib import Path

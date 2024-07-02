@@ -24,6 +24,8 @@ And the config files
 import os
 import json
 import logging
+
+from agentlib.utils import MultiProcessingBroker
 from agentlib.utils.multi_agent_system import LocalMASAgency
 
 
@@ -84,6 +86,7 @@ def run_example(
 
         conf_dicts.append(conf_dict)
 
+    broker = MultiProcessingBroker(config={"port": 32300})
     env_config = {"rt": False, "factor": 0.08, "t_sample": 60}
     mas = LocalMASAgency(
         agent_configs=conf_dicts, env=env_config, variable_logging=False

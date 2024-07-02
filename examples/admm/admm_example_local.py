@@ -98,7 +98,7 @@ def run_example(
     # assertion for unittest
     if testing:
         cooledRoom_T = results["CooledRoom"]["AgentLogger"]["T_0"].dropna()
-        assert cooledRoom_T.iloc[0] > cooledRoom_T.iloc[0]
+        assert cooledRoom_T.iloc[0] > cooledRoom_T.iloc[-1]
 
     return results
 

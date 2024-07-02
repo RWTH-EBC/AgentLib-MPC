@@ -7,7 +7,7 @@ import attrs
 import numpy as np
 import pandas as pd
 import pydantic
-from aenum import Enum, auto
+from enum import Enum, auto
 from agentlib.core import AgentVariable
 from agentlib.core.module import BaseModuleConfigClass
 

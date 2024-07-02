@@ -15,6 +15,10 @@ variables:
   TEST_PATH: tests
   TEST_ENGINE: "PYTEST"
   GIT_REPO: "RWTH-EBC/AgentLib-MPC"
+  EXTRA_REQUIREMENTS_PIP: "[full]"
+  INSTALL_REQUIREMENTS_TXT: "false"
+
+
 
 
 include:

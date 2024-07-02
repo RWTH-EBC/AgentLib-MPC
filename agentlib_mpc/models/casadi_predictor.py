@@ -3,7 +3,7 @@ import abc
 import casadi as ca
 import numpy as np
 
-from aenum import Enum
+from enum import Enum
 from keras import layers
 
 from typing import Union, TYPE_CHECKING

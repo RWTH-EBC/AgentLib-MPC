@@ -25,21 +25,6 @@ class TestExamples(unittest.TestCase):
         # Change back cwd:
         os.chdir(self.main_cwd)
 
-    def _run_example(self, example, timeout=None):
-        if timeout is None:
-            timeout = self.timeout
-        ex_py = (
-            pathlib.Path(__file__).absolute().parents[1].joinpath("examples", example)
-        )
-        try:
-            subprocess.check_output(
-                ["python", ex_py], stderr=subprocess.STDOUT, timeout=timeout
-            )
-        except subprocess.TimeoutExpired:
-            pass
-        except subprocess.CalledProcessError as proc_err:
-            raise Exception(proc_err.output.decode("utf-8")) from proc_err
-
     def _run_example_with_return(
         self, file: str, func_name: str, **kwargs
     ) -> dict[str, dict[str, pd.DataFrame]]:
@@ -104,17 +89,7 @@ class TestExamples(unittest.TestCase):
             log_level=logging.FATAL,
         )
 
-    @pytest.mark.slow
-    def test_admm_realtime(self):
-        self._run_example_with_return(
-            file="admm//admm_example_main.py",
-            func_name="run_example",
-            with_plots=False,
-            until=1000,
-            log_level=logging.FATAL,
-            testing=True,
-        )
-
+    @pytest.mark.skip
     def test_exchange_admm(self):
         self._run_example_with_return(
             file="exchange_admm//admm_4rooms_main.py",

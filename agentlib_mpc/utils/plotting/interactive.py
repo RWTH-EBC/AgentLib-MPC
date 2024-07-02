@@ -1,16 +1,26 @@
 import pandas as pd
-import plotly.graph_objects as go
 from typing import Literal, Optional
-import dash
-from dash import html, dcc
-from dash.dependencies import Input, Output
+
 import socket
 import webbrowser
+
+from agentlib.core.errors import OptionalDependencyError
 
 from agentlib_mpc.utils import TIME_CONVERSION
 from agentlib_mpc.utils.analysis import load_mpc
 from agentlib_mpc.utils.plotting.basic import EBCColors
 from agentlib_mpc.utils.plotting.mpc import interpolate_colors
+
+try:
+    import dash
+    from dash import html, dcc
+    from dash.dependencies import Input, Output
+    import plotly.graph_objects as go
+except ImportError as e:
+    raise OptionalDependencyError(
+        dependency_name="interactive", dependency_install="plotly, dash", used_object="interactive"
+    ) from e
+
 
 
 def make_figure_plotly() -> go.Figure:
