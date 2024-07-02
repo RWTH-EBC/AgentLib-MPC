@@ -11,7 +11,7 @@ variables:
   COVERAGE_TYPE: "NotDymola"
   PAGES_BRANCH: main
   PYTHON_VERSION: "registry.git.rwth-aachen.de/ebc/ebc_all/gitlab_ci/templates:python_3.9"
-  PYTHON_PACKAGE_NAME: "agentlib-mpc"
+  PYTHON_PACKAGE_NAME: "agentlib_mpc"
   TEST_PATH: tests
   TEST_ENGINE: "PYTEST"
   GIT_REPO: "RWTH-EBC/AgentLib-MPC"
