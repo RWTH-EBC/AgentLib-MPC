@@ -10,7 +10,8 @@ variables:
   EXCLUDE_PYTHON: 37, 38
   COVERAGE_TYPE: "NotDymola"
   PAGES_BRANCH: main
-  PYTHON_VERSION: "registry.git.rwth-aachen.de/ebc/ebc_all/gitlab_ci/templates:python_3.9"
+  PYTHON_VERSION: "registry.git.rwth-aachen.de/ebc/ebc_all/gitlab_ci/templates:python_3.11"
+  PYTHON_VERSION_NAME: "__version__"
   PYTHON_PACKAGE_NAME: "agentlib_mpc"
   TEST_PATH: tests
   TEST_ENGINE: "PYTEST"
@@ -39,6 +40,9 @@ include:
     file: 'python/build/build.gitlab-ci.yml'
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: SAST.gitlab-ci.yml
+    # PyPI release
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
+    file: 'python/pypi-release/release.gitlab-ci.yml'
 
 
 run_example:
