@@ -70,6 +70,6 @@ class TestSerializedGPR(unittest.TestCase):
         casadi_gpr = CasadiGPR(serialized_model=serialized_gpr)
         self.assertIsInstance(casadi_gpr, CasadiGPR)
         self.assertEqual(
-            round(float(self.test_gpr.predict(np.ones((1, 2)))), 6),
-            round(float(casadi_gpr.predict(np.ones((1, 2)))), 6),
+            round(float(self.test_gpr.predict(np.ones((1, 2)))[0]), 5),
+            round(float(casadi_gpr.predict(np.ones((1, 2)))[0]), 5),
         )

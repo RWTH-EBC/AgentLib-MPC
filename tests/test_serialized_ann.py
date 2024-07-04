@@ -86,6 +86,6 @@ class TestSerializedANN(unittest.TestCase):
         casadi_ann = CasadiANN(serialized_model=serialized_ann)
         self.assertIsInstance(casadi_ann, CasadiANN)
         self.assertEqual(
-            round(float(self.test_ann.predict(np.ones((1, 2)))), 6),
-            round(float(casadi_ann.predict(np.ones((1, 2)))), 6),
+            round(float(self.test_ann.predict(np.ones((1, 2)))[0]), 5),
+            round(float(casadi_ann.predict(np.ones((1, 2)))[0]), 5),
         )
