@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 import logging
 from pathlib import Path
-from typing import Dict, Union, Callable, TypeVar, Optional
+from typing import Dict, Union, Callable, TypeVar, Optional, List
 
 import pandas as pd
 import pydantic
@@ -88,7 +88,7 @@ class OptimizationBackend(abc.ABC):
     the solutions.
     """
 
-    _supported_models: dict[str, ModelT] = {}
+    _supported_models: List[ModelT] = []
     mpc_backend_parameters = ("time_step", "prediction_horizon")
     config_type = BackendConfig
 
@@ -164,13 +164,13 @@ class OptimizationBackend(abc.ABC):
         if not any(
             (
                 isinstance(model, _supp_model)
-                for _supp_model in self._supported_models.values()
+                for _supp_model in self._supported_models
             )
         ):
             raise TypeError(
                 f"Given model is of type {type(model)} but "
                 f"should be instance of one of:"
-                f"{', '.join(list(self._supported_models.keys()))}"
+                f"{', '.join(c.__name__ for c in [self._supported_models])}"
             )
         return model
 

@@ -9,6 +9,7 @@ import pydantic
 from agentlib.core.errors import ConfigurationError
 
 from agentlib_mpc.data_structures.mpc_datamodels import MPCVariable, stats_path
+from agentlib_mpc.models.casadi_model_new import CasadiModel2
 from agentlib_mpc.optimization_backends.casadi_.core import system
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
     OptimizationVariable,
@@ -96,7 +97,7 @@ class CasADiBackend(OptimizationBackend):
     system: system.SystemT
     discretization_types: dict[DiscretizationMethod, Type[DiscretizationT]]
     discretization: DiscretizationT
-    _supported_models = {"CasadiModel": CasadiModel}
+    _supported_models = [CasadiModel, CasadiModel2]
     config_type = CasadiBackendConfig
 
     def setup_optimization(self, var_ref: mpc_datamodels.VariableReference):

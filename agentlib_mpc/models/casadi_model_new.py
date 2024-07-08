@@ -1,14 +1,16 @@
 """Holds the classes for CasADi variables and the CasADi model."""
+
 from __future__ import annotations
 
 import logging
 import abc
 from itertools import chain
 
-from typing import List, Union, Tuple, Optional
+from typing import List, Union, Tuple, Type, Dict, Any, get_type_hints
 
 import attrs
-from pydantic import Field, PrivateAttr, ConfigDict
+import pydantic
+from pydantic import Field, PrivateAttr, ConfigDict, model_validator
 import casadi as ca
 import numpy as np
 
@@ -17,8 +19,13 @@ from agentlib.core.datamodels import (
     Causality,
 )
 from agentlib_mpc.data_structures.casadi_utils import ModelConstraint
-from agentlib_mpc.models.casadi_model import CasadiInput, CasadiOutput, CasadiState, \
-    CasadiParameter, CasadiVariable
+from agentlib_mpc.models.casadi_model import (
+    CasadiInput,
+    CasadiOutput,
+    CasadiState,
+    CasadiParameter,
+    CasadiVariable,
+)
 
 CasadiTypes = Union[ca.MX, ca.SX, ca.DM, ca.Sparsity]
 
@@ -29,11 +36,11 @@ ca_constraint = Tuple[ca_all_inputs, ca_func_inputs, ca_all_inputs]
 ca_constraints = List[Tuple[ca_all_inputs, ca_func_inputs, ca_all_inputs]]
 
 
-
 @attrs.define(slots=True, weakref_slot=False, kw_only=True)
 class Var(CasadiVariable):
     name: str = "__empty__"
     causality: Causality
+
     @classmethod
     def input(cls, **kwargs) -> Var:
         return cls(**kwargs, causality=Causality.input)
@@ -50,47 +57,53 @@ class Var(CasadiVariable):
     def output(cls, **kwargs) -> Var:
         return cls(**kwargs, causality=Causality.output)
 
+    def to_casadi_variable(
+        self, name: str
+    ) -> Union[CasadiInput, CasadiOutput, CasadiState, CasadiParameter]:
+        casadi_type = {
+            Causality.input: CasadiInput,
+            Causality.output: CasadiOutput,
+            Causality.local: CasadiState,
+            Causality.parameter: CasadiParameter,
+        }[self.causality]
+
+        keys_to_replace = {'ode': '_ode', 'alg': '_alg'}
+        # dict_ =  {keys_to_replace.get(k, k): v for k, v in self.dict().items()}
+        cas_var = casadi_type(**self.dict())
+        if hasattr(self, "ode"):
+            cas_var.ode = self.ode
+        if hasattr(self, "alg"):
+            cas_var.alg = self.alg
+
+        return cas_var
+
+    def set_name(self, name):
+        if self.name != "__empty__" and name != self.name:
+            raise ValueError(
+                "Defined a Var with mismatching name. Name needs to match between "
+                f"variable definition and class attribute. Var name is {self.name} "
+                f"but class attribute was {name}."
+            )
+        self.name = name
+        self._sym = self.create_sym()
 
 
-        #
-        #
-        # name: str = field(
-        #     metadata={"title": "Name", "description": "The name of the variable"}
-        # )
-        # type: #Optional[str] = field(
-        #     default=None,
-        #     metadata={
-        #         "title": "Type",
-        #         "description": "Name the type of the variable using a string",
-        #     },
-        # )
-        # timestamp: Optional[float] = field(
-        #     default=None,
-        #     metadata={
-        #         "title": "Timestamp",
-        #         "description": "Timestamp of the current value",
-        #     },
-        # )
-        # unit: str = field(
-        # description: str
-        # ub: Union[float, int] = field(
-        #     default=math.inf,
-        # lb: Union[float, int] = field(
-        #     default=-math.inf,
-        # clip: bool
-        # value: Any
-
-
-class CasadiModelConfig2(ModelConfig):
+class CasadiModelConfig2(ModelConfig, abc.ABC):
     system: CasadiTypes = None
-    cost_function: CasadiTypes = None
+    cost_function: ca_all_inputs = None
+    constraints: List[Tuple[Any, Any, Any]] = None
 
-    inputs: List[CasadiInput] = Field(default=list())
-    outputs: List[CasadiOutput] = Field(default=list())
-    states: List[CasadiState] = Field(default=list())
-    parameters: List[CasadiParameter] = Field(default=list())
-    model_config = ConfigDict(validate_assignment=True, extra="forbid")
-    _types: dict[str, type] = PrivateAttr(
+    inputs: List[CasadiInput] = Field(default_factory=list)
+    outputs: List[CasadiOutput] = Field(default_factory=list)
+    states: List[CasadiState] = Field(default_factory=list)
+    parameters: List[CasadiParameter] = Field(default_factory=list)
+
+    model_config = ConfigDict(
+        validate_assignment=True,
+        extra="allow",
+        ignored_types=(Var, ca_all_inputs, CasadiTypes),
+    )
+    _types: Dict[str, Type] = PrivateAttr(
         default={
             "inputs": CasadiInput,
             "outputs": CasadiOutput,
@@ -98,7 +111,52 @@ class CasadiModelConfig2(ModelConfig):
             "parameters": CasadiParameter,
         }
     )
+    _started_setup: bool = PrivateAttr(default=False)
 
+    @abc.abstractmethod
+    def setup_system(self) -> ca_all_inputs:
+        pass
+
+    @model_validator(mode="after")
+    def setup_and_collect_variables(self) -> "CasadiModelConfig2":
+
+        # this check makes sure that we only validate once, as this validator performs
+        # assignments that would be validated.
+        if self._started_setup:
+            return self
+        self._started_setup = True
+
+        # Get all extra attributes of the class
+        all_attrs = set(dir(self.__class__))
+        custom_attrs = all_attrs - set(dir(CasadiModelConfig2))
+
+        for field_name in custom_attrs:
+            value = getattr(self, field_name, None)
+            if not isinstance(value, Var):
+                raise AttributeError(
+                    f"Extra Field '{field_name}' is not allowed. Add variables only "
+                    f"of the Var type defined in {__name__}."
+                )
+            value.set_name(field_name)
+
+        self.setup_system()
+
+        casadi_vars = {
+            Causality.input: self.inputs,
+            Causality.output: self.outputs,
+            Causality.local: self.states,
+            Causality.parameter: self.parameters,
+        }
+
+
+
+        for field_name in custom_attrs:
+            value = getattr(self, field_name)
+            casadi_var = value.to_casadi_variable(field_name)
+            casadi_vars[value.causality].append(casadi_var)
+            # delattr(self, field_name)
+
+        return self
 
 
 class CasadiModel2(Model):
@@ -112,9 +170,6 @@ class CasadiModel2(Model):
         # Initializes the config
         super().__init__(**kwargs)
 
-        self.constraints = []  # constraint functions
-        # read constraints, assign ode's and return cost function
-        self.cost_func = self.setup_system()
         self._assert_outputs_are_defined()
 
         # save system equations as a single casadi vector
@@ -123,6 +178,14 @@ class CasadiModel2(Model):
         self.system = ca.reshape(system, system.shape[0], 1)
         self.integrator = None  # set in intitialize
         self.initialize()
+
+    @property
+    def cost_func(self) -> ca_all_inputs:
+        return self.config.cost_function
+
+    @property
+    def constraints(self) -> ca_constraints:
+        return self.config.constraints
 
     def _assert_outputs_are_defined(self):
         """Raises an Error, if the output variables are not defined with an equation"""
@@ -251,12 +314,6 @@ class CasadiModel2(Model):
         constraints of optimization models."""
         return [var for var in self.states if var.ode is None]
 
-    @abc.abstractmethod
-    def setup_system(self):
-        raise NotImplementedError(
-            "The ode is defined by the actual models " "inheriting from this class."
-        )
-
     def get_input_values(self):
         return ca.vertcat(
             *[inp.value for inp in chain.from_iterable([self.inputs, self.parameters])]
@@ -295,6 +352,6 @@ def get_symbolic(equation):
         return equation
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     a = Var(value=10, unit="asdf")
     print(a)

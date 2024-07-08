@@ -26,19 +26,24 @@ ub = 295.15
 
 
 class MyCasadiModelConfig(CasadiModelConfig2):
+
     # controls
     mDot = Var.input(
         value=0.0225,
         unit="m³/s",
         description="Air mass flow into zone",
-    ),
+    )
     # disturbances
     load = Var.input(
-       value=150, unit="W", description="Heat load into zone"
-    ),
+        value=150,
+        unit="W",
+        description="Heat load into zone"
+    )
     T_in = Var.input(
-        value=290.15, unit="K", description="Inflow air temperature"
-    ),
+        value=290.15,
+        unit="K",
+        description="Inflow air temperature"
+    )
     # settings
     T_upper = Var.input(
         name="T_upper",
@@ -47,51 +52,45 @@ class MyCasadiModelConfig(CasadiModelConfig2):
         description="Upper boundary (soft) for T.",
     )
 
-    states: List[CasadiState] = [
-        # differential
-        CasadiState(
-            name="T", value=293.15, unit="K", description="Temperature of zone"
-        ),
-        # algebraic
-        # slack variables
-        CasadiState(
-            name="T_slack",
-            value=0,
-            unit="K",
-            description="Slack variable of temperature of zone",
-        ),
-    ]
+    # states
+    T = Var.state(
+        value=293.15,
+        unit="K",
+        description="Temperature of zone"
+    )
+    T_slack = Var.state(
+        value=0,
+        unit="K",
+        description="Slack variable of temperature of zone"
+    )
 
-    parameters: List[CasadiParameter] = [
-        CasadiParameter(
-            name="cp",
-            value=1000,
-            unit="J/kg*K",
-            description="thermal capacity of the air",
-        ),
-        CasadiParameter(
-            name="C", value=100000, unit="J/K", description="thermal capacity of zone"
-        ),
-        CasadiParameter(
-            name="s_T",
-            value=1,
-            unit="-",
-            description="Weight for T in constraint function",
-        ),
-        CasadiParameter(
-            name="r_mDot",
-            value=1,
-            unit="-",
-            description="Weight for mDot in objective function",
-        ),
-    ]
-    outputs: List[CasadiOutput] = [
-        CasadiOutput(name="T_out", unit="K", description="Temperature of zone")
-    ]
+    # parameters
+    cp = Var.parameter(
+        value=1000,
+        unit="J/kg*K",
+        description="thermal capacity of the air"
+    )
+    C = Var.parameter(
+        value=100000,
+        unit="J/K",
+        description="thermal capacity of zone"
+    )
+    s_T = Var.parameter(
+        value=1,
+        unit="-",
+        description="Weight for T in constraint function"
+    )
+    r_mDot = Var.parameter(
+        value=1,
+        unit="-",
+        description="Weight for mDot in objective function"
+    )
 
-
-class MyCasadiModel(CasadiModel2):
-    config: MyCasadiModelConfig
+    # outputs
+    T_out = Var.output(
+        unit="K",
+        description="Temperature of zone"
+    )
 
     def setup_system(self):
         # Define ode
@@ -109,14 +108,17 @@ class MyCasadiModel(CasadiModel2):
         ]
 
         # Objective function
-        objective = sum(
+        self.cost_function = sum(
             [
                 self.r_mDot * self.mDot,
                 self.s_T * self.T_slack**2,
             ]
         )
 
-        return objective
+class MyCasadiModel(CasadiModel2):
+    config: MyCasadiModelConfig
+
+
 
 
 ENV_CONFIG = {"rt": False, "factor": 0.01, "t_sample": 60}
