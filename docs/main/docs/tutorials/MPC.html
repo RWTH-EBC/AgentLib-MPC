@@ -100,7 +100,7 @@
 <p>To run a model predictive controller, a system model for use in optimization
 is required. What model types are available depends on the chosen
 optimization backend. In this section, creating an MPC with a CasADi backend
-is explained. Open the ‘examples/multi-agent-systems/casadi/simple_mpc.py’ example.</p>
+is explained. Open the ‘examples/one_room_mpc/physical/simple_mpc.py’ example.</p>
 <section id="imports">
 <h3>Imports<a class="headerlink" href="#imports" title="Permalink to this heading"></a></h3>
 <p>As usual, let’s look at the imports first.</p>
@@ -125,28 +125,29 @@ and their environment by hand.</p>
 <p>Now let’s see how we can create an optimization model. The model contains
 the physical system dynamics, as well as the cost function and additional
 constraints on the system.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>In future versions of agentlib, cost function and constraints will be
-separated from the model and instead specified in the module config.</p>
-</div>
 <p>In this example, we will create a model of a room, which is under a constant
 heat load and can be controlled by changing the mass flow of cool air from
 an air handling unit.</p>
-<img alt="images/tutorials/room_example.png" src="images/tutorials/room_example.png" />
-<p>Creating a custom CasadiModel is similar to creating a module. Three steps
-are required:</p>
+<p>Creating a custom CasadiModel is similar to creating a module.</p>
 <ol class="arabic simple">
-<li><p>Creating a class that inherits from <code class="docutils literal notranslate"><span class="pre">CasadiModel</span></code></p></li>
-<li><p>Declare the model variables in the inner class <code class="docutils literal notranslate"><span class="pre">Settings</span></code></p>
+<li><p>Creating a class that inherits from <code class="docutils literal notranslate"><span class="pre">CasadiModelConfig</span></code></p>
 <ul class="simple">
+<li><p>Declare the model variables in the config class</p>
+<ul>
 <li><p>inputs</p></li>
 <li><p>outputs</p></li>
 <li><p>states</p></li>
 <li><p>parameters</p></li>
 </ul>
 </li>
+</ul>
+</li>
+<li><p>Creating a class that inherits from <code class="docutils literal notranslate"><span class="pre">CasadiModel</span></code></p>
+<ol class="arabic simple">
+<li><p>Assign the config with <code class="docutils literal notranslate"><span class="pre">config:</span> <span class="pre">&lt;&lt;ConfigClass&gt;&gt;</span></code></p></li>
 <li><p>Define model equations by overwriting the <code class="docutils literal notranslate"><span class="pre">setup_system</span></code> method</p></li>
+</ol>
+</li>
 </ol>
 <section id="variable-declaration">
 <h4>Variable declaration<a class="headerlink" href="#variable-declaration" title="Permalink to this heading"></a></h4>
@@ -227,7 +228,7 @@ attribute of that variable. In the same way, algebraic equations can be
 defined by setting the <code class="docutils literal notranslate"><span class="pre">alg</span></code> attribute.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyCasadiModel</span><span class="p">(</span><span class="n">CasadiModel</span><span class="p">):</span>
 
-    <span class="n">config</span><span class="p">:</span><span class="n">MyCasadiModelConfig</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">MyCasadiModelConfig</span>
 
     <span class="k">def</span> <span class="nf">setup_system</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Define ode</span>
@@ -268,9 +269,7 @@ constraint on the room temperature.</p>
 equality constraint?
 </summary>
 <blockquote>
-Algebraic equations are explicit assignments to a CasadiState or a
-CasadiOutput. They are considered when simulating the model or when doing
-MPC with it.
+Algebraic equations are explicit assignments to a CasadiOutput. They are considered when simulating the model or when doing MPC with it.
 Constraints specified as tuples can be of implicit nature, however they are
 ignored for simulation. The only limitation on constraints is, that
 variables that make up the upper or lower bound cannot be used as
