@@ -3,7 +3,7 @@ Alternating Direction Method of Multipliers
 
 In this section, we will learn how to use agentlib for distributed MPC using 
 the alternating direction method of multipliers (ADMM). The required example 
-files are located in 'examples/multi-agent-systems/admm/'. They include two 
+files are located in 'examples/admm/'. They include two 
 main scripts and two directories with models and config files respectively. 
 We simulate the same system as before, however this time the AHU determines 
 its mass flow without knowing the system behaviour of the room, creating the 
@@ -225,6 +225,3 @@ would be setpoint of the mass flow, and "mDot_out" would be the actual mass
 flow.
 </blockquote>
 </details>
-
-### How does ADMM work?
-.. image::  ../diagrams/out/admm_sequence.svg

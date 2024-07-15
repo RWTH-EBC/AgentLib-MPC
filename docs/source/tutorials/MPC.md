@@ -6,7 +6,7 @@ To run a model predictive controller, a system model for use in optimization
 is required. What model types are available depends on the chosen 
 optimization backend. In this section, creating an MPC with a CasADi backend 
 is explained. \
-Open the 'examples/multi-agent-systems/casadi/simple_mpc.py' example.
+Open the 'examples/one_room_mpc/physical/simple_mpc.py' example.
 #### Imports
 As usual, let's look at the imports first.
 ```python
@@ -31,25 +31,21 @@ Now let's see how we can create an optimization model. The model contains
 the physical system dynamics, as well as the cost function and additional 
 constraints on the system.
 
-.. note:: 
-    In future versions of agentlib, cost function and constraints will be 
-    separated from the model and instead specified in the module config.
 
 In this example, we will create a model of a room, which is under a constant 
 heat load and can be controlled by changing the mass flow of cool air from 
 an air handling unit.
 
-.. image::  ../images/tutorials/room_example.png
-
-Creating a custom CasadiModel is similar to creating a module. Three steps 
-are required:
-1. Creating a class that inherits from ``CasadiModel`` 
-2. Declare the model variables in the inner class ``Settings``
-   - inputs
-   - outputs
-   - states
-   - parameters 
-3. Define model equations by overwriting the ``setup_system`` method
+Creating a custom CasadiModel is similar to creating a module. 
+1. Creating a class that inherits from ``CasadiModelConfig`` 
+   - Declare the model variables in the config class
+     - inputs
+     - outputs
+     - states
+     - parameters 
+2. Creating a class that inherits from ``CasadiModel`` 
+   1. Assign the config with ``config: <<ConfigClass>>``
+   2. Define model equations by overwriting the ``setup_system`` method
 
 ##### Variable declaration
 
@@ -134,7 +130,7 @@ defined by setting the ``alg`` attribute.
 ````python
 class MyCasadiModel(CasadiModel):
 
-    config:MyCasadiModelConfig
+    config: MyCasadiModelConfig
 
     def setup_system(self):
         # Define ode
@@ -175,9 +171,7 @@ constraint on the room temperature.
 equality constraint?
 </summary>
 <blockquote>
-Algebraic equations are explicit assignments to a CasadiState or a 
-CasadiOutput. They are considered when simulating the model or when doing 
-MPC with it. 
+Algebraic equations are explicit assignments to a CasadiOutput. They are considered when simulating the model or when doing MPC with it. 
 Constraints specified as tuples can be of implicit nature, however they are 
 ignored for simulation. The only limitation on constraints is, that 
 variables that make up the upper or lower bound cannot be used as 

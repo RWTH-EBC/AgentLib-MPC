@@ -1,6 +1,5 @@
 # agentlib_mpc
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![Coverage](https://rwth-ebc.github.io/AgentLib-MPC/main/coverage/badge.svg)](https://rwth-ebc.github.io/AgentLib-MPC/main/coverage/)
 [![pylint](https://rwth-ebc.github.io/AgentLib-MPC/main/pylint/pylint.svg)](https://rwth-ebc.github.io/AgentLib-MPC/main/pylint/pylint.html)
 [![documentation](https://rwth-ebc.github.io/AgentLib-MPC/main/docs/doc.svg)](https://rwth-ebc.github.io/AgentLib-MPC/main/docs/index.html)
 
