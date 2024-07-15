@@ -1,13 +1,11 @@
 # agentlib_mpc
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![Coverage](https://ebc.pages.git-ce.rwth-aachen.de/projects/ebc_acs0017_bmwi_agent/agents_python/agentlib_mpc/main/coverage/badge.svg)](https://ebc.pages.git-ce.rwth-aachen.de/projects/ebc_acs0017_bmwi_agent/agents_python/agentlib_mpc/main/coverage/)
-[![pylint](https://ebc.pages.git-ce.rwth-aachen.de/projects/ebc_acs0017_bmwi_agent/agents_python/agentlib_mpc/main/pylint/pylint.svg)](https://ebc.pages.git-ce.rwth-aachen.de/projects/ebc_acs0017_bmwi_agent/agents_python/agentlib_mpc/main/pylint/pylint.html)
-[![documentation](https://ebc.pages.git-ce.rwth-aachen.de/projects/ebc_acs0017_bmwi_agent/agents_python/agentlib_mpc/main/docs/doc.svg)](https://ebc.pages.git-ce.rwth-aachen.de/projects/ebc_acs0017_bmwi_agent/agents_python/agentlib_mpc/main/docs/index.html)
+[![Coverage](https://rwth-ebc.github.io/AgentLib-MPC/main/coverage/badge.svg)](https://rwth-ebc.github.io/AgentLib-MPC/main/coverage/)
+[![pylint](https://rwth-ebc.github.io/AgentLib-MPC/main/pylint/pylint.svg)](https://rwth-ebc.github.io/AgentLib-MPC/main/pylint/pylint.html)
+[![documentation](https://rwth-ebc.github.io/AgentLib-MPC/main/docs/doc.svg)](https://rwth-ebc.github.io/AgentLib-MPC/main/docs/index.html)
 
-Links in Badges will be updated shortly.
-
-This is a plugin for the AgentLib. 
-Includes functions for modeling with Casadi, and using those models in nonlinear MPC, central and distributed (based on ADMM).
+This is a plugin for [AgentLib]https://github.com/RWTH-EBC/AgentLib). 
+Includes functions for modeling with [CasADi](https://web.casadi.org/), and using those models in nonlinear MPC, central and distributed (based on ADMM).
 
 See examples and the tutorial in the docs.
 
@@ -47,6 +45,8 @@ For now, please cite the base framework under https://github.com/RWTH-EBC/AgentL
 A preprint is available under http://dx.doi.org/10.2139/ssrn.4884846 and can be cited as: 
 
 > Eser, Steffen and Storek, Thomas and Wüllhorst, Fabian and Dähling, Stefan and Gall, Jan and Stoffel, Phillip and Müller, Dirk, A Modular Python Framework for Rapid Development of Advanced Control Algorithms for Energy Systems. Available at SSRN: https://ssrn.com/abstract=4884846 or http://dx.doi.org/10.2139/ssrn.4884846 
+
+When using AgentLib-MPC, please remember to cite other tools that you are using, for example CasADi or IPOPT.
 
 ## Acknowledgments
 
