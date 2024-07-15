@@ -4,7 +4,7 @@
 [![pylint](https://rwth-ebc.github.io/AgentLib-MPC/main/pylint/pylint.svg)](https://rwth-ebc.github.io/AgentLib-MPC/main/pylint/pylint.html)
 [![documentation](https://rwth-ebc.github.io/AgentLib-MPC/main/docs/doc.svg)](https://rwth-ebc.github.io/AgentLib-MPC/main/docs/index.html)
 
-This is a plugin for [AgentLib]https://github.com/RWTH-EBC/AgentLib). 
+This is a plugin for [AgentLib](https://github.com/RWTH-EBC/AgentLib). 
 Includes functions for modeling with [CasADi](https://web.casadi.org/), and using those models in nonlinear MPC, central and distributed (based on ADMM).
 
 See examples and the tutorial in the docs.
