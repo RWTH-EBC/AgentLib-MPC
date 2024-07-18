@@ -51,7 +51,7 @@ class TestExamples(unittest.TestCase):
             log_level=logging.FATAL,
         )
         self._run_example_with_return(
-            file="one_room_mpc//physical//mpc_trajectories.py",
+            file="one_room_mpc//physical//simple_mpc_with_time_variant_inputs.py",
             func_name="run_example",
             with_plots=False,
             log_level=logging.FATAL,

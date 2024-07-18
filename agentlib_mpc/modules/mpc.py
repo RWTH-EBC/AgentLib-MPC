@@ -90,7 +90,6 @@ class BaseMPCConfig(BaseModuleConfig):
             samp_time = info.data["time_step"]
         return samp_time
 
-
 def _create_optimization_backend(optimization_backend, agent_id):
     """Set up the optimization_backend"""
     optimization_backend = optimization_backend.copy()
