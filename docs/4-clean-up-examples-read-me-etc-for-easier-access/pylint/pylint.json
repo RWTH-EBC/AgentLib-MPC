@@ -2087,19 +2087,19 @@
                 "test_examples"
             ],
             "agentlib.utils": [
-                "test_examples",
-                "conftest"
+                "conftest",
+                "test_examples"
             ],
             "agentlib.utils.local_broadcast_broker": [
                 "test_admm",
                 "test_examples"
             ],
             "numpy": [
-                "test_serialized_ann",
-                "test_serialized_gpr",
-                "test_serialized_linreg",
                 "test_admm",
-                "test_mpc"
+                "test_serialized_gpr",
+                "test_serialized_ann",
+                "test_mpc",
+                "test_serialized_linreg"
             ],
             "agentlib.core": [
                 "test_admm"
@@ -2154,27 +2154,27 @@
                 "test_mpc"
             ],
             "agentlib_mpc.data_structures.ml_model_datatypes": [
-                "test_serialized_gpr",
                 "test_serialized_ann",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_gpr"
             ],
             "agentlib_mpc.models.casadi_predictor": [
-                "test_serialized_gpr",
                 "test_serialized_ann",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_gpr"
             ],
             "agentlib_mpc.models.serialized_ml_model": [
-                "test_serialized_gpr",
                 "test_serialized_ann",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_gpr"
             ],
             "fixtures.ann": [
                 "test_serialized_ann"
             ],
             "fixtures.data_generator": [
-                "test_serialized_gpr",
                 "test_serialized_ann",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_gpr"
             ],
             "sklearn.gaussian_process": [
                 "test_serialized_gpr"
@@ -2377,19 +2377,19 @@
                 "ci.test_examples"
             ],
             "agentlib.utils": [
-                "ci.test_examples",
-                "conftest"
+                "conftest",
+                "ci.test_examples"
             ],
             "agentlib.utils.local_broadcast_broker": [
                 "test_admm",
                 "ci.test_examples"
             ],
             "numpy": [
-                "test_serialized_ann",
-                "test_serialized_gpr",
-                "test_serialized_linreg",
                 "test_admm",
-                "test_mpc"
+                "test_serialized_gpr",
+                "test_serialized_ann",
+                "test_mpc",
+                "test_serialized_linreg"
             ],
             "agentlib.core": [
                 "test_admm"
@@ -2444,27 +2444,27 @@
                 "test_mpc"
             ],
             "agentlib_mpc.data_structures.ml_model_datatypes": [
-                "test_serialized_gpr",
                 "test_serialized_ann",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_gpr"
             ],
             "agentlib_mpc.models.casadi_predictor": [
-                "test_serialized_gpr",
                 "test_serialized_ann",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_gpr"
             ],
             "agentlib_mpc.models.serialized_ml_model": [
-                "test_serialized_gpr",
                 "test_serialized_ann",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_gpr"
             ],
             "fixtures.ann": [
                 "test_serialized_ann"
             ],
             "fixtures.data_generator": [
-                "test_serialized_gpr",
                 "test_serialized_ann",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_gpr"
             ],
             "sklearn.gaussian_process": [
                 "test_serialized_gpr"
