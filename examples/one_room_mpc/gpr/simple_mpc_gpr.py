@@ -35,7 +35,7 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                         "method": "multiple_shooting",
                     },
                     "results_file": "results//opt.csv",
-                    "solver": {"name": "ipopt", "options": {"ipopt.print_level": 5}},
+                    "solver": {"name": "ipopt", "options": {"ipopt.print_level": 0}},
                 },
                 "time_step": 300,
                 "prediction_horizon": 15,
@@ -104,7 +104,7 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000):
     mas = LocalMASAgency(
         agent_configs=agent_configs(ml_model_path=str(ann_path)),
         env=ENV_CONFIG,
-        variable_logging=True,
+        variable_logging=False,
     )
     mas.run(until=until)
     results = mas.get_results()

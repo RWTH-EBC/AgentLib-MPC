@@ -18,9 +18,6 @@ from agentlib.utils.multi_agent_system import LocalMASAgency
 
 logger = logging.getLogger(__name__)
 
-# put your license file here
-# import os
-# os.environ['GRB_LICENSE_FILE'] = r'C:\Users\ses\gurobi.lic'
 
 # script variables
 ub = 295.15

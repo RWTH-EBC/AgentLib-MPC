@@ -19,7 +19,7 @@ class PhysicalModelConfig(CasadiModelConfig):
         ),
         # disturbances
         CasadiInput(
-            name="load", value=150, unit="W", description="Heat " "load into zone"
+            name="load", value=150, unit="W", description="Heat load into zone"
         ),
         CasadiInput(
             name="T_in", value=290.15, unit="K", description="Inflow air temperature"
@@ -173,12 +173,8 @@ class DataDrivenModelConfig(CasadiMLModelConfig, PhysicalModelConfig):
 class DataDrivenModel(CasadiMLModel):
     config: DataDrivenModelConfig
 
-    # self.anns = ["temp_ann"]
-
     def setup_system(self):
         # ode
-
-        # self.T.ode = self.temp_ann(mdot=self.mdot_rel*self.cooler_on, T_in=self.T_in)
 
         # Define ae
         self.T_out.alg = self.T  # math operation to get the symbolic variable

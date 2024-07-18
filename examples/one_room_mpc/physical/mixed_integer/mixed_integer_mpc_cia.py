@@ -15,13 +15,8 @@ from agentlib_mpc.models.casadi_model import (
 )
 from agentlib.utils.multi_agent_system import LocalMASAgency
 
-from agentlib_mpc.utils.plotting.interactive import show_dashboard
-
 logger = logging.getLogger(__name__)
 
-# put your license file here
-# import os
-# os.environ['GRB_LICENSE_FILE'] = r'C:\Users\ses\gurobi.lic'
 
 # script variables
 ub = 295.15
