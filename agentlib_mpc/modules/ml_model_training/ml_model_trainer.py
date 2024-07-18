@@ -122,6 +122,13 @@ class MLModelTrainerConfig(BaseModuleConfig, abc.ABC):
         " data has not reached the trainer. If False, an Error will be "
         "raised when the data is not sufficient.",
     )
+    max_interpolation_gap: float = pydantic.Field(
+        default=-1.,
+        description="When creating training data, the trainer will interpolate "
+                    "available values to the correct grid. If the gap between two "
+                    "values is too large, they will not be interpolated, and the "
+                    "training data is split at this point."
+    )
     data_sources: list[Path] = pydantic.Field(
         default=[],
         description="List of paths to time series data, which can be loaded on "
@@ -306,6 +313,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
         """Trains the model based on the current historic data."""
         sampled = self.resample()
         inputs, outputs = self.create_inputs_and_outputs(sampled)
+        self.process_input_output_data()
         training_data = self.divide_in_tvt(inputs, outputs)
         self.fit_ml_model(training_data)
         serialized_ml_model = self.serialize_ml_model()
@@ -580,6 +588,34 @@ class MLModelTrainer(BaseModule, abc.ABC):
             test_inputs=inputs.iloc[n_validation:],
             test_outputs=outputs.iloc[n_validation:],
         )
+
+    def process_input_output_data(self, inputs: pd.DataFrame, outputs: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+        """Removes all rows where the absolute value of the difference in the output is greater than max_delta"""
+        if self.config.max_interpolation_gap < 0:
+            return inputs, outputs
+
+        # Initialize masks for both types of output.
+        diff_mask = pd.Series(data=True, index=outputs.index)
+        abs_mask = pd.Series(data=True, index=outputs.index)
+
+        for output_name in outputs.columns:
+            output_type = self.config.output_types[output_name]
+
+            if output_type == ml_model_datatypes.OutputType.difference:
+                diff_mask &= outputs[output_name].abs() < self.config.max_interpolation_gap
+            else:  # output_type == OutputType.absolute
+                abs_mask &= (outputs[output_name].shift(-1) - outputs[output_name]).abs() < self.config.max_interpolation_gap
+
+        # Combine masks
+        final_mask = diff_mask & abs_mask
+        print(f"Rows before removal {len(inputs)}")
+        inputs = inputs.loc[final_mask]
+        print(f"Rows after removal {len(inputs)}")
+        outputs = outputs.loc[final_mask]
+        # Print how much data was removed.
+        print(f"Removed {len(final_mask) - len(inputs)} rows ({(1-len(inputs)/len(final_mask))*100}%) due to max_delta.")
+
+        return inputs, outputs
 
 
 class ANNTrainerConfig(MLModelTrainerConfig):
