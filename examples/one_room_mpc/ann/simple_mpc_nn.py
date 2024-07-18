@@ -13,7 +13,6 @@ ENV_CONFIG = {"rt": False, "factor": 0.01, "t_sample": 60}
 
 
 def agent_configs(ml_model_path: str) -> list[dict]:
-
     agent_mpc = {
         "id": "myMPCAgent",
         "modules": [
@@ -34,7 +33,7 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                         "method": "multiple_shooting",
                     },
                     "results_file": "results//opt.csv",
-                    "solver": {"name": "ipopt", "options": {"ipopt.print_level": 5}},
+                    "solver": {"name": "ipopt", "options": {"ipopt.print_level": 0}},
                 },
                 "time_step": 300,
                 "prediction_horizon": 15,
@@ -97,10 +96,10 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000):
         training_nn.main(training_time=3600 * 24 * 1, plot_results=False, step_size=300)
         ann_path = list(Path.cwd().glob("anns/*/ml_model.json"))[-1]
 
-    # model.sim_step(mDot=0.02, load=30, T_in=290.15, cp=1000, C=100_000, T=298)
     mas = LocalMASAgency(
         agent_configs=agent_configs(ml_model_path=str(ann_path)),
         env=ENV_CONFIG,
+        variable_logging=False
     )
     mas.run(until=until)
     results = mas.get_results()

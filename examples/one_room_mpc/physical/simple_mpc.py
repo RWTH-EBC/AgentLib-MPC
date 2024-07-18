@@ -2,8 +2,8 @@ import logging
 import os
 from pathlib import Path
 from typing import List
-import json
-import requests
+
+import pandas as pd
 
 from agentlib_mpc.models.casadi_model import (
     CasadiModel,
@@ -139,7 +139,7 @@ AGENT_MPC = {
                 },
                 "solver": {
                     "name": "ipopt",
-                    "options": {"ipopt.print_level": 5}
+                    "options": {"ipopt.print_level": 0}
                 },
                 "results_file": "results//mpc.csv",
                 "save_results": True,
@@ -217,10 +217,15 @@ def run_example(
     sim_res = results["SimAgent"]["room"]
 
     if with_dashboard:
-
         show_dashboard(mpc_results, stats)
 
     if with_plots:
+        plot(mpc_results, sim_res, until)
+
+    return results
+
+
+def plot(mpc_results: pd.DataFrame, sim_res: pd.DataFrame, until: float):
         import matplotlib.pyplot as plt
         from agentlib_mpc.utils.plotting.mpc import plot_mpc
 
@@ -260,22 +265,9 @@ def run_example(
         ax[1].set_xlim([0, until])
         plt.show()
 
-    return results
-
-
-def run_example_clonemap():
-    # set up full example using regular clonemap
-    URL = "http://localhost:30009/api/clonemap/mas"
-    CFG_PATH = Path(__file__).parent.joinpath("simple_mpc_clonemap_config.json")
-    with open(CFG_PATH, "r") as file:
-        DATA = json.load(file)
-    requests.post(URL, json=DATA)
-
-    return 0
 
 
 if __name__ == "__main__":
     run_example(
-        with_plots=False, with_dashboard=True, until=7200, log_level=logging.WARNING
+        with_plots=True, with_dashboard=False, until=7200, log_level=logging.CRITICAL
     )
-    # run_example_clonemap()

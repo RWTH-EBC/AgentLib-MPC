@@ -15,13 +15,9 @@ from agentlib_mpc.models.casadi_model import (
 )
 from agentlib.utils.multi_agent_system import LocalMASAgency
 
-from agentlib_mpc.utils.plotting.interactive import show_dashboard
 
 logger = logging.getLogger(__name__)
 
-# put your license file here
-# import os
-# os.environ['GRB_LICENSE_FILE'] = r'C:\Users\ses\gurobi.lic'
 
 # script variables
 ub = 295.15
@@ -153,16 +149,16 @@ AGENT_MPC = {
             "module_id": "myMPC",
             "type": "agentlib_mpc.minlp_mpc",
             "optimization_backend": {
-                "type": "casadi_cia",
+                "type": "casadi_minlp",
                 "model": {"type": {"file": __file__, "class_name": "MyCasadiModel"}},
                 "discretization_options": {
                     "collocation_order": 2,
                     "collocation_method": "legendre",
                 },
                 "solver": {
-                    "name": "ipopt",
+                    "name": "bonmin",
+                    # "name": "gurobi",
                 },
-                "overwrite_result_file": True,
                 "results_file": "results//mpc.csv",
                 "save_results": True,
             },
@@ -224,15 +220,13 @@ def run_example(with_plots=True, log_level=logging.INFO, until=10000):
     mas.run(until=until)
     results = mas.get_results()
     if with_plots:
-        # show_dashboard(results["myMPCAgent"]["myMPC"])
-
         import matplotlib.pyplot as plt
         from agentlib_mpc.utils.plotting.mpc import plot_mpc
 
         fig, ax = plt.subplots(3, 1, sharex=True)
         mpc_results = results["myMPCAgent"]["myMPC"]
+        fig.suptitle("Bonmin")
 
-        fig.suptitle("CIA")
         plot_mpc(
             series=mpc_results["variable"]["T"] - 273.15,
             ax=ax[0],
@@ -265,7 +259,7 @@ def run_example(with_plots=True, log_level=logging.INFO, until=10000):
         ax[2].set_yticks([0, 1])
         ax[1].set_ylim([0, 510])
         # results["myMPCAgent"]["AgentLogger"]["cooler_on"].plot(ax=ax[2], color="black", drawstyle="steps-post", label="Switch")
-        # ax[2].set_xlim([0, until])
+        ax[2].set_xlim([0, until])
         ax[1].legend()
         ax[0].legend()
         ax[2].legend()

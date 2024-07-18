@@ -42,7 +42,7 @@ class InputGeneratorConfig(al.ModelConfig):
 
 
 class InputGenerator(al.Model):
-    config_type: InputGeneratorConfig
+    config: InputGeneratorConfig
 
     def do_step(self, *, t_start, t_sample=None):
         for out in self.config.outputs:
@@ -178,7 +178,7 @@ def configs(
                 "interval": 60 * 10,
                 "target_variable": {"name": "T_set", "alias": "T_set"},
             },
-            {"type": "AgentLogger", "values_only": True, "t_sample": 10},
+            {"type": "AgentLogger", "values_only": True, "t_sample": 3600},
             {"type": "local", "subscriptions": ["Simulator"]},
         ],
     }
@@ -203,4 +203,4 @@ def main(training_time: float = 1000, plot_results=False, step_size: float = 300
 
 
 if __name__ == "__main__":
-    main(training_time=3600 * 24 * 0.9, plot_results=True, step_size=300)
+    main(training_time=3600 * 24 * 1, plot_results=True, step_size=300)

@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 from typing import List
 import logging
@@ -373,8 +372,6 @@ def run_example(until=3600 * 3, with_plots=True, time_step=0, log_level=logging.
 
         set_points = controller["T_upper"].iloc[0].value - 273.15
         set_points.index = set_points.index.astype(np.float64) / 3600
-        # set_points2 = controller["T_upper"].loc[7260 / 3600].value - 273.15
-        # set_points2.index = set_points2.index.astype(np.float64) / 3600
 
         fig, ax = plt.subplots(3, 1, sharex=True)
 
@@ -387,22 +384,12 @@ def run_example(until=3600 * 3, with_plots=True, time_step=0, log_level=logging.
             convert_to="hours",
         )
 
-        # controller.plot(y="T", ax=ax[0], label="temperature")
-        # t0 = mpc_at_time_step(data=mpc_results, time_step=time_step, variable="T")
-        # t0.plot(y="variable", ax=ax[0], ls="--", label="prediction")
         set_points.plot(
             ax=ax[0],
             color="red",
             drawstyle="steps-post",
             label="_nolegend_",
         )
-        # set_points2.plot(
-        #     ax=ax[0],
-        #     color="red",
-        #     drawstyle="steps-post",
-        #     label="_nolegend_",
-        # )
-        # ax[0].axhline(ub, color="red", label="upper boundary")
 
         # air mass flow
         sim_res.plot(y="mDot", color="0", ax=ax[1], label="_nolegend_")

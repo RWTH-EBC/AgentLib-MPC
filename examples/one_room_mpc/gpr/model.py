@@ -19,7 +19,7 @@ class PhysicalModelConfig(CasadiModelConfig):
         ),
         # disturbances
         CasadiInput(
-            name="load", value=150, unit="W", description="Heat " "load into zone"
+            name="load", value=150, unit="W", description="Heat load into zone"
         ),
         CasadiInput(
             name="T_in", value=290.15, unit="K", description="Inflow air temperature"

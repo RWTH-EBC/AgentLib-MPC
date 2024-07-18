@@ -46,6 +46,8 @@ class Results:
         except KeyError:
             pass
 
+
+
     def __getitem__(self, item: str) -> np.ndarray:
         return self.matrix[
             self.variable_grid_indices[item], self._variable_name_to_index[item]
@@ -240,6 +242,9 @@ class Discretization(abc.ABC):
                 inputs[key] = outputs[out_key]
 
         result_matrix = self._result_map(**inputs)["result"]
+
+
+
         return self._create_results(result_matrix, self._optimizer.stats())
 
     def create_nlp_in_out_mapping(self, system: System):
