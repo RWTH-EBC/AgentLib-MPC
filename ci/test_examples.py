@@ -57,7 +57,7 @@ class TestExamples(unittest.TestCase):
             log_level=logging.FATAL,
         )
         self._run_example_with_return(
-            file="one_room_mpc//physical//mixed_integer_mpc.py",
+            file="one_room_mpc//physical//mixed_integer//mixed_integer_mpc.py",
             func_name="run_example",
             with_plots=False,
             log_level=logging.FATAL,
