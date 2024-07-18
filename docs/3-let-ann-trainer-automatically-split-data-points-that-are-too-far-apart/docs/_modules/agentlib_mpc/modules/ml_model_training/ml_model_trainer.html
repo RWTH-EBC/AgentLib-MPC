@@ -201,6 +201,13 @@
         <span class="s2">&quot; data has not reached the trainer. If False, an Error will be &quot;</span>
         <span class="s2">&quot;raised when the data is not sufficient.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">max_interpolation_gap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=-</span><span class="mf">1.</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;When creating training data, the trainer will interpolate &quot;</span>
+                    <span class="s2">&quot;available values to the correct grid. If the gap between two &quot;</span>
+                    <span class="s2">&quot;values is too large, they will not be interpolated, and the &quot;</span>
+                    <span class="s2">&quot;training data is split at this point.&quot;</span>
+    <span class="p">)</span>
     <span class="n">data_sources</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;List of paths to time series data, which can be loaded on &quot;</span>
@@ -385,6 +392,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Trains the model based on the current historic data.&quot;&quot;&quot;</span>
         <span class="n">sampled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resample</span><span class="p">()</span>
         <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_inputs_and_outputs</span><span class="p">(</span><span class="n">sampled</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process_input_output_data</span><span class="p">()</span>
         <span class="n">training_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">divide_in_tvt</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fit_ml_model</span><span class="p">(</span><span class="n">training_data</span><span class="p">)</span>
         <span class="n">serialized_ml_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serialize_ml_model</span><span class="p">()</span>
@@ -658,7 +666,35 @@
             <span class="n">validation_outputs</span><span class="o">=</span><span class="n">outputs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">n_training</span><span class="p">:</span><span class="n">n_validation</span><span class="p">],</span>
             <span class="n">test_inputs</span><span class="o">=</span><span class="n">inputs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">n_validation</span><span class="p">:],</span>
             <span class="n">test_outputs</span><span class="o">=</span><span class="n">outputs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">n_validation</span><span class="p">:],</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="MLModelTrainer.process_input_output_data"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.process_input_output_data">[docs]</a>    <span class="k">def</span> <span class="nf">process_input_output_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Removes all rows where the absolute value of the difference in the output is greater than max_delta&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">max_interpolation_gap</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span>
+
+        <span class="c1"># Initialize masks for both types of output.</span>
+        <span class="n">diff_mask</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">outputs</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="n">abs_mask</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">outputs</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">output_name</span> <span class="ow">in</span> <span class="n">outputs</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">output_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">output_types</span><span class="p">[</span><span class="n">output_name</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">output_type</span> <span class="o">==</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">OutputType</span><span class="o">.</span><span class="n">difference</span><span class="p">:</span>
+                <span class="n">diff_mask</span> <span class="o">&amp;=</span> <span class="n">outputs</span><span class="p">[</span><span class="n">output_name</span><span class="p">]</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">max_interpolation_gap</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># output_type == OutputType.absolute</span>
+                <span class="n">abs_mask</span> <span class="o">&amp;=</span> <span class="p">(</span><span class="n">outputs</span><span class="p">[</span><span class="n">output_name</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">outputs</span><span class="p">[</span><span class="n">output_name</span><span class="p">])</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">max_interpolation_gap</span>
+
+        <span class="c1"># Combine masks</span>
+        <span class="n">final_mask</span> <span class="o">=</span> <span class="n">diff_mask</span> <span class="o">&amp;</span> <span class="n">abs_mask</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rows before removal </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">final_mask</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rows after removal </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">outputs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">final_mask</span><span class="p">]</span>
+        <span class="c1"># Print how much data was removed.</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">final_mask</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span><span class="si">}</span><span class="s2"> rows (</span><span class="si">{</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">final_mask</span><span class="p">))</span><span class="o">*</span><span class="mi">100</span><span class="si">}</span><span class="s2">%) due to max_delta.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span></div></div>
 
 
 <div class="viewcode-block" id="ANNTrainerConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.ANNTrainerConfig">[docs]</a><span class="k">class</span> <span class="nc">ANNTrainerConfig</span><span class="p">(</span><span class="n">MLModelTrainerConfig</span><span class="p">):</span>
