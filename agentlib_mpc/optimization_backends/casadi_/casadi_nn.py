@@ -73,14 +73,14 @@ class CasadiNNSystem(FullSystem):
             ref_list=var_ref.parameters,
         )
         self.initial_state = OptimizationParameter.declare(
-            denotation="initial_state",  # append the 0 as a convention to get initial guess
+            denotation="initial_state",
             variables=model.get_states(var_ref.states),
             ref_list=var_ref.states,
             use_in_stage_function=False,
             assert_complete=True,
         )
         self.last_control = OptimizationParameter.declare(
-            denotation="initial_control",  # append the 0 as a convention to get initial guess
+            denotation="initial_control",
             variables=model.get_inputs(var_ref.controls),
             ref_list=var_ref.controls,
             use_in_stage_function=False,
@@ -193,19 +193,29 @@ class MultipleShooting_NN(MultipleShooting):
             self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
 
             # get stage arguments from current time step
-            stage_arguments = {
-                # variables
-                sys.states.name: stage_mx[sys.states.name],
-                sys.algebraics.name: stage_mx[sys.algebraics.name],
-                sys.outputs.name: stage_mx[sys.outputs.name],
-                # parameters
-                sys.controls.name: stage_mx[sys.controls.name],
-                sys.non_controlled_inputs.name: stage_mx[
-                    sys.non_controlled_inputs.name
-                ],
-                sys.model_parameters.name: const_par,
-            }
+            stage_result = self._stage_results(
+                sys, mx_dict, stage_mx, time, ts, const_par
+            )
+            self.add_constraint(
+                stage_result["next_states"] - mx_dict[time + ts][sys.states.name]
+            )
+            self.objective_function += stage_result["cost_function"] * ts
 
+    def _stage_results(self, sys, mx_dict, stage_mx, time, ts, const_par, lags: bool = True):
+        all_quantities = sys.all_system_quantities()
+
+        stage_arguments = {
+            # variables
+            sys.states.name: stage_mx[sys.states.name],
+            sys.algebraics.name: stage_mx[sys.algebraics.name],
+            sys.outputs.name: stage_mx[sys.outputs.name],
+            # parameters
+            sys.controls.name: stage_mx[sys.controls.name],
+            sys.non_controlled_inputs.name: stage_mx[sys.non_controlled_inputs.name],
+            sys.model_parameters.name: const_par,
+        }
+
+        if lags:
             # collect stage arguments for lagged variables
             for lag, denotation_dict in self._lagged_input_names.items():
                 for denotation, var_names in denotation_dict.items():
@@ -217,19 +227,15 @@ class MultipleShooting_NN(MultipleShooting):
                         index = all_quantities[denotation].full_names.index(v_name)
                         mx_list.append(mx_dict[time - lag * ts][denotation][index])
                     stage_arguments[l_name] = ca.vertcat(*mx_list)
-
-            # evaluate a stage, add path constraints, multiple shooting constraints
-            # and add to the objective function
-            stage_result = self._stage_function(**stage_arguments)
-            self.add_constraint(
-                stage_result["model_constraints"],
-                lb=stage_result["lb_model_constraints"],
-                ub=stage_result["ub_model_constraints"],
-            )
-            self.add_constraint(
-                stage_result["next_states"] - mx_dict[time + ts][sys.states.name]
-            )
-            self.objective_function += stage_result["cost_function"] * ts
+        # evaluate a stage, add path constraints, multiple shooting constraints
+        # and add to the objective function
+        stage_result = self._stage_function(**stage_arguments)
+        self.add_constraint(
+            stage_result["model_constraints"],
+            lb=stage_result["lb_model_constraints"],
+            ub=stage_result["ub_model_constraints"],
+        )
+        return stage_result
 
     def initialize(self, system: CasadiNNSystem, solver_factory: SolverFactory):
         """Initializes the trajectory optimization problem, creating all symbolic

@@ -46,7 +46,7 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                     {"name": "load", "value": 150},
                     {"name": "T_upper", "value": ub},
                 ],
-                "controls": [{"name": "mDot", "value": 0.02, "ub": 0.05, "lb": 0}],
+                "controls": [{"name": "mDot_", "alias": "mDot", "value": 0.02, "ub": 0.05, "lb": 0}],
                 "states": [{"name": "T", "value": 298.16, "ub": 303.15, "lb": 288.15}],
             },
         ],
