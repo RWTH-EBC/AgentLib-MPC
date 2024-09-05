@@ -126,10 +126,12 @@
 
 <div class="viewcode-block" id="Solvers"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers">[docs]</a><span class="k">class</span> <span class="nc">Solvers</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
     <span class="n">ipopt</span> <span class="o">=</span> <span class="s2">&quot;ipopt&quot;</span>
-    <span class="n">qpoases</span> <span class="o">=</span> <span class="s2">&quot;qpoases&quot;</span>
     <span class="n">sqpmethod</span> <span class="o">=</span> <span class="s2">&quot;sqpmethod&quot;</span>
     <span class="n">gurobi</span> <span class="o">=</span> <span class="s2">&quot;gurobi&quot;</span>
-    <span class="n">bonmin</span> <span class="o">=</span> <span class="s2">&quot;bonmin&quot;</span></div>
+    <span class="n">bonmin</span> <span class="o">=</span> <span class="s2">&quot;bonmin&quot;</span>
+    <span class="n">qpoases</span> <span class="o">=</span> <span class="s2">&quot;qpoases&quot;</span>
+    <span class="n">osqp</span> <span class="o">=</span> <span class="s2">&quot;osqp&quot;</span>
+    <span class="n">proxqp</span> <span class="o">=</span> <span class="s2">&quot;proxqp&quot;</span></div>
 
 
 <div class="viewcode-block" id="Integrators"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Integrators">[docs]</a><span class="k">class</span> <span class="nc">Integrators</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
@@ -194,6 +196,17 @@
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">options</span><span class="p">:</span> <span class="n">SolverOptions</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">SolverOptions</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver_creators</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">Solvers</span><span class="o">.</span><span class="n">ipopt</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_ipopt_solver</span><span class="p">,</span>
+            <span class="n">Solvers</span><span class="o">.</span><span class="n">bonmin</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_bonmin_solver</span><span class="p">,</span>
+            <span class="n">Solvers</span><span class="o">.</span><span class="n">gurobi</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_gurobi_solver</span><span class="p">,</span>
+            <span class="n">Solvers</span><span class="o">.</span><span class="n">qpoases</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_qpoases_solver</span><span class="p">,</span>
+            <span class="n">Solvers</span><span class="o">.</span><span class="n">osqp</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_osqp_solver</span><span class="p">,</span>
+            <span class="n">Solvers</span><span class="o">.</span><span class="n">proxqp</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_proxqp_solver</span><span class="p">,</span>
+            <span class="n">Solvers</span><span class="o">.</span><span class="n">sqpmethod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_sqpmethod_solver</span><span class="p">,</span>
+        <span class="p">}</span>
+
 <div class="viewcode-block" id="SolverFactory.create_solver"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.create_solver">[docs]</a>    <span class="k">def</span> <span class="nf">create_solver</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">nlp</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
@@ -202,24 +215,20 @@
         <span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">options</span>
         <span class="n">solver_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="n">solver_name</span> <span class="o">==</span> <span class="n">Solvers</span><span class="o">.</span><span class="n">ipopt</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_ipopt_solver</span><span class="p">(</span><span class="n">nlp</span><span class="o">=</span><span class="n">nlp</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">solver_name</span> <span class="o">==</span> <span class="n">Solvers</span><span class="o">.</span><span class="n">sqpmethod</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_sqpmethod_solver</span><span class="p">(</span><span class="n">nlp</span><span class="o">=</span><span class="n">nlp</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">solver_name</span> <span class="o">==</span> <span class="n">Solvers</span><span class="o">.</span><span class="n">qpoases</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_qpoases_solver</span><span class="p">(</span><span class="n">nlp</span><span class="o">=</span><span class="n">nlp</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">solver_name</span> <span class="o">==</span> <span class="n">Solvers</span><span class="o">.</span><span class="n">gurobi</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_gurobi_solver</span><span class="p">(</span>
+        <span class="n">solver_creator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_creators</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">solver_name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">solver_creator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Solver &quot;</span><span class="si">{</span><span class="n">solver_name</span><span class="si">}</span><span class="s1">&quot; not recognized. Currently &#39;</span>
+                <span class="sa">f</span><span class="s2">&quot;supported: </span><span class="si">{</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">Solvers</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">solver_name</span> <span class="ow">in</span> <span class="p">{</span><span class="n">Solvers</span><span class="o">.</span><span class="n">bonmin</span><span class="p">,</span> <span class="n">Solvers</span><span class="o">.</span><span class="n">gurobi</span><span class="p">}:</span>
+            <span class="k">return</span> <span class="n">solver_creator</span><span class="p">(</span>
                 <span class="n">nlp</span><span class="o">=</span><span class="n">nlp</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span> <span class="n">discrete</span><span class="o">=</span><span class="n">discrete</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="n">solver_name</span> <span class="o">==</span> <span class="n">Solvers</span><span class="o">.</span><span class="n">bonmin</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_bonmin_solver</span><span class="p">(</span>
-                <span class="n">nlp</span><span class="o">=</span><span class="n">nlp</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span> <span class="n">discrete</span><span class="o">=</span><span class="n">discrete</span>
-            <span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s1">&#39;Solver &quot;</span><span class="si">{</span><span class="n">solver_name</span><span class="si">}</span><span class="s1">&quot; not recognized. Currently &#39;</span>
-            <span class="sa">f</span><span class="s2">&quot;supported: </span><span class="si">{</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">Solvers</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">solver_creator</span><span class="p">(</span><span class="n">nlp</span><span class="o">=</span><span class="n">nlp</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span></div>
+
+
 
     <span class="k">def</span> <span class="nf">_create_ipopt_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">default_opts</span> <span class="o">=</span> <span class="p">{</span>
@@ -268,6 +277,21 @@
         <span class="p">}</span>
         <span class="n">opts</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_opts</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">qpsol</span><span class="p">(</span><span class="s2">&quot;mpc&quot;</span><span class="p">,</span> <span class="s2">&quot;qpoases&quot;</span><span class="p">,</span> <span class="n">nlp</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_proxqp_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">default_opts</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">opts</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_opts</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">qpsol</span><span class="p">(</span><span class="s2">&quot;mpc&quot;</span><span class="p">,</span> <span class="s2">&quot;proxqp&quot;</span><span class="p">,</span> <span class="n">nlp</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create_osqp_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">default_opts</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+
+        <span class="p">}</span>
+        <span class="n">opts</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_opts</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">qpsol</span><span class="p">(</span><span class="s2">&quot;mpc&quot;</span><span class="p">,</span> <span class="s2">&quot;osqp&quot;</span><span class="p">,</span> <span class="n">nlp</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_create_gurobi_solver</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">discrete</span><span class="p">:</span> <span class="n">DiscreteVars</span> <span class="o">=</span> <span class="kc">None</span>
