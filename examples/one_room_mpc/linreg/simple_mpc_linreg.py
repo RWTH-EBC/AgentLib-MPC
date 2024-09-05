@@ -35,7 +35,7 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                         "method": "multiple_shooting",
                     },
                     "results_file": "results//opt.csv",
-                    "solver": {"name": "qpoases"},
+                    "solver": {"name": "ipopt", "options": {"ipopt.print_level": 5}},
                 },
                 "time_step": 300,
                 "prediction_horizon": 15,

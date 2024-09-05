@@ -147,6 +147,9 @@ class MultipleShooting_NN(MultipleShooting):
                 sys.states, lb=x_past, ub=x_past, guess=x_past
             )
             mx_dict[time][sys.initial_state.name] = x_past
+            # mx_dict[time][sys.algebraics.name] = self.add_opt_var(sys.algebraics)
+            # mx_dict[time][sys.outputs.name] = self.add_opt_var(sys.outputs)
+
 
         # add past inputs
         for time in pre_grid_inputs:
@@ -182,7 +185,14 @@ class MultipleShooting_NN(MultipleShooting):
         # control of last time step
         mx_dict[0 - ts][sys.controls.name] = self.add_opt_par(sys.last_control)
 
-        all_quantities = sys.all_system_quantities()
+        # for time in pre_grid_states:
+        #     stage_mx = mx_dict[time]
+        #
+        #     # add constraints for past variables
+        #     stage_result = self._stage_results(
+        #         sys, mx_dict, stage_mx, time, ts, const_par, lags=False
+        #     )
+
         # add constraints and create the objective function for all stages
         for time in prediction_grid:
             stage_mx = mx_dict[time]

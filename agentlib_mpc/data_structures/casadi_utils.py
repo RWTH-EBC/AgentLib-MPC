@@ -48,10 +48,12 @@ class CollocationMethod(str, Enum):
 
 class Solvers(str, Enum):
     ipopt = "ipopt"
-    qpoases = "qpoases"
     sqpmethod = "sqpmethod"
     gurobi = "gurobi"
     bonmin = "bonmin"
+    qpoases = "qpoases"
+    osqp = "osqp"
+    proxqp = "proxqp"
 
 
 class Integrators(str, Enum):
@@ -116,6 +118,17 @@ class SolverFactory:
     name: str = None
     options: SolverOptions = field(default_factory=SolverOptions)
 
+    def __post_init__(self):
+        self.solver_creators = {
+            Solvers.ipopt: self._create_ipopt_solver,
+            Solvers.bonmin: self._create_bonmin_solver,
+            Solvers.gurobi: self._create_gurobi_solver,
+            Solvers.qpoases: self._create_qpoases_solver,
+            Solvers.osqp: self._create_osqp_solver,
+            Solvers.proxqp: self._create_proxqp_solver,
+            Solvers.sqpmethod: self._create_sqpmethod_solver,
+        }
+
     def create_solver(
         self,
         nlp: Union[dict, str],
@@ -124,24 +137,20 @@ class SolverFactory:
         options = self.options.options
         solver_name = self.options.name.casefold()
 
-        if solver_name == Solvers.ipopt:
-            return self._create_ipopt_solver(nlp=nlp, options=options)
-        if solver_name == Solvers.sqpmethod:
-            return self._create_sqpmethod_solver(nlp=nlp, options=options)
-        if solver_name == Solvers.qpoases:
-            return self._create_qpoases_solver(nlp=nlp, options=options)
-        if solver_name == Solvers.gurobi:
-            return self._create_gurobi_solver(
+        solver_creator = self.solver_creators.get(solver_name)
+
+        if solver_creator is None:
+            raise ValueError(
+                f'Solver "{solver_name}" not recognized. Currently '
+                f"supported: {[s.value for s in Solvers]}"
+            )
+        if solver_name in {Solvers.bonmin, Solvers.gurobi}:
+            return solver_creator(
                 nlp=nlp, options=options, discrete=discrete
             )
-        if solver_name == Solvers.bonmin:
-            return self._create_bonmin_solver(
-                nlp=nlp, options=options, discrete=discrete
-            )
-        raise ValueError(
-            f'Solver "{solver_name}" not recognized. Currently '
-            f"supported: {[s.value for s in Solvers]}"
-        )
+        return solver_creator(nlp=nlp, options=options)
+
+
 
     def _create_ipopt_solver(self, nlp: dict, options: dict):
         default_opts = {
@@ -190,6 +199,21 @@ class SolverFactory:
         }
         opts = {**default_opts, **options}
         return ca.qpsol("mpc", "qpoases", nlp, opts)
+
+    def _create_proxqp_solver(self, nlp: dict, options: dict):
+        default_opts = {
+            "verbose": False,
+        }
+        opts = {**default_opts, **options}
+        return ca.qpsol("mpc", "proxqp", nlp, opts)
+
+    def _create_osqp_solver(self, nlp: dict, options: dict):
+        default_opts = {
+            "verbose": False,
+
+        }
+        opts = {**default_opts, **options}
+        return ca.qpsol("mpc", "osqp", nlp, opts)
 
     def _create_gurobi_solver(
         self, nlp: dict, options: dict, discrete: DiscreteVars = None

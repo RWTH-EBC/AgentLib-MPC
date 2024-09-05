@@ -109,7 +109,7 @@ class DataDrivenModelConfig(CasadiMLModelConfig, PhysicalModelConfig):
     inputs: List[CasadiInput] = [
         # controls
         CasadiInput(
-            name="mDot_", value=0.0225, unit="K", description="Air mass flow into zone"
+            name="mDot_mpc", value=0.0225, unit="K", description="Air mass flow into zone"
         ),
         # disturbances
         CasadiInput(
@@ -118,6 +118,8 @@ class DataDrivenModelConfig(CasadiMLModelConfig, PhysicalModelConfig):
         CasadiInput(
             name="T_in", value=290.15, unit="K", description="Inflow air temperature"
         ),
+        CasadiInput(name="mDot"),
+
         # settings
         CasadiInput(
             name="T_upper",
@@ -132,8 +134,6 @@ class DataDrivenModelConfig(CasadiMLModelConfig, PhysicalModelConfig):
         CasadiState(
             name="T", value=293.15, unit="K", description="Temperature of zone"
         ),
-        # algebraic
-        CasadiState(name="mDot"),
 
         # slack variables
         CasadiState(
@@ -181,13 +181,14 @@ class DataDrivenModel(CasadiMLModel):
         # Define ae
         self.T_out.alg = self.T  # math operation to get the symbolic variable
 
-        self.mDot = self.mDot_ * 0.99
+        # self.mDot.alg = self.mDot_mpc * 0.99
 
 
         # Constraints: List[(lower bound, function, upper bound)]
         self.constraints = [
             # soft constraints
             (0, self.T + self.T_slack, self.T_upper),
+            (0, self.mDot - self.mDot_mpc*0.5, 0)
         ]
 
         # Objective function

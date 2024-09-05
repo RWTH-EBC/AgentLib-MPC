@@ -46,7 +46,22 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                     {"name": "load", "value": 150},
                     {"name": "T_upper", "value": ub},
                 ],
-                "controls": [{"name": "mDot_", "alias": "mDot", "value": 0.02, "ub": 0.05, "lb": 0}],
+                "controls": [
+                    {
+                        "name": "mDot_mpc",
+                        "alias": "mDot_mpc",
+                        "value": 0.02,
+                        "ub": 0.05,
+                        "lb": 0,
+                    },
+                    {
+                        "name": "mDot",
+                        "alias": "mDot_constructed",
+                        "value": 0.02,
+                        "ub": 0.05,
+                        "lb": 0,
+                    },
+                ],
                 "states": [{"name": "T", "value": 298.16, "ub": 303.15, "lb": 288.15}],
             },
         ],
@@ -67,12 +82,12 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                 },
                 "t_sample": 10,
                 "save_results": True,
-                "update_inputs_on_callback": False,
+                "update_inputs_on_callback": True,
                 "outputs": [
                     {"name": "T_out", "value": 298, "alias": "T"},
                 ],
                 "inputs": [
-                    {"name": "mDot", "value": 0.02, "alias": "mDot"},
+                    {"name": "mDot", "value": 0.02, "alias": "mDot_mpc"},
                 ],
             },
         ],
@@ -99,7 +114,7 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000):
     mas = LocalMASAgency(
         agent_configs=agent_configs(ml_model_path=str(ann_path)),
         env=ENV_CONFIG,
-        variable_logging=False
+        variable_logging=False,
     )
     mas.run(until=until)
     results = mas.get_results()
