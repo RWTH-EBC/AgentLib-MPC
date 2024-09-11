@@ -209,10 +209,10 @@ def run_example(
     )
     mas.run(until=until)
     try:
-        stats = load_mpc_stats("results/stats_mpc.csv")
-    except FileNotFoundError:
+        stats = load_mpc_stats("results/stats_mpc_fatropfull.csv")
+    except Exception:
         stats = None
-    results = mas.get_results(cleanup=True)
+    results = mas.get_results(cleanup=False)
     mpc_results = results["myMPCAgent"]["myMPC"]
     sim_res = results["SimAgent"]["room"]
 

@@ -6,10 +6,11 @@ import subprocess
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Union, List, NamedTuple
+from typing import Union, List, NamedTuple, Literal
 
 import casadi as ca
 from enum import Enum
+
 from pydantic import ConfigDict, Field, BaseModel
 
 from agentlib_mpc.data_structures import mpc_datamodels
@@ -52,6 +53,7 @@ class Solvers(str, Enum):
     sqpmethod = "sqpmethod"
     gurobi = "gurobi"
     bonmin = "bonmin"
+    fatrop = "fatrop"
 
 
 class Integrators(str, Enum):
@@ -120,12 +122,15 @@ class SolverFactory:
         self,
         nlp: Union[dict, str],
         discrete: DiscreteVars = None,
+        equalities: list[bool] = None,
     ) -> ca.Function:
         options = self.options.options
         solver_name = self.options.name.casefold()
 
         if solver_name == Solvers.ipopt:
             return self._create_ipopt_solver(nlp=nlp, options=options)
+        if solver_name == Solvers.fatrop:
+            return self._create_fatrop_solver(nlp=nlp, options=options, equalities=equalities)
         if solver_name == Solvers.sqpmethod:
             return self._create_sqpmethod_solver(nlp=nlp, options=options)
         if solver_name == Solvers.qpoases:
@@ -143,14 +148,47 @@ class SolverFactory:
             f"supported: {[s.value for s in Solvers]}"
         )
 
+    def _create_fatrop_solver(self, nlp: dict, options: dict, equalities: list[bool]):
+        # equality = [True for _ in range(nlp["g"].shape[0])]
+
+
+        default_opts = {
+            "verbose": False,
+            "print_time": False,
+            "record_time": True,
+            "expand": True,
+            "structure_detection": "auto",
+            "debug": True,
+            "equality": equalities,
+            "fatrop": {
+                "max_iter": 100,
+                "tol": 1e-4,
+                # "mu_init": 1e-2,
+                "print_level": 0,
+            },
+        }
+        default_solver_opts = options.pop("fatrop", {})
+        opts = {**default_opts, **options}
+        opts["fatrop"].update(default_solver_opts)
+
+        solver = make_casadi_nlp(nlp, "fatrop", opts, "nlp")
+        if not self.do_jit:
+            return solver
+        nlp = compile_solver(
+            bat_file=self.bat_file, optimizer=solver, name=self.name
+        )
+        return make_casadi_nlp(nlp, "ipopt", opts, "nlp")
+
     def _create_ipopt_solver(self, nlp: dict, options: dict):
         default_opts = {
             "verbose": False,
             "print_time": False,
             "record_time": True,
+            "expand": True,
             "ipopt": {
+                # "mu_init": 1e-2,
                 "max_iter": 100,
-                "tol": 1e-5,
+                "tol": 1e-4,
                 "acceptable_tol": 0.1,
                 "acceptable_constr_viol_tol": 1,
                 "acceptable_iter": 5,
@@ -161,13 +199,14 @@ class SolverFactory:
         ipopt_ = options.pop("ipopt", {})
         opts = {**default_opts, **options}
         opts["ipopt"].update(ipopt_)
-        solver = ca.nlpsol("mpc", "ipopt", nlp, opts)
+
+        solver = make_casadi_nlp(nlp, "ipopt", opts, "nlp")
         if not self.do_jit:
             return solver
-        nlp = compile_ipopt_solver(
+        nlp = compile_solver(
             bat_file=self.bat_file, optimizer=solver, name=self.name
         )
-        return ca.nlpsol("mpc", "ipopt", nlp, opts)
+        return make_casadi_nlp(nlp, "ipopt", opts, "nlp")
 
     def _create_sqpmethod_solver(self, nlp: dict, options: dict):
         default_opts = {
@@ -220,7 +259,16 @@ def temporary_directory(path):
         os.chdir(old_pwd)
 
 
-def compile_ipopt_solver(bat_file: Path, name: str, optimizer: ca.Function) -> str:
+def make_casadi_nlp(problem: Union[dict, str], solver: str, opts: dict, problem_type: Literal["nlp", "qp"] = "nlp"):
+    ca_sol = ca.nlpsol if problem_type == "nlp" else ca.qpsol
+    try:
+        solver = ca_sol("mpc", solver, problem, opts)
+    except RuntimeError:
+        solver = ca_sol("mpc", solver, problem, {**opts, "expand": False})
+    return solver
+
+
+def compile_solver(bat_file: Path, name: str, optimizer: ca.Function) -> str:
     """
     Code-generates an ipopt solver and compiles it.
     Currently, only works on Windows! Requires a batch file that knows

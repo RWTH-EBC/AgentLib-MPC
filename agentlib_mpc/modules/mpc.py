@@ -348,7 +348,7 @@ class BaseMPC(BaseModule):
             (results, stats) tuple of Dataframes.
         """
         results_file = self.optimization_backend.config.results_file
-        if results_file is None:
+        if results_file is None or not self.optimization_backend.config.save_results:
             self.logger.info("No results were saved .")
             return None
         try:
@@ -359,12 +359,14 @@ class BaseMPC(BaseModule):
             self.logger.error("Results file %s was not found.", results_file)
             return None
 
-    def warn_for_missed_solves(self, stats):
+    def warn_for_missed_solves(self, stats: Optional[pd.DataFrame]):
         """
         Read the solver information from the optimization
         Returns:
             Warning if solver fails
         """
+        if stats is None:
+            return
         if stats["success"].all():
             return
         failures = ~stats["success"]

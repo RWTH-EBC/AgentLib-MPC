@@ -45,8 +45,7 @@ class Results:
             self.stats["obj"] = iters["obj"][-1]
         except KeyError:
             pass
-
-
+        self.stats.pop("fatrop", {})
 
     def __getitem__(self, item: str) -> np.ndarray:
         return self.matrix[
@@ -120,6 +119,7 @@ class Discretization(abc.ABC):
         self.constraints_ub: list[ca.MX] = []
         self.objective_function: CaFuncInputs = ca.DM(0)
         self.binary_opt_vars = []
+        self.equalities: list[bool] = []
 
         # dicts of variables of the optimization problem, sorted by role
         self.mpc_opt_vars: dict[str, OptVarMXContainer] = {}
@@ -146,7 +146,7 @@ class Discretization(abc.ABC):
 
     def _create_solver(self, solver_factory: SolverFactory):
         self._optimizer = solver_factory.create_solver(
-            nlp=self.nlp, discrete=self.binary_vars
+            nlp=self.nlp, discrete=self.binary_vars, equalities=self.equalities
         )
 
     def solve(self, mpc_inputs: MPCInputs) -> Results:
@@ -542,6 +542,10 @@ class Discretization(abc.ABC):
         Add a constraint to the optimization problem. If no bounds are given,
         adds an equality constraint.
         """
+        # check if equality constraint
+        equality = (lb is None and ub is None) or (lb is ub)
+        self.equalities.extend([equality]*constraint_function.shape[0])
+
         # set bounds to default for equality constraints
         if lb is None:
             lb = ca.DM.zeros(constraint_function.shape[0], 1)
