@@ -6,6 +6,7 @@ import random
 import subprocess
 from contextlib import contextmanager
 from dataclasses import dataclass, field
+from logging import Logger
 from pathlib import Path
 from typing import Union, List, NamedTuple, Literal
 
@@ -119,6 +120,7 @@ class SolverFactory:
     bat_file: Path = None
     name: str = None
     options: SolverOptions = field(default_factory=SolverOptions)
+    logger: Logger = None
 
     def create_solver(
         self,
@@ -173,11 +175,12 @@ class SolverFactory:
         opts = {**default_opts, **options}
         opts["fatrop"].update(default_solver_opts)
 
-        solver = make_casadi_nlp(nlp, "fatrop", opts, "nlp")
+        solver = self.make_casadi_nlp(nlp, "fatrop", opts, "nlp")
         if not self.do_jit:
             return solver
         nlp = compile_solver(bat_file=self.bat_file, optimizer=solver, name=self.name)
-        return make_casadi_nlp(nlp, "ipopt", opts, "nlp")
+        opts["expand"] = False  # compiled code is better not expanded
+        return self.make_casadi_nlp(nlp, "ipopt", opts, "nlp")
 
     def _create_ipopt_solver(self, nlp: dict, options: dict):
         default_opts = {
@@ -200,11 +203,12 @@ class SolverFactory:
         opts = {**default_opts, **options}
         opts["ipopt"].update(ipopt_)
 
-        solver = make_casadi_nlp(nlp, "ipopt", opts, "nlp")
+        solver = self.make_casadi_nlp(nlp, "ipopt", opts, "nlp")
         if not self.do_jit:
             return solver
         nlp = compile_solver(bat_file=self.bat_file, optimizer=solver, name=self.name)
-        return make_casadi_nlp(nlp, "ipopt", opts, "nlp")
+        opts["expand"] = False  # compiled code is better not expanded
+        return self.make_casadi_nlp(nlp, "ipopt", opts, "nlp")
 
     def _create_sqpmethod_solver(self, nlp: dict, options: dict):
         default_opts = {
@@ -249,6 +253,26 @@ class SolverFactory:
         opts = {**default_opts, **options, "discrete": discrete}
         return ca.nlpsol("mpc", "bonmin", nlp, opts)
 
+    def make_casadi_nlp(
+        self,
+        problem: Union[dict, str],
+        solver: str,
+        opts: dict,
+        problem_type: Literal["nlp", "qp"] = "nlp",
+    ):
+        ca_sol = ca.nlpsol if problem_type == "nlp" else ca.qpsol
+        try:
+            solver = ca_sol("mpc", solver, problem, opts)
+        except RuntimeError:
+            solver = ca_sol("mpc", solver, problem, {**opts, "expand": False})
+            if not self.do_jit:
+                self.logger.info(
+                    "Tried setting up nlp with 'expand'=True, but your problem "
+                    "formulation contains non-expandable elements (e.g. using cvodes "
+                    "as integrator, or interpolation tables.)"
+                )
+        return solver
+
 
 @contextmanager
 def temporary_directory(path):
@@ -258,20 +282,6 @@ def temporary_directory(path):
         yield
     finally:
         os.chdir(old_pwd)
-
-
-def make_casadi_nlp(
-    problem: Union[dict, str],
-    solver: str,
-    opts: dict,
-    problem_type: Literal["nlp", "qp"] = "nlp",
-):
-    ca_sol = ca.nlpsol if problem_type == "nlp" else ca.qpsol
-    try:
-        solver = ca_sol("mpc", solver, problem, opts)
-    except RuntimeError:
-        solver = ca_sol("mpc", solver, problem, {**opts, "expand": False})
-    return solver
 
 
 def compile_solver(bat_file: Path, name: str, optimizer: ca.Function) -> str:

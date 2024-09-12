@@ -130,6 +130,7 @@ class Discretization(abc.ABC):
         self.mpc_opt_pars: dict[str, OptParMXContainer] = {}
 
         self._create_results: Optional[Callable[[ca.DM, dict], Results]] = None
+        self.logger = None
 
     def initialize(self, system: System, solver_factory: SolverFactory):
         """Initializes the trajectory optimization problem, creating all symbolic

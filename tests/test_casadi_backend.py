@@ -1,3 +1,5 @@
+import logging
+
 import casadi as ca
 import pytest
 
@@ -43,7 +45,7 @@ def collocation_discretization(example_casadi_system) -> Discretization:
     options = CasadiDiscretizationOptions()
     dis = DirectCollocation(options=options)
     dis.initialize(
-        system=example_casadi_system, solver_factory=SolverFactory(do_jit=False)
+        system=example_casadi_system, solver_factory=SolverFactory(do_jit=False, logger=logging.getLogger()),
     )
     return dis
 

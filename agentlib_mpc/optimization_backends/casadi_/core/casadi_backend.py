@@ -99,6 +99,11 @@ class CasADiBackend(OptimizationBackend):
     _supported_models = {"CasadiModel": CasadiModel}
     config_type = CasadiBackendConfig
 
+    def register_logger(self, logger: logging.Logger):
+        self.logger = logger
+        self.discretization.logger = logger
+
+
     def setup_optimization(self, var_ref: mpc_datamodels.VariableReference):
         """
         Performs all necessary steps to make the ``solve`` method usable.
@@ -118,6 +123,7 @@ class CasADiBackend(OptimizationBackend):
             bat_file=self.config.build_batch_bat,
             name=self.config.name,
             options=self.config.solver,
+            logger=self.logger
         )
         self.discretization.initialize(
             system=self.system, solver_factory=solver_factory

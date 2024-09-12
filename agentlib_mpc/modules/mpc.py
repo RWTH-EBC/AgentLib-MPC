@@ -162,6 +162,7 @@ class BaseMPC(BaseModule):
         opti_back = _create_optimization_backend(
             self.config.optimization_backend, self.agent.id
         )
+        opti_back.register_logger(self.logger)
         disc_opts = opti_back.config.discretization_options
         disc_opts.prediction_horizon = self.config.prediction_horizon
         disc_opts.time_step = self.config.time_step

@@ -100,17 +100,19 @@ class DataSource(BaseModule):
         if isinstance(data.index, pd.DatetimeIndex):
             data.index = (data.index - data.index[0]).total_seconds()
         else:
-            # Try to convert to datetime if it's a string
+            # Try to convert to numeric if it's a string
             try:
-                data.index = pd.to_datetime(data.index)
-                data.index = (data.index - data.index[0]).total_seconds()
+                data.index = pd.to_numeric(data.index)
+                data.index = data.index - data.index[0]
             except ValueError:
-                # If conversion to datetime fails, try to convert to numeric
+                # If conversion to numeric fails, try to convert to datetune
                 try:
-                    data.index = pd.to_numeric(data.index)
-                    data.index = data.index - data.index[0]
+                    data.index = pd.to_datetime(data.index, unit="s")
+                    data.index = (data.index - data.index[0]).total_seconds()
                 except ValueError:
                     raise ValueError("Unable to convert index to numeric format")
+
+
         data.index = data.index.astype(float) - offset
         return data
 
