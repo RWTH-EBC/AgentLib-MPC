@@ -107,7 +107,7 @@ class DataSource(BaseModule):
             except ValueError:
                 # If conversion to numeric fails, try to convert to datetune
                 try:
-                    data.index = pd.to_datetime(data.index, unit="s")
+                    data.index = pd.to_datetime(data.index)
                     data.index = (data.index - data.index[0]).total_seconds()
                 except ValueError:
                     raise ValueError("Unable to convert index to numeric format")
