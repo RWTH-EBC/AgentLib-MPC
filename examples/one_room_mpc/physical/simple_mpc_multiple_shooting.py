@@ -1,5 +1,10 @@
 import logging
+import os
+from pathlib import Path
 from typing import List
+
+import pandas as pd
+
 from agentlib_mpc.models.casadi_model import (
     CasadiModel,
     CasadiInput,
@@ -10,6 +15,8 @@ from agentlib_mpc.models.casadi_model import (
 )
 from agentlib.utils.multi_agent_system import LocalMASAgency
 
+from agentlib_mpc.utils.analysis import load_mpc_stats
+from agentlib_mpc.utils.plotting.interactive import show_dashboard
 
 logger = logging.getLogger(__name__)
 
@@ -21,11 +28,14 @@ class MyCasadiModelConfig(CasadiModelConfig):
     inputs: List[CasadiInput] = [
         # controls
         CasadiInput(
-            name="mDot", value=0.0225, unit="K", description="Air mass flow into zone"
+            name="mDot",
+            value=0.0225,
+            unit="m³/s",
+            description="Air mass flow into zone",
         ),
         # disturbances
         CasadiInput(
-            name="load", value=150, unit="W", description="Heat " "load into zone"
+            name="load", value=150, unit="W", description="Heat load into zone"
         ),
         CasadiInput(
             name="T_in", value=290.15, unit="K", description="Inflow air temperature"
@@ -83,7 +93,6 @@ class MyCasadiModelConfig(CasadiModelConfig):
 
 
 class MyCasadiModel(CasadiModel):
-
     config: MyCasadiModelConfig
 
     def setup_system(self):
@@ -126,18 +135,14 @@ AGENT_MPC = {
                 "model": {"type": {"file": __file__, "class_name": "MyCasadiModel"}},
                 "discretization_options": {
                     "method": "multiple_shooting",
+                    "integrator": "euler",
                 },
                 "solver": {
-                    "name": "sqpmethod",
-                    "options": {
-                        "print_header": False,
-                        "print_iteration": False,
-                        "qpsol": "qpoases",
-                        "qpsol_options": {"printLevel": "low"},
-                    },
+                    "name": "fatrop",
                 },
                 "results_file": "results//mpc.csv",
                 "save_results": True,
+                "overwrite_result_file": True,
             },
             "time_step": 300,
             "prediction_horizon": 15,
@@ -151,7 +156,17 @@ AGENT_MPC = {
                 {"name": "T_upper", "value": ub},
             ],
             "controls": [{"name": "mDot", "value": 0.02, "ub": 0.05, "lb": 0}],
-            "states": [{"name": "T", "value": 298.16, "ub": 303.15, "lb": 288.15}],
+            "outputs": [{"name": "T_out"}],
+            "states": [
+                {
+                    "name": "T",
+                    "value": 298.16,
+                    "ub": 303.15,
+                    "lb": 288.15,
+                    "alias": "T",
+                    "source": "SimAgent",
+                }
+            ],
         },
     ],
 }
@@ -168,6 +183,7 @@ AGENT_SIM = {
             },
             "t_sample": 10,
             "update_inputs_on_callback": False,
+            "save_results": True,
             "outputs": [
                 {"name": "T_out", "value": 298, "alias": "T"},
             ],
@@ -179,45 +195,77 @@ AGENT_SIM = {
 }
 
 
-def run_example(with_plots=True, log_level=logging.INFO, until=10000):
+def run_example(
+    with_plots=True, log_level=logging.INFO, until=10000, with_dashboard=False
+):
+    # Change the working directly so that relative paths work
+    os.chdir(Path(__file__).parent)
+
     # Set the log-level
     logging.basicConfig(level=log_level)
     mas = LocalMASAgency(
-        agent_configs=[AGENT_MPC, AGENT_SIM], env=ENV_CONFIG, variable_logging=True
+        agent_configs=[AGENT_MPC, AGENT_SIM], env=ENV_CONFIG, variable_logging=False
     )
     mas.run(until=until)
-    results = mas.get_results()
+    try:
+        stats = load_mpc_stats("results/stats_mpc_fatropfull.csv")
+    except Exception:
+        stats = None
+    results = mas.get_results(cleanup=False)
+    mpc_results = results["myMPCAgent"]["myMPC"]
+    sim_res = results["SimAgent"]["room"]
+
+    if with_dashboard:
+        show_dashboard(mpc_results, stats)
+
     if with_plots:
-        import matplotlib.pyplot as plt
-        from agentlib_mpc.utils.plotting.mpc import plot_mpc
-
-        mpc_results = results["myMPCAgent"]["myMPC"]
-        fig, ax = plt.subplots(2, 1, sharex=True)
-        plot_mpc(
-            series=mpc_results["variable"]["T"] - 273.15,
-            ax=ax[0],
-            plot_actual_values=True,
-            plot_predictions=True,
-        )
-        ax[0].axhline(ub - 273.15, color="grey", linestyle="--", label="upper boundary")
-        plot_mpc(
-            series=mpc_results["variable"]["mDot"],
-            ax=ax[1],
-            plot_actual_values=True,
-            plot_predictions=True,
-        )
-
-        ax[1].legend()
-        ax[0].legend()
-        ax[0].set_ylabel("$T_{room}$ / °C")
-        ax[1].set_ylabel("$\dot{m}_{air}$ / kg/s")
-        ax[1].set_xlabel("simulation time / s")
-        ax[1].set_ylim([0, 0.06])
-        ax[1].set_xlim([0, until])
-        plt.show()
+        plot(mpc_results, sim_res, until)
 
     return results
 
 
+def plot(mpc_results: pd.DataFrame, sim_res: pd.DataFrame, until: float):
+    import matplotlib.pyplot as plt
+    from agentlib_mpc.utils.plotting.mpc import plot_mpc
+
+    fig, ax = plt.subplots(2, 1, sharex=True)
+    t_sim = sim_res["T_out"]
+    t_sample = t_sim.index[1] - t_sim.index[0]
+    aie_kh = (t_sim - ub).abs().sum() * t_sample / 3600
+    energy_cost_kWh = (
+        (sim_res["mDot"] * (sim_res["T_out"] - sim_res["T_in"])).sum()
+        * t_sample
+        * 1
+        / 3600
+    )  # cp is 1
+    print(f"Absoulute integral error: {aie_kh} Kh.")
+    print(f"Cooling energy used: {energy_cost_kWh} kWh.")
+
+    plot_mpc(
+        series=mpc_results["variable"]["T"] - 273.15,
+        ax=ax[0],
+        plot_actual_values=True,
+        plot_predictions=True,
+    )
+    ax[0].axhline(ub - 273.15, color="grey", linestyle="--", label="upper boundary")
+    plot_mpc(
+        series=mpc_results["variable"]["mDot"],
+        ax=ax[1],
+        plot_actual_values=True,
+        plot_predictions=True,
+    )
+
+    ax[1].legend()
+    ax[0].legend()
+    ax[0].set_ylabel("$T_{room}$ / °C")
+    ax[1].set_ylabel("$\dot{m}_{air}$ / kg/s")
+    ax[1].set_xlabel("simulation time / s")
+    ax[1].set_ylim([0, 0.06])
+    ax[1].set_xlim([0, until])
+    plt.show()
+
+
 if __name__ == "__main__":
-    run_example(with_plots=True, until=3600)
+    run_example(
+        with_plots=True, with_dashboard=False, until=7200, log_level=logging.CRITICAL
+    )

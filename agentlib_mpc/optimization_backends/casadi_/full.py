@@ -82,7 +82,7 @@ class DirectCollocation(basic.DirectCollocation):
                 sys.non_controlled_inputs: dk,
                 sys.model_parameters: const_par,
             }
-            xk_end = self._collocation_inner_loop(
+            xk_end, constraints = self._collocation_inner_loop(
                 collocation=collocation_matrices,
                 state_at_beginning=xk,
                 states=sys.states,
@@ -99,7 +99,11 @@ class DirectCollocation(basic.DirectCollocation):
             xk = self.add_opt_var(sys.states)
 
             # Add continuity constraint
-            self.add_constraint(xk_end - xk)
+            self.add_constraint(xk - xk_end, gap_closing=True)
+
+            # add collocation constraints later for fatrop
+            for constraint in constraints:
+                self.add_constraint(*constraint)
 
 
 class MultipleShooting(basic.MultipleShooting):
@@ -114,9 +118,8 @@ class MultipleShooting(basic.MultipleShooting):
         # Initial State
         x0 = self.add_opt_par(sys.initial_state)
         xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)
-        uk = self.add_opt_par(sys.last_control)
-
         vars_dict[sys.states.name][0] = xk
+        uk = self.add_opt_par(sys.last_control)
 
         # Parameters that are constant over the horizon
         du_weights = self.add_opt_par(sys.r_del_u)
@@ -130,11 +133,11 @@ class MultipleShooting(basic.MultipleShooting):
             uk = self.add_opt_var(sys.controls)
             # penalty for control change between time steps
             self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
-
             dk = self.add_opt_par(sys.non_controlled_inputs)
             zk = self.add_opt_var(sys.algebraics)
             yk = self.add_opt_var(sys.outputs)
-            # get stage
+
+            # get path constraints and objective values (stage)
             stage_arguments = {
                 # variables
                 sys.states.name: xk,
@@ -145,26 +148,26 @@ class MultipleShooting(basic.MultipleShooting):
                 sys.non_controlled_inputs.name: dk,
                 sys.model_parameters.name: const_par,
             }
-            # get stage
             stage = self._stage_function(**stage_arguments)
 
-            self.add_constraint(
-                stage["model_constraints"],
-                lb=stage["lb_model_constraints"],
-                ub=stage["ub_model_constraints"],
-            )
-
+            # integral and multiple shooting constraint
             fk = opt_integrator(
                 x0=xk,
                 p=ca.vertcat(uk, dk, const_par),
             )
             xk_end = fk["xf"]
-            # calculate model constraint
             self.k += 1
             self.pred_time = ts * self.k
             xk = self.add_opt_var(sys.states)
             vars_dict[sys.states.name][self.k] = xk
-            self.add_constraint(xk_end - xk)
+            self.add_constraint(xk-xk_end, gap_closing=True)
+
+            # add model constraints last due to fatrop
+            self.add_constraint(
+                stage["model_constraints"],
+                lb=stage["lb_model_constraints"],
+                ub=stage["ub_model_constraints"],
+            )
             self.objective_function += stage["cost_function"] * ts
 
 

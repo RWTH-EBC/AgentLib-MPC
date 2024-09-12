@@ -1,7 +1,7 @@
 from ast import literal_eval
 import datetime
 from pathlib import Path
-from typing import NewType, Literal, Union
+from typing import NewType, Literal, Union, Optional
 
 import pandas as pd
 from pandas.api.types import is_float_dtype
@@ -24,12 +24,12 @@ def load_mpc(file: Union[Path, str]) -> pd.DataFrame:
     return df
 
 
-def load_mpc_stats(results_file: Union[str, Path]):
+def load_mpc_stats(results_file: Union[str, Path]) -> Optional[pd.DataFrame]:
     stats_file = mpc_datamodels.stats_path(results_file)
     try:
         df = pd.read_csv(stats_file, index_col=0)
-    except FileNotFoundError:
-        df = pd.read_csv(results_file, index_col=0)
+    except Exception:
+        return None
     if is_float_dtype(df.index):
         return df
     new_ind = [literal_eval(i) for i in df.index]

@@ -93,12 +93,17 @@ class OptimizationBackend(abc.ABC):
     config_type = BackendConfig
 
     def __init__(self, config: dict):
+        self.logger = logger
         self.config = self.config_type(**config)
         self.model: ModelT = self.model_from_config(self.config.model)
         self.var_ref: Optional[mpc_datamodels.VariableReference] = None
         self.cost_function: Optional[Callable] = None
         self.stats = {}
         self._created_file: bool = False  # flag if we checked the file location
+
+    def register_logger(self, logger: logging.Logger):
+        """Registers a logger, can be used to use the module logger"""
+        self.logger = logger
 
     @abc.abstractmethod
     def setup_optimization(self, var_ref: mpc_datamodels.VariableReference):

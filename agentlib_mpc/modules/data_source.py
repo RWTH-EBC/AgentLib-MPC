@@ -76,20 +76,45 @@ class DataSource(BaseModule):
 
     def __init__(self, config: dict, agent: Agent):
         super().__init__(config=config, agent=agent)
+        data = self.config.data
+        data = self.transform_index(data)
+
+        # Filter columns if specified
+        if self.config.columns:
+            columns_to_keep = [col for col in self.config.columns if
+                               col in data.columns]
+            if not columns_to_keep:
+                raise ValueError("None of the specified columns exist in the dataframe")
+            data = data[columns_to_keep]
+
+        if data.empty:
+            raise ValueError("Resulting dataframe is empty after processing")
+
+    def transform_index(self, data: pd.DataFrame) -> pd.DataFrame:
+        """Handles the index and ensures it is numeric, with correct offset"""
         offset = self.config.data_offset
+        # Convert offset to seconds if it's a Timedelta
         if isinstance(offset, pd.Timedelta):
             offset = offset.total_seconds()
-        data = self.config.data
+        # Handle different index types
         if isinstance(data.index, pd.DatetimeIndex):
-            data.set_index(
-                (data.index - data.index[0]).total_seconds() - offset,
-                inplace=True,
-            )
+            data.index = (data.index - data.index[0]).total_seconds()
         else:
-            data.set_index((data.index - data.index[0] - offset), inplace=True)
-        if self.config.columns:
-            columns_to_drop = data.columns[~data.columns.isin(self.config.columns)]
-            data.drop(columns=columns_to_drop, inplace=True)
+            # Try to convert to numeric if it's a string
+            try:
+                data.index = pd.to_numeric(data.index)
+                data.index = data.index - data.index[0]
+            except ValueError:
+                # If conversion to numeric fails, try to convert to datetune
+                try:
+                    data.index = pd.to_datetime(data.index)
+                    data.index = (data.index - data.index[0]).total_seconds()
+                except ValueError:
+                    raise ValueError("Unable to convert index to numeric format")
+
+
+        data.index = data.index.astype(float) - offset
+        return data
 
     def _get_data_at_time(
         self,

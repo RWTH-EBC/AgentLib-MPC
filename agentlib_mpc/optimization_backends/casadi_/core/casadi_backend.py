@@ -118,6 +118,7 @@ class CasADiBackend(OptimizationBackend):
             bat_file=self.config.build_batch_bat,
             name=self.config.name,
             options=self.config.solver,
+            logger=self.logger
         )
         self.discretization.initialize(
             system=self.system, solver_factory=solver_factory
@@ -251,6 +252,7 @@ class CasADiBackend(OptimizationBackend):
         opts = self.config.discretization_options
         method = opts.method
         self.discretization = self.discretization_types[method](options=opts)
+        self.discretization.logger = self.logger
 
     def save_result_df(
         self,

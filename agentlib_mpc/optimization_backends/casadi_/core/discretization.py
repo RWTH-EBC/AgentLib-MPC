@@ -45,8 +45,11 @@ class Results:
             self.stats["obj"] = iters["obj"][-1]
         except KeyError:
             pass
-
-
+        if "fatrop" in self.stats:
+            self.stats.pop("ng")
+            self.stats.pop("nu")
+            self.stats.pop("nx")
+            self.stats.pop("fatrop")
 
     def __getitem__(self, item: str) -> np.ndarray:
         return self.matrix[
@@ -120,12 +123,14 @@ class Discretization(abc.ABC):
         self.constraints_ub: list[ca.MX] = []
         self.objective_function: CaFuncInputs = ca.DM(0)
         self.binary_opt_vars = []
+        self.equalities: list[bool] = []
 
         # dicts of variables of the optimization problem, sorted by role
         self.mpc_opt_vars: dict[str, OptVarMXContainer] = {}
         self.mpc_opt_pars: dict[str, OptParMXContainer] = {}
 
         self._create_results: Optional[Callable[[ca.DM, dict], Results]] = None
+        self.logger = None
 
     def initialize(self, system: System, solver_factory: SolverFactory):
         """Initializes the trajectory optimization problem, creating all symbolic
@@ -146,7 +151,7 @@ class Discretization(abc.ABC):
 
     def _create_solver(self, solver_factory: SolverFactory):
         self._optimizer = solver_factory.create_solver(
-            nlp=self.nlp, discrete=self.binary_vars
+            nlp=self.nlp, discrete=self.binary_vars, equalities=self.equalities
         )
 
     def solve(self, mpc_inputs: MPCInputs) -> Results:
@@ -537,11 +542,16 @@ class Discretization(abc.ABC):
         constraint_function: CaFuncInputs,
         lb: CaFuncInputs = None,
         ub: CaFuncInputs = None,
+            *,
+            gap_closing: bool = False,
     ):
         """
         Add a constraint to the optimization problem. If no bounds are given,
         adds an equality constraint.
         """
+        # set equality for fatrop
+        self.equalities.extend([gap_closing]*constraint_function.shape[0])
+
         # set bounds to default for equality constraints
         if lb is None:
             lb = ca.DM.zeros(constraint_function.shape[0], 1)
