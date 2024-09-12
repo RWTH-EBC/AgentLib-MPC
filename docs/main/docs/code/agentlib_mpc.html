@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc package &mdash; agentlib_mpc 0.6.0 documentation</title>
+  <title>agentlib_mpc package &mdash; agentlib_mpc 0.6.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
@@ -220,6 +220,7 @@ and data-driven modeling.</p>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Integrators"><code class="docutils literal notranslate"><span class="pre">Integrators</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Integrators.cvodes"><code class="docutils literal notranslate"><span class="pre">Integrators.cvodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Integrators.euler"><code class="docutils literal notranslate"><span class="pre">Integrators.euler</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Integrators.rk"><code class="docutils literal notranslate"><span class="pre">Integrators.rk</span></code></a></li>
 </ul>
 </li>
@@ -247,6 +248,8 @@ and data-driven modeling.</p>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.bat_file"><code class="docutils literal notranslate"><span class="pre">SolverFactory.bat_file</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.create_solver"><code class="docutils literal notranslate"><span class="pre">SolverFactory.create_solver()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.do_jit"><code class="docutils literal notranslate"><span class="pre">SolverFactory.do_jit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.logger"><code class="docutils literal notranslate"><span class="pre">SolverFactory.logger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.make_casadi_nlp"><code class="docutils literal notranslate"><span class="pre">SolverFactory.make_casadi_nlp()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.name"><code class="docutils literal notranslate"><span class="pre">SolverFactory.name</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.options"><code class="docutils literal notranslate"><span class="pre">SolverFactory.options</span></code></a></li>
 </ul>
@@ -258,13 +261,14 @@ and data-driven modeling.</p>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers"><code class="docutils literal notranslate"><span class="pre">Solvers</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers.bonmin"><code class="docutils literal notranslate"><span class="pre">Solvers.bonmin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers.fatrop"><code class="docutils literal notranslate"><span class="pre">Solvers.fatrop</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers.gurobi"><code class="docutils literal notranslate"><span class="pre">Solvers.gurobi</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers.ipopt"><code class="docutils literal notranslate"><span class="pre">Solvers.ipopt</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers.qpoases"><code class="docutils literal notranslate"><span class="pre">Solvers.qpoases</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers.sqpmethod"><code class="docutils literal notranslate"><span class="pre">Solvers.sqpmethod</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.compile_ipopt_solver"><code class="docutils literal notranslate"><span class="pre">compile_ipopt_solver()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.compile_solver"><code class="docutils literal notranslate"><span class="pre">compile_solver()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.temporary_directory"><code class="docutils literal notranslate"><span class="pre">temporary_directory()</span></code></a></li>
 </ul>
 </li>
@@ -655,6 +659,7 @@ and data-driven modeling.</p>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.data_source.DataSource"><code class="docutils literal notranslate"><span class="pre">DataSource</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.data_source.DataSource.process"><code class="docutils literal notranslate"><span class="pre">DataSource.process()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.data_source.DataSource.register_callbacks"><code class="docutils literal notranslate"><span class="pre">DataSource.register_callbacks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.data_source.DataSource.transform_index"><code class="docutils literal notranslate"><span class="pre">DataSource.transform_index()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.data_source.DataSourceConfig"><code class="docutils literal notranslate"><span class="pre">DataSourceConfig</span></code></a><ul>
@@ -762,6 +767,7 @@ and data-driven modeling.</p>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.model"><code class="docutils literal notranslate"><span class="pre">OptimizationBackend.model</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.model_from_config"><code class="docutils literal notranslate"><span class="pre">OptimizationBackend.model_from_config()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.mpc_backend_parameters"><code class="docutils literal notranslate"><span class="pre">OptimizationBackend.mpc_backend_parameters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.register_logger"><code class="docutils literal notranslate"><span class="pre">OptimizationBackend.register_logger()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.results_file_exists"><code class="docutils literal notranslate"><span class="pre">OptimizationBackend.results_file_exists()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.setup_optimization"><code class="docutils literal notranslate"><span class="pre">OptimizationBackend.setup_optimization()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.solve"><code class="docutils literal notranslate"><span class="pre">OptimizationBackend.solve()</span></code></a></li>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.optimization_backends.casadi_.core.discretization &mdash; agentlib_mpc 0.6.0 documentation</title>
+  <title>agentlib_mpc.optimization_backends.casadi_.core.discretization &mdash; agentlib_mpc 0.6.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/autodoc_pydantic.css" />
@@ -124,6 +124,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;obj&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">iters</span><span class="p">[</span><span class="s2">&quot;obj&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">pass</span>
+        <span class="k">if</span> <span class="s2">&quot;fatrop&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;ng&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;nu&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;nx&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;fatrop&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[</span>
@@ -197,12 +202,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">constraints_ub</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span><span class="p">:</span> <span class="n">CaFuncInputs</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">binary_opt_vars</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">equalities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1"># dicts of variables of the optimization problem, sorted by role</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mpc_opt_vars</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">OptVarMXContainer</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mpc_opt_pars</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">OptParMXContainer</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_results</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">,</span> <span class="nb">dict</span><span class="p">],</span> <span class="n">Results</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="Discretization.initialize"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">,</span> <span class="n">solver_factory</span><span class="p">:</span> <span class="n">SolverFactory</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the trajectory optimization problem, creating all symbolic</span>
@@ -223,7 +230,7 @@
 
     <span class="k">def</span> <span class="nf">_create_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_factory</span><span class="p">:</span> <span class="n">SolverFactory</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="n">solver_factory</span><span class="o">.</span><span class="n">create_solver</span><span class="p">(</span>
-            <span class="n">nlp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nlp</span><span class="p">,</span> <span class="n">discrete</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">binary_vars</span>
+            <span class="n">nlp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nlp</span><span class="p">,</span> <span class="n">discrete</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">binary_vars</span><span class="p">,</span> <span class="n">equalities</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">equalities</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Discretization.solve"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mpc_inputs</span><span class="p">:</span> <span class="n">MPCInputs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Results</span><span class="p">:</span>
@@ -319,6 +326,9 @@
                 <span class="n">inputs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">outputs</span><span class="p">[</span><span class="n">out_key</span><span class="p">]</span>
 
         <span class="n">result_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_map</span><span class="p">(</span><span class="o">**</span><span class="n">inputs</span><span class="p">)[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
+
+
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_results</span><span class="p">(</span><span class="n">result_matrix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">stats</span><span class="p">())</span>
 
 <div class="viewcode-block" id="Discretization.create_nlp_in_out_mapping"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.create_nlp_in_out_mapping">[docs]</a>    <span class="k">def</span> <span class="nf">create_nlp_in_out_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">):</span>
@@ -611,11 +621,16 @@
         <span class="n">constraint_function</span><span class="p">:</span> <span class="n">CaFuncInputs</span><span class="p">,</span>
         <span class="n">lb</span><span class="p">:</span> <span class="n">CaFuncInputs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">ub</span><span class="p">:</span> <span class="n">CaFuncInputs</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="o">*</span><span class="p">,</span>
+            <span class="n">gap_closing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add a constraint to the optimization problem. If no bounds are given,</span>
 <span class="sd">        adds an equality constraint.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># set equality for fatrop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">equalities</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">gap_closing</span><span class="p">]</span><span class="o">*</span><span class="n">constraint_function</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
         <span class="c1"># set bounds to default for equality constraints</span>
         <span class="k">if</span> <span class="n">lb</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">lb</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">constraint_function</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
