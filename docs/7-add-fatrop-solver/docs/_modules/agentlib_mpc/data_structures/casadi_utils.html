@@ -84,6 +84,7 @@
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">Logger</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">NamedTuple</span><span class="p">,</span> <span class="n">Literal</span>
 
@@ -197,6 +198,7 @@
     <span class="n">bat_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">options</span><span class="p">:</span> <span class="n">SolverOptions</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">SolverOptions</span><span class="p">)</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="SolverFactory.create_solver"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.create_solver">[docs]</a>    <span class="k">def</span> <span class="nf">create_solver</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -251,11 +253,12 @@
         <span class="n">opts</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_opts</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">}</span>
         <span class="n">opts</span><span class="p">[</span><span class="s2">&quot;fatrop&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">default_solver_opts</span><span class="p">)</span>
 
-        <span class="n">solver</span> <span class="o">=</span> <span class="n">make_casadi_nlp</span><span class="p">(</span><span class="n">nlp</span><span class="p">,</span> <span class="s2">&quot;fatrop&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="s2">&quot;nlp&quot;</span><span class="p">)</span>
+        <span class="n">solver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_casadi_nlp</span><span class="p">(</span><span class="n">nlp</span><span class="p">,</span> <span class="s2">&quot;fatrop&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="s2">&quot;nlp&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_jit</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">solver</span>
         <span class="n">nlp</span> <span class="o">=</span> <span class="n">compile_solver</span><span class="p">(</span><span class="n">bat_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bat_file</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">make_casadi_nlp</span><span class="p">(</span><span class="n">nlp</span><span class="p">,</span> <span class="s2">&quot;ipopt&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="s2">&quot;nlp&quot;</span><span class="p">)</span>
+        <span class="n">opts</span><span class="p">[</span><span class="s2">&quot;expand&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># compiled code is better not expanded</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_casadi_nlp</span><span class="p">(</span><span class="n">nlp</span><span class="p">,</span> <span class="s2">&quot;ipopt&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="s2">&quot;nlp&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_create_ipopt_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">default_opts</span> <span class="o">=</span> <span class="p">{</span>
@@ -278,11 +281,12 @@
         <span class="n">opts</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_opts</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">}</span>
         <span class="n">opts</span><span class="p">[</span><span class="s2">&quot;ipopt&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ipopt_</span><span class="p">)</span>
 
-        <span class="n">solver</span> <span class="o">=</span> <span class="n">make_casadi_nlp</span><span class="p">(</span><span class="n">nlp</span><span class="p">,</span> <span class="s2">&quot;ipopt&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="s2">&quot;nlp&quot;</span><span class="p">)</span>
+        <span class="n">solver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_casadi_nlp</span><span class="p">(</span><span class="n">nlp</span><span class="p">,</span> <span class="s2">&quot;ipopt&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="s2">&quot;nlp&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_jit</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">solver</span>
         <span class="n">nlp</span> <span class="o">=</span> <span class="n">compile_solver</span><span class="p">(</span><span class="n">bat_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bat_file</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">make_casadi_nlp</span><span class="p">(</span><span class="n">nlp</span><span class="p">,</span> <span class="s2">&quot;ipopt&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="s2">&quot;nlp&quot;</span><span class="p">)</span>
+        <span class="n">opts</span><span class="p">[</span><span class="s2">&quot;expand&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># compiled code is better not expanded</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_casadi_nlp</span><span class="p">(</span><span class="n">nlp</span><span class="p">,</span> <span class="s2">&quot;ipopt&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="s2">&quot;nlp&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_create_sqpmethod_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">default_opts</span> <span class="o">=</span> <span class="p">{</span>
@@ -325,7 +329,27 @@
             <span class="s2">&quot;bonmin.nlp_log_level&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">opts</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_opts</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">,</span> <span class="s2">&quot;discrete&quot;</span><span class="p">:</span> <span class="n">discrete</span><span class="p">}</span>
-        <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">nlpsol</span><span class="p">(</span><span class="s2">&quot;mpc&quot;</span><span class="p">,</span> <span class="s2">&quot;bonmin&quot;</span><span class="p">,</span> <span class="n">nlp</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">nlpsol</span><span class="p">(</span><span class="s2">&quot;mpc&quot;</span><span class="p">,</span> <span class="s2">&quot;bonmin&quot;</span><span class="p">,</span> <span class="n">nlp</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SolverFactory.make_casadi_nlp"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.make_casadi_nlp">[docs]</a>    <span class="k">def</span> <span class="nf">make_casadi_nlp</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">problem</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">opts</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">problem_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;nlp&quot;</span><span class="p">,</span> <span class="s2">&quot;qp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;nlp&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">ca_sol</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">nlpsol</span> <span class="k">if</span> <span class="n">problem_type</span> <span class="o">==</span> <span class="s2">&quot;nlp&quot;</span> <span class="k">else</span> <span class="n">ca</span><span class="o">.</span><span class="n">qpsol</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">solver</span> <span class="o">=</span> <span class="n">ca_sol</span><span class="p">(</span><span class="s2">&quot;mpc&quot;</span><span class="p">,</span> <span class="n">solver</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+            <span class="n">solver</span> <span class="o">=</span> <span class="n">ca_sol</span><span class="p">(</span><span class="s2">&quot;mpc&quot;</span><span class="p">,</span> <span class="n">solver</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="p">{</span><span class="o">**</span><span class="n">opts</span><span class="p">,</span> <span class="s2">&quot;expand&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_jit</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;Tried setting up nlp with &#39;expand&#39;=True, but your problem &quot;</span>
+                    <span class="s2">&quot;formulation contains non-expandable elements (e.g. using cvodes &quot;</span>
+                    <span class="s2">&quot;as integrator, or interpolation tables.)&quot;</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">solver</span></div></div>
 
 
 <div class="viewcode-block" id="temporary_directory"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.temporary_directory">[docs]</a><span class="nd">@contextmanager</span>
@@ -336,20 +360,6 @@
         <span class="k">yield</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">old_pwd</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="make_casadi_nlp"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.make_casadi_nlp">[docs]</a><span class="k">def</span> <span class="nf">make_casadi_nlp</span><span class="p">(</span>
-    <span class="n">problem</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-    <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">opts</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
-    <span class="n">problem_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;nlp&quot;</span><span class="p">,</span> <span class="s2">&quot;qp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;nlp&quot;</span><span class="p">,</span>
-<span class="p">):</span>
-    <span class="n">ca_sol</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">nlpsol</span> <span class="k">if</span> <span class="n">problem_type</span> <span class="o">==</span> <span class="s2">&quot;nlp&quot;</span> <span class="k">else</span> <span class="n">ca</span><span class="o">.</span><span class="n">qpsol</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">solver</span> <span class="o">=</span> <span class="n">ca_sol</span><span class="p">(</span><span class="s2">&quot;mpc&quot;</span><span class="p">,</span> <span class="n">solver</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
-        <span class="n">solver</span> <span class="o">=</span> <span class="n">ca_sol</span><span class="p">(</span><span class="s2">&quot;mpc&quot;</span><span class="p">,</span> <span class="n">solver</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="p">{</span><span class="o">**</span><span class="n">opts</span><span class="p">,</span> <span class="s2">&quot;expand&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">})</span>
-    <span class="k">return</span> <span class="n">solver</span></div>
 
 
 <div class="viewcode-block" id="compile_solver"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.compile_solver">[docs]</a><span class="k">def</span> <span class="nf">compile_solver</span><span class="p">(</span><span class="n">bat_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
