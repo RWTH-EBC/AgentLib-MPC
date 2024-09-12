@@ -321,7 +321,7 @@ class DirectCollocation(Discretization):
                 **constants,
             )
 
-            constraints.append((ts * stage["ode"] - xp))
+            constraints.append((ts * stage["ode"] - xp,))
             constraints.append((
                 stage["model_constraints"],
                 stage["lb_model_constraints"],
