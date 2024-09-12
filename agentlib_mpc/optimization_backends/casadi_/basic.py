@@ -148,7 +148,7 @@ class DirectCollocation(Discretization):
                 sys.non_controlled_inputs: dk,
                 sys.model_parameters: const_par,
             }
-            xk_end = self._collocation_inner_loop(
+            xk_end, constraints = self._collocation_inner_loop(
                 collocation=collocation_matrices,
                 state_at_beginning=xk,
                 states=sys.states,
@@ -165,7 +165,12 @@ class DirectCollocation(Discretization):
             xk = self.add_opt_var(sys.states)
 
             # Add continuity constraint
-            self.add_constraint(xk_end - xk)
+            self.add_constraint(xk - xk_end, gap_closing=True)
+
+            # add collocation constraints later for fatrop
+            for constraint in constraints:
+                self.add_constraint(*constraint)
+
 
     def _construct_stage_function(self, system: BaseSystem):
         """
@@ -249,7 +254,7 @@ class DirectCollocation(Discretization):
         opt_vars: list[OptimizationVariable],
         opt_pars: list[OptimizationParameter],
         const: dict[OptimizationQuantity, ca.MX],
-    ) -> ca.MX:
+    ) -> tuple[ca.MX, tuple]:
         """
         Constructs the inner loop of a collocation discretization. Takes the
 
@@ -268,6 +273,7 @@ class DirectCollocation(Discretization):
         Returns:
             state_k_end[MX]: state at the end of collocation interval
         """
+        constraints = []
         constants = {var.name: mx for var, mx in const.items()}
 
         # remember time at start of collocation loop
@@ -315,14 +321,12 @@ class DirectCollocation(Discretization):
                 **constants,
             )
 
-            self.add_constraint(ts * stage["ode"] - xp)
-
-            # Append inequality constraints
-            self.add_constraint(
+            constraints.append((ts * stage["ode"] - xp))
+            constraints.append((
                 stage["model_constraints"],
-                lb=stage["lb_model_constraints"],
-                ub=stage["ub_model_constraints"],
-            )
+                stage["lb_model_constraints"],
+                stage["ub_model_constraints"],
+            ))
 
             # Add contribution to the end state
             state_k_end = state_k_end + collocation.D[j] * state_collocation[j - 1]
@@ -330,7 +334,7 @@ class DirectCollocation(Discretization):
             # Add contribution to quadrature function
             self.objective_function += collocation.B[j] * stage["cost_function"] * ts
 
-        return state_k_end
+        return state_k_end, constraints
 
     def _collocation_polynomial(self) -> CollocationMatrices:
         """Returns the matrices needed for direct collocation discretization."""
@@ -381,8 +385,6 @@ class DirectCollocation(Discretization):
             C=C,
             D=D,
         )
-
-
 
 
 class MultipleShooting(Discretization):
@@ -436,7 +438,7 @@ class MultipleShooting(Discretization):
             self.pred_time = ts * self.k
             xk = self.add_opt_var(sys.states)
             vars_dict[sys.states.name][self.k] = xk
-            self.add_constraint(xk_end - xk)
+            self.add_constraint(xk_end - xk, gap_closing=True)
             self.objective_function += stage["cost_function"] * ts
 
     def _create_ode(self, sys: BaseSystem, opts: dict, integrator: Integrators):

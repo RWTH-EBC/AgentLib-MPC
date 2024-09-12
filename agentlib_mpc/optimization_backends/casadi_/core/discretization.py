@@ -45,7 +45,11 @@ class Results:
             self.stats["obj"] = iters["obj"][-1]
         except KeyError:
             pass
-        self.stats.pop("fatrop", {})
+        if "fatrop" in self.stats:
+            self.stats.pop("ng")
+            self.stats.pop("nu")
+            self.stats.pop("nx")
+            self.stats.pop("fatrop")
 
     def __getitem__(self, item: str) -> np.ndarray:
         return self.matrix[

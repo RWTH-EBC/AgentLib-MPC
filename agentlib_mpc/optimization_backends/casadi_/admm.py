@@ -161,7 +161,7 @@ class ADMMCollocation(DirectCollocation):
                 sys.model_parameters: const_par,
                 sys.penalty_factor: rho,
             }
-            xk_end = self._collocation_inner_loop(
+            xk_end, constraints = self._collocation_inner_loop(
                 collocation=collocation_matrices,
                 state_at_beginning=xk,
                 states=sys.states,
@@ -178,7 +178,11 @@ class ADMMCollocation(DirectCollocation):
             xk = self.add_opt_var(sys.states)
 
             # Add continuity constraint
-            self.add_constraint(xk_end - xk)
+            self.add_constraint(xk - xk_end, gap_closing=True)
+
+            # add collocation constraints later for fatrop
+            for constraint in constraints:
+                self.add_constraint(*constraint)
 
 
 class ADMMMultipleShooting(MultipleShooting):
@@ -211,6 +215,7 @@ class ADMMMultipleShooting(MultipleShooting):
         rho = self.add_opt_par(sys.penalty_factor)
         e_diff0 = self.add_opt_par(sys.exchange_diff)
         e_multi0 = self.add_opt_par(sys.exchange_multipliers)
+
         # create integrator
         opt_integrator = self._create_ode(sys, opts, self.options.integrator)
         # initiate states
@@ -229,6 +234,7 @@ class ADMMMultipleShooting(MultipleShooting):
 
             e_localk = self.add_opt_var(sys.local_exchange)
             vars_dict[sys.local_exchange.name][self.k] = e_localk
+
             # get stage_function
             stage_arguments = {
                 # variables
@@ -249,25 +255,24 @@ class ADMMMultipleShooting(MultipleShooting):
             }
             stage = self._stage_function(**stage_arguments)
 
+            # integral and multiple shooting constraint
+            fk = opt_integrator(
+                x0=xk,
+                p=ca.vertcat(uk, v_localk, dk, const_par),
+            )
+            xk_end = fk["xf"]
+            self.k += 1
+            self.pred_time = ts * self.k
+            xk = self.add_opt_var(sys.states)
+            vars_dict[sys.states.name][self.k] = xk
+            self.add_constraint(xk-xk_end, gap_closing=True)
+
+            # add model constraints last due to fatrop
             self.add_constraint(
                 stage["model_constraints"],
                 lb=stage["lb_model_constraints"],
                 ub=stage["ub_model_constraints"],
             )
-            # TODO: add casadi 3.6 support
-            fk = opt_integrator(
-                x0=xk,
-                p=ca.vertcat(v_localk, dk, const_par),
-            )
-            xk_end = fk["xf"]
-            # calculate model constraint
-            self.k += 1
-            self.pred_time = ts * self.k
-            xk = self.add_opt_var(sys.states)
-            vars_dict[sys.states.name][self.k] = xk
-            self.add_constraint(xk_end - xk)
-            # TODO use stage cost from the integrator, i.e. fk["qf"] and integrate
-            #  everything into the stage function
             self.objective_function += stage["cost_function"] * ts
 
     def _create_ode(
@@ -281,6 +286,7 @@ class ADMMMultipleShooting(MultipleShooting):
         # create inputs
         x = sys.states.full_symbolic
         p = ca.vertcat(
+            sys.controls.full_symbolic,
             sys.local_couplings.full_symbolic,
             sys.non_controlled_inputs.full_symbolic,
             sys.model_parameters.full_symbolic,

@@ -82,7 +82,7 @@ class DirectCollocation(basic.DirectCollocation):
                 sys.non_controlled_inputs: dk,
                 sys.model_parameters: const_par,
             }
-            xk_end = self._collocation_inner_loop(
+            xk_end, constraints = self._collocation_inner_loop(
                 collocation=collocation_matrices,
                 state_at_beginning=xk,
                 states=sys.states,
@@ -99,7 +99,11 @@ class DirectCollocation(basic.DirectCollocation):
             xk = self.add_opt_var(sys.states)
 
             # Add continuity constraint
-            self.add_constraint(xk_end - xk)
+            self.add_constraint(xk - xk_end, gap_closing=True)
+
+            # add collocation constraints later for fatrop
+            for constraint in constraints:
+                self.add_constraint(*constraint)
 
 
 class MultipleShooting(basic.MultipleShooting):
@@ -114,9 +118,8 @@ class MultipleShooting(basic.MultipleShooting):
         # Initial State
         x0 = self.add_opt_par(sys.initial_state)
         xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)
-        uk = self.add_opt_par(sys.last_control)
-
         vars_dict[sys.states.name][0] = xk
+        uk = self.add_opt_par(sys.last_control)
 
         # Parameters that are constant over the horizon
         du_weights = self.add_opt_par(sys.r_del_u)
@@ -157,7 +160,7 @@ class MultipleShooting(basic.MultipleShooting):
             self.pred_time = ts * self.k
             xk = self.add_opt_var(sys.states)
             vars_dict[sys.states.name][self.k] = xk
-            self.add_constraint(xk-xk_end)
+            self.add_constraint(xk-xk_end, gap_closing=True)
 
             # add model constraints last due to fatrop
             self.add_constraint(

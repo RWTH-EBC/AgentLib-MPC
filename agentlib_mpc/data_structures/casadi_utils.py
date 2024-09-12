@@ -158,7 +158,6 @@ class SolverFactory:
             "record_time": True,
             "expand": True,
             "structure_detection": "auto",
-            "debug": True,
             "equality": equalities,
             "fatrop": {
                 "max_iter": 100,
