@@ -60,6 +60,7 @@ class Solvers(str, Enum):
 class Integrators(str, Enum):
     cvodes = "cvodes"
     rk = "rk"  # runge-kutta
+    euler = "euler"
 
 
 class CasadiDiscretizationOptions(mpc_datamodels.DiscretizationOptions):

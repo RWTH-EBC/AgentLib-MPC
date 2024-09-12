@@ -135,11 +135,10 @@ AGENT_MPC = {
                 "model": {"type": {"file": __file__, "class_name": "MyCasadiModel"}},
                 "discretization_options": {
                     "method": "multiple_shooting",
-                    "integrator": "rk",
+                    "integrator": "euler",
                 },
                 "solver": {
-                    "name": "sqpmethod",
-                    "options": {"qpsol": "osqp", "verbose": False},
+                    "name": "fatrop",
                 },
                 "results_file": "results//mpc.csv",
                 "save_results": True,

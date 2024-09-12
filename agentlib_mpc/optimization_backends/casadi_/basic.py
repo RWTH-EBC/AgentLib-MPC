@@ -455,7 +455,12 @@ class MultipleShooting(Discretization):
             sys.model_parameters.full_symbolic,
         )
         integrator_ode = {"x": x, "p": p, "ode": ode}
-        opt_integrator = ca.integrator("system", integrator, integrator_ode, opts)
+
+        if integrator == Integrators.euler:
+            xk_end = x + ode * opts["tf"]
+            opt_integrator = ca.Function("system", [x, p], [xk_end], ["x0", "p"], ["xf"])
+        else:  # rk, cvodes
+            opt_integrator = ca.integrator("system", integrator, integrator_ode, opts)
 
         return opt_integrator
 
