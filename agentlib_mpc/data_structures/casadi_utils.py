@@ -1,5 +1,6 @@
 """Stores all sorts of Dataclasses, Enums or Factories to help with the
 CasadiBackend."""
+
 import os
 import random
 import subprocess
@@ -130,7 +131,9 @@ class SolverFactory:
         if solver_name == Solvers.ipopt:
             return self._create_ipopt_solver(nlp=nlp, options=options)
         if solver_name == Solvers.fatrop:
-            return self._create_fatrop_solver(nlp=nlp, options=options, equalities=equalities)
+            return self._create_fatrop_solver(
+                nlp=nlp, options=options, equalities=equalities
+            )
         if solver_name == Solvers.sqpmethod:
             return self._create_sqpmethod_solver(nlp=nlp, options=options)
         if solver_name == Solvers.qpoases:
@@ -150,7 +153,6 @@ class SolverFactory:
 
     def _create_fatrop_solver(self, nlp: dict, options: dict, equalities: list[bool]):
         # equality = [True for _ in range(nlp["g"].shape[0])]
-
 
         default_opts = {
             "verbose": False,
@@ -173,9 +175,7 @@ class SolverFactory:
         solver = make_casadi_nlp(nlp, "fatrop", opts, "nlp")
         if not self.do_jit:
             return solver
-        nlp = compile_solver(
-            bat_file=self.bat_file, optimizer=solver, name=self.name
-        )
+        nlp = compile_solver(bat_file=self.bat_file, optimizer=solver, name=self.name)
         return make_casadi_nlp(nlp, "ipopt", opts, "nlp")
 
     def _create_ipopt_solver(self, nlp: dict, options: dict):
@@ -202,15 +202,16 @@ class SolverFactory:
         solver = make_casadi_nlp(nlp, "ipopt", opts, "nlp")
         if not self.do_jit:
             return solver
-        nlp = compile_solver(
-            bat_file=self.bat_file, optimizer=solver, name=self.name
-        )
+        nlp = compile_solver(bat_file=self.bat_file, optimizer=solver, name=self.name)
         return make_casadi_nlp(nlp, "ipopt", opts, "nlp")
 
     def _create_sqpmethod_solver(self, nlp: dict, options: dict):
         default_opts = {
-            "qpsol": "qrqp",
+            "qpsol": "osqp",
             "qpsol_options": {"error_on_fail": False},
+            "print_iteration": False,
+            "print_status": False,
+            "print_header": False,
             "print_time": False,
             "max_iter": 20,
             "tol_du": 0.01,
@@ -258,7 +259,12 @@ def temporary_directory(path):
         os.chdir(old_pwd)
 
 
-def make_casadi_nlp(problem: Union[dict, str], solver: str, opts: dict, problem_type: Literal["nlp", "qp"] = "nlp"):
+def make_casadi_nlp(
+    problem: Union[dict, str],
+    solver: str,
+    opts: dict,
+    problem_type: Literal["nlp", "qp"] = "nlp",
+):
     ca_sol = ca.nlpsol if problem_type == "nlp" else ca.qpsol
     try:
         solver = ca_sol("mpc", solver, problem, opts)

@@ -151,9 +151,9 @@ AGENT_MPC = {
                 {"name": "r_mDot", "value": 1},
             ],
             "inputs": [
+                {"name": "T_in", "value": 290.15},
                 {"name": "load", "value": 150},
                 {"name": "T_upper", "value": ub},
-                {"name": "T_in", "value": 290.15},
             ],
             "controls": [{"name": "mDot", "value": 0.02, "ub": 0.05, "lb": 0}],
             "outputs": [{"name": "T_out"}],
@@ -225,45 +225,44 @@ def run_example(
 
 
 def plot(mpc_results: pd.DataFrame, sim_res: pd.DataFrame, until: float):
-        import matplotlib.pyplot as plt
-        from agentlib_mpc.utils.plotting.mpc import plot_mpc
+    import matplotlib.pyplot as plt
+    from agentlib_mpc.utils.plotting.mpc import plot_mpc
 
-        fig, ax = plt.subplots(2, 1, sharex=True)
-        t_sim = sim_res["T_out"]
-        t_sample = t_sim.index[1] - t_sim.index[0]
-        aie_kh = (t_sim - ub).abs().sum() * t_sample / 3600
-        energy_cost_kWh = (
-            (sim_res["mDot"] * (sim_res["T_out"] - sim_res["T_in"])).sum()
-            * t_sample
-            * 1
-            / 3600
-        )  # cp is 1
-        print(f"Absoulute integral error: {aie_kh} Kh.")
-        print(f"Cooling energy used: {energy_cost_kWh} kWh.")
+    fig, ax = plt.subplots(2, 1, sharex=True)
+    t_sim = sim_res["T_out"]
+    t_sample = t_sim.index[1] - t_sim.index[0]
+    aie_kh = (t_sim - ub).abs().sum() * t_sample / 3600
+    energy_cost_kWh = (
+        (sim_res["mDot"] * (sim_res["T_out"] - sim_res["T_in"])).sum()
+        * t_sample
+        * 1
+        / 3600
+    )  # cp is 1
+    print(f"Absoulute integral error: {aie_kh} Kh.")
+    print(f"Cooling energy used: {energy_cost_kWh} kWh.")
 
-        plot_mpc(
-            series=mpc_results["variable"]["T"] - 273.15,
-            ax=ax[0],
-            plot_actual_values=True,
-            plot_predictions=True,
-        )
-        ax[0].axhline(ub - 273.15, color="grey", linestyle="--", label="upper boundary")
-        plot_mpc(
-            series=mpc_results["variable"]["mDot"],
-            ax=ax[1],
-            plot_actual_values=True,
-            plot_predictions=True,
-        )
+    plot_mpc(
+        series=mpc_results["variable"]["T"] - 273.15,
+        ax=ax[0],
+        plot_actual_values=True,
+        plot_predictions=True,
+    )
+    ax[0].axhline(ub - 273.15, color="grey", linestyle="--", label="upper boundary")
+    plot_mpc(
+        series=mpc_results["variable"]["mDot"],
+        ax=ax[1],
+        plot_actual_values=True,
+        plot_predictions=True,
+    )
 
-        ax[1].legend()
-        ax[0].legend()
-        ax[0].set_ylabel("$T_{room}$ / °C")
-        ax[1].set_ylabel("$\dot{m}_{air}$ / kg/s")
-        ax[1].set_xlabel("simulation time / s")
-        ax[1].set_ylim([0, 0.06])
-        ax[1].set_xlim([0, until])
-        plt.show()
-
+    ax[1].legend()
+    ax[0].legend()
+    ax[0].set_ylabel("$T_{room}$ / °C")
+    ax[1].set_ylabel("$\dot{m}_{air}$ / kg/s")
+    ax[1].set_xlabel("simulation time / s")
+    ax[1].set_ylim([0, 0.06])
+    ax[1].set_xlim([0, until])
+    plt.show()
 
 
 if __name__ == "__main__":

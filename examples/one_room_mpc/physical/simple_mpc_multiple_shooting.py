@@ -93,7 +93,6 @@ class MyCasadiModelConfig(CasadiModelConfig):
 
 
 class MyCasadiModel(CasadiModel):
-
     config: MyCasadiModelConfig
 
     def setup_system(self):
@@ -138,7 +137,10 @@ AGENT_MPC = {
                     "method": "multiple_shooting",
                     "integrator": "rk",
                 },
-                "solver": {"name": "sqpmethod", "options": {"qpsol": "proxqp", "print": False}},
+                "solver": {
+                    "name": "sqpmethod",
+                    "options": {"qpsol": "osqp", "verbose": False},
+                },
                 "results_file": "results//mpc.csv",
                 "save_results": True,
                 "overwrite_result_file": True,
@@ -155,7 +157,17 @@ AGENT_MPC = {
                 {"name": "T_upper", "value": ub},
             ],
             "controls": [{"name": "mDot", "value": 0.02, "ub": 0.05, "lb": 0}],
-            "states": [{"name": "T", "value": 298.16, "ub": 303.15, "lb": 288.15}],
+            "outputs": [{"name": "T_out"}],
+            "states": [
+                {
+                    "name": "T",
+                    "value": 298.16,
+                    "ub": 303.15,
+                    "lb": 288.15,
+                    "alias": "T",
+                    "source": "SimAgent",
+                }
+            ],
         },
     ],
 }
@@ -172,6 +184,7 @@ AGENT_SIM = {
             },
             "t_sample": 10,
             "update_inputs_on_callback": False,
+            "save_results": True,
             "outputs": [
                 {"name": "T_out", "value": 298, "alias": "T"},
             ],

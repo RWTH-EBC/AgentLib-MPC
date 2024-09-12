@@ -541,14 +541,15 @@ class Discretization(abc.ABC):
         constraint_function: CaFuncInputs,
         lb: CaFuncInputs = None,
         ub: CaFuncInputs = None,
+            *,
+            gap_closing: bool = False,
     ):
         """
         Add a constraint to the optimization problem. If no bounds are given,
         adds an equality constraint.
         """
-        # check if equality constraint
-        equality = (lb is None and ub is None) or (lb is ub)
-        self.equalities.extend([equality]*constraint_function.shape[0])
+        # set equality for fatrop
+        self.equalities.extend([gap_closing]*constraint_function.shape[0])
 
         # set bounds to default for equality constraints
         if lb is None:
