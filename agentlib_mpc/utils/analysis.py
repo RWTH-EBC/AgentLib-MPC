@@ -108,6 +108,7 @@ def mpc_at_time_step(
     data: pd.DataFrame,
     time_step: float,
     variable=None,
+    variable_type="variable",
     index_offset: Union[float, Literal["auto"], bool] = True,
 ) -> pd.DataFrame:
     """
@@ -119,6 +120,7 @@ def mpc_at_time_step(
             If no exact match, shows closest.
         variable: If specified, only returns results
             with regard to a certain variable.
+        variable_type: The type of the variable provided (parameter, variable, lower, ...)
         index_offset: Determines how the index will be updated when loading the data.
         The offset will be subtracted from the time-index. This is useful for results
         of realtime systems, where the time value with be a unix time stamp and we want
@@ -151,7 +153,7 @@ def mpc_at_time_step(
 
     # select the data at this index and increment the inner index
     if variable:
-        data_at_ts = data.xs(variable, axis=1, level="variable").loc[closest]
+        data_at_ts = data[variable_type][variable].loc[closest]
     else:
         data_at_ts = data.loc[closest]
     data_at_ts = data_at_ts.copy()
