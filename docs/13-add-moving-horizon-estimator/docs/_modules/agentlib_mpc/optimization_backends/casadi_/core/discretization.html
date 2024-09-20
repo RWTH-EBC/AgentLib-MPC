@@ -183,6 +183,7 @@
     <span class="n">_nlp_outputs_to_mpc_outputs</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span>
     <span class="n">_optimizer</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span>
     <span class="n">_result_map</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span>
+    <span class="n">only_positive_times_in_results</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">CasadiDiscretizationOptions</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">options</span>
@@ -487,9 +488,9 @@
                 <span class="k">if</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">grid</span><span class="p">:</span>
                     <span class="n">index</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
                     <span class="n">entry</span> <span class="o">=</span> <span class="n">mx_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
-                    <span class="k">if</span> <span class="n">time</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="c1"># with NARX there can be times smaller 0, however we don&#39;t</span>
-                        <span class="c1"># want them in the results slice</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">only_positive_times_in_results</span> <span class="ow">or</span> <span class="n">time</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="c1"># with NARX there can be times smaller 0, however sometimes</span>
+                        <span class="c1"># we dont want them in the results slice.</span>
                         <span class="n">non_nan_entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index_full</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">entry</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">vars_in_quantity</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
