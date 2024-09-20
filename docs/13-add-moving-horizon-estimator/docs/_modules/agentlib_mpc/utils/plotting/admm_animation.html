@@ -122,7 +122,6 @@
 <div class="viewcode-block" id="animate_full"><a class="viewcode-back" href="../../../../code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.admm_animation.animate_full">[docs]</a><span class="k">def</span> <span class="nf">animate_full</span><span class="p">(</span>
     <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">LinesDict</span><span class="p">,</span> <span class="n">annotation</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Annotation</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">,</span> <span class="n">time_step</span><span class="p">:</span> <span class="nb">float</span>
 <span class="p">):</span>  <span class="c1"># Upper plot: Temperatures</span>
-
     <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">data_for_iter</span> <span class="o">=</span> <span class="n">admm_at_time_step</span><span class="p">(</span>
             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">label</span><span class="p">],</span>
@@ -147,7 +146,6 @@
     <span class="n">customize</span><span class="p">:</span> <span class="n">Customizer</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">iteration</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
 <span class="p">):</span>
-
     <span class="n">labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># from data</span>
 
     <span class="k">with</span> <span class="n">Style</span><span class="p">()</span> <span class="k">as</span> <span class="n">style</span><span class="p">:</span>

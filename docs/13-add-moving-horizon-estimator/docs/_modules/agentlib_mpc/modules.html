@@ -82,6 +82,7 @@
 
 <span class="sd">It contains classes for local optimization and global coordination.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">importlib</span>
 
 
@@ -140,20 +141,10 @@
         <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.ml_model_training.setpoint_generator&quot;</span><span class="p">,</span>
         <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;SetPointGenerator&quot;</span><span class="p">,</span>
     <span class="p">),</span>
+    <span class="s2">&quot;mhe&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
+        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.estimation.mhe&quot;</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;MHE&quot;</span>
+    <span class="p">),</span>
 <span class="p">}</span>
-
-
-<span class="c1"># MODULE_TYPES = {</span>
-<span class="c1">#     &quot;mpc&quot;: ModuleImport(file=&quot;mpc/mpc.py&quot;, class_name=&quot;MPC&quot;),</span>
-<span class="c1">#     &quot;admm&quot;: ModuleImport(file=&quot;mpc/dmpc/admm/admm.py&quot;, class_name=&quot;ADMM&quot;),</span>
-<span class="c1">#     &quot;admm_local&quot;: ModuleImport(file=&quot;mpc/dmpc/admm/admm.py&quot;, class_name=&quot;LocalADMM&quot;),</span>
-<span class="c1">#     &quot;admm_coordinated&quot;: ModuleImport(</span>
-<span class="c1">#         file=&quot;mpc/dmpc/admm/admm_coordinated.py&quot;, class_name=&quot;CoordinatedADMM&quot;</span>
-<span class="c1">#     ),</span>
-<span class="c1">#     &quot;admm_coordinator&quot;: ModuleImport(</span>
-<span class="c1">#         file=&quot;mpc/dmpc/admm/admm_coordinator.py&quot;, class_name=&quot;ADMMCoordinator&quot;</span>
-<span class="c1">#     ),</span>
-<span class="c1"># }</span>
 </pre></div>
 
            </div>

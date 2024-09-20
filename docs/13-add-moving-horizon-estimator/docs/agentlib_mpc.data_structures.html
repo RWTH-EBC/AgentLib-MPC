@@ -963,6 +963,25 @@ participating agent and the coordinator in DMPC.</p>
 </section>
 <section id="module-agentlib_mpc.data_structures.mpc_datamodels">
 <span id="agentlib-mpc-data-structures-mpc-datamodels-module"></span><h2>agentlib_mpc.data_structures.mpc_datamodels module<a class="headerlink" href="#module-agentlib_mpc.data_structures.mpc_datamodels" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.BaseVariableReference">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.mpc_datamodels.</span></span><span class="sig-name descname"><span class="pre">BaseVariableReference</span></span><a class="reference internal" href="_modules/agentlib_mpc/data_structures/mpc_datamodels.html#BaseVariableReference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.BaseVariableReference" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.BaseVariableReference.all_variables">
+<span class="sig-name descname"><span class="pre">all_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agentlib_mpc/data_structures/mpc_datamodels.html#BaseVariableReference.all_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.BaseVariableReference.all_variables" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a list of all variables registered in the var_ref</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.BaseVariableReference.from_config">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseModuleConfigClass</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/data_structures/mpc_datamodels.html#BaseVariableReference.from_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.BaseVariableReference.from_config" title="Permalink to this definition"></a></dt>
+<dd><p>Creates an instance from a pydantic values dict which includes lists of
+AgentVariables with the keys corresponding to ‘states’, ‘inputs’, etc..</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.DiscretizationOptions">
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.mpc_datamodels.</span></span><span class="sig-name descname"><span class="pre">DiscretizationOptions</span></span><a class="reference internal" href="_modules/agentlib_mpc/data_structures/mpc_datamodels.html#DiscretizationOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.DiscretizationOptions" title="Permalink to this definition"></a></dt>
@@ -1044,6 +1063,59 @@ optimization implementations.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.mpc_datamodels.</span></span><span class="sig-name descname"><span class="pre">MHEVariableReference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measured_states:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights_states:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimated_inputs:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimated_parameters:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">known_inputs:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">known_parameters:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/data_structures/mpc_datamodels.html#MHEVariableReference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.BaseVariableReference" title="agentlib_mpc.data_structures.mpc_datamodels.BaseVariableReference"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseVariableReference</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.all_variables">
+<span class="sig-name descname"><span class="pre">all_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agentlib_mpc/data_structures/mpc_datamodels.html#MHEVariableReference.all_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.all_variables" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a list of all variables registered in the var_ref which the MHE can
+get from the config with get()</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.estimated_inputs">
+<span class="sig-name descname"><span class="pre">estimated_inputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.estimated_inputs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.estimated_parameters">
+<span class="sig-name descname"><span class="pre">estimated_parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.estimated_parameters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.known_inputs">
+<span class="sig-name descname"><span class="pre">known_inputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.known_inputs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.known_parameters">
+<span class="sig-name descname"><span class="pre">known_parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.known_parameters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.measured_states">
+<span class="sig-name descname"><span class="pre">measured_states</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.measured_states" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.outputs">
+<span class="sig-name descname"><span class="pre">outputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.outputs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.states">
+<span class="sig-name descname"><span class="pre">states</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.states" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.weights_states">
+<span class="sig-name descname"><span class="pre">weights_states</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.weights_states" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.MINLPVariableReference">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.mpc_datamodels.</span></span><span class="sig-name descname"><span class="pre">MINLPVariableReference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controls:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binary_controls:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/data_structures/mpc_datamodels.html#MINLPVariableReference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.MINLPVariableReference" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.VariableReference" title="agentlib_mpc.data_structures.mpc_datamodels.VariableReference"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariableReference</span></code></a></p>
@@ -1080,24 +1152,11 @@ optimization implementations.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.VariableReference">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.mpc_datamodels.</span></span><span class="sig-name descname"><span class="pre">VariableReference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controls:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs:</span> <span class="pre">List[str]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/data_structures/mpc_datamodels.html#VariableReference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.VariableReference" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.VariableReference.all_variables">
-<span class="sig-name descname"><span class="pre">all_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agentlib_mpc/data_structures/mpc_datamodels.html#VariableReference.all_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.VariableReference.all_variables" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a list of all variables registered in the var_ref</p>
-</dd></dl>
-
+<dd><p>Bases: <a class="reference internal" href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.BaseVariableReference" title="agentlib_mpc.data_structures.mpc_datamodels.BaseVariableReference"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseVariableReference</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.VariableReference.controls">
 <span class="sig-name descname"><span class="pre">controls</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.VariableReference.controls" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.VariableReference.from_config">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseModuleConfigClass</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/data_structures/mpc_datamodels.html#VariableReference.from_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.mpc_datamodels.VariableReference.from_config" title="Permalink to this definition"></a></dt>
-<dd><p>Creates an instance from a pydantic values dict which includes lists of
-AgentVariables with the keys corresponding to ‘states’, ‘inputs’, etc..</p>
-</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="agentlib_mpc.data_structures.mpc_datamodels.VariableReference.inputs">

@@ -169,7 +169,8 @@
             <span class="n">samp_time</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;time_step&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">samp_time</span></div></div>
 
-<span class="k">def</span> <span class="nf">_create_optimization_backend</span><span class="p">(</span><span class="n">optimization_backend</span><span class="p">,</span> <span class="n">agent_id</span><span class="p">):</span>
+
+<div class="viewcode-block" id="create_optimization_backend"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.mpc.create_optimization_backend">[docs]</a><span class="k">def</span> <span class="nf">create_optimization_backend</span><span class="p">(</span><span class="n">optimization_backend</span><span class="p">,</span> <span class="n">agent_id</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set up the optimization_backend&quot;&quot;&quot;</span>
     <span class="n">optimization_backend</span> <span class="o">=</span> <span class="n">optimization_backend</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">optimization_backend</span><span class="p">:</span>
@@ -201,7 +202,7 @@
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">_type</span><span class="p">)</span><span class="si">}</span><span class="s2"> instead. &quot;</span>
         <span class="p">)</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">OptimizationBackend</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">backend</span>
+    <span class="k">return</span> <span class="n">backend</span></div>
 
 
 <div class="viewcode-block" id="BaseMPC"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.mpc.BaseMPC">[docs]</a><span class="k">class</span> <span class="nc">BaseMPC</span><span class="p">(</span><span class="n">BaseModule</span><span class="p">):</span>
@@ -238,7 +239,7 @@
     <span class="k">def</span> <span class="nf">_setup_optimization_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptimizationBackendT</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs the setup of the optimization_backend, keeps track of status&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_status</span> <span class="o">=</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">InitStatus</span><span class="o">.</span><span class="n">during_update</span>
-        <span class="n">opti_back</span> <span class="o">=</span> <span class="n">_create_optimization_backend</span><span class="p">(</span>
+        <span class="n">opti_back</span> <span class="o">=</span> <span class="n">create_optimization_backend</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">optimization_backend</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">id</span>
         <span class="p">)</span>
         <span class="n">opti_back</span><span class="o">.</span><span class="n">register_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
@@ -357,9 +358,9 @@
 
 <div class="viewcode-block" id="BaseMPC.re_init_optimization"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.mpc.BaseMPC.re_init_optimization">[docs]</a>    <span class="k">def</span> <span class="nf">re_init_optimization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Re-initializes the optimization backend with new parameters.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">optimization_backend</span><span class="o">.</span><span class="n">discretization_options</span><span class="p">[</span>
-            <span class="n">parameter</span><span class="o">.</span><span class="n">name</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="n">parameter</span><span class="o">.</span><span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimization_backend</span><span class="o">.</span><span class="n">discretization_options</span><span class="p">[</span><span class="n">parameter</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">parameter</span><span class="o">.</span><span class="n">value</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_optimization</span><span class="p">()</span></div>
 
     <span class="nd">@property</span>

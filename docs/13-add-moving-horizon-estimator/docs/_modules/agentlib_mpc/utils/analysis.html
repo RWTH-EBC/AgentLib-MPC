@@ -76,10 +76,11 @@
            <div itemprop="articleBody">
              
   <h1>Source code for agentlib_mpc.utils.analysis</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">NewType</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">NewType</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterable</span>
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">pandas.api.types</span> <span class="kn">import</span> <span class="n">is_float_dtype</span>
@@ -330,6 +331,40 @@
         <span class="n">result</span><span class="p">[</span><span class="n">SimulationTime</span><span class="p">(</span><span class="n">t</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">[</span><span class="n">_slice</span><span class="p">])</span>
 
     <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="get_time_steps"><a class="viewcode-back" href="../../../code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.get_time_steps">[docs]</a><span class="k">def</span> <span class="nf">get_time_steps</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the time steps at which an MPC step was performed.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="first_vals_at_trajectory_index"><a class="viewcode-back" href="../../../code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.first_vals_at_trajectory_index">[docs]</a><span class="k">def</span> <span class="nf">first_vals_at_trajectory_index</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gets the first values at each time step of a results trajectory.&quot;&quot;&quot;</span>
+    <span class="n">time_steps</span> <span class="o">=</span> <span class="n">get_time_steps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">first_vals</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+        <span class="p">{</span><span class="n">time_step</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">time_step</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">time_step</span> <span class="ow">in</span> <span class="n">time_steps</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="ow">in</span> <span class="n">first_vals</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Nan detected in first values. You may need to select the &quot;</span>
+            <span class="s2">&quot;correct column of the DataFrame and drop NaN before.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">first_vals</span></div>
+
+
+<div class="viewcode-block" id="last_vals_at_trajectory_index"><a class="viewcode-back" href="../../../code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.last_vals_at_trajectory_index">[docs]</a><span class="k">def</span> <span class="nf">last_vals_at_trajectory_index</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gets the last values at each time step of a results trajectory.&quot;&quot;&quot;</span>
+    <span class="n">time_steps</span> <span class="o">=</span> <span class="n">get_time_steps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">last_vals</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+        <span class="p">{</span><span class="n">time_step</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">time_step</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">time_step</span> <span class="ow">in</span> <span class="n">time_steps</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="ow">in</span> <span class="n">last_vals</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Nan detected in first values. You may need to select the &quot;</span>
+            <span class="s2">&quot;correct column of the DataFrame and drop NaN before.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">last_vals</span></div>
 </pre></div>
 
            </div>
