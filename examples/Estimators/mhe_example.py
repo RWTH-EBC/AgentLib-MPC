@@ -197,6 +197,7 @@ def configs() -> List[dict]:
                     },
                     "solver": {"name": "ipopt", "options": {"ipopt.print_level": 0}},
                     "results_file": "results//mhe.csv",
+                    "overwrite_result_file": True,
                 },
                 "horizon": 15,
                 "time_step": 200,
@@ -235,7 +236,7 @@ def configs() -> List[dict]:
                     },
                     "solver": {"name": "ipopt", "options": {"ipopt.print_level": 0}},
                     "results_file": "results//mpc.csv",
-                },
+                    "overwrite_result_file": True,                },
                 "time_step": 200,
                 "prediction_horizon": 15,
                 "parameters": [
@@ -309,7 +310,8 @@ def configs() -> List[dict]:
 
 
 def plots(results):
-    fig, ax = plt.subplots(4, 1)
+    fig, ax = plt.subplots(4, 1, sharex=True)
+    fig: plt.Figure
 
     ax[0].axhline(T_UPPER_23, color="red", label="upper boundary")
     ax[0].plot(results["SimAgent"]["room"]["T_out"], label="temperature")
@@ -331,13 +333,14 @@ def plots(results):
 
     # for x in ax:
     #     right_legend(x, adjust_right=0.8)
-    ax[0].set_ylabel("room temperature / K")
-    ax[0].set_xlabel("simulation time / s")
-    ax[1].set_ylabel("Wall temperature /°C")
-    ax[2].set_ylabel("mass flow / kg/s")
-    ax[3].set_ylabel("Capacity Factor")
-    ax[1].set_xlabel("simulation time / s")
+    ax[0].set_ylabel("$T_air$ / K")
+    ax[1].set_ylabel("$T_{wall}$ /°C")
+    ax[2].set_ylabel("$\dot{m}$ / kg/s")
+    ax[3].set_ylabel("$c_{v, room}$")
     ax[2].set_ylim([0, 0.11])
+    ax[3].set_xlabel("simulation time / s")
+
+    fig.tight_layout()
     plt.show()
 
 

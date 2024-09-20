@@ -70,7 +70,7 @@ class MHESystem(System):
         )
         self.algebraics = OptimizationVariable.declare(
             denotation="algebraics",
-            variables=model.algebraics + model.auxiliaries,
+            variables=model.auxiliaries,
             ref_list=[],
         )
         self.outputs = OptimizationVariable.declare(
@@ -79,13 +79,6 @@ class MHESystem(System):
             ref_list=var_ref.outputs,
         )
 
-        # define parameters
-        # self.measured_states = OptimizationParameter.declare(
-        #     denotation="measured_states",
-        #     variables=model.get_states(var_ref.measured_states),
-        #     ref_list=var_ref.measured_states,
-        #     assert_complete=True,
-        # )
         self.known_inputs = OptimizationParameter.declare(
             denotation="known_inputs",
             variables=model.get_inputs(var_ref.known_inputs),
@@ -101,18 +94,15 @@ class MHESystem(System):
             ref_list=var_ref.known_parameters,
             assert_complete=False,
         )
-
-        measured_state_names = ["measured_" + state for state in var_ref.states]
         self.measured_states = OptimizationParameter.declare(
             denotation="measured_states",
-            variables=[CasadiInput(name=name) for name in measured_state_names],
-            ref_list=measured_state_names,
+            variables=[CasadiInput(name=name) for name in var_ref.measured_states],
+            ref_list=var_ref.measured_states,
         )
-        weights_state_names = ["weight_" + state for state in var_ref.states]
         self.weights_states = OptimizationParameter.declare(
             denotation="weight_states",
-            variables=[CasadiInput(name=name) for name in weights_state_names],
-            ref_list=weights_state_names,
+            variables=[CasadiInput(name=name) for name in var_ref.weights_states],
+            ref_list=var_ref.weights_states,
         )
 
         # add admm terms to objective function
@@ -124,12 +114,12 @@ class MHESystem(System):
             objective += weights * (states - measured_states) ** 2
 
         # dynamics
-        self.ode = model.system
+        self.ode = ca.vertcat(*[sta.ode for sta in model.get_states(var_ref.states)])
         self.cost_function = objective
         self.model_constraints = Constraint(
-            function=ca.vertcat(*[c.function for c in model.constraints]),
-            lb=ca.vertcat(*[c.lb for c in model.constraints]),
-            ub=ca.vertcat(*[c.ub for c in model.constraints]),
+            function=ca.vertcat(*[c.function for c in model.get_constraints()]),
+            lb=ca.vertcat(*[c.lb for c in model.get_constraints()]),
+            ub=ca.vertcat(*[c.ub for c in model.get_constraints()]),
         )
 
 
@@ -143,6 +133,8 @@ class CollocationMatrices:
 
 
 class DirectCollocation(Discretization):
+    only_positive_times_in_results: bool = False
+
     def _discretize(self, sys: MHESystem):
         """
         Defines a direct collocation discretization.

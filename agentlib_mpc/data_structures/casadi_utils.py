@@ -174,13 +174,13 @@ class SolverFactory:
         default_solver_opts = options.pop("fatrop", {})
         opts = {**default_opts, **options}
         opts["fatrop"].update(default_solver_opts)
-
+        if self.do_jit:
+            opts["expand"] = False  # compiled code is better not expanded
         solver = self.make_casadi_nlp(nlp, "fatrop", opts, "nlp")
         if not self.do_jit:
             return solver
         nlp = compile_solver(bat_file=self.bat_file, optimizer=solver, name=self.name)
-        opts["expand"] = False  # compiled code is better not expanded
-        return self.make_casadi_nlp(nlp, "ipopt", opts, "nlp")
+        return self.make_casadi_nlp(nlp, "fatrop", opts, "nlp")
 
     def _create_ipopt_solver(self, nlp: dict, options: dict):
         default_opts = {
@@ -202,12 +202,12 @@ class SolverFactory:
         ipopt_ = options.pop("ipopt", {})
         opts = {**default_opts, **options}
         opts["ipopt"].update(ipopt_)
-
+        if self.do_jit:
+            opts["expand"] = False  # compiled code is better not expanded
         solver = self.make_casadi_nlp(nlp, "ipopt", opts, "nlp")
         if not self.do_jit:
             return solver
         nlp = compile_solver(bat_file=self.bat_file, optimizer=solver, name=self.name)
-        opts["expand"] = False  # compiled code is better not expanded
         return self.make_casadi_nlp(nlp, "ipopt", opts, "nlp")
 
     def _create_sqpmethod_solver(self, nlp: dict, options: dict):

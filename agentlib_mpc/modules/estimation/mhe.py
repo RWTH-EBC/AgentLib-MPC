@@ -14,10 +14,12 @@ from agentlib.core.errors import ConfigurationError
 from pydantic import Field
 
 from agentlib_mpc.data_structures import mpc_datamodels
+from agentlib_mpc.data_structures.mpc_datamodels import Results
 from agentlib_mpc.modules.mpc import create_optimization_backend
 from agentlib_mpc.optimization_backends.backend import (
     OptimizationBackendT,
 )
+from agentlib_mpc.utils.analysis import load_mpc, load_mpc_stats
 
 AG_VAR_DICT = dict[str, AgentVariable]
 
@@ -120,11 +122,13 @@ class MHE(BaseModule):
 
         # creates a reference of variables, which have to be kept track of in a
         # dataframe, to provide a past trajectory for the MHE
-        self._history_var_names: set[str] = {
+        self._history_var_names: list[str] = [
             v.name for v in self.config.known_inputs
-        }.union(measured_states)
+        ] + list(measured_states)
 
-        self.history: pd.DataFrame = pd.DataFrame(columns=self._history_var_names)
+        self.history: pd.DataFrame = pd.DataFrame(
+            columns=self._history_var_names, dtype=float
+        )
 
         # construct the optimization problem
         try:
@@ -141,8 +145,8 @@ class MHE(BaseModule):
         opti_back = create_optimization_backend(
             self.config.optimization_backend, self.agent.id
         )
-        disc_opts = opti_back.discretization_options
-        disc_opts.prediction_horizon = self.config.horizon
+        opti_back.register_logger(self.logger)
+        disc_opts = opti_back.config.discretization_options
         disc_opts.time_step = self.config.time_step
         return opti_back
 
@@ -168,9 +172,9 @@ class MHE(BaseModule):
 
     def process(self):
         while True:
-            cache_vars = self.collect_variables_for_optimization()
+            current_vars = self.collect_variables_for_optimization()
             solution = self.optimization_backend.solve(
-                now=self.env.now, cache_vars=cache_vars
+                now=self.env.now, current_vars=current_vars
             )
             self._set_estimation(solution)
             self._remove_old_values_from_history()
@@ -184,20 +188,19 @@ class MHE(BaseModule):
         filt = self.history.index >= oldest_relevant_time
         self.history = self.history[filt]
 
-    def _set_estimation(self, results: pd.DataFrame):
+    def _set_estimation(self, solution: Results):
         """Sets the estimated variables to the DataBroker."""
 
         # parameters are scalars defined at the beginning of the problem, so we send
         # the first value in the parameter trajectory
-        for par in self.var_ref.estimated_parameters:
-            par_val = results[par].iloc[0]
-            self.set(par, par_val)
+        for parameter in self.var_ref.estimated_parameters:
+            par_val = solution[parameter]
+            self.set(parameter, par_val)
 
-        # we want to know the most recent state value, so we send
-        # the last value in the state trajectory
+        # we want to know the most recent value of states and inputs
         for var in self.var_ref.states + self.var_ref.estimated_inputs:
-            value = results[var].iloc[-1]
-            self.set(var, value)
+            value = solution[var][-1]
+            self.set(var, float(value))
 
     def register_callbacks(self):
         """Registers callbacks which listen to the variables which have to be saved as
@@ -241,9 +244,9 @@ class MHE(BaseModule):
         # then, collect the variables for the weights and measured states, that have
         # been generated and are not in the config
         for ms_name, ms_var in self.measured_states.items():
-            all_variables[ms_name] = ms_var
+            all_variables[ms_name] = ms_var.copy()
         for w_name, w_var in self.weights_states.items():
-            all_variables[w_name] = w_var
+            all_variables[w_name] = w_var.copy()
 
         # for values whose past trajectory is required in the optimization, set the
         # var value to that trajectory
@@ -255,8 +258,7 @@ class MHE(BaseModule):
 
             # create copy to not mess up scalar value of original variable in case
             # fallback is needed
-            updated_var = all_variables[hist_var].copy(update={"value": past_values})
-            all_variables[hist_var] = updated_var
+            all_variables[hist_var].value = past_values
 
         return all_variables
 
@@ -296,7 +298,7 @@ class MHE(BaseModule):
         Returns:
             (results, stats) tuple of Dataframes.
         """
-        results_file = self.optimization_backend.results_file
+        results_file = self.optimization_backend.config.results_file
         try:
             results, _ = self.read_results_file(results_file)
             return results
@@ -317,13 +319,12 @@ class MHE(BaseModule):
             optimizations.
             stats is the Dataframe with matching solver stats
         """
-        stats_file = mpc_datamodels.stats_path(results_file)
-        results = pd.read_csv(results_file, index_col=[0, 1], header=[0, 1])
-        stats = pd.read_csv(stats_file, index_col=0)
+        results = load_mpc(results_file)
+        stats = load_mpc_stats(results_file)
         return results, stats
 
     def cleanup_results(self):
-        results_file = self.optimization_backend.results_file
+        results_file = self.optimization_backend.config.results_file
         if not results_file:
             return
         os.remove(results_file)

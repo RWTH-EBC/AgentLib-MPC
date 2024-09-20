@@ -277,8 +277,9 @@ def first_vals_at_trajectory_index(data: Union[pd.DataFrame, pd.Series]):
 def last_vals_at_trajectory_index(data: Union[pd.DataFrame, pd.Series]):
     """Gets the last values at each time step of a results trajectory."""
     time_steps = get_time_steps(data)
+    # -1 covers for parameters (only one entry) and states (-horizon until 0)
     last_vals = pd.Series(
-        {time_step: data.loc[time_step].iloc[-1] for time_step in time_steps}
+        {time_step: data.at[time_step].iloc[-1] for time_step in time_steps}
     )
 
     if np.nan in last_vals:
