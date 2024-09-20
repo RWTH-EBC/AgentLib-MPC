@@ -47,7 +47,6 @@ class CaCoolerConfig(CasadiModelConfig):
 
 
 class CaCooler(CasadiModel):
-
     config: CaCoolerConfig
 
     def setup_system(self):

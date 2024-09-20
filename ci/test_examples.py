@@ -115,5 +115,3 @@ class TestExamples(unittest.TestCase):
             log_level=logging.FATAL,
             TESTING=True,
         )
-
-

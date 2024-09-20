@@ -1,7 +1,11 @@
 import dataclasses
+import logging
+from typing import Union
 
 import casadi as ca
 import numpy as np
+import pandas as pd
+from scipy import interpolate
 
 from agentlib_mpc.data_structures.casadi_utils import (
     Constraint,
@@ -9,10 +13,9 @@ from agentlib_mpc.data_structures.casadi_utils import (
     UB_PREFIX,
     DiscretizationMethod,
     SolverFactory,
-    Integrators,
 )
-from agentlib_mpc.data_structures.mpc_datamodels import VariableReference
-from agentlib_mpc.models.casadi_model import CasadiModel
+from agentlib_mpc.data_structures.mpc_datamodels import MHEVariableReference
+from agentlib_mpc.models.casadi_model import CasadiModel, CasadiInput
 from agentlib_mpc.optimization_backends.casadi_.core.casadi_backend import CasADiBackend
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
     OptimizationQuantity,
@@ -25,76 +28,108 @@ from agentlib_mpc.optimization_backends.casadi_.core.discretization import (
 from agentlib_mpc.optimization_backends.casadi_.core.system import System
 
 
-class BaseSystem(System):
+logger = logging.getLogger(__name__)
+
+
+class MHESystem(System):
     # variables
-    states: OptimizationVariable
-    controls: OptimizationVariable
+    estimated_states: OptimizationVariable
+    estimated_inputs: OptimizationVariable
+    estimated_parameters: OptimizationVariable
     algebraics: OptimizationVariable
     outputs: OptimizationVariable
 
     # parameters
-    non_controlled_inputs: OptimizationParameter
-    model_parameters: OptimizationParameter
-    initial_state: OptimizationParameter
+    measured_states: OptimizationParameter
+    known_inputs: OptimizationParameter
+    known_parameters: OptimizationParameter
 
     # dynamics
     model_constraints: Constraint
     cost_function: ca.MX
     ode: ca.MX
 
-    def initialize(self, model: CasadiModel, var_ref: VariableReference):
+    def initialize(self, model: CasadiModel, var_ref: MHEVariableReference):
         # define variables
         self.states = OptimizationVariable.declare(
-            denotation="state",
+            denotation="states",
             variables=model.get_states(var_ref.states),
             ref_list=var_ref.states,
             assert_complete=True,
         )
-        self.controls = OptimizationVariable.declare(
-            denotation="control",
-            variables=model.get_inputs(var_ref.controls),
-            ref_list=var_ref.controls,
+        self.estimated_inputs = OptimizationVariable.declare(
+            denotation="estimated_inputs",
+            variables=model.get_inputs(var_ref.estimated_inputs),
+            ref_list=var_ref.estimated_inputs,
             assert_complete=True,
         )
+        self.estimated_parameters = OptimizationVariable.declare(
+            denotation="estimated_parameters",
+            variables=model.get_parameters(var_ref.estimated_parameters),
+            ref_list=var_ref.estimated_parameters,
+        )
         self.algebraics = OptimizationVariable.declare(
-            denotation="z",
-            variables=model.auxiliaries,
+            denotation="algebraics",
+            variables=model.algebraics + model.auxiliaries,
             ref_list=[],
         )
         self.outputs = OptimizationVariable.declare(
-            denotation="y",
+            denotation="outputs",
             variables=model.outputs,
             ref_list=var_ref.outputs,
         )
 
         # define parameters
-        self.non_controlled_inputs = OptimizationParameter.declare(
-            denotation="d",
-            variables=model.get_inputs(var_ref.inputs),
-            ref_list=var_ref.inputs,
+        # self.measured_states = OptimizationParameter.declare(
+        #     denotation="measured_states",
+        #     variables=model.get_states(var_ref.measured_states),
+        #     ref_list=var_ref.measured_states,
+        #     assert_complete=True,
+        # )
+        self.known_inputs = OptimizationParameter.declare(
+            denotation="known_inputs",
+            variables=model.get_inputs(var_ref.known_inputs),
+            ref_list=var_ref.known_inputs,
             assert_complete=True,
         )
-        self.model_parameters = OptimizationParameter.declare(
-            denotation="parameter",
-            variables=model.parameters,
-            ref_list=var_ref.parameters,
+        known_parameter_names = set(model.get_parameter_names()) - set(
+            var_ref.estimated_parameters
         )
-        self.initial_state = OptimizationParameter.declare(
-            denotation="initial_state",  # append the 0 as a convention to get initial guess
-            variables=model.get_states(var_ref.states),
-            ref_list=var_ref.states,
-            use_in_stage_function=False,
-            assert_complete=True,
+        self.known_parameters = OptimizationParameter.declare(
+            denotation="known_parameters",
+            variables=model.get_parameters(list(known_parameter_names)),
+            ref_list=var_ref.known_parameters,
+            assert_complete=False,
         )
 
+        measured_state_names = ["measured_" + state for state in var_ref.states]
+        self.measured_states = OptimizationParameter.declare(
+            denotation="measured_states",
+            variables=[CasadiInput(name=name) for name in measured_state_names],
+            ref_list=measured_state_names,
+        )
+        weights_state_names = ["weight_" + state for state in var_ref.states]
+        self.weights_states = OptimizationParameter.declare(
+            denotation="weight_states",
+            variables=[CasadiInput(name=name) for name in weights_state_names],
+            ref_list=weights_state_names,
+        )
+
+        # add admm terms to objective function
+        objective: ca.MX = 0
+        for i in range(len(var_ref.states)):
+            states = self.states.full_symbolic[i]
+            measured_states = self.measured_states.full_symbolic[i]
+            weights = self.weights_states.full_symbolic[i]
+            objective += weights * (states - measured_states) ** 2
+
         # dynamics
-        ode = ca.vertcat(*[sta.ode for sta in model.get_states(var_ref.states)])
-        self.ode = ca.reshape(ode, -1, 1)
-        self.cost_function = model.cost_func
+        self.ode = model.system
+        self.cost_function = objective
         self.model_constraints = Constraint(
-            function=ca.vertcat(*[c.function for c in model.get_constraints()]),
-            lb=ca.vertcat(*[c.lb for c in model.get_constraints()]),
-            ub=ca.vertcat(*[c.ub for c in model.get_constraints()]),
+            function=ca.vertcat(*[c.function for c in model.constraints]),
+            lb=ca.vertcat(*[c.lb for c in model.constraints]),
+            ub=ca.vertcat(*[c.ub for c in model.constraints]),
         )
 
 
@@ -108,7 +143,7 @@ class CollocationMatrices:
 
 
 class DirectCollocation(Discretization):
-    def _discretize(self, sys: BaseSystem):
+    def _discretize(self, sys: MHESystem):
         """
         Defines a direct collocation discretization.
         # pylint: disable=invalid-name
@@ -120,36 +155,38 @@ class DirectCollocation(Discretization):
         # shorthands
         n = self.options.prediction_horizon
         ts = self.options.time_step
+        start_time = -n * ts
+        self.pred_time = start_time
 
         # Initial State
-        x0 = self.add_opt_par(sys.initial_state)
-        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)
+        x_est_k = self.add_opt_var(sys.states)
 
         # Parameters that are constant over the horizon
-        const_par = self.add_opt_par(sys.model_parameters)
+        known_pars = self.add_opt_par(sys.known_parameters)
+        estimated_pars = self.add_opt_var(sys.estimated_parameters)
+        weights = self.add_opt_par(sys.weights_states)
 
         # Formulate the NLP
         # loop over prediction horizon
-        k = 0
-        while k < n:
+        while self.k < n:
             # New NLP variable for the control
-            uk = self.add_opt_var(sys.controls)
-
-            # New parameter for inputs
-            dk = self.add_opt_par(sys.non_controlled_inputs)
+            inp_known = self.add_opt_par(sys.known_inputs)
+            inp_est = self.add_opt_var(sys.estimated_inputs)
 
             # perform inner collocation loop
-            opt_vars_inside_inner = [sys.algebraics, sys.outputs]
-            opt_pars_inside_inner = []
+            opt_vars_inside_inner = [sys.outputs, sys.algebraics]
+            opt_pars_inside_inner = [sys.measured_states]
 
             constant_over_inner = {
-                sys.controls: uk,
-                sys.non_controlled_inputs: dk,
-                sys.model_parameters: const_par,
+                sys.known_inputs: inp_known,
+                sys.estimated_inputs: inp_est,
+                sys.estimated_parameters: estimated_pars,
+                sys.known_parameters: known_pars,
+                sys.weights_states: weights,
             }
-            xk_end, constraints = self._collocation_inner_loop(
+            xk_end = self._collocation_inner_loop(
                 collocation=collocation_matrices,
-                state_at_beginning=xk,
+                state_at_beginning=x_est_k,
                 states=sys.states,
                 opt_vars=opt_vars_inside_inner,
                 opt_pars=opt_pars_inside_inner,
@@ -157,20 +194,16 @@ class DirectCollocation(Discretization):
             )
 
             # increment loop counter and time
-            k += 1
-            self.pred_time = ts * k
+            self.k += 1
+            self.pred_time = start_time + ts * self.k
 
             # New NLP variable for differential state at end of interval
             xk = self.add_opt_var(sys.states)
 
             # Add continuity constraint
-            self.add_constraint(xk - xk_end, gap_closing=True)
+            self.add_constraint(xk_end - xk)
 
-            # add collocation constraints later for fatrop
-            for constraint in constraints:
-                self.add_constraint(*constraint)
-
-    def _construct_stage_function(self, system: BaseSystem):
+    def _construct_stage_function(self, system: MHESystem):
         """
         Combine information from the model and the var_ref to create CasADi
         functions which describe the system dynamics and constraints at each
@@ -238,7 +271,7 @@ class DirectCollocation(Discretization):
             output_denotations,
         )
 
-    def initialize(self, system: BaseSystem, solver_factory: SolverFactory):
+    def initialize(self, system: MHESystem, solver_factory: SolverFactory):
         """Initializes the trajectory optimization problem, creating all symbolic
         variables of the OCP, the mapping function and the numerical solver."""
         self._construct_stage_function(system)
@@ -252,7 +285,7 @@ class DirectCollocation(Discretization):
         opt_vars: list[OptimizationVariable],
         opt_pars: list[OptimizationParameter],
         const: dict[OptimizationQuantity, ca.MX],
-    ) -> tuple[ca.MX, tuple]:
+    ) -> ca.MX:
         """
         Constructs the inner loop of a collocation discretization. Takes the
 
@@ -271,7 +304,6 @@ class DirectCollocation(Discretization):
         Returns:
             state_k_end[MX]: state at the end of collocation interval
         """
-        constraints = []
         constants = {var.name: mx for var, mx in const.items()}
 
         # remember time at start of collocation loop
@@ -319,13 +351,13 @@ class DirectCollocation(Discretization):
                 **constants,
             )
 
-            constraints.append((ts * stage["ode"] - xp,))
-            constraints.append(
-                (
-                    stage["model_constraints"],
-                    stage["lb_model_constraints"],
-                    stage["ub_model_constraints"],
-                )
+            self.add_constraint(ts * stage["ode"] - xp)
+
+            # Append inequality constraints
+            self.add_constraint(
+                stage["model_constraints"],
+                lb=stage["lb_model_constraints"],
+                ub=stage["ub_model_constraints"],
             )
 
             # Add contribution to the end state
@@ -334,7 +366,7 @@ class DirectCollocation(Discretization):
             # Add contribution to quadrature function
             self.objective_function += collocation.B[j] * stage["cost_function"] * ts
 
-        return state_k_end, constraints
+        return state_k_end
 
     def _collocation_polynomial(self) -> CollocationMatrices:
         """Returns the matrices needed for direct collocation discretization."""
@@ -387,168 +419,132 @@ class DirectCollocation(Discretization):
         )
 
 
-class MultipleShooting(Discretization):
-    def _discretize(self, sys: BaseSystem):
-        """
-        Defines a multiple shooting discretization
-        """
-        vars_dict = {sys.states.name: {}}
-        n = self.options.prediction_horizon
-        ts = self.options.time_step
-        opts = {"t0": 0, "tf": ts}
-        # Initial State
-        x0 = self.add_opt_par(sys.initial_state)
-        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)
-        vars_dict[sys.states.name][0] = xk
-        const_par = self.add_opt_par(sys.model_parameters)
-        # ODE is used here because the algebraics can be calculated with the stage function
-        opt_integrator = self._create_ode(sys, opts, integrator=self.options.integrator)
-        # initiate states
-        while self.k < n:
-            uk = self.add_opt_var(sys.controls)
-            dk = self.add_opt_par(sys.non_controlled_inputs)
-            zk = self.add_opt_var(sys.algebraics)
-            yk = self.add_opt_var(sys.outputs)
-            # get stage
-            stage_arguments = {
-                # variables
-                sys.states.name: xk,
-                sys.algebraics.name: zk,
-                sys.outputs.name: yk,
-                # parameters
-                sys.controls.name: uk,
-                sys.non_controlled_inputs.name: dk,
-                sys.model_parameters.name: const_par,
-            }
-            # get stage
-            stage = self._stage_function(**stage_arguments)
-
-            self.add_constraint(
-                stage["model_constraints"],
-                lb=stage["lb_model_constraints"],
-                ub=stage["ub_model_constraints"],
-            )
-            fk = opt_integrator(
-                x0=xk,
-                p=ca.vertcat(uk, dk, const_par),
-            )
-            xk_end = fk["xf"]
-            # calculate model constraint
-            self.k += 1
-            self.pred_time = ts * self.k
-            xk = self.add_opt_var(sys.states)
-            vars_dict[sys.states.name][self.k] = xk
-            self.add_constraint(xk_end - xk, gap_closing=True)
-            self.objective_function += stage["cost_function"] * ts
-
-    def _create_ode(self, sys: BaseSystem, opts: dict, integrator: Integrators):
-        # dummy function for empty ode, since ca.integrator would throw an error
-        if sys.states.full_symbolic.shape[0] == 0:
-            return lambda *args, **kwargs: {"xf": ca.MX.sym("xk_end", 0)}
-
-        ode = sys.ode
-        # create inputs
-        x = sys.states.full_symbolic
-        p = ca.vertcat(
-            sys.controls.full_symbolic,
-            sys.non_controlled_inputs.full_symbolic,
-            sys.model_parameters.full_symbolic,
-        )
-        integrator_ode = {"x": x, "p": p, "ode": ode}
-
-        if integrator == Integrators.euler:
-            xk_end = x + ode * opts["tf"]
-            opt_integrator = ca.Function(
-                "system", [x, p], [xk_end], ["x0", "p"], ["xf"]
-            )
-        else:  # rk, cvodes
-            opt_integrator = ca.integrator("system", integrator, integrator_ode, opts)
-
-        return opt_integrator
-
-    def _construct_stage_function(self, system: BaseSystem):
-        """
-        Combine information from the model and the var_ref to create CasADi
-        functions which describe the system dynamics and constraints at each
-        stage of the optimization problem. Sets the stage function. It has
-        all mpc variables as inputs, sorted by denotation (declared in
-        self.declare_quantities) and outputs ode, cost function and 3 outputs
-        per constraint (constraint, lb_constraint, ub_constraint).
-
-        In the basic case, it has the form:
-        CasadiFunction: ['x', 'z', 'u', 'y', 'd', 'p'] ->
-            ['ode', 'cost_function', 'model_constraints',
-            'ub_model_constraints', 'lb_model_constraints']
-
-        Args:
-            system
-        """
-        all_system_quantities: dict[str, OptimizationQuantity] = {
-            var.name: var for var in system.quantities
-        }
-        constraints = {"model_constraints": system.model_constraints}
-
-        inputs = [
-            q.full_symbolic
-            for q in all_system_quantities.values()
-            if q.use_in_stage_function
-        ]
-        input_denotations = [
-            q.name
-            for denotation, q in all_system_quantities.items()
-            if q.use_in_stage_function
-        ]
-
-        # aggregate constraints
-        constraints_func = [c.function for c in constraints.values()]
-        constraints_lb = [c.lb for c in constraints.values()]
-        constraints_ub = [c.ub for c in constraints.values()]
-        constraint_denotations = list(constraints.keys())
-        constraint_lb_denotations = [LB_PREFIX + k for k in constraints]
-        constraint_ub_denotations = [UB_PREFIX + k for k in constraints]
-
-        # aggregate outputs
-        outputs = [
-            system.ode,
-            system.cost_function,
-            *constraints_func,
-            *constraints_lb,
-            *constraints_ub,
-        ]
-        output_denotations = [
-            "ode",
-            "cost_function",
-            *constraint_denotations,
-            *constraint_lb_denotations,
-            *constraint_ub_denotations,
-        ]
-
-        # function describing system dynamics and cost function
-        self._stage_function = ca.Function(
-            "f",
-            inputs,
-            outputs,
-            # input handles to make kwarg use possible and to debug
-            input_denotations,
-            # output handles to make kwarg use possible and to debug
-            output_denotations,
-        )
-
-    def initialize(self, system: BaseSystem, solver_factory: SolverFactory):
-        """Initializes the trajectory optimization problem, creating all symbolic
-        variables of the OCP, the mapping function and the numerical solver."""
-        self._construct_stage_function(system)
-        super().initialize(system=system, solver_factory=solver_factory)
-
-
-class CasADiBaseBackend(CasADiBackend):
+class CasADiMHEBackend(CasADiBackend):
     """
     Class doing optimization of ADMM subproblems with CasADi.
     """
 
-    system_type = BaseSystem
+    system_type = MHESystem
     discretization_types = {
         DiscretizationMethod.collocation: DirectCollocation,
-        DiscretizationMethod.multiple_shooting: MultipleShooting,
     }
-    system: BaseSystem
+    system: MHESystem
+
+    @staticmethod
+    def sample(
+        trajectory: Union[float, int, pd.Series, list[Union[float, int]]],
+        grid: Union[list, np.ndarray],
+        current: float = 0,
+        method: str = "linear",
+    ) -> list:
+        """
+        Obtain the specified portion of the trajectory.
+
+        Args:
+            trajectory:  The trajectory to be sampled. Scalars will be
+                expanded onto the grid. Lists need to exactly match the provided
+                grid. Otherwise, a list of tuples is accepted with the form (
+                timestamp, value). A dict with the keys 'grid' and 'value' is also
+                accepted.
+            current: start time of requested trajectory
+            grid: target interpolation grid in seconds in relative terms (i.e.
+                starting from 0 usually)
+            method: interpolation method, currently accepted: 'linear',
+                'spline', 'previous'
+
+        Returns:
+            Sampled list of values.
+
+        Takes a slice of the trajectory from the current time step with the
+        specified length and interpolates it to match the requested sampling.
+        If the requested horizon is longer than the available data, the last
+        available value will be used for the remainder.
+
+        Raises:
+            ValueError
+            TypeError
+        """
+        target_grid_length = len(grid)
+        if isinstance(trajectory, (float, int)):
+            # return constant trajectory for scalars
+            return [trajectory] * target_grid_length
+        if isinstance(trajectory, list):
+            # return lists of matching length without timestamps
+            if len(trajectory) == target_grid_length:
+                return trajectory
+            raise ValueError(
+                f"Passed list with length {len(trajectory)} "
+                f"does not match target ({target_grid_length})."
+            )
+        if isinstance(trajectory, pd.Series):
+            source_grid = np.array(trajectory.index)
+            values = trajectory.values
+        else:
+            raise TypeError(
+                f"Passed trajectory of type '{type(trajectory)}' " f"cannot be sampled."
+            )
+        target_grid = np.array(grid) + current
+
+        # expand scalar values
+        if len(source_grid) == 1:
+            return [trajectory[0]] * target_grid_length
+
+        # skip resampling if grids are (almost) the same
+        if (target_grid.shape == source_grid.shape) and all(target_grid == source_grid):
+            return list(values)
+        values = np.array(values)
+
+        # check requested portion of trajectory, whether the most recent value in the
+        # source grid is older than the first value in the MHE trajectory
+        if target_grid[0] >= source_grid[-1]:
+            # return the last value of the trajectory if requested sample
+            # starts out of range
+            logger.warning(
+                f"Latest value of source grid %s is older than "
+                f"current time (%s. Returning latest value anyway.",
+                source_grid[-1],
+                current,
+            )
+            return [values[-1]] * target_grid_length
+
+        # determine whether the target grid lies within the available source grid, and
+        # how many entries to extrapolate on either side
+        source_grid_oldest_time: float = source_grid[0]
+        source_grid_newest_time: float = source_grid[-1]
+        source_is_recent_enough: np.ndarray = target_grid < source_grid_newest_time
+        source_is_old_enough: np.ndarray = target_grid > source_grid_oldest_time
+        number_of_missing_old_entries: int = target_grid_length - np.count_nonzero(
+            source_is_old_enough
+        )
+        number_of_missing_new_entries: int = target_grid_length - np.count_nonzero(
+            source_is_recent_enough
+        )
+        # shorten target interpolation grid by extra points that go above or below
+        # available data range
+        target_grid = target_grid[source_is_recent_enough * source_is_old_enough]
+
+        # interpolate data to match new grid
+        if method == "linear":
+            tck = interpolate.interp1d(x=source_grid, y=values, kind="linear")
+            sequence_new = list(tck(target_grid))
+        elif method == "spline":
+            raise NotImplementedError(
+                "Spline interpolation is currently not " "supported"
+            )
+        elif method == "previous":
+            tck = interpolate.interp1d(source_grid, values, kind="previous")
+            sequence_new = list(tck(target_grid))
+        else:
+            raise ValueError(
+                f"Chosen 'method' {method} is not a valid method. "
+                f"Currently supported: linear, spline, previous"
+            )
+
+        # extrapolate sequence with last available value if necessary
+        interpolated_trajectory = (
+            [values[0]] * number_of_missing_old_entries
+            + sequence_new
+            + [values[-1]] * number_of_missing_new_entries
+        )
+
+        return interpolated_trajectory

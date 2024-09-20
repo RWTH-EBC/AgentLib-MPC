@@ -1,4 +1,3 @@
-
 from pathlib import Path
 from typing import Callable, Union, Optional
 
@@ -43,7 +42,7 @@ def pairwise_sort(*arrays: tuple[np.ndarray, np.ndarray]):
 
     for _, pred in arrays:
         copy_empty = empty.copy()
-        copy_empty[i: i + len(pred)] = pred
+        copy_empty[i : i + len(pred)] = pred
         i += len(pred)
 
         copy_empty = copy_empty[idx]
@@ -81,7 +80,9 @@ def evaluate_model(
     valid_pred = predict_array(
         df=training_data.validation_inputs, ml_model=model_, outputs=outputs
     )
-    test_pred = predict_array(df=training_data.test_inputs, ml_model=model_, outputs=outputs)
+    test_pred = predict_array(
+        df=training_data.test_inputs, ml_model=model_, outputs=outputs
+    )
     train_error = training_data.training_outputs - train_pred
     valid_error = training_data.validation_outputs - valid_pred
     test_error = training_data.test_outputs - test_pred

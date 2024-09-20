@@ -44,7 +44,6 @@ def init_full(lines: LinesDict, annotation: plt.Annotation, ax: plt.Axes):
 def animate_full(
     i: int, lines: LinesDict, annotation: plt.Annotation, data: Data, time_step: float
 ):  # Upper plot: Temperatures
-
     for label, line in lines.items():
         data_for_iter = admm_at_time_step(
             data=data[label],
@@ -69,7 +68,6 @@ def make_image(
     customize: Customizer = None,
     iteration=-1,
 ):
-
     labels = list(data)  # from data
 
     with Style() as style:

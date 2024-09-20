@@ -1,4 +1,5 @@
 """Holds the classes for CasADi variables and the CasADi model."""
+
 import json
 import logging
 import abc

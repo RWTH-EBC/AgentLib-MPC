@@ -118,7 +118,6 @@ class CaCooledRoomSimConfig(CaCooledRoomConfig):
 
 
 class CaCooledRoomSim(CaCooledRoom):
-
     config: CaCooledRoomSimConfig
 
     def setup_system(self):

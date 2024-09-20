@@ -1,4 +1,5 @@
 """Holds the classes for CasADi variables and the CasADi model."""
+
 import itertools
 import logging
 from itertools import chain
@@ -379,9 +380,9 @@ class CasadiMLModel(CasadiModel):
         for output in self.config.outputs + self.config.states:
             for serialized_output_names, ml_model in ml_model_sources_dict.items():
                 if output.name in serialized_output_names:
-                    output_to_ml_model[
-                        output.name
-                    ] = CasadiPredictor.from_serialized_model(ml_model)
+                    output_to_ml_model[output.name] = (
+                        CasadiPredictor.from_serialized_model(ml_model)
+                    )
                     ml_model_dict[output.name] = ml_model
         casadi_ml_model_dict: Dict[str, CasadiPredictor] = output_to_ml_model
         return ml_model_dict, casadi_ml_model_dict

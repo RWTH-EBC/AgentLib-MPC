@@ -180,7 +180,6 @@ def configs(
 
 
 def main(training_time: float = 1000, plot_results=False, step_size: float = 300):
-
     env_config = {"rt": False, "t_sample": 60}
     logging.basicConfig(level=logging.INFO)
     mas = LocalMASAgency(

@@ -29,7 +29,6 @@ class CasadiADMMSystem(FullSystem):
     penalty_factor: OptimizationParameter
 
     def initialize(self, model: CasadiModel, var_ref: admm_datatypes.VariableReference):
-
         super().initialize(model=model, var_ref=var_ref)
 
         coup_names = [c.name for c in var_ref.couplings]
@@ -265,7 +264,7 @@ class ADMMMultipleShooting(MultipleShooting):
             self.pred_time = ts * self.k
             xk = self.add_opt_var(sys.states)
             vars_dict[sys.states.name][self.k] = xk
-            self.add_constraint(xk-xk_end, gap_closing=True)
+            self.add_constraint(xk - xk_end, gap_closing=True)
 
             # add model constraints last due to fatrop
             self.add_constraint(

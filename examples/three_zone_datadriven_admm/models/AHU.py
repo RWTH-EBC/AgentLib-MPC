@@ -62,7 +62,6 @@ class AHUConfig(CasadiModelConfig):
 
 
 class AHU(CasadiModel):
-
     config: AHUConfig
 
     def setup_system(self):

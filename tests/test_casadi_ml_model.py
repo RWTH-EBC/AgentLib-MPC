@@ -1,4 +1,5 @@
 """Module for tests of casadi_ml_model.py"""
+
 import pytest
 
 from agentlib_mpc.models.casadi_model import CasadiInput, CasadiOutput

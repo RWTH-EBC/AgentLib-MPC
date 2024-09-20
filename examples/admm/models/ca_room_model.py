@@ -83,7 +83,6 @@ class CaCooledRoomConfig(CasadiModelConfig):
 
 
 class CaCooledRoom(CasadiModel):
-
     config: CaCooledRoomConfig
 
     def setup_system(self):

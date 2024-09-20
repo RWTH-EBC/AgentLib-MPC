@@ -185,7 +185,6 @@ def interpolate_to_previous(
     _grid_index = 0
     stop = len(original_grid)
     for target_point in target_grid:
-
         _grid_index = earliest_index(
             target_point, original_grid, stop, start=_grid_index
         )

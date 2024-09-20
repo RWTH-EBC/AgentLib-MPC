@@ -25,7 +25,6 @@ logger = logging.getLogger(__name__)
 
 
 class CoordinatorConfig(BaseModuleConfig):
-
     maxIter: int = Field(default=10, description="Maximum number of iterations")
     time_out_non_responders: float = Field(
         default=1, description="Maximum wait time for subsystems in seconds"

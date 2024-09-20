@@ -33,7 +33,6 @@ class CasadiMINLPSystem(basic.BaseSystem):
         self.is_linear = self._is_minlp()
 
     def _is_minlp(self) -> bool:
-
         inputs = ca.vertcat(*(v.full_symbolic for v in self.variables))
         parameters = ca.vertcat(
             *(v.full_symbolic for v in self.parameters if v.use_in_stage_function)

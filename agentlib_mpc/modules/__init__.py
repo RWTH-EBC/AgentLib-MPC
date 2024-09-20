@@ -4,6 +4,7 @@ distributed model predictive control using multi agent systems.
 
 It contains classes for local optimization and global coordination.
 """
+
 import importlib
 
 
@@ -62,17 +63,7 @@ MODULE_TYPES = {
         module_path="agentlib_mpc.modules.ml_model_training.setpoint_generator",
         class_name="SetPointGenerator",
     ),
+    "mhe": ModuleImport(
+        module_path="agentlib_mpc.modules.estimation.mhe", class_name="MHE"
+    ),
 }
-
-
-# MODULE_TYPES = {
-#     "mpc": ModuleImport(file="mpc/mpc.py", class_name="MPC"),
-#     "admm": ModuleImport(file="mpc/dmpc/admm/admm.py", class_name="ADMM"),
-#     "admm_local": ModuleImport(file="mpc/dmpc/admm/admm.py", class_name="LocalADMM"),
-#     "admm_coordinated": ModuleImport(
-#         file="mpc/dmpc/admm/admm_coordinated.py", class_name="CoordinatedADMM"
-#     ),
-#     "admm_coordinator": ModuleImport(
-#         file="mpc/dmpc/admm/admm_coordinator.py", class_name="ADMMCoordinator"
-#     ),
-# }

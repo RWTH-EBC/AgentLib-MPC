@@ -68,7 +68,9 @@ def run_example(
 
 
 if __name__ == "__main__":
-    raise NotImplementedError("This example is currently broken and requires debugging.")
+    raise NotImplementedError(
+        "This example is currently broken and requires debugging."
+    )
     run_example(
         with_plots=True,
         until=1800,

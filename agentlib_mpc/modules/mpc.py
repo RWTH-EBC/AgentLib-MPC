@@ -90,6 +90,7 @@ class BaseMPCConfig(BaseModuleConfig):
             samp_time = info.data["time_step"]
         return samp_time
 
+
 def _create_optimization_backend(optimization_backend, agent_id):
     """Set up the optimization_backend"""
     optimization_backend = optimization_backend.copy()
@@ -278,9 +279,9 @@ class BaseMPC(BaseModule):
 
     def re_init_optimization(self, parameter: AgentVariable):
         """Re-initializes the optimization backend with new parameters."""
-        self.optimization_backend.discretization_options[
-            parameter.name
-        ] = parameter.value
+        self.optimization_backend.discretization_options[parameter.name] = (
+            parameter.value
+        )
         self._init_optimization()
 
     @property

@@ -42,11 +42,9 @@ class DiscretizationOptions(pydantic.BaseModel):
 
 
 class Results(Protocol):
-
     df: pd.DataFrame
 
-    def __getitem__(self, item: str) -> Sequence[float]:
-        ...
+    def __getitem__(self, item: str) -> Sequence[float]: ...
 
 
 @dataclasses.dataclass
