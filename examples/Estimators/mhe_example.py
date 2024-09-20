@@ -208,7 +208,7 @@ def configs() -> List[dict]:
                 ],
                 "estimated_inputs": [],
                 "estimated_parameters": [
-                    {"name": "full_capacity_from_volume_factor", "lb": 1, "ub": 10}
+                    {"name": "full_capacity_from_volume_factor", "lb": 5, "ub": 6}
                 ],
                 "known_inputs": [
                     {"name": "mDot", "value": 0.22},
@@ -236,7 +236,8 @@ def configs() -> List[dict]:
                     },
                     "solver": {"name": "ipopt", "options": {"ipopt.print_level": 0}},
                     "results_file": "results//mpc.csv",
-                    "overwrite_result_file": True,                },
+                    "overwrite_result_file": True,
+                },
                 "time_step": 200,
                 "prediction_horizon": 15,
                 "parameters": [
@@ -244,7 +245,7 @@ def configs() -> List[dict]:
                         "name": "full_capacity_from_volume_factor",
                         "value": 5.5,
                         "lb": 1,
-                        "ub": 10,
+                        "ub": 50,
                     }
                 ],
                 "inputs": [
@@ -313,34 +314,68 @@ def plots(results):
     fig, ax = plt.subplots(4, 1, sharex=True)
     fig: plt.Figure
 
-    ax[0].axhline(T_UPPER_23, color="red", label="upper boundary")
-    ax[0].plot(results["SimAgent"]["room"]["T_out"], label="temperature")
-    room_res = mpc_at_time_step(data=results["myMPCAgent"]["myMPC"], time_step=0)
-    ax[0].plot(room_res["variable"]["T"], label="temperature prediction")
+    colors = {"sim": "blue", "mpc": "green", "mhe": "red"}
+    linestyles = {"sim": "-", "mpc": "--", "mhe": ":"}
 
-    ax[1].plot(results["SimAgent"]["room"]["T_wall"], label="Wall temperature")
+    # Temperature plot
+    ax[0].axhline(T_UPPER_23, color="0.5", linestyle="--", label="Upper boundary")
+    ax[0].plot(
+        results["SimAgent"]["room"]["T_out"],
+        color=colors["sim"],
+        linestyle=linestyles["sim"],
+        label="Simulation",
+    )
+    room_res = mpc_at_time_step(data=results["myMPCAgent"]["myMPC"], time_step=0)
+    ax[0].plot(
+        room_res["variable"]["T"],
+        color=colors["mpc"],
+        linestyle=linestyles["mpc"],
+        label="MPC prediction",
+    )
+    ax[0].set_ylabel("$T_air$ / K")
+
+    # Wall temperature plot
+    ax[1].plot(
+        results["SimAgent"]["room"]["T_wall"],
+        color=colors["sim"],
+        linestyle=linestyles["sim"],
+        label="Simulation",
+    )
     mhe_res = results["myMPCAgent"]["mhe"]
     estimate = last_vals_at_trajectory_index(mhe_res["variable"]["T_wall"].dropna())
-    ax[1].plot(estimate, label="Estimated wall temp")
+    ax[1].plot(
+        estimate, color=colors["mhe"], linestyle=linestyles["mhe"], label="MHE estimate"
+    )
+    ax[1].set_ylabel("$T_{wall}$ /°C")
 
-    ax[2].plot(results["SimAgent"]["room"]["mDot"], label="air mass flow")
+    # Air mass flow plot
+    ax[2].plot(
+        results["SimAgent"]["room"]["mDot"],
+        color=colors["sim"],
+        linestyle=linestyles["sim"],
+        label="Simulation",
+    )
+    ax[2].set_ylabel("$\dot{m}$ / kg/s")
+    ax[2].set_ylim([0, 0.11])
 
-    ax[3].axhline(TRUE_CAP_FACTOR, label="Capacity Factor")
+    # Capacity factor plot
+    ax[3].axhline(
+        TRUE_CAP_FACTOR, color="black", linestyle="--", label="True capacity factor"
+    )
     estimate = last_vals_at_trajectory_index(
         mhe_res["variable"]["full_capacity_from_volume_factor"].dropna()
     )
-    ax[3].plot(estimate, label="Estimated Capacity Factor")
-
-    # for x in ax:
-    #     right_legend(x, adjust_right=0.8)
-    ax[0].set_ylabel("$T_air$ / K")
-    ax[1].set_ylabel("$T_{wall}$ /°C")
-    ax[2].set_ylabel("$\dot{m}$ / kg/s")
+    ax[3].plot(
+        estimate, color=colors["mhe"], linestyle=linestyles["mhe"], label="MHE estimate"
+    )
     ax[3].set_ylabel("$c_{v, room}$")
-    ax[2].set_ylim([0, 0.11])
-    ax[3].set_xlabel("simulation time / s")
+    ax[3].set_xlabel("Simulation time (s)")
+
+    for x in ax:
+        x.legend()
 
     fig.tight_layout()
+    # plt.subplots_adjust(right=0.85)
     plt.show()
 
 
@@ -360,4 +395,4 @@ def main(until: float = 1000, log_level: int = logging.INFO, with_plots: bool = 
 
 
 if __name__ == "__main__":
-    main(until=3000)
+    main(until=3600 * 1.5)
