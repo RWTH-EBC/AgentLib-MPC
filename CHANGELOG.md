@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.2
+- Add moving horizon estimator. Use it as ``"agentlib_mpc.mhe"``
+
+
 ## 0.6.1
 
 - Added Changelog
