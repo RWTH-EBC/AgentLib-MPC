@@ -1,49 +1,41 @@
-import logging
-from typing import Union
-
 import casadi as ca
+from typing import Dict
+import collections
 
-from agentlib_mpc.models.casadi_model import CasadiInput, CasadiParameter
+from agentlib_mpc.models.casadi_model import CasadiParameter
+
 from agentlib_mpc.data_structures.casadi_utils import (
     LB_PREFIX,
     UB_PREFIX,
     DiscretizationMethod,
+    SolverFactory,
     Constraint,
 )
 from agentlib_mpc.data_structures.ml_model_datatypes import name_with_lag
-from agentlib_mpc.models.casadi_ml_model import CasadiMLModel
-from agentlib_mpc.optimization_backends.casadi_.casadi_nn import (
-    CasadiNNSystem,
-    CasADiBBBackend,
-    MultipleShooting_NN,
+from agentlib_mpc.data_structures.mpc_datamodels import (
+    FullVariableReference,
 )
+from agentlib_mpc.models.casadi_ml_model import CasadiMLModel
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
+    OptimizationQuantity,
     OptimizationVariable,
     OptimizationParameter,
 )
-from agentlib_mpc.data_structures import admm_datatypes
-from agentlib_mpc.optimization_backends.casadi_.admm import (
-    ADMMMultipleShooting,
-    CasadiADMMSystem,
-    CasADiADMMBackend,
+from agentlib_mpc.optimization_backends.casadi_.basic import (
+    MultipleShooting,
+    CasADiBaseBackend,
 )
+from agentlib_mpc.optimization_backends.casadi_.full import FullSystem
 
-logger = logging.getLogger(__name__)
 
+class CasadiMLSystem(FullSystem):
+    # multiple possibilities of using the MLModel
+    # stage function for neural networks
+    model: CasadiMLModel
+    lags_dict: dict[str, int]
+    sim_step: ca.Function
 
-class CasadiADMMNNSystem(CasadiADMMSystem, CasadiNNSystem):
-    """
-    In this class, the lags are determined by the trainer alone and the lags are
-    saved in the serialized MLModel so that it doesn't have to be defined in the
-    model again
-    """
-
-    past_couplings: OptimizationParameter
-    past_exchange: OptimizationParameter
-
-    def initialize(
-        self, model: CasadiMLModel, var_ref: admm_datatypes.VariableReference
-    ):
+    def initialize(self, model: CasadiMLModel, var_ref: FullVariableReference):
         # define variables
         self.states = OptimizationVariable.declare(
             denotation="state",
@@ -101,7 +93,6 @@ class CasadiADMMNNSystem(CasadiADMMSystem, CasadiNNSystem):
             use_in_stage_function=False,
             assert_complete=True,
         )
-
         self.cost_function = model.cost_func
         self.model_constraints = Constraint(
             function=ca.vertcat(*[c.function for c in model.get_constraints()]),
@@ -112,140 +103,25 @@ class CasadiADMMNNSystem(CasadiADMMSystem, CasadiNNSystem):
         self.model = model
         self.lags_dict: dict[str, int] = model.lags_dict
 
-        coup_names = [c.name for c in var_ref.couplings]
-        exchange_names = [c.name for c in var_ref.exchange]
-        pure_outs = [
-            m for m in model.outputs if m.name not in coup_names + exchange_names
-        ]
-        self.outputs = OptimizationVariable.declare(
-            denotation="y",
-            variables=pure_outs,
-            ref_list=var_ref.outputs,
-        )
-
-        self.local_couplings = OptimizationVariable.declare(
-            denotation="local_couplings",
-            variables=[model.get(name) for name in coup_names],
-            ref_list=coup_names,
-        )
-        couplings_global = [coup.mean for coup in var_ref.couplings]
-        self.global_couplings = OptimizationParameter.declare(
-            denotation="global_couplings",
-            variables=[CasadiInput(name=coup) for coup in couplings_global],
-            ref_list=couplings_global,
-        )
-
-        multipliers = [coup.multiplier for coup in var_ref.couplings]
-        self.multipliers = OptimizationParameter.declare(
-            denotation="multipliers",
-            variables=[CasadiInput(name=coup) for coup in multipliers],
-            ref_list=multipliers,
-        )
-
-        self.local_exchange = OptimizationVariable.declare(
-            denotation="local_exchange",
-            variables=[model.get(name) for name in exchange_names],
-            ref_list=exchange_names,
-        )
-        couplings_mean_diff = [coup.mean_diff for coup in var_ref.exchange]
-        self.exchange_diff = OptimizationParameter.declare(
-            denotation="average_diff",
-            variables=[CasadiInput(name=coup) for coup in couplings_mean_diff],
-            ref_list=couplings_mean_diff,
-        )
-
-        multipliers = [coup.multiplier for coup in var_ref.exchange]
-        self.exchange_multipliers = OptimizationParameter.declare(
-            denotation="exchange_multipliers",
-            variables=[CasadiInput(name=coup) for coup in multipliers],
-            ref_list=multipliers,
-        )
-
-        self.penalty_factor = OptimizationParameter.declare(
-            denotation="rho",
-            variables=[CasadiParameter(name="penalty_factor")],
-            ref_list=["penalty_factor"],
-        )
-        past_coup_names = [coup.lagged for coup in var_ref.couplings]
-        self.past_couplings = OptimizationParameter.declare(
-            denotation="past_couplings",
-            variables=[CasadiInput(name=name) for name in past_coup_names],
-            ref_list=past_coup_names,
-            use_in_stage_function=False,
-        )
-        past_exchange_names = [exchange.lagged for exchange in var_ref.exchange]
-        self.past_exchange = OptimizationParameter.declare(
-            denotation="past_exchange",
-            variables=[CasadiInput(name=name) for name in exchange_names],
-            ref_list=past_exchange_names,
-            use_in_stage_function=False,
-        )
-
-        # add admm terms to objective function
-        admm_objective = 0
-        rho = self.penalty_factor.full_symbolic[0]
-        for i in range(len(var_ref.couplings)):
-            admm_in = self.global_couplings.full_symbolic[i]
-            admm_out = self.local_couplings.full_symbolic[i]
-            admm_lam = self.multipliers.full_symbolic[i]
-            admm_objective += admm_lam * admm_out + rho / 2 * (admm_in - admm_out) ** 2
-
-        for i in range(len(var_ref.exchange)):
-            admm_in = self.exchange_diff.full_symbolic[i]
-            admm_out = self.local_exchange.full_symbolic[i]
-            admm_lam = self.exchange_multipliers.full_symbolic[i]
-            admm_objective += admm_lam * admm_out + rho / 2 * (admm_in - admm_out) ** 2
-
-        self.cost_function += admm_objective
-
     @property
-    def variables(self) -> list[OptimizationVariable]:
-        return [
-            var
-            for var in self.__dict__.values()
-            if isinstance(var, OptimizationVariable)
-        ]
+    def max_lag(self) -> int:
+        if self.lags_dict:
+            return max(self.lags_dict.values())
+        else:
+            # if there is no bb variable, we have a lag of 1
+            return 1
 
-    @property
-    def parameters(self) -> list[OptimizationParameter]:
-        return [
-            var
-            for var in self.__dict__.values()
-            if isinstance(var, OptimizationParameter)
-        ]
-
-    @property
-    def quantities(self) -> list[Union[OptimizationParameter, OptimizationVariable]]:
-        return self.variables + self.parameters
-
-    @property
-    def sim_step_quantities(
-        self,
-    ) -> dict[str, Union[OptimizationParameter, OptimizationVariable]]:
-        omit_in_blackbox_function = {
-            "global_couplings",
-            "multipliers",
-            "average_diff",
-            "exchange_multipliers",
-            "rho",
-        }
-        return {
-            var.name: var
-            for var in self.quantities
-            if not var.name in omit_in_blackbox_function
-        }
+    def all_system_quantities(self) -> dict[str, OptimizationQuantity]:
+        return {var.name: var for var in self.quantities}
 
 
-class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_NN):
+class MultipleShooting_ML(MultipleShooting):
     max_lag: int
 
-    def _discretize(self, sys: CasadiADMMNNSystem):
+    def _discretize(self, sys: CasadiMLSystem):
         n = self.options.prediction_horizon
         ts = self.options.time_step
-
-        # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
-        rho = self.add_opt_par(sys.penalty_factor)
         du_weights = self.add_opt_par(sys.r_del_u)
 
         pre_grid_states = [ts * i for i in range(-sys.max_lag + 1, 1)]
@@ -283,18 +159,6 @@ class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_NN):
             )
             mx_dict[time][sys.last_control.name] = u_past
 
-            # admm quantities
-            past_coup = self.add_opt_par(sys.past_couplings)
-            past_exch = self.add_opt_par(sys.past_exchange)
-            mx_dict[time][sys.local_couplings.name] = past_coup
-            mx_dict[time][sys.local_exchange.name] = past_exch
-            mx_dict[time][sys.local_exchange.name] = self.add_opt_var(
-                sys.local_exchange, lb=past_exch, ub=past_exch, guess=past_exch
-            )
-            mx_dict[time][sys.local_couplings.name] = self.add_opt_var(
-                sys.local_couplings, lb=past_coup, ub=past_coup, guess=past_coup
-            )
-
         # add all variables over future grid
         for time in prediction_grid:
             self.pred_time = time
@@ -304,22 +168,6 @@ class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_NN):
             )
             mx_dict[time][sys.algebraics.name] = self.add_opt_var(sys.algebraics)
             mx_dict[time][sys.outputs.name] = self.add_opt_var(sys.outputs)
-
-            # admm related quantities
-            mx_dict[time][sys.multipliers.name] = self.add_opt_par(sys.multipliers)
-            mx_dict[time][sys.exchange_multipliers.name] = self.add_opt_par(
-                sys.exchange_multipliers
-            )
-            mx_dict[time][sys.exchange_diff.name] = self.add_opt_par(sys.exchange_diff)
-            mx_dict[time][sys.global_couplings.name] = self.add_opt_par(
-                sys.global_couplings
-            )
-            mx_dict[time][sys.local_exchange.name] = self.add_opt_var(
-                sys.local_exchange
-            )
-            mx_dict[time][sys.local_couplings.name] = self.add_opt_var(
-                sys.local_couplings
-            )
 
         # create the state grid
         # x0 will always be the state at time 0 since the loop it is defined in starts
@@ -356,14 +204,6 @@ class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_NN):
                     sys.non_controlled_inputs.name
                 ],
                 sys.model_parameters.name: const_par,
-                sys.penalty_factor.name: rho,
-                # admm related quantities
-                sys.multipliers.name: stage_mx[sys.multipliers.name],
-                sys.exchange_multipliers.name: stage_mx[sys.exchange_multipliers.name],
-                sys.exchange_diff.name: stage_mx[sys.exchange_diff.name],
-                sys.global_couplings.name: stage_mx[sys.global_couplings.name],
-                sys.local_exchange.name: stage_mx[sys.local_exchange.name],
-                sys.local_couplings.name: stage_mx[sys.local_couplings.name],
             }
 
             # collect stage arguments for lagged variables
@@ -372,6 +212,8 @@ class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_NN):
                     l_name = name_with_lag(denotation, lag)
                     mx_list = []
                     for v_name in var_names:
+                        # add only the singular variable which has a lag on this level
+                        # to the stage arguments
                         index = all_quantities[denotation].full_names.index(v_name)
                         mx_list.append(mx_dict[time - lag * ts][denotation][index])
                     stage_arguments[l_name] = ca.vertcat(*mx_list)
@@ -389,7 +231,13 @@ class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_NN):
             )
             self.objective_function += stage_result["cost_function"] * ts
 
-    def _construct_stage_function(self, system: CasadiADMMNNSystem):
+    def initialize(self, system: CasadiMLSystem, solver_factory: SolverFactory):
+        """Initializes the trajectory optimization problem, creating all symbolic
+        variables of the OCP, the mapping function and the numerical solver."""
+        self._construct_stage_function(system)
+        super().initialize(system=system, solver_factory=solver_factory)
+
+    def _construct_stage_function(self, system: CasadiMLSystem):
         """
         Combine information from the model and the var_ref to create CasADi
         functions which describe the system dynamics and constraints at each
@@ -433,20 +281,18 @@ class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_NN):
         lagged_inputs: dict[int, dict[str, ca.MX]] = {}
         # dict[lag, dict[denotation, list[var_name]]]
         lagged_input_names: dict[int, dict[str, list[str]]] = {}
-
-        for q_name, quantity in system.sim_step_quantities.items():
-            if not quantity.use_in_stage_function:
+        for q_name, q_obj in all_system_quantities.items():
+            if not q_obj.use_in_stage_function:
                 continue
-
-            for v_id, v_name in enumerate(quantity.full_names):
-                all_input_variables[v_name] = quantity.full_symbolic[v_id]
+            for v_id, v_name in enumerate(q_obj.full_names):
+                all_input_variables[v_name] = q_obj.full_symbolic[v_id]
                 lag = system.lags_dict.get(v_name, 1)
 
                 # if lag exists, we have to create and organize new variables
                 for j in range(1, lag):
                     # create an MX variable for this lag
                     l_name = name_with_lag(v_name, j)
-                    new_lag_var = ca.MX.sym(l_name)
+                    new_lag_var = system.model.lags_mx_store[l_name]
                     all_input_variables[l_name] = new_lag_var
 
                     # add the mx variable to its lag time and denotation
@@ -497,15 +343,58 @@ class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_NN):
             output_denotations,
         )
 
+    def _create_lag_structure_for_denotations(self, system: CasadiMLSystem):
+        all_system_quantities = self.all_system_quantities(system)
+        all_input_variables = {}
+        lagged_inputs: dict[int, dict[str, ca.MX]] = {}
+        # dict[lag, dict[denotation, list[var_name]]]
+        lagged_input_names: dict[int, dict[str, list[str]]] = {}
+        for q_name, q_obj in all_system_quantities.items():
+            if not q_obj.use_in_stage_function:
+                continue
+            for v_id, v_name in enumerate(q_obj.full_names):
+                all_input_variables[v_name] = q_obj.full_symbolic[v_id]
+                lag = system.lags_dict.get(v_name, 1)
 
-class CasADiADMMBackend_NN(CasADiADMMBackend, CasADiBBBackend):
+                # if lag exists, we have to create and organize new variables
+                for j in range(1, lag):
+                    # create an MX variable for this lag
+                    l_name = name_with_lag(v_name, j)
+                    new_lag_var = ca.MX.sym(l_name)
+                    all_input_variables[l_name] = new_lag_var
+
+                    # add the mx variable to its lag time and denotation
+                    lagged_inputs_j = lagged_inputs.setdefault(j, {})
+                    lv_mx = lagged_inputs_j.setdefault(q_name, ca.DM([]))
+                    lagged_inputs[j][q_name] = ca.vertcat(lv_mx, new_lag_var)
+
+                    # keep track of the variable names that were added
+                    lagged_input_names_j = lagged_input_names.setdefault(j, {})
+                    lv_names = lagged_input_names_j.setdefault(q_name, [])
+                    lv_names.append(v_name)
+
+        return
+
+
+class CasADiBBBackend(CasADiBaseBackend):
     """
-    Class doing optimization with an MLModel.
+    Class doing optimization with a MLModel.
     """
 
-    system_type = CasadiADMMNNSystem
-    discretization_types = {
-        DiscretizationMethod.multiple_shooting: MultipleShootingADMMNN
-    }
-    system: CasadiADMMNNSystem
+    system_type = CasadiMLSystem
+    discretization_types = {DiscretizationMethod.multiple_shooting: MultipleShooting_ML}
+    system: CasadiMLSystem
     # a dictionary of collections of the variable lags
+    lag_collection: Dict[str, collections.deque] = {}
+    max_lag: int
+
+    def get_lags_per_variable(self) -> dict[str, float]:
+        """Returns the name of variables which include lags and their lag. The MPC
+        module can use this information to save relevant past data of lagged
+        variables"""
+        ts = self.config.discretization_options.time_step
+        return {
+            name: (lag - 1) * ts
+            for name, lag in self.system.lags_dict.items()
+            if name in self.var_ref
+        }

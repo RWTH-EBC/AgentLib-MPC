@@ -291,8 +291,8 @@ class MLModelTrainer(BaseModule, abc.ABC):
         """Loads simulation data to initialize the time_series data"""
         feature_names = list(self.config.lags.keys())
         time_series_data = {name: pd.Series(dtype=float) for name in feature_names}
-        for ann_src in self.config.data_sources:
-            loaded_time_series = load_sim(ann_src)
+        for ml_src in self.config.data_sources:
+            loaded_time_series = load_sim(ml_src)
             for column in loaded_time_series.columns:
                 if column in feature_names:
                     srs = loaded_time_series[column]
@@ -376,7 +376,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
     @abc.abstractmethod
     def build_ml_model(self):
         """
-        Builds and returns an ann model
+        Builds and returns an ml model
         """
         pass
 
@@ -405,7 +405,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
             and features_with_insufficient_data
         ):
             raise RuntimeError(
-                f"Called ANN Trainer in strict mode but there was insufficient data."
+                f"Called ML Trainer in strict mode but there was insufficient data."
                 f" Features with insufficient data are: "
                 f"{features_with_insufficient_data}"
             )
@@ -438,21 +438,21 @@ class MLModelTrainer(BaseModule, abc.ABC):
 
     def serialize_ml_model(self) -> SerializedMLModel:
         """
-        Serializes the ML Model, sa that it can be saved
+        Serializes the ML Model, so that it can be saved
         as json file.
         Returns:
             SerializedMLModel version of the passed ML Model.
         """
-        ann_inputs, ann_outputs = self._define_features()
+        ml_inputs, ml_outputs = self._define_features()
 
-        serialized_ann = self.model_type.serialize(
+        serialized_ml = self.model_type.serialize(
             model=self.ml_model,
             dt=self.config.step_size,
-            input=ann_inputs,
-            output=ann_outputs,
+            input=ml_inputs,
+            output=ml_outputs,
             training_info=self.training_info,
         )
-        return serialized_ann
+        return serialized_ml
 
     def save_ml_model(self, serialized_ml_model: SerializedMLModel, path: Path):
         """Saves the ML Model in serialized format."""
@@ -464,23 +464,23 @@ class MLModelTrainer(BaseModule, abc.ABC):
         dict[str, ml_model_datatypes.Feature],
         dict[str, ml_model_datatypes.OutputFeature],
     ]:
-        """Defines dictionaries for all features of the ANN based on the inputs and
-        outputs. This will also be the order, in which the serialized ann is exported"""
-        ann_inputs = {}
+        """Defines dictionaries for all features of the ML based on the inputs and
+        outputs. This will also be the order, in which the serialized ml is exported"""
+        ml_inputs = {}
         for name in self.input_names:
-            ann_inputs[name] = ml_model_datatypes.Feature(
+            ml_inputs[name] = ml_model_datatypes.Feature(
                 name=name,
                 lag=self.config.lags[name],
             )
-        ann_outputs = {}
+        ml_outputs = {}
         for name in self.output_names:
-            ann_outputs[name] = ml_model_datatypes.OutputFeature(
+            ml_outputs[name] = ml_model_datatypes.OutputFeature(
                 name=name,
                 lag=self.config.lags[name],
                 output_type=self.config.output_types[name],
                 recursive=self.config.recursive_outputs[name],
             )
-        return ann_inputs, ann_outputs
+        return ml_inputs, ml_outputs
 
     @property
     def agent_and_time(self) -> str:
@@ -672,7 +672,7 @@ class GPRTrainerConfig(MLModelTrainerConfig):
 
 class GPRTrainer(MLModelTrainer):
     """
-    Module that generates ANNs based on received data.
+    Module that generates GPRs based on received data.
     """
 
     config: GPRTrainerConfig
@@ -743,7 +743,7 @@ class LinRegTrainerConfig(MLModelTrainerConfig):
 
 class LinRegTrainer(MLModelTrainer):
     """
-    Module that generates ANNs based on received data.
+    Module that generates LinRegs based on received data.
     """
 
     config: LinRegTrainerConfig

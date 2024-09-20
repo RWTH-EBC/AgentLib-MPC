@@ -15,7 +15,7 @@ class CaCoolerConfig(CasadiModelConfig):
             name="mDot",
             value=0.0225,
             unit="kg/s",
-            description="Air " "mass flow out of cooler.",
+            description="Air mass flow out of cooler.",
         ),
         # disturbances
         # CasadiInput(name="T_oda", value=273.15 + 30, unit="K", description="Ambient air temperature"),
