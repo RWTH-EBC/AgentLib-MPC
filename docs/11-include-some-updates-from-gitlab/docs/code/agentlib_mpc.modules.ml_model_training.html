@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules.ml_model_training package &mdash; agentlib_mpc 0.6.1 documentation</title>
+  <title>agentlib_mpc.modules.ml_model_training package &mdash; agentlib_mpc 0.6.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
@@ -202,7 +202,7 @@ method.</p>
 <dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.ml_model_trainer.GPRTrainer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.ml_model_training.ml_model_trainer.</span></span><span class="sig-name descname"><span class="pre">GPRTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Agent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_training/ml_model_trainer.html#GPRTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.ml_model_trainer.GPRTrainer" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer" title="agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">MLModelTrainer</span></code></a></p>
-<p>Module that generates ANNs based on received data.</p>
+<p>Module that generates GPRs based on received data.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.ml_model_trainer.GPRTrainer.build_ml_model">
 <span class="sig-name descname"><span class="pre">build_ml_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_training/ml_model_trainer.html#GPRTrainer.build_ml_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.ml_model_trainer.GPRTrainer.build_ml_model" title="Permalink to this definition"></a></dt>
@@ -302,7 +302,7 @@ method.</p>
 <dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.ml_model_trainer.LinRegTrainer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.ml_model_training.ml_model_trainer.</span></span><span class="sig-name descname"><span class="pre">LinRegTrainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Agent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_training/ml_model_trainer.html#LinRegTrainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.ml_model_trainer.LinRegTrainer" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer" title="agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">MLModelTrainer</span></code></a></p>
-<p>Module that generates ANNs based on received data.</p>
+<p>Module that generates LinRegs based on received data.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.ml_model_trainer.LinRegTrainer.build_ml_model">
 <span class="sig-name descname"><span class="pre">build_ml_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_training/ml_model_trainer.html#LinRegTrainer.build_ml_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.ml_model_trainer.LinRegTrainer.build_ml_model" title="Permalink to this definition"></a></dt>
@@ -365,7 +365,7 @@ method.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.build_ml_model">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_ml_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_training/ml_model_trainer.html#MLModelTrainer.build_ml_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.build_ml_model" title="Permalink to this definition"></a></dt>
-<dd><p>Builds and returns an ann model</p>
+<dd><p>Builds and returns an ml model</p>
 </dd></dl>
 
 <dl class="py method">
@@ -441,7 +441,7 @@ with the other processes of the agent and the whole MAS.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.serialize_ml_model">
 <span class="sig-name descname"><span class="pre">serialize_ml_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel" title="agentlib_mpc.models.serialized_ml_model.SerializedMLModel"><span class="pre">SerializedMLModel</span></a></span></span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_training/ml_model_trainer.html#MLModelTrainer.serialize_ml_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.serialize_ml_model" title="Permalink to this definition"></a></dt>
-<dd><p>Serializes the ML Model, sa that it can be saved
+<dd><p>Serializes the ML Model, so that it can be saved
 as json file.
 :returns: SerializedMLModel version of the passed ML Model.</p>
 </dd></dl>
@@ -715,7 +715,7 @@ as json file.
 
 <dl class="py method pydantic_validator">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.check_if_save_path_is_there">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_if_save_path_is_there</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><a class="reference internal" href="#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.save_data" title="agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.save_data"><em class="xref py py-obj"><span class="pre">save_data</span></em></a><em class="property"><span class="pre">,</span> </em><a class="reference internal" href="#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.save_ml_model" title="agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.save_ml_model"><em class="xref py py-obj"><span class="pre">save_ml_model</span></em></a><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_training/ml_model_trainer.html#MLModelTrainerConfig.check_if_save_path_is_there"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.check_if_save_path_is_there" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_if_save_path_is_there</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><a class="reference internal" href="#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.save_ml_model" title="agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.save_ml_model"><em class="xref py py-obj"><span class="pre">save_ml_model</span></em></a><em class="property"><span class="pre">,</span> </em><a class="reference internal" href="#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.save_data" title="agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.save_data"><em class="xref py py-obj"><span class="pre">save_data</span></em></a><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_training/ml_model_trainer.html#MLModelTrainerConfig.check_if_save_path_is_there"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.check_if_save_path_is_there" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method pydantic_validator">
