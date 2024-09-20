@@ -1653,30 +1653,8 @@
         {
             "type": "error",
             "module": "test_serialized_ann",
-            "obj": "",
-            "line": 7,
-            "column": 0,
-            "path": "tests/test_serialized_ann.py",
-            "symbol": "import-error",
-            "message": "Unable to import 'pytest'",
-            "message-id": "E0401"
-        },
-        {
-            "type": "error",
-            "module": "test_serialized_ann",
-            "obj": "",
-            "line": 8,
-            "column": 0,
-            "path": "tests/test_serialized_ann.py",
-            "symbol": "import-error",
-            "message": "Unable to import 'keras.models'",
-            "message-id": "E0401"
-        },
-        {
-            "type": "error",
-            "module": "test_serialized_ann",
             "obj": "TestSerializedANN.test_serialize",
-            "line": 46,
+            "line": 44,
             "column": 30,
             "path": "tests/test_serialized_ann.py",
             "symbol": "unsubscriptable-object",
@@ -1687,7 +1665,7 @@
             "type": "error",
             "module": "test_serialized_ann",
             "obj": "TestSerializedANN.test_serialize",
-            "line": 47,
+            "line": 45,
             "column": 30,
             "path": "tests/test_serialized_ann.py",
             "symbol": "unsubscriptable-object",
@@ -1709,7 +1687,7 @@
             "type": "convention",
             "module": "test_serialized_ann",
             "obj": "",
-            "line": 9,
+            "line": 8,
             "column": 0,
             "path": "tests/test_serialized_ann.py",
             "symbol": "wrong-import-order",
@@ -1720,18 +1698,7 @@
             "type": "convention",
             "module": "test_serialized_ann",
             "obj": "",
-            "line": 10,
-            "column": 0,
-            "path": "tests/test_serialized_ann.py",
-            "symbol": "wrong-import-order",
-            "message": "standard import \"from typing import List\" should be placed before \"import numpy as np\"",
-            "message-id": "C0411"
-        },
-        {
-            "type": "convention",
-            "module": "test_serialized_ann",
-            "obj": "",
-            "line": 15,
+            "line": 13,
             "column": 0,
             "path": "tests/test_serialized_ann.py",
             "symbol": "wrong-import-order",
@@ -1742,34 +1709,12 @@
             "type": "convention",
             "module": "test_serialized_ann",
             "obj": "",
-            "line": 16,
+            "line": 14,
             "column": 0,
             "path": "tests/test_serialized_ann.py",
             "symbol": "wrong-import-order",
             "message": "third party import \"from fixtures.data_generator import DataGenerator\" should be placed before \"from agentlib_mpc.data_structures import ml_model_datatypes\"",
             "message-id": "C0411"
-        },
-        {
-            "type": "warning",
-            "module": "test_serialized_ann",
-            "obj": "",
-            "line": 7,
-            "column": 0,
-            "path": "tests/test_serialized_ann.py",
-            "symbol": "unused-import",
-            "message": "Unused import pytest",
-            "message-id": "W0611"
-        },
-        {
-            "type": "warning",
-            "module": "test_serialized_ann",
-            "obj": "",
-            "line": 10,
-            "column": 0,
-            "path": "tests/test_serialized_ann.py",
-            "symbol": "unused-import",
-            "message": "Unused List imported from typing",
-            "message-id": "W0611"
         },
         {
             "type": "convention",
@@ -2014,13 +1959,13 @@
                 "warning": 2
             },
             "test_serialized_ann": {
-                "convention": 5,
-                "error": 4,
+                "convention": 4,
+                "error": 2,
                 "fatal": 0,
                 "info": 0,
                 "refactor": 0,
-                "statement": 47,
-                "warning": 2
+                "statement": 45,
+                "warning": 0
             },
             "test_serialized_gpr": {
                 "convention": 6,
@@ -2042,10 +1987,10 @@
             }
         },
         "by_msg": {
-            "import-error": 6,
+            "import-error": 4,
             "pointless-string-statement": 1,
             "missing-function-docstring": 26,
-            "unused-import": 5,
+            "unused-import": 3,
             "missing-module-docstring": 6,
             "redefined-outer-name": 9,
             "invalid-name": 6,
@@ -2053,7 +1998,7 @@
             "unused-variable": 4,
             "protected-access": 14,
             "attribute-defined-outside-init": 4,
-            "wrong-import-order": 16,
+            "wrong-import-order": 15,
             "unsubscriptable-object": 2
         },
         "code_type_count": {
@@ -2071,23 +2016,23 @@
                 "agentlib_mpc"
             ],
             "pandas": [
-                "test_mpc",
-                "test_examples"
+                "test_examples",
+                "test_mpc"
             ],
             "agentlib.utils": [
                 "conftest",
                 "test_examples"
             ],
             "agentlib.utils.local_broadcast_broker": [
-                "test_examples",
-                "test_admm"
+                "test_admm",
+                "test_examples"
             ],
             "numpy": [
                 "test_serialized_gpr",
-                "test_serialized_ann",
                 "test_admm",
+                "test_serialized_linreg",
                 "test_mpc",
-                "test_serialized_linreg"
+                "test_serialized_ann"
             ],
             "agentlib.core": [
                 "test_admm"
@@ -2141,28 +2086,31 @@
             "agentlib_mpc.utils.sampling": [
                 "test_mpc"
             ],
+            "keras": [
+                "test_serialized_ann"
+            ],
             "agentlib_mpc.data_structures.ml_model_datatypes": [
-                "test_serialized_ann",
                 "test_serialized_gpr",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_ann"
             ],
             "agentlib_mpc.models.casadi_predictor": [
-                "test_serialized_ann",
                 "test_serialized_gpr",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_ann"
             ],
             "agentlib_mpc.models.serialized_ml_model": [
-                "test_serialized_ann",
                 "test_serialized_gpr",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_ann"
             ],
             "fixtures.ann": [
                 "test_serialized_ann"
             ],
             "fixtures.data_generator": [
-                "test_serialized_ann",
                 "test_serialized_gpr",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_ann"
             ],
             "sklearn.gaussian_process": [
                 "test_serialized_gpr"
@@ -2193,13 +2141,13 @@
             "method": 14,
             "module": 6
         },
-        "convention": 57,
-        "error": 8,
+        "convention": 56,
+        "error": 6,
         "fatal": 0,
         "info": 0,
         "refactor": 0,
-        "statement": 421,
-        "warning": 37,
+        "statement": 419,
+        "warning": 35,
         "global_note": 0,
         "nb_duplicated_lines": 0,
         "percent_duplicated_lines": 0.0
@@ -2303,13 +2251,13 @@
                 "warning": 2
             },
             "test_serialized_ann": {
-                "convention": 5,
-                "error": 4,
+                "convention": 4,
+                "error": 2,
                 "fatal": 0,
                 "info": 0,
                 "refactor": 0,
-                "statement": 47,
-                "warning": 2
+                "statement": 45,
+                "warning": 0
             },
             "test_serialized_gpr": {
                 "convention": 6,
@@ -2331,10 +2279,10 @@
             }
         },
         "by_msg": {
-            "import-error": 6,
+            "import-error": 4,
             "pointless-string-statement": 1,
             "missing-function-docstring": 26,
-            "unused-import": 5,
+            "unused-import": 3,
             "missing-module-docstring": 6,
             "redefined-outer-name": 9,
             "invalid-name": 6,
@@ -2342,7 +2290,7 @@
             "unused-variable": 4,
             "protected-access": 14,
             "attribute-defined-outside-init": 4,
-            "wrong-import-order": 16,
+            "wrong-import-order": 15,
             "unsubscriptable-object": 2
         },
         "code_type_count": {
@@ -2360,12 +2308,12 @@
                 "agentlib_mpc"
             ],
             "pandas": [
-                "test_mpc",
-                "ci.test_examples"
+                "ci.test_examples",
+                "test_mpc"
             ],
             "agentlib.utils": [
-                "conftest",
-                "ci.test_examples"
+                "ci.test_examples",
+                "conftest"
             ],
             "agentlib.utils.local_broadcast_broker": [
                 "test_admm",
@@ -2373,10 +2321,10 @@
             ],
             "numpy": [
                 "test_serialized_gpr",
-                "test_serialized_ann",
                 "test_admm",
+                "test_serialized_linreg",
                 "test_mpc",
-                "test_serialized_linreg"
+                "test_serialized_ann"
             ],
             "agentlib.core": [
                 "test_admm"
@@ -2430,28 +2378,31 @@
             "agentlib_mpc.utils.sampling": [
                 "test_mpc"
             ],
+            "keras": [
+                "test_serialized_ann"
+            ],
             "agentlib_mpc.data_structures.ml_model_datatypes": [
                 "test_serialized_ann",
-                "test_serialized_gpr",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_gpr"
             ],
             "agentlib_mpc.models.casadi_predictor": [
                 "test_serialized_ann",
-                "test_serialized_gpr",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_gpr"
             ],
             "agentlib_mpc.models.serialized_ml_model": [
                 "test_serialized_ann",
-                "test_serialized_gpr",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_gpr"
             ],
             "fixtures.ann": [
                 "test_serialized_ann"
             ],
             "fixtures.data_generator": [
                 "test_serialized_ann",
-                "test_serialized_gpr",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_gpr"
             ],
             "sklearn.gaussian_process": [
                 "test_serialized_gpr"
@@ -2482,14 +2433,14 @@
             "method": 14,
             "module": 6
         },
-        "convention": 57,
-        "error": 8,
+        "convention": 56,
+        "error": 6,
         "fatal": 0,
         "info": 0,
         "refactor": 0,
-        "statement": 421,
-        "warning": 37,
-        "global_note": 6.817102137767221,
+        "statement": 419,
+        "warning": 35,
+        "global_note": 7.11217183770883,
         "nb_duplicated_lines": 0,
         "percent_duplicated_lines": 0.0
     }

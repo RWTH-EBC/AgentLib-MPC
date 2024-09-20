@@ -156,17 +156,12 @@ tests/test_mpc.py:166:4: C0116: Missing function or method docstring (missing-fu
 tests/test_mpc.py:6:0: C0411: standard import "import pathlib" should be placed before "import numpy as np" (wrong-import-order)
 tests/test_mpc.py:13:0: W0611: Unused OptimizationBackend imported from agentlib_mpc.optimization_backends.backend (unused-import)
 ************* Module test_serialized_ann
-tests/test_serialized_ann.py:7:0: E0401: Unable to import 'pytest' (import-error)
-tests/test_serialized_ann.py:8:0: E0401: Unable to import 'keras.models' (import-error)
-tests/test_serialized_ann.py:46:30: E1136: Value 'serialized_ann.weights' is unsubscriptable (unsubscriptable-object)
-tests/test_serialized_ann.py:47:30: E1136: Value 'serialized_ann.weights' is unsubscriptable (unsubscriptable-object)
+tests/test_serialized_ann.py:44:30: E1136: Value 'serialized_ann.weights' is unsubscriptable (unsubscriptable-object)
+tests/test_serialized_ann.py:45:30: E1136: Value 'serialized_ann.weights' is unsubscriptable (unsubscriptable-object)
 tests/test_serialized_ann.py:5:0: C0411: standard import "import unittest" should be placed before "import numpy as np" (wrong-import-order)
-tests/test_serialized_ann.py:9:0: C0411: standard import "from pathlib import Path" should be placed before "import numpy as np" (wrong-import-order)
-tests/test_serialized_ann.py:10:0: C0411: standard import "from typing import List" should be placed before "import numpy as np" (wrong-import-order)
-tests/test_serialized_ann.py:15:0: C0411: third party import "from fixtures.ann import ANNTrainer" should be placed before "from agentlib_mpc.data_structures import ml_model_datatypes" (wrong-import-order)
-tests/test_serialized_ann.py:16:0: C0411: third party import "from fixtures.data_generator import DataGenerator" should be placed before "from agentlib_mpc.data_structures import ml_model_datatypes" (wrong-import-order)
-tests/test_serialized_ann.py:7:0: W0611: Unused import pytest (unused-import)
-tests/test_serialized_ann.py:10:0: W0611: Unused List imported from typing (unused-import)
+tests/test_serialized_ann.py:8:0: C0411: standard import "from pathlib import Path" should be placed before "import numpy as np" (wrong-import-order)
+tests/test_serialized_ann.py:13:0: C0411: third party import "from fixtures.ann import ANNTrainer" should be placed before "from agentlib_mpc.data_structures import ml_model_datatypes" (wrong-import-order)
+tests/test_serialized_ann.py:14:0: C0411: third party import "from fixtures.data_generator import DataGenerator" should be placed before "from agentlib_mpc.data_structures import ml_model_datatypes" (wrong-import-order)
 ************* Module test_serialized_gpr
 tests/test_serialized_gpr.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 tests/test_serialized_gpr.py:2:0: C0411: standard import "import os" should be placed before "import numpy as np" (wrong-import-order)
@@ -184,5 +179,5 @@ tests/test_serialized_linreg.py:11:0: C0411: third party import "from fixtures.l
 tests/test_serialized_linreg.py:12:0: C0411: third party import "from fixtures.data_generator import DataGenerator" should be placed before "from agentlib_mpc.data_structures import ml_model_datatypes" (wrong-import-order)
 
 -----------------------------------
-Your code has been rated at 6.82/10
+Your code has been rated at 7.11/10
 
