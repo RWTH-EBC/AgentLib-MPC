@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.utils.analysis &mdash; agentlib_mpc 0.6.1 documentation</title>
+  <title>agentlib_mpc.utils.analysis &mdash; agentlib_mpc 0.6.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -186,6 +186,7 @@
     <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
     <span class="n">time_step</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="n">variable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">variable_type</span><span class="o">=</span><span class="s2">&quot;variable&quot;</span><span class="p">,</span>
     <span class="n">index_offset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;auto&quot;</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -197,6 +198,7 @@
 <span class="sd">            If no exact match, shows closest.</span>
 <span class="sd">        variable: If specified, only returns results</span>
 <span class="sd">            with regard to a certain variable.</span>
+<span class="sd">        variable_type: The type of the variable provided (parameter, variable, lower, ...)</span>
 <span class="sd">        index_offset: Determines how the index will be updated when loading the data.</span>
 <span class="sd">        The offset will be subtracted from the time-index. This is useful for results</span>
 <span class="sd">        of realtime systems, where the time value with be a unix time stamp and we want</span>
@@ -229,7 +231,7 @@
 
     <span class="c1"># select the data at this index and increment the inner index</span>
     <span class="k">if</span> <span class="n">variable</span><span class="p">:</span>
-        <span class="n">data_at_ts</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">xs</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s2">&quot;variable&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">closest</span><span class="p">]</span>
+        <span class="n">data_at_ts</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">variable_type</span><span class="p">][</span><span class="n">variable</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">closest</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">data_at_ts</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">closest</span><span class="p">]</span>
     <span class="n">data_at_ts</span> <span class="o">=</span> <span class="n">data_at_ts</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
