@@ -140,23 +140,19 @@ class RNGRoomConfig(CasadiModelConfig):
 
 
 class RNGRoom(CasadiModel):
-    config_type: RNGRoomConfig
+    config: RNGRoomConfig
 
     def setup_system(self):
         # Define ode
 
         # power wall to zone
         power_wall2zone = (self.T_wall - self.T) / self.RZone_Wall
-
         air_cooling = self.cp * self.mDot * (self.T_in - self.T)
-
         C_zone = self.rho * self.cp * self.V * self.full_capacity_from_volume_factor
-
         self.T.ode = (self.load + air_cooling + power_wall2zone) / C_zone
 
         # power wall to ambient
         power_wall2amb = (self.T_wall - self.T_ambient) / self.R_hull_amb
-
         self.T_wall.ode = -(power_wall2amb + power_wall2zone) / self.C_Wall
 
         # Define ae
@@ -204,9 +200,10 @@ def configs() -> List[dict]:
                 },
                 "horizon": 15,
                 "time_step": 200,
+                "state_weights": {"T": 1, "T_wall": 0},
                 "states": [
-                    {"name": "T", "value": 25, "weight": 1},
-                    {"name": "T_wall", "value": 27, "weight": 0},
+                    {"name": "T", "value": 25},
+                    {"name": "T_wall", "value": 27},
                 ],
                 "estimated_inputs": [],
                 "estimated_parameters": [

@@ -419,7 +419,7 @@ class DirectCollocation(Discretization):
         )
 
 
-class CasADiMHEBackend(CasADiBackend):
+class MHEBackend(CasADiBackend):
     """
     Class doing optimization of ADMM subproblems with CasADi.
     """

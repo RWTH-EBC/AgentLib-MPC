@@ -2,6 +2,7 @@ import os
 from typing import Dict, Optional, Tuple
 
 import pandas as pd
+import pydantic
 from agentlib.core import (
     BaseModuleConfig,
     BaseModule,
@@ -58,11 +59,35 @@ class MHEConfig(BaseModuleConfig):
         description="List of unknown input variables of the MHE. Includes "
         "mainly disturbances.",
     )  # AgentVariables for the initial condition of states to be optimized
-    states: mpc_datamodels.MHEVariables = Field(
+    states: mpc_datamodels.MPCVariables = Field(
         default=[],
         description="List of all differential states of the MHE.",
     )
-    shared_variable_fields = []
+    state_weights: dict[str, float] = Field(
+        title="State Weights",
+        default={},
+        description="Mapping of state names to their weight in the MHE problem. If "
+        "you are certain with your measurement, chose a high value. If "
+        "you dont have a measurement / do not trust it, choose 0. Default "
+        "is 0.",
+    )
+    shared_variable_fields: list[str] = []
+
+    @classmethod
+    @pydantic.field_validator("state_weights")
+    def state_weights_are_in_states(
+        cls, state_weights: dict, info: pydantic.ValidationInfo
+    ):
+        state_names = {s.name for s in info.data["states"]}
+        state_weight_names = set(state_weights)
+
+        missing_names = state_weight_names - state_names
+        if missing_names:
+            raise ValueError(
+                f"The following states defined in state weights do not exist in the "
+                f"states: {', '.join(missing_names)}"
+            )
+        return state_weights
 
 
 class MHE(BaseModule):
@@ -241,28 +266,24 @@ class MHE(BaseModule):
 
     def _create_auxiliary_variables(self) -> tuple[AG_VAR_DICT, AG_VAR_DICT]:
         """Creates variables holding the weights and measurements of the states"""
-        states: mpc_datamodels.MHEVariables = self.config.states
+        states: mpc_datamodels.MPCVariables = self.config.states
         measured_states: dict[str, AgentVariable] = {}
         weights_states: dict[str, AgentVariable] = {}
         for state in states:
-            include = state.dict(include={"unit", "description"})
-
             weight_name = "weight_" + state.name
             measurement_name = "measured_" + state.name
 
             weights_states[weight_name] = mpc_datamodels.MPCVariable(
                 name=weight_name,
-                value=state.weight,
+                value=self.config.state_weights.get(state.name, 0),
                 type="float",
                 source=Source(module_id=self.id),
-                **include,
             )
             measured_states[measurement_name] = mpc_datamodels.MPCVariable(
                 name=measurement_name,
                 value=pd.Series(state.value),
                 type="pd.Series",
                 source=state.source,
-                **include,
             )
         self.weights_states = weights_states
         self.measured_states = measured_states
