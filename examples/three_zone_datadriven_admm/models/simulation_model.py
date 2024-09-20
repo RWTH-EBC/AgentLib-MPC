@@ -137,7 +137,6 @@ class FullModelConfig(CasadiModelConfig):
 
 
 class FullModel(CasadiModel):
-
     config: FullModelConfig
 
     def setup_system(self):

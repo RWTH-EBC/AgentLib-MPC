@@ -4,6 +4,7 @@ distributed model predictive control using multi agent systems.
 
 It contains classes for local optimization and global coordination.
 """
+
 import importlib
 
 

@@ -1,4 +1,5 @@
 """Some basic plotting utilities"""
+
 import logging
 import typing
 from dataclasses import dataclass
@@ -96,20 +97,17 @@ MultiCustomizer = Callable[
 @typing.overload
 def make_fig(
     style: Style, customizer: Customizer = None, rows: int = 1
-) -> tuple[plt.Figure, tuple[plt.Axes, ...]]:
-    ...
+) -> tuple[plt.Figure, tuple[plt.Axes, ...]]: ...
 
 
 @typing.overload
 def make_fig(
     style: Style, customizer: MultiCustomizer = None
-) -> tuple[plt.Figure, plt.Axes]:
-    ...
+) -> tuple[plt.Figure, plt.Axes]: ...
 
 
 @typing.overload
-def make_fig(style: Style) -> tuple[plt.Figure, plt.Axes]:
-    ...
+def make_fig(style: Style) -> tuple[plt.Figure, plt.Axes]: ...
 
 
 def make_fig(

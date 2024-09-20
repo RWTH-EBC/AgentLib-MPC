@@ -62,8 +62,9 @@ def create_trainer():
     )
     test_data = generate_test_data()
     trainer.history_dict["outputs"] = list(test_data.index), list(test_data["outputs"])
-    trainer.history_dict["outputs2"] = list(test_data.index), list(
-        test_data["outputs2"]
+    trainer.history_dict["outputs2"] = (
+        list(test_data.index),
+        list(test_data["outputs2"]),
     )
     trainer.history_dict["inputs"] = list(test_data.index), list(test_data["inputs"])
     trainer._update_time_series_data()
@@ -77,7 +78,6 @@ def create_trainer():
 
 
 def create_model():
-
     str_path = "anns//test_trainer_0//ann.json"
     ann = SerializedANN.load_serialized_ann(Path(str_path))
     inputs_ = [CasadiInput(name=name) for name in ann.input]

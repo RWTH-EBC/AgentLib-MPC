@@ -1,4 +1,5 @@
 """Holds the System class, which knows the model"""
+
 from __future__ import annotations
 
 import abc
@@ -50,8 +51,7 @@ class System(abc.ABC):
     """
 
     @abc.abstractmethod
-    def initialize(self, model: CasadiModel, var_ref: VariableReference):
-        ...
+    def initialize(self, model: CasadiModel, var_ref: VariableReference): ...
 
     @property
     def variables(self) -> list[OptimizationVariable]:

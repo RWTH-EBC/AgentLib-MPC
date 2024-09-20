@@ -53,7 +53,6 @@ class NystroemReducer(InducingPoints):
 
 
 if __name__ == "__main__":
-
     from sklearn.gaussian_process import GaussianProcessRegressor
     import matplotlib.pyplot as plt
 
@@ -65,7 +64,6 @@ if __name__ == "__main__":
         return x[:, 0] * 2 + x[:, 1] * x[:, 0] + x[:, 1] * 3 + 1 / x[:, 1] * x[:, 1]
 
     def get_score(x, y, x_test, y_test, message):
-
         gpr = GaussianProcessRegressor(RBF(), normalize_y=True)
         gpr.fit(x, y)
         s = gpr.score(x_test, y_test)

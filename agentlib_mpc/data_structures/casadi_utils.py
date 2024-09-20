@@ -247,7 +247,7 @@ class SolverFactory:
             "verbose": False,
             "print_time": False,
             "record_time": True,
-            "proxqp": {"max_iter": 200, "eps_abs": 1e-4, "backend": "sparse"}
+            "proxqp": {"max_iter": 200, "eps_abs": 1e-4, "backend": "sparse"},
         }
         opts = {**default_opts, **options}
         return ca.qpsol("mpc", "proxqp", nlp, opts)
@@ -257,7 +257,7 @@ class SolverFactory:
             "verbose": False,
             "print_time": False,
             "record_time": True,
-            "osqp": {"max_iter": 200, "eps_abs": 1e-4, "verbose": False}
+            "osqp": {"max_iter": 200, "eps_abs": 1e-4, "verbose": False},
         }
         opts = {**default_opts, **options}
         return ca.qpsol("mpc", "osqp", nlp, opts)

@@ -1,5 +1,6 @@
 """Module implementing the coordinated ADMM module, which works together
 with a coordinator."""
+
 from collections import namedtuple
 from typing import Dict, Optional
 import pandas as pd
@@ -38,7 +39,6 @@ class CoordinatedADMM(MiniEmployee, ADMM):
         self._result: Optional[pd.DataFrame] = None
 
     def process(self):
-
         # send registration request to coordinator
         timeout = self.config.registration_interval
 

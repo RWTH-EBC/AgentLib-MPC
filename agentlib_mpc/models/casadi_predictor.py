@@ -40,9 +40,9 @@ class CasadiPredictor(abc.ABC):
     def __init__(self, serialized_model: SerializedMLModel) -> None:
         """Initialize Predictor class."""
         self.serialized_model: SerializedMLModel = serialized_model
-        self.predictor_model: Union[
-            Sequential, CustomGPR, LinearRegression
-        ] = serialized_model.deserialize()
+        self.predictor_model: Union[Sequential, CustomGPR, LinearRegression] = (
+            serialized_model.deserialize()
+        )
         self.sym_input: ca.MX = self._get_sym_input()
         self.prediction_function: ca.Function = self._build_prediction_function()
 

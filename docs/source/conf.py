@@ -31,7 +31,13 @@ author = "AGENT-Project Associates"
 with open(Path(__file__).parents[2].joinpath(project, "__init__.py"), "r") as file:
     for line in file.readlines():
         if line.startswith("__version__"):
-            release = line.replace("__version__", "").split("=")[1].strip().replace("'", "").replace('"', '')
+            release = (
+                line.replace("__version__", "")
+                .split("=")[1]
+                .strip()
+                .replace("'", "")
+                .replace('"', "")
+            )
 
 # The short X.Y version.
 version = ".".join(release.split(".")[:2])
@@ -85,31 +91,23 @@ html_theme = "sphinx_rtd_theme"
 html_theme_options = {
     # Set the name of the project to appear in the navigation.
     "nav_title": project,
-
     # Set you GA account ID to enable tracking
     # 'google_analytics_account': 'UA-XXXXX',
-
     # Specify a base_url used to generate sitemap.xml. If not
     # specified, then no sitemap will be built.
     # 'base_url': 'https://project.github.io/project',
-
     # Set the color and the accent color
     "color_primary": "red",
     "color_accent": "red",
-
     # Set the repo location to get a badge with stats
-    'repo_url': 'https://github.com/RWTH-EBC/AgentLib-MPC',
-    'repo_name': 'AgentLib-MPC: An MPC plugin for AgentLib',
-
+    "repo_url": "https://github.com/RWTH-EBC/AgentLib-MPC",
+    "repo_name": "AgentLib-MPC: An MPC plugin for AgentLib",
     # Visible levels of the global TOC; -1 means unlimited
     "globaltoc_depth": 3,
-
     # If False, expand all TOC entries
     "globaltoc_collapse": True,
-
     # If True, show hidden TOC entries
     "globaltoc_includehidden": False,
-
     # Little logo on top left
     "logo_icon": "&#xe869",
 }

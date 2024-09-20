@@ -71,7 +71,6 @@ class DataSourceConfig(BaseModuleConfig):
 
 
 class DataSource(BaseModule):
-
     config: DataSourceConfig
 
     def __init__(self, config: dict, agent: Agent):
@@ -81,8 +80,9 @@ class DataSource(BaseModule):
 
         # Filter columns if specified
         if self.config.columns:
-            columns_to_keep = [col for col in self.config.columns if
-                               col in data.columns]
+            columns_to_keep = [
+                col for col in self.config.columns if col in data.columns
+            ]
             if not columns_to_keep:
                 raise ValueError("None of the specified columns exist in the dataframe")
             data = data[columns_to_keep]
@@ -111,7 +111,6 @@ class DataSource(BaseModule):
                     data.index = (data.index - data.index[0]).total_seconds()
                 except ValueError:
                     raise ValueError("Unable to convert index to numeric format")
-
 
         data.index = data.index.astype(float) - offset
         return data

@@ -43,7 +43,6 @@ class MiniEmployeeConfig(BaseModuleConfig):
 
 
 class MiniEmployee(BaseModule):
-
     config: MiniEmployeeConfig
 
     def __init__(self, *, config: dict, agent: Agent):

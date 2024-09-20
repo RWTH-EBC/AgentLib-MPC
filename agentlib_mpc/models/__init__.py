@@ -1,6 +1,7 @@
 """
 Package containing models for agentlib_mpc.
 """
+
 from agentlib.utils.plugin_import import ModuleImport
 
 MODEL_TYPES = {

@@ -43,7 +43,6 @@ class BaseSystem(System):
     ode: ca.MX
 
     def initialize(self, model: CasadiModel, var_ref: VariableReference):
-
         # define variables
         self.states = OptimizationVariable.declare(
             denotation="state",
@@ -170,7 +169,6 @@ class DirectCollocation(Discretization):
             # add collocation constraints later for fatrop
             for constraint in constraints:
                 self.add_constraint(*constraint)
-
 
     def _construct_stage_function(self, system: BaseSystem):
         """
@@ -322,11 +320,13 @@ class DirectCollocation(Discretization):
             )
 
             constraints.append((ts * stage["ode"] - xp,))
-            constraints.append((
-                stage["model_constraints"],
-                stage["lb_model_constraints"],
-                stage["ub_model_constraints"],
-            ))
+            constraints.append(
+                (
+                    stage["model_constraints"],
+                    stage["lb_model_constraints"],
+                    stage["ub_model_constraints"],
+                )
+            )
 
             # Add contribution to the end state
             state_k_end = state_k_end + collocation.D[j] * state_collocation[j - 1]
@@ -458,7 +458,9 @@ class MultipleShooting(Discretization):
 
         if integrator == Integrators.euler:
             xk_end = x + ode * opts["tf"]
-            opt_integrator = ca.Function("system", [x, p], [xk_end], ["x0", "p"], ["xf"])
+            opt_integrator = ca.Function(
+                "system", [x, p], [xk_end], ["x0", "p"], ["xf"]
+            )
         else:  # rk, cvodes
             opt_integrator = ca.integrator("system", integrator, integrator_ode, opts)
 

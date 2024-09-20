@@ -15,7 +15,6 @@ from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
 
 
 class FullSystem(basic.BaseSystem):
-
     last_control: OptimizationParameter
     r_del_u: OptimizationParameter  # penalty on change of control between time steps
 
@@ -160,7 +159,7 @@ class MultipleShooting(basic.MultipleShooting):
             self.pred_time = ts * self.k
             xk = self.add_opt_var(sys.states)
             vars_dict[sys.states.name][self.k] = xk
-            self.add_constraint(xk-xk_end, gap_closing=True)
+            self.add_constraint(xk - xk_end, gap_closing=True)
 
             # add model constraints last due to fatrop
             self.add_constraint(

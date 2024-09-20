@@ -406,7 +406,6 @@ def run_example(until=3600 * 3, with_plots=True, time_step=0, log_level=logging.
         ax[2].get_legend().remove()
 
         for x in ax:
-
             basic.make_grid(x)
 
         plt.show()

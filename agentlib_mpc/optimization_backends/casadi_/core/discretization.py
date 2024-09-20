@@ -1,4 +1,5 @@
 """Holds classes that implement different transcriptions of the OCP"""
+
 import abc
 import dataclasses
 from functools import cached_property
@@ -248,8 +249,6 @@ class Discretization(abc.ABC):
 
         result_matrix = self._result_map(**inputs)["result"]
 
-
-
         return self._create_results(result_matrix, self._optimizer.stats())
 
     def create_nlp_in_out_mapping(self, system: System):
@@ -422,7 +421,6 @@ class Discretization(abc.ABC):
         full_grid = set()
         variable_grids: dict[str, list[int]] = {}
         for quant_type in {**self.mpc_opt_vars, **self.mpc_opt_pars}.values():
-
             full_grid.update(set(quant_type.grid))
         full_grid = sorted(full_grid)
         columns = []
@@ -542,15 +540,15 @@ class Discretization(abc.ABC):
         constraint_function: CaFuncInputs,
         lb: CaFuncInputs = None,
         ub: CaFuncInputs = None,
-            *,
-            gap_closing: bool = False,
+        *,
+        gap_closing: bool = False,
     ):
         """
         Add a constraint to the optimization problem. If no bounds are given,
         adds an equality constraint.
         """
         # set equality for fatrop
-        self.equalities.extend([gap_closing]*constraint_function.shape[0])
+        self.equalities.extend([gap_closing] * constraint_function.shape[0])
 
         # set bounds to default for equality constraints
         if lb is None:
