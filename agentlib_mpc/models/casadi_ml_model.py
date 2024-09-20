@@ -67,7 +67,7 @@ class CasadiMLModelConfig(CasadiModelConfig):
     @field_validator("ml_model_sources", mode="before")
     @classmethod
     def check_or_load_models(cls, ml_model_sources, info: FieldValidationInfo):
-        """Load all ml models from paths or check they are already of correct type."""
+        # load all ANNs that are paths
         for i, ml_model_src in enumerate(ml_model_sources):
             if isinstance(ml_model_src, SerializedMLModel):
                 continue
@@ -182,7 +182,7 @@ class CasadiMLModel(CasadiModel):
         # construct a stage function for optimization and simulation
         self.sim_step = self._make_unified_predict_function()
 
-    def specify_ml_constructed_features(self):
+    def specify_ann_constructed_features(self):
         """to be implemented by user
         todo example"""
         pass
@@ -438,11 +438,11 @@ class CasadiMLModel(CasadiModel):
                 inputs=serialized_ml_model.input, outputs=serialized_ml_model.output
             )
             # todo tanja: here, we need to lookup what the user specified for the ANN as input, instead of the original mx variable
-            ca_ml_input = ca.vertcat(*[bb_inputs_mx[name] for name in columns_ordered])
+            ca_nn_input = ca.vertcat(*[bb_inputs_mx[name] for name in columns_ordered])
 
             # predict the result with current MLModel and add the result to the stage function
             output_index = list(serialized_ml_model.output).index(output_name)
-            result = casadi_ml_model.predict(ca_ml_input)[output_index]
+            result = casadi_ml_model.predict(ca_nn_input)[output_index]
             if (
                 serialized_ml_model.output[output_name].output_type
                 == OutputType.difference

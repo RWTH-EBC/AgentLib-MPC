@@ -56,8 +56,6 @@ class Solvers(str, Enum):
     gurobi = "gurobi"
     bonmin = "bonmin"
     fatrop = "fatrop"
-    proxqp = "proxqp"
-    osqp = "osqp"
 
 
 class Integrators(str, Enum):
@@ -143,10 +141,6 @@ class SolverFactory:
             return self._create_sqpmethod_solver(nlp=nlp, options=options)
         if solver_name == Solvers.qpoases:
             return self._create_qpoases_solver(nlp=nlp, options=options)
-        if solver_name == Solvers.proxqp:
-            return self._create_proxqp_solver(nlp=nlp, options=options)
-        if solver_name == Solvers.osqp:
-            return self._create_osqp_solver(nlp=nlp, options=options)
         if solver_name == Solvers.gurobi:
             return self._create_gurobi_solver(
                 nlp=nlp, options=options, discrete=discrete
@@ -170,7 +164,6 @@ class SolverFactory:
             "expand": True,
             "structure_detection": "auto",
             "equality": equalities,
-            "debug": False,
             "fatrop": {
                 "max_iter": 100,
                 "tol": 1e-4,
@@ -187,7 +180,7 @@ class SolverFactory:
             return solver
         nlp = compile_solver(bat_file=self.bat_file, optimizer=solver, name=self.name)
         opts["expand"] = False  # compiled code is better not expanded
-        return self.make_casadi_nlp(nlp, "fatrop", opts, "nlp")
+        return self.make_casadi_nlp(nlp, "ipopt", opts, "nlp")
 
     def _create_ipopt_solver(self, nlp: dict, options: dict):
         default_opts = {
@@ -241,26 +234,6 @@ class SolverFactory:
         }
         opts = {**default_opts, **options}
         return ca.qpsol("mpc", "qpoases", nlp, opts)
-
-    def _create_proxqp_solver(self, nlp: dict, options: dict):
-        default_opts = {
-            "verbose": False,
-            "print_time": False,
-            "record_time": True,
-            "proxqp": {"max_iter": 200, "eps_abs": 1e-4, "backend": "sparse"}
-        }
-        opts = {**default_opts, **options}
-        return ca.qpsol("mpc", "proxqp", nlp, opts)
-
-    def _create_osqp_solver(self, nlp: dict, options: dict):
-        default_opts = {
-            "verbose": False,
-            "print_time": False,
-            "record_time": True,
-            "osqp": {"max_iter": 200, "eps_abs": 1e-4, "verbose": False}
-        }
-        opts = {**default_opts, **options}
-        return ca.qpsol("mpc", "osqp", nlp, opts)
 
     def _create_gurobi_solver(
         self, nlp: dict, options: dict, discrete: DiscreteVars = None
