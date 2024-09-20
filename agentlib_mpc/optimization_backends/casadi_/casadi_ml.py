@@ -73,14 +73,16 @@ class CasadiMLSystem(FullSystem):
             ref_list=var_ref.parameters,
         )
         self.initial_state = OptimizationParameter.declare(
-            denotation="initial_state",  # append the 0 as a convention to get initial guess
+            denotation="initial_state",
+            # append the 0 as a convention to get initial guess
             variables=model.get_states(var_ref.states),
             ref_list=var_ref.states,
             use_in_stage_function=False,
             assert_complete=True,
         )
         self.last_control = OptimizationParameter.declare(
-            denotation="initial_control",  # append the 0 as a convention to get initial guess
+            denotation="initial_control",
+            # append the 0 as a convention to get initial guess
             variables=model.get_inputs(var_ref.controls),
             ref_list=var_ref.controls,
             use_in_stage_function=False,
@@ -147,6 +149,11 @@ class MultipleShooting_ML(MultipleShooting):
                 sys.states, lb=x_past, ub=x_past, guess=x_past
             )
             mx_dict[time][sys.initial_state.name] = x_past
+            z_past = self.add_opt_par(sys.algebraics)
+            mx_dict[time][sys.algebraics.name] = self.add_opt_var(
+                sys.algebraics, lb=z_past, ub=z_past, guess=z_past
+            )
+            mx_dict[time][sys.algebraics.name] = z_past
 
         # add past inputs
         for time in pre_grid_inputs:
