@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.optimization_backends.casadi_.core package &mdash; agentlib_mpc 0.6.1 documentation</title>
+  <title>agentlib_mpc.optimization_backends.casadi_.core package &mdash; agentlib_mpc 0.6.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
@@ -344,6 +344,21 @@ of a state to a parameter.</p>
 <dd><p>List specifying for every optimization variable, whether it is binary.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.constraints">
+<span class="sig-name descname"><span class="pre">constraints</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">casadi.casadi.MX</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MX</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.constraints" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.constraints_lb">
+<span class="sig-name descname"><span class="pre">constraints_lb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">casadi.casadi.MX</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.constraints_lb" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.constraints_ub">
+<span class="sig-name descname"><span class="pre">constraints_ub</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">casadi.casadi.MX</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.constraints_ub" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.create_nlp_in_out_mapping">
 <span class="sig-name descname"><span class="pre">create_nlp_in_out_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.core.system.System" title="agentlib_mpc.optimization_backends.casadi_.core.system.System"><span class="pre">System</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/optimization_backends/casadi_/core/discretization.html#Discretization.create_nlp_in_out_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.create_nlp_in_out_mapping" title="Permalink to this definition"></a></dt>
@@ -352,9 +367,19 @@ by type (as defined in <cite>declare_quantities</cite> and the raw input/output
 vector of the CasADi NLP.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.equalities">
+<span class="sig-name descname"><span class="pre">equalities</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.equalities" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.grid">
 <span class="sig-name descname"><span class="pre">grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationQuantity" title="agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationQuantity"><span class="pre">OptimizationQuantity</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/optimization_backends/casadi_/core/discretization.html#Discretization.grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.grid" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.initial_guess">
+<span class="sig-name descname"><span class="pre">initial_guess</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">casadi.casadi.MX</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.initial_guess" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -364,11 +389,61 @@ vector of the CasADi NLP.</p>
 variables of the OCP, the mapping function and the numerical solver.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.k">
+<span class="sig-name descname"><span class="pre">k</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.k" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.mpc_opt_pars">
+<span class="sig-name descname"><span class="pre">mpc_opt_pars</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.OptParMXContainer" title="agentlib_mpc.data_structures.casadi_utils.OptParMXContainer"><span class="pre">agentlib_mpc.data_structures.casadi_utils.OptParMXContainer</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.mpc_opt_pars" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.mpc_opt_vars">
+<span class="sig-name descname"><span class="pre">mpc_opt_vars</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.OptVarMXContainer" title="agentlib_mpc.data_structures.casadi_utils.OptVarMXContainer"><span class="pre">agentlib_mpc.data_structures.casadi_utils.OptVarMXContainer</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.mpc_opt_vars" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.nlp">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nlp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">casadi.casadi.MX</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.nlp" title="Permalink to this definition"></a></dt>
 <dd><p>The nlp dict that casadi solvers need for instantiation</p>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.objective_function">
+<span class="sig-name descname"><span class="pre">objective_function</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MX</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SX</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sparsity</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DM</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.objective_function" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.only_positive_times_in_results">
+<span class="sig-name descname"><span class="pre">only_positive_times_in_results</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.only_positive_times_in_results" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.opt_pars">
+<span class="sig-name descname"><span class="pre">opt_pars</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">casadi.casadi.MX</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MX</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.opt_pars" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.opt_vars">
+<span class="sig-name descname"><span class="pre">opt_vars</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">casadi.casadi.MX</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MX</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.opt_vars" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.opt_vars_lb">
+<span class="sig-name descname"><span class="pre">opt_vars_lb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">casadi.casadi.MX</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.opt_vars_lb" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.opt_vars_ub">
+<span class="sig-name descname"><span class="pre">opt_vars_ub</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">casadi.casadi.MX</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.opt_vars_ub" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.pred_time">
+<span class="sig-name descname"><span class="pre">pred_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.pred_time" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.solve">

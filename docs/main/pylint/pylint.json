@@ -793,19 +793,8 @@
             "message-id": "W0012"
         },
         {
-            "type": "convention",
-            "module": "ci.test_examples",
-            "obj": "",
-            "line": 119,
-            "column": 0,
-            "path": "ci/test_examples.py",
-            "symbol": "trailing-newlines",
-            "message": "Trailing newlines",
-            "message-id": "C0305"
-        },
-        {
             "type": "error",
-            "module": "ci.test_examples",
+            "module": "test_examples",
             "obj": "",
             "line": 9,
             "column": 0,
@@ -816,7 +805,7 @@
         },
         {
             "type": "warning",
-            "module": "ci.test_examples",
+            "module": "test_examples",
             "obj": "TestExamples.test_mpc",
             "line": 65,
             "column": 8,
@@ -827,7 +816,7 @@
         },
         {
             "type": "convention",
-            "module": "ci.test_examples",
+            "module": "test_examples",
             "obj": "TestExamples.test_admm_local",
             "line": 73,
             "column": 4,
@@ -838,7 +827,7 @@
         },
         {
             "type": "convention",
-            "module": "ci.test_examples",
+            "module": "test_examples",
             "obj": "TestExamples.test_admm_coordinated",
             "line": 83,
             "column": 4,
@@ -849,7 +838,7 @@
         },
         {
             "type": "convention",
-            "module": "ci.test_examples",
+            "module": "test_examples",
             "obj": "TestExamples.test_exchange_admm",
             "line": 93,
             "column": 4,
@@ -860,7 +849,7 @@
         },
         {
             "type": "convention",
-            "module": "ci.test_examples",
+            "module": "test_examples",
             "obj": "TestExamples.test_admm_mp_broadcast",
             "line": 109,
             "column": 4,
@@ -871,7 +860,7 @@
         },
         {
             "type": "warning",
-            "module": "ci.test_examples",
+            "module": "test_examples",
             "obj": "",
             "line": 5,
             "column": 0,
@@ -1203,17 +1192,6 @@
             "type": "convention",
             "module": "test_casadi_backend",
             "obj": "",
-            "line": 48,
-            "column": 0,
-            "path": "tests/test_casadi_backend.py",
-            "symbol": "line-too-long",
-            "message": "Line too long (109/100)",
-            "message-id": "C0301"
-        },
-        {
-            "type": "convention",
-            "module": "test_casadi_backend",
-            "obj": "",
             "line": 1,
             "column": 0,
             "path": "tests/test_casadi_backend.py",
@@ -1291,7 +1269,7 @@
             "type": "convention",
             "module": "test_casadi_backend",
             "obj": "example_backend",
-            "line": 54,
+            "line": 55,
             "column": 0,
             "path": "tests/test_casadi_backend.py",
             "symbol": "missing-function-docstring",
@@ -1302,7 +1280,7 @@
             "type": "warning",
             "module": "test_casadi_backend",
             "obj": "example_backend",
-            "line": 54,
+            "line": 55,
             "column": 32,
             "path": "tests/test_casadi_backend.py",
             "symbol": "redefined-outer-name",
@@ -1313,7 +1291,7 @@
             "type": "convention",
             "module": "test_casadi_backend",
             "obj": "example_backend",
-            "line": 55,
+            "line": 56,
             "column": 4,
             "path": "tests/test_casadi_backend.py",
             "symbol": "invalid-name",
@@ -1324,7 +1302,7 @@
             "type": "convention",
             "module": "test_casadi_backend",
             "obj": "test_optimization_variable",
-            "line": 60,
+            "line": 61,
             "column": 0,
             "path": "tests/test_casadi_backend.py",
             "symbol": "missing-function-docstring",
@@ -1335,7 +1313,7 @@
             "type": "warning",
             "module": "test_casadi_backend",
             "obj": "test_optimization_variable",
-            "line": 67,
+            "line": 68,
             "column": 8,
             "path": "tests/test_casadi_backend.py",
             "symbol": "unused-variable",
@@ -1346,7 +1324,7 @@
             "type": "warning",
             "module": "test_casadi_backend",
             "obj": "test_optimization_variable",
-            "line": 74,
+            "line": 75,
             "column": 4,
             "path": "tests/test_casadi_backend.py",
             "symbol": "unused-variable",
@@ -1357,7 +1335,7 @@
             "type": "warning",
             "module": "test_casadi_backend",
             "obj": "test_optimization_variable",
-            "line": 89,
+            "line": 90,
             "column": 8,
             "path": "tests/test_casadi_backend.py",
             "symbol": "unused-variable",
@@ -1368,7 +1346,7 @@
             "type": "convention",
             "module": "test_casadi_backend",
             "obj": "test_system",
-            "line": 96,
+            "line": 97,
             "column": 0,
             "path": "tests/test_casadi_backend.py",
             "symbol": "missing-function-docstring",
@@ -1379,7 +1357,7 @@
             "type": "warning",
             "module": "test_casadi_backend",
             "obj": "test_system",
-            "line": 96,
+            "line": 97,
             "column": 16,
             "path": "tests/test_casadi_backend.py",
             "symbol": "redefined-outer-name",
@@ -1390,7 +1368,7 @@
             "type": "convention",
             "module": "test_casadi_backend",
             "obj": "test_discretization",
-            "line": 112,
+            "line": 113,
             "column": 0,
             "path": "tests/test_casadi_backend.py",
             "symbol": "missing-function-docstring",
@@ -1401,7 +1379,7 @@
             "type": "warning",
             "module": "test_casadi_backend",
             "obj": "test_discretization",
-            "line": 113,
+            "line": 114,
             "column": 4,
             "path": "tests/test_casadi_backend.py",
             "symbol": "redefined-outer-name",
@@ -1412,7 +1390,7 @@
             "type": "warning",
             "module": "test_casadi_backend",
             "obj": "test_discretization",
-            "line": 113,
+            "line": 114,
             "column": 51,
             "path": "tests/test_casadi_backend.py",
             "symbol": "redefined-outer-name",
@@ -1423,7 +1401,7 @@
             "type": "convention",
             "module": "test_casadi_backend",
             "obj": "test_add_opt",
-            "line": 134,
+            "line": 135,
             "column": 0,
             "path": "tests/test_casadi_backend.py",
             "symbol": "missing-function-docstring",
@@ -1434,7 +1412,7 @@
             "type": "warning",
             "module": "test_casadi_backend",
             "obj": "test_add_opt",
-            "line": 134,
+            "line": 135,
             "column": 17,
             "path": "tests/test_casadi_backend.py",
             "symbol": "redefined-outer-name",
@@ -1445,7 +1423,7 @@
             "type": "convention",
             "module": "test_casadi_backend",
             "obj": "test_create_backend",
-            "line": 153,
+            "line": 154,
             "column": 0,
             "path": "tests/test_casadi_backend.py",
             "symbol": "missing-function-docstring",
@@ -1456,18 +1434,18 @@
             "type": "warning",
             "module": "test_casadi_backend",
             "obj": "test_create_backend",
-            "line": 153,
+            "line": 154,
             "column": 24,
             "path": "tests/test_casadi_backend.py",
             "symbol": "redefined-outer-name",
-            "message": "Redefining name 'example_backend' from outer scope (line 54)",
+            "message": "Redefining name 'example_backend' from outer scope (line 55)",
             "message-id": "W0621"
         },
         {
             "type": "convention",
             "module": "test_casadi_backend",
             "obj": "test_create_backend",
-            "line": 154,
+            "line": 155,
             "column": 4,
             "path": "tests/test_casadi_backend.py",
             "symbol": "invalid-name",
@@ -1478,7 +1456,7 @@
             "type": "warning",
             "module": "test_casadi_backend",
             "obj": "test_create_backend",
-            "line": 158,
+            "line": 159,
             "column": 13,
             "path": "tests/test_casadi_backend.py",
             "symbol": "protected-access",
@@ -1489,7 +1467,7 @@
             "type": "error",
             "module": "test_casadi_ml_model",
             "obj": "",
-            "line": 2,
+            "line": 3,
             "column": 0,
             "path": "tests/test_casadi_ml_model.py",
             "symbol": "import-error",
@@ -1500,7 +1478,7 @@
             "type": "convention",
             "module": "test_casadi_ml_model",
             "obj": "CasadiMLTestConfig",
-            "line": 8,
+            "line": 9,
             "column": 0,
             "path": "tests/test_casadi_ml_model.py",
             "symbol": "missing-class-docstring",
@@ -1511,7 +1489,7 @@
             "type": "convention",
             "module": "test_casadi_ml_model",
             "obj": "CasadiMLTestModel",
-            "line": 13,
+            "line": 14,
             "column": 0,
             "path": "tests/test_casadi_ml_model.py",
             "symbol": "missing-class-docstring",
@@ -1522,7 +1500,7 @@
             "type": "convention",
             "module": "test_casadi_ml_model",
             "obj": "test_casadi_ml_model",
-            "line": 22,
+            "line": 23,
             "column": 0,
             "path": "tests/test_casadi_ml_model.py",
             "symbol": "missing-function-docstring",
@@ -1675,24 +1653,13 @@
         {
             "type": "error",
             "module": "test_serialized_ann",
-            "obj": "",
-            "line": 6,
-            "column": 0,
+            "obj": "TestSerializedANN.test_serialize",
+            "line": 44,
+            "column": 30,
             "path": "tests/test_serialized_ann.py",
-            "symbol": "import-error",
-            "message": "Unable to import 'pytest'",
-            "message-id": "E0401"
-        },
-        {
-            "type": "error",
-            "module": "test_serialized_ann",
-            "obj": "",
-            "line": 7,
-            "column": 0,
-            "path": "tests/test_serialized_ann.py",
-            "symbol": "import-error",
-            "message": "Unable to import 'keras.models'",
-            "message-id": "E0401"
+            "symbol": "unsubscriptable-object",
+            "message": "Value 'serialized_ann.weights' is unsubscriptable",
+            "message-id": "E1136"
         },
         {
             "type": "error",
@@ -1706,21 +1673,10 @@
             "message-id": "E1136"
         },
         {
-            "type": "error",
-            "module": "test_serialized_ann",
-            "obj": "TestSerializedANN.test_serialize",
-            "line": 46,
-            "column": 30,
-            "path": "tests/test_serialized_ann.py",
-            "symbol": "unsubscriptable-object",
-            "message": "Value 'serialized_ann.weights' is unsubscriptable",
-            "message-id": "E1136"
-        },
-        {
             "type": "convention",
             "module": "test_serialized_ann",
             "obj": "",
-            "line": 4,
+            "line": 5,
             "column": 0,
             "path": "tests/test_serialized_ann.py",
             "symbol": "wrong-import-order",
@@ -1742,18 +1698,7 @@
             "type": "convention",
             "module": "test_serialized_ann",
             "obj": "",
-            "line": 9,
-            "column": 0,
-            "path": "tests/test_serialized_ann.py",
-            "symbol": "wrong-import-order",
-            "message": "standard import \"from typing import List\" should be placed before \"import numpy as np\"",
-            "message-id": "C0411"
-        },
-        {
-            "type": "convention",
-            "module": "test_serialized_ann",
-            "obj": "",
-            "line": 14,
+            "line": 13,
             "column": 0,
             "path": "tests/test_serialized_ann.py",
             "symbol": "wrong-import-order",
@@ -1764,34 +1709,12 @@
             "type": "convention",
             "module": "test_serialized_ann",
             "obj": "",
-            "line": 15,
+            "line": 14,
             "column": 0,
             "path": "tests/test_serialized_ann.py",
             "symbol": "wrong-import-order",
             "message": "third party import \"from fixtures.data_generator import DataGenerator\" should be placed before \"from agentlib_mpc.data_structures import ml_model_datatypes\"",
             "message-id": "C0411"
-        },
-        {
-            "type": "warning",
-            "module": "test_serialized_ann",
-            "obj": "",
-            "line": 6,
-            "column": 0,
-            "path": "tests/test_serialized_ann.py",
-            "symbol": "unused-import",
-            "message": "Unused import pytest",
-            "message-id": "W0611"
-        },
-        {
-            "type": "warning",
-            "module": "test_serialized_ann",
-            "obj": "",
-            "line": 9,
-            "column": 0,
-            "path": "tests/test_serialized_ann.py",
-            "symbol": "unused-import",
-            "message": "Unused List imported from typing",
-            "message-id": "W0611"
         },
         {
             "type": "convention",
@@ -1963,8 +1886,8 @@
                 "statement": 3,
                 "warning": 0
             },
-            "ci.test_examples": {
-                "convention": 5,
+            "test_examples": {
+                "convention": 4,
                 "error": 1,
                 "fatal": 0,
                 "info": 0,
@@ -1991,7 +1914,7 @@
                 "warning": 17
             },
             "test_casadi_backend": {
-                "convention": 13,
+                "convention": 12,
                 "error": 1,
                 "fatal": 0,
                 "info": 0,
@@ -2036,13 +1959,13 @@
                 "warning": 2
             },
             "test_serialized_ann": {
-                "convention": 5,
-                "error": 4,
+                "convention": 4,
+                "error": 2,
                 "fatal": 0,
                 "info": 0,
                 "refactor": 0,
-                "statement": 47,
-                "warning": 2
+                "statement": 45,
+                "warning": 0
             },
             "test_serialized_gpr": {
                 "convention": 6,
@@ -2064,11 +1987,10 @@
             }
         },
         "by_msg": {
-            "trailing-newlines": 1,
-            "import-error": 6,
+            "import-error": 4,
             "pointless-string-statement": 1,
             "missing-function-docstring": 26,
-            "unused-import": 5,
+            "unused-import": 3,
             "missing-module-docstring": 6,
             "redefined-outer-name": 9,
             "invalid-name": 6,
@@ -2076,8 +1998,7 @@
             "unused-variable": 4,
             "protected-access": 14,
             "attribute-defined-outside-init": 4,
-            "line-too-long": 1,
-            "wrong-import-order": 16,
+            "wrong-import-order": 15,
             "unsubscriptable-object": 2
         },
         "code_type_count": {
@@ -2095,22 +2016,22 @@
                 "agentlib_mpc"
             ],
             "pandas": [
-                "ci.test_examples",
-                "test_mpc"
+                "test_mpc",
+                "test_examples"
             ],
             "agentlib.utils": [
-                "ci.test_examples",
-                "conftest"
+                "conftest",
+                "test_examples"
             ],
             "agentlib.utils.local_broadcast_broker": [
-                "ci.test_examples",
-                "test_admm"
+                "test_admm",
+                "test_examples"
             ],
             "numpy": [
-                "test_mpc",
-                "test_admm",
-                "test_serialized_gpr",
                 "test_serialized_ann",
+                "test_serialized_gpr",
+                "test_admm",
+                "test_mpc",
                 "test_serialized_linreg"
             ],
             "agentlib.core": [
@@ -2165,6 +2086,9 @@
             "agentlib_mpc.utils.sampling": [
                 "test_mpc"
             ],
+            "keras": [
+                "test_serialized_ann"
+            ],
             "agentlib_mpc.data_structures.ml_model_datatypes": [
                 "test_serialized_ann",
                 "test_serialized_gpr",
@@ -2217,13 +2141,13 @@
             "method": 14,
             "module": 6
         },
-        "convention": 59,
-        "error": 8,
+        "convention": 56,
+        "error": 6,
         "fatal": 0,
         "info": 0,
         "refactor": 0,
-        "statement": 421,
-        "warning": 37,
+        "statement": 419,
+        "warning": 35,
         "global_note": 0,
         "nb_duplicated_lines": 0,
         "percent_duplicated_lines": 0.0
@@ -2254,8 +2178,8 @@
                 "statement": 3,
                 "warning": 0
             },
-            "test_examples": {
-                "convention": 5,
+            "ci.test_examples": {
+                "convention": 4,
                 "error": 1,
                 "fatal": 0,
                 "info": 0,
@@ -2282,7 +2206,7 @@
                 "warning": 17
             },
             "test_casadi_backend": {
-                "convention": 13,
+                "convention": 12,
                 "error": 1,
                 "fatal": 0,
                 "info": 0,
@@ -2327,13 +2251,13 @@
                 "warning": 2
             },
             "test_serialized_ann": {
-                "convention": 5,
-                "error": 4,
+                "convention": 4,
+                "error": 2,
                 "fatal": 0,
                 "info": 0,
                 "refactor": 0,
-                "statement": 47,
-                "warning": 2
+                "statement": 45,
+                "warning": 0
             },
             "test_serialized_gpr": {
                 "convention": 6,
@@ -2355,11 +2279,10 @@
             }
         },
         "by_msg": {
-            "trailing-newlines": 1,
-            "import-error": 6,
+            "import-error": 4,
             "pointless-string-statement": 1,
             "missing-function-docstring": 26,
-            "unused-import": 5,
+            "unused-import": 3,
             "missing-module-docstring": 6,
             "redefined-outer-name": 9,
             "invalid-name": 6,
@@ -2367,8 +2290,7 @@
             "unused-variable": 4,
             "protected-access": 14,
             "attribute-defined-outside-init": 4,
-            "line-too-long": 1,
-            "wrong-import-order": 16,
+            "wrong-import-order": 15,
             "unsubscriptable-object": 2
         },
         "code_type_count": {
@@ -2387,21 +2309,21 @@
             ],
             "pandas": [
                 "test_mpc",
-                "test_examples"
+                "ci.test_examples"
             ],
             "agentlib.utils": [
                 "conftest",
-                "test_examples"
+                "ci.test_examples"
             ],
             "agentlib.utils.local_broadcast_broker": [
-                "test_examples",
+                "ci.test_examples",
                 "test_admm"
             ],
             "numpy": [
-                "test_mpc",
-                "test_admm",
-                "test_serialized_gpr",
                 "test_serialized_ann",
+                "test_serialized_gpr",
+                "test_admm",
+                "test_mpc",
                 "test_serialized_linreg"
             ],
             "agentlib.core": [
@@ -2456,6 +2378,9 @@
             "agentlib_mpc.utils.sampling": [
                 "test_mpc"
             ],
+            "keras": [
+                "test_serialized_ann"
+            ],
             "agentlib_mpc.data_structures.ml_model_datatypes": [
                 "test_serialized_ann",
                 "test_serialized_gpr",
@@ -2508,14 +2433,14 @@
             "method": 14,
             "module": 6
         },
-        "convention": 59,
-        "error": 8,
+        "convention": 56,
+        "error": 6,
         "fatal": 0,
         "info": 0,
         "refactor": 0,
-        "statement": 421,
-        "warning": 37,
-        "global_note": 6.7695961995249405,
+        "statement": 419,
+        "warning": 35,
+        "global_note": 7.11217183770883,
         "nb_duplicated_lines": 0,
         "percent_duplicated_lines": 0.0
     }

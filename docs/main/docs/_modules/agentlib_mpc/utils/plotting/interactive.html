@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.utils.plotting.interactive &mdash; agentlib_mpc 0.6.1 documentation</title>
+  <title>agentlib_mpc.utils.plotting.interactive &mdash; agentlib_mpc 0.6.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -96,9 +96,10 @@
     <span class="kn">import</span> <span class="nn">plotly.graph_objects</span> <span class="k">as</span> <span class="nn">go</span>
 <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="k">raise</span> <span class="n">OptionalDependencyError</span><span class="p">(</span>
-        <span class="n">dependency_name</span><span class="o">=</span><span class="s2">&quot;interactive&quot;</span><span class="p">,</span> <span class="n">dependency_install</span><span class="o">=</span><span class="s2">&quot;plotly, dash&quot;</span><span class="p">,</span> <span class="n">used_object</span><span class="o">=</span><span class="s2">&quot;interactive&quot;</span>
+        <span class="n">dependency_name</span><span class="o">=</span><span class="s2">&quot;interactive&quot;</span><span class="p">,</span>
+        <span class="n">dependency_install</span><span class="o">=</span><span class="s2">&quot;plotly, dash&quot;</span><span class="p">,</span>
+        <span class="n">used_object</span><span class="o">=</span><span class="s2">&quot;interactive&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
-
 
 
 <div class="viewcode-block" id="make_figure_plotly"><a class="viewcode-back" href="../../../../code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.interactive.make_figure_plotly">[docs]</a><span class="k">def</span> <span class="nf">make_figure_plotly</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">:</span>
