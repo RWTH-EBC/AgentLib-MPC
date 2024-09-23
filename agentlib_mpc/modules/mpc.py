@@ -90,7 +90,8 @@ class BaseMPCConfig(BaseModuleConfig):
             samp_time = info.data["time_step"]
         return samp_time
 
-def _create_optimization_backend(optimization_backend, agent_id):
+
+def create_optimization_backend(optimization_backend, agent_id):
     """Set up the optimization_backend"""
     optimization_backend = optimization_backend.copy()
     if "type" not in optimization_backend:
@@ -159,7 +160,7 @@ class BaseMPC(BaseModule):
     def _setup_optimization_backend(self) -> OptimizationBackendT:
         """Performs the setup of the optimization_backend, keeps track of status"""
         self.init_status = mpc_datamodels.InitStatus.during_update
-        opti_back = _create_optimization_backend(
+        opti_back = create_optimization_backend(
             self.config.optimization_backend, self.agent.id
         )
         opti_back.register_logger(self.logger)
@@ -278,9 +279,9 @@ class BaseMPC(BaseModule):
 
     def re_init_optimization(self, parameter: AgentVariable):
         """Re-initializes the optimization backend with new parameters."""
-        self.optimization_backend.discretization_options[
-            parameter.name
-        ] = parameter.value
+        self.optimization_backend.discretization_options[parameter.name] = (
+            parameter.value
+        )
         self._init_optimization()
 
     @property

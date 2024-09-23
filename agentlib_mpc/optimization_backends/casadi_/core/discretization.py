@@ -1,4 +1,5 @@
 """Holds classes that implement different transcriptions of the OCP"""
+
 import abc
 import dataclasses
 from functools import cached_property
@@ -103,6 +104,7 @@ class Discretization(abc.ABC):
     _nlp_outputs_to_mpc_outputs: ca.Function
     _optimizer: ca.Function
     _result_map: ca.Function
+    only_positive_times_in_results = True
 
     def __init__(self, options: CasadiDiscretizationOptions):
         self.options = options
@@ -247,8 +249,6 @@ class Discretization(abc.ABC):
                 inputs[key] = outputs[out_key]
 
         result_matrix = self._result_map(**inputs)["result"]
-
-
 
         return self._create_results(result_matrix, self._optimizer.stats())
 
@@ -409,9 +409,9 @@ class Discretization(abc.ABC):
                 if time in grid:
                     index = grid.index(time)
                     entry = mx_list[index].T
-                    if time >= 0:
-                        # with NARX there can be times smaller 0, however we don't
-                        # want them in the results slice
+                    if not self.only_positive_times_in_results or time >= 0:
+                        # with NARX there can be times smaller 0, however sometimes
+                        # we dont want them in the results slice.
                         non_nan_entries.append(index_full)
                 else:
                     entry = np.full((1, vars_in_quantity), np.nan)
@@ -422,7 +422,6 @@ class Discretization(abc.ABC):
         full_grid = set()
         variable_grids: dict[str, list[int]] = {}
         for quant_type in {**self.mpc_opt_vars, **self.mpc_opt_pars}.values():
-
             full_grid.update(set(quant_type.grid))
         full_grid = sorted(full_grid)
         columns = []
@@ -542,15 +541,15 @@ class Discretization(abc.ABC):
         constraint_function: CaFuncInputs,
         lb: CaFuncInputs = None,
         ub: CaFuncInputs = None,
-            *,
-            gap_closing: bool = False,
+        *,
+        gap_closing: bool = False,
     ):
         """
         Add a constraint to the optimization problem. If no bounds are given,
         adds an equality constraint.
         """
         # set equality for fatrop
-        self.equalities.extend([gap_closing]*constraint_function.shape[0])
+        self.equalities.extend([gap_closing] * constraint_function.shape[0])
 
         # set bounds to default for equality constraints
         if lb is None:

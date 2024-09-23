@@ -10,7 +10,6 @@ from pydantic import field_validator
 
 
 class MLModelSimulatorConfig(SimulatorConfig):
-
     serialized_ml_models: AgentVariables = []
 
     @field_validator("t_sample")
@@ -27,7 +26,6 @@ class MLModelSimulatorConfig(SimulatorConfig):
 
 
 class MLModelSimulator(Simulator):
-
     config: MLModelSimulatorConfig
     model: CasadiMLModel
 

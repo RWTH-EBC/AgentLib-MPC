@@ -1,12 +1,11 @@
 "Module for tests of serialized_ann.py"
+
 import os
 import numpy as np
 import unittest
 
-import pytest
-from keras.models import Sequential
+from keras import Sequential
 from pathlib import Path
-from typing import List
 
 from agentlib_mpc.data_structures import ml_model_datatypes
 from agentlib_mpc.models.casadi_predictor import CasadiANN

@@ -1,4 +1,3 @@
-
 import pytest
 
 import numpy as np
@@ -36,7 +35,6 @@ class DataGenerator:
             y = inp[i, 1]
             res[i] = (a - x) ** 2 + b * (y - x**2) ** 2
         return res
-
 
 
 @pytest.fixture

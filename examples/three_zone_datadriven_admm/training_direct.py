@@ -511,8 +511,9 @@ class Datagenerator:
         x.append(input_data[: round(input_data.shape[0] * training)])
         x.append(
             input_data[
-                round(input_data.shape[0] * training)
-                - 1 : round(input_data.shape[0] * (training + validation))
+                round(input_data.shape[0] * training) - 1 : round(
+                    input_data.shape[0] * (training + validation)
+                )
             ]
         )
         x.append(input_data[round(input_data.shape[0] * (training + validation)) - 1 :])
@@ -520,8 +521,9 @@ class Datagenerator:
         y.append(output_data[: round(output_data.shape[0] * training)])
         y.append(
             output_data[
-                round(output_data.shape[0] * training)
-                - 1 : round(output_data.shape[0] * (training + validation))
+                round(output_data.shape[0] * training) - 1 : round(
+                    output_data.shape[0] * (training + validation)
+                )
             ]
         )
         y.append(

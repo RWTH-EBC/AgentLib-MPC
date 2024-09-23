@@ -1,7 +1,8 @@
+import warnings
 from ast import literal_eval
 import datetime
 from pathlib import Path
-from typing import NewType, Literal, Union, Optional
+from typing import NewType, Literal, Union, Optional, Iterable
 
 import pandas as pd
 from pandas.api.types import is_float_dtype
@@ -252,3 +253,38 @@ def get_number_of_iterations(data: pd.DataFrame) -> dict[SimulationTime, int]:
         result[SimulationTime(t)] = len(ind[_slice])
 
     return result
+
+
+def get_time_steps(data: pd.DataFrame) -> Iterable[float]:
+    """Returns the time steps at which an MPC step was performed."""
+    return sorted(set(data.index.get_level_values(0)))
+
+
+def first_vals_at_trajectory_index(data: Union[pd.DataFrame, pd.Series]):
+    """Gets the first values at each time step of a results trajectory."""
+    time_steps = get_time_steps(data)
+    first_vals = pd.Series(
+        {time_step: data.loc[time_step].iloc[0] for time_step in time_steps}
+    )
+    if np.nan in first_vals:
+        warnings.warn(
+            "Nan detected in first values. You may need to select the "
+            "correct column of the DataFrame and drop NaN before."
+        )
+    return first_vals
+
+
+def last_vals_at_trajectory_index(data: Union[pd.DataFrame, pd.Series]):
+    """Gets the last values at each time step of a results trajectory."""
+    time_steps = get_time_steps(data)
+    # -1 covers for parameters (only one entry) and states (-horizon until 0)
+    last_vals = pd.Series(
+        {time_step: data.at[time_step].iloc[-1] for time_step in time_steps}
+    )
+
+    if np.nan in last_vals:
+        warnings.warn(
+            "Nan detected in first values. You may need to select the "
+            "correct column of the DataFrame and drop NaN before."
+        )
+    return last_vals

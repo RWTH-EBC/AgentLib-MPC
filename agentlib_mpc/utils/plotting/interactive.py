@@ -18,9 +18,10 @@ try:
     import plotly.graph_objects as go
 except ImportError as e:
     raise OptionalDependencyError(
-        dependency_name="interactive", dependency_install="plotly, dash", used_object="interactive"
+        dependency_name="interactive",
+        dependency_install="plotly, dash",
+        used_object="interactive",
     ) from e
-
 
 
 def make_figure_plotly() -> go.Figure:

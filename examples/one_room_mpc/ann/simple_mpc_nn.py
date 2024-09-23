@@ -99,7 +99,7 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000):
     mas = LocalMASAgency(
         agent_configs=agent_configs(ml_model_path=str(ann_path)),
         env=ENV_CONFIG,
-        variable_logging=False
+        variable_logging=False,
     )
     mas.run(until=until)
     results = mas.get_results()

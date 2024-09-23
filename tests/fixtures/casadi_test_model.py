@@ -34,7 +34,6 @@ class MyCasadiModelConfig(CasadiModelConfig):
 
 
 class MyCasadiModel(CasadiModel):
-
     config: MyCasadiModelConfig
 
     def setup_system(self):

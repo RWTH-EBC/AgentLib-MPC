@@ -1,6 +1,6 @@
 import dataclasses
 from pathlib import Path
-from typing import List, Union, TypeVar, Protocol, Sequence
+from typing import List, Union, TypeVar, Protocol, Sequence, Iterable
 from itertools import chain
 
 import attrs
@@ -42,21 +42,13 @@ class DiscretizationOptions(pydantic.BaseModel):
 
 
 class Results(Protocol):
-
     df: pd.DataFrame
 
-    def __getitem__(self, item: str) -> Sequence[float]:
-        ...
+    def __getitem__(self, item: str) -> Sequence[float]: ...
 
 
 @dataclasses.dataclass
-class VariableReference:
-    states: List[str] = dataclasses.field(default_factory=list)
-    controls: List[str] = dataclasses.field(default_factory=list)
-    inputs: List[str] = dataclasses.field(default_factory=list)
-    parameters: List[str] = dataclasses.field(default_factory=list)
-    outputs: List[str] = dataclasses.field(default_factory=list)
-
+class BaseVariableReference:
     def all_variables(self) -> List[str]:
         """Returns a list of all variables registered in the var_ref"""
         return list(chain.from_iterable(self.__dict__.values()))
@@ -79,8 +71,16 @@ class VariableReference:
         all_variables = set(chain.from_iterable(self.__dict__.values()))
         return item in all_variables
 
+VariableReferenceT = TypeVar("VariableReferenceT", bound=BaseVariableReference)
 
-VariableReferenceT = TypeVar("VariableReferenceT", bound=VariableReference)
+
+@dataclasses.dataclass
+class VariableReference(BaseVariableReference):
+    states: List[str] = dataclasses.field(default_factory=list)
+    controls: List[str] = dataclasses.field(default_factory=list)
+    inputs: List[str] = dataclasses.field(default_factory=list)
+    parameters: List[str] = dataclasses.field(default_factory=list)
+    outputs: List[str] = dataclasses.field(default_factory=list)
 
 
 def r_del_u_convention(name: str) -> str:
@@ -98,6 +98,27 @@ class FullVariableReference(VariableReference):
 @dataclasses.dataclass
 class MINLPVariableReference(VariableReference):
     binary_controls: List[str] = dataclasses.field(default_factory=list)
+
+
+@dataclasses.dataclass
+class MHEVariableReference(BaseVariableReference):
+    states: List[str] = dataclasses.field(default_factory=list)
+    measured_states: List[str] = dataclasses.field(default_factory=list)
+    weights_states: List[str] = dataclasses.field(default_factory=list)
+    estimated_inputs: List[str] = dataclasses.field(default_factory=list)
+    estimated_parameters: List[str] = dataclasses.field(default_factory=list)
+    known_inputs: List[str] = dataclasses.field(default_factory=list)
+    known_parameters: List[str] = dataclasses.field(default_factory=list)
+    outputs: List[str] = dataclasses.field(default_factory=list)
+
+    def all_variables(self) -> Iterable[str]:
+        """Returns a list of all variables registered in the var_ref which the MHE can
+        get from the config with get()"""
+        return (
+            set(super().all_variables())
+            - set(self.measured_states)
+            - set(self.weights_states)
+        )
 
 
 @attrs.define(slots=True, weakref_slot=False, kw_only=True)

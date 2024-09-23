@@ -1,5 +1,6 @@
 """Module which generates random set points within a comfort zone. Code heavily stolen
- from Max Berktold"""
+from Max Berktold"""
+
 import datetime
 import random
 
@@ -38,8 +39,7 @@ class SetPointGenerator(BaseModule):
         lb, ub = self._bounds()
         self.current_target = random.uniform(lb, ub)
 
-    def register_callbacks(self):
-        ...
+    def register_callbacks(self): ...
 
     def process(self):
         while True:

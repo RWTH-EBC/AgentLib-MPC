@@ -53,7 +53,6 @@ class TempControllerConfig(CasadiModelConfig):
 
 
 class TempController(CasadiModel):
-
     config: TempControllerConfig
 
     def setup_system(self):

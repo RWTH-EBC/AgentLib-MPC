@@ -1,4 +1,5 @@
 """Holds the class for full featured MPCs."""
+
 import numpy as np
 import pandas as pd
 from agentlib.core import AgentVariable

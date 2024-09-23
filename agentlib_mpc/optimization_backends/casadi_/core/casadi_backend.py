@@ -118,7 +118,7 @@ class CasADiBackend(OptimizationBackend):
             bat_file=self.config.build_batch_bat,
             name=self.config.name,
             options=self.config.solver,
-            logger=self.logger
+            logger=self.logger,
         )
         self.discretization.initialize(
             system=self.system, solver_factory=solver_factory

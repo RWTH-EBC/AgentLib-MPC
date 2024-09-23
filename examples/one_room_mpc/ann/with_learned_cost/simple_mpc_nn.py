@@ -15,7 +15,6 @@ ENV_CONFIG = {"rt": False, "factor": 0.01, "t_sample": 60}
 
 
 def agent_configs(ann_path: str) -> list[dict]:
-
     agent_mpc = {
         "id": "myMPCAgent",
         "modules": [

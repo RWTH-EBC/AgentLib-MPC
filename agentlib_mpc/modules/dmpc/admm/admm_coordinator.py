@@ -1,6 +1,7 @@
 """
 Defines classes that coordinate an ADMM process.
 """
+
 import os
 import time
 from ast import literal_eval
@@ -129,11 +130,9 @@ class ADMMCoordinatorConfig(CoordinatorConfig):
 
 
 class ADMMCoordinator(Coordinator):
-
     config: ADMMCoordinatorConfig
 
     def __init__(self, *, config: dict, agent: Agent):
-
         if agent.env.config.rt:
             self.process = self._realtime_process
             self.registration_callback = self._real_time_registration_callback
@@ -414,7 +413,8 @@ class ADMMCoordinator(Coordinator):
         if self.config.use_relative_tolerances:
             # scaling factors for relative criterion
             primal_scaling = max(
-                np.linalg.norm(flat_locals), np.linalg.norm(flat_means)  # Ax  # Bz
+                np.linalg.norm(flat_locals),
+                np.linalg.norm(flat_means),  # Ax  # Bz
             )
             dual_scaling = np.linalg.norm(flat_multipliers)
             # compute tolerances for this iteration
@@ -494,7 +494,6 @@ class ADMMCoordinator(Coordinator):
 
         # aggregate and send trajectories per agent
         for source, agent in active_agents:
-
             # collect mean and multiplier per coupling variable
             mean_trajectories = {}
             multipliers = {}

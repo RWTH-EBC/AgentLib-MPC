@@ -49,9 +49,9 @@ backend_types = {
         import_path="agentlib_mpc.optimization_backends.casadi_.casadi_admm_nn",
         class_name="CasADiADMMBackend_NN",
     ),
-    "grampc": BackendImport(
-        import_path="agentlib_mpc.optimization_backends.grampc_.grampc_backend",
-        class_name="GrampcBackend",
+    "casadi_mhe": BackendImport(
+        import_path="agentlib_mpc.optimization_backends.casadi_.mhe",
+        class_name="MHEBackend",
     ),
 }
 
