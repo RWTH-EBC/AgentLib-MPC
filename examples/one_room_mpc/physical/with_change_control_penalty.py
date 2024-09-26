@@ -224,3 +224,4 @@ def run_example(with_plots=True, log_level=logging.INFO, until=10000):
 
 if __name__ == "__main__":
     run_example(with_plots=True, until=3600)
+    # commit for CI
