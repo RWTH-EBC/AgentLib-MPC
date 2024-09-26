@@ -71,6 +71,9 @@ pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pyli
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'old-octal-literal' (unknown-option-value)
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'non-ascii-bytes-literal' (unknown-option-value)
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'eq-without-hash' (unknown-option-value)
+************* Module agentlib_mpc
+agentlib_mpc/__init__.py:4:0: C0414: Import alias does not rename original package (useless-import-alias)
+agentlib_mpc/__init__.py:5:0: C0414: Import alias does not rename original package (useless-import-alias)
 ************* Module test_examples
 ci/test_examples.py:9:0: E0401: Unable to import 'pytest' (import-error)
 ci/test_examples.py:65:8: W0105: String statement has no effect (pointless-string-statement)
@@ -179,5 +182,5 @@ tests/test_serialized_linreg.py:11:0: C0411: third party import "from fixtures.l
 tests/test_serialized_linreg.py:12:0: C0411: third party import "from fixtures.data_generator import DataGenerator" should be placed before "from agentlib_mpc.data_structures import ml_model_datatypes" (wrong-import-order)
 
 -----------------------------------
-Your code has been rated at 7.11/10
+Your code has been rated at 7.06/10
 

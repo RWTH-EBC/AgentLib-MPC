@@ -793,6 +793,28 @@
             "message-id": "W0012"
         },
         {
+            "type": "convention",
+            "module": "agentlib_mpc",
+            "obj": "",
+            "line": 4,
+            "column": 0,
+            "path": "agentlib_mpc/__init__.py",
+            "symbol": "useless-import-alias",
+            "message": "Import alias does not rename original package",
+            "message-id": "C0414"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc",
+            "obj": "",
+            "line": 5,
+            "column": 0,
+            "path": "agentlib_mpc/__init__.py",
+            "symbol": "useless-import-alias",
+            "message": "Import alias does not rename original package",
+            "message-id": "C0414"
+        },
+        {
             "type": "error",
             "module": "test_examples",
             "obj": "",
@@ -1878,7 +1900,7 @@
         },
         "by_module": {
             "agentlib_mpc.__init__": {
-                "convention": 0,
+                "convention": 2,
                 "error": 0,
                 "fatal": 0,
                 "info": 0,
@@ -1987,6 +2009,7 @@
             }
         },
         "by_msg": {
+            "useless-import-alias": 2,
             "import-error": 4,
             "pointless-string-statement": 1,
             "missing-function-docstring": 26,
@@ -2016,23 +2039,23 @@
                 "agentlib_mpc"
             ],
             "pandas": [
-                "test_examples",
-                "test_mpc"
-            ],
-            "agentlib.utils": [
-                "conftest",
+                "test_mpc",
                 "test_examples"
             ],
-            "agentlib.utils.local_broadcast_broker": [
+            "agentlib.utils": [
                 "test_examples",
-                "test_admm"
+                "conftest"
+            ],
+            "agentlib.utils.local_broadcast_broker": [
+                "test_admm",
+                "test_examples"
             ],
             "numpy": [
-                "test_mpc",
+                "test_serialized_gpr",
                 "test_admm",
+                "test_mpc",
                 "test_serialized_ann",
-                "test_serialized_linreg",
-                "test_serialized_gpr"
+                "test_serialized_linreg"
             ],
             "agentlib.core": [
                 "test_admm"
@@ -2053,8 +2076,8 @@
                 "test_casadi_backend"
             ],
             "agentlib_mpc.models.casadi_model": [
-                "test_casadi_ml_model",
-                "test_casadi_backend"
+                "test_casadi_backend",
+                "test_casadi_ml_model"
             ],
             "agentlib_mpc.optimization_backends.casadi_.basic": [
                 "test_casadi_backend"
@@ -2090,27 +2113,27 @@
                 "test_serialized_ann"
             ],
             "agentlib_mpc.data_structures.ml_model_datatypes": [
-                "test_serialized_linreg",
+                "test_serialized_gpr",
                 "test_serialized_ann",
-                "test_serialized_gpr"
+                "test_serialized_linreg"
             ],
             "agentlib_mpc.models.casadi_predictor": [
-                "test_serialized_linreg",
+                "test_serialized_gpr",
                 "test_serialized_ann",
-                "test_serialized_gpr"
+                "test_serialized_linreg"
             ],
             "agentlib_mpc.models.serialized_ml_model": [
-                "test_serialized_linreg",
+                "test_serialized_gpr",
                 "test_serialized_ann",
-                "test_serialized_gpr"
+                "test_serialized_linreg"
             ],
             "fixtures.ann": [
                 "test_serialized_ann"
             ],
             "fixtures.data_generator": [
-                "test_serialized_linreg",
+                "test_serialized_gpr",
                 "test_serialized_ann",
-                "test_serialized_gpr"
+                "test_serialized_linreg"
             ],
             "sklearn.gaussian_process": [
                 "test_serialized_gpr"
@@ -2141,7 +2164,7 @@
             "method": 14,
             "module": 6
         },
-        "convention": 56,
+        "convention": 58,
         "error": 6,
         "fatal": 0,
         "info": 0,
@@ -2170,7 +2193,7 @@
         },
         "by_module": {
             "agentlib_mpc.__init__": {
-                "convention": 0,
+                "convention": 2,
                 "error": 0,
                 "fatal": 0,
                 "info": 0,
@@ -2279,6 +2302,7 @@
             }
         },
         "by_msg": {
+            "useless-import-alias": 2,
             "import-error": 4,
             "pointless-string-statement": 1,
             "missing-function-docstring": 26,
@@ -2308,23 +2332,23 @@
                 "agentlib_mpc"
             ],
             "pandas": [
-                "test_examples",
-                "test_mpc"
-            ],
-            "agentlib.utils": [
-                "conftest",
+                "test_mpc",
                 "test_examples"
             ],
-            "agentlib.utils.local_broadcast_broker": [
+            "agentlib.utils": [
                 "test_examples",
-                "test_admm"
+                "conftest"
+            ],
+            "agentlib.utils.local_broadcast_broker": [
+                "test_admm",
+                "test_examples"
             ],
             "numpy": [
-                "test_mpc",
+                "test_serialized_gpr",
                 "test_admm",
+                "test_mpc",
                 "test_serialized_ann",
-                "test_serialized_linreg",
-                "test_serialized_gpr"
+                "test_serialized_linreg"
             ],
             "agentlib.core": [
                 "test_admm"
@@ -2345,8 +2369,8 @@
                 "test_casadi_backend"
             ],
             "agentlib_mpc.models.casadi_model": [
-                "test_casadi_ml_model",
-                "test_casadi_backend"
+                "test_casadi_backend",
+                "test_casadi_ml_model"
             ],
             "agentlib_mpc.optimization_backends.casadi_.basic": [
                 "test_casadi_backend"
@@ -2382,27 +2406,27 @@
                 "test_serialized_ann"
             ],
             "agentlib_mpc.data_structures.ml_model_datatypes": [
-                "test_serialized_linreg",
+                "test_serialized_gpr",
                 "test_serialized_ann",
-                "test_serialized_gpr"
+                "test_serialized_linreg"
             ],
             "agentlib_mpc.models.casadi_predictor": [
-                "test_serialized_linreg",
+                "test_serialized_gpr",
                 "test_serialized_ann",
-                "test_serialized_gpr"
+                "test_serialized_linreg"
             ],
             "agentlib_mpc.models.serialized_ml_model": [
-                "test_serialized_linreg",
+                "test_serialized_gpr",
                 "test_serialized_ann",
-                "test_serialized_gpr"
+                "test_serialized_linreg"
             ],
             "fixtures.ann": [
                 "test_serialized_ann"
             ],
             "fixtures.data_generator": [
-                "test_serialized_linreg",
+                "test_serialized_gpr",
                 "test_serialized_ann",
-                "test_serialized_gpr"
+                "test_serialized_linreg"
             ],
             "sklearn.gaussian_process": [
                 "test_serialized_gpr"
@@ -2433,14 +2457,14 @@
             "method": 14,
             "module": 6
         },
-        "convention": 56,
+        "convention": 58,
         "error": 6,
         "fatal": 0,
         "info": 0,
         "refactor": 0,
         "statement": 419,
         "warning": 35,
-        "global_note": 7.11217183770883,
+        "global_note": 7.064439140811456,
         "nb_duplicated_lines": 0,
         "percent_duplicated_lines": 0.0
     }

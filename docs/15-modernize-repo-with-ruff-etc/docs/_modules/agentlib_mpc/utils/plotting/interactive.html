@@ -188,8 +188,8 @@
                     <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;lines&quot;</span><span class="p">,</span>
                     <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;rgb</span><span class="si">{</span><span class="n">prediction_color</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.7</span><span class="p">),</span>
                     <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">time_converted</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">convert_to</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="n">legendgroup</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Prediction&quot;</span><span class="p">,</span>
-                    <span class="n">legendgrouptitle_text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Predictions&quot;</span><span class="p">,</span>
+                    <span class="n">legendgroup</span><span class="o">=</span><span class="s2">&quot;Prediction&quot;</span><span class="p">,</span>
+                    <span class="n">legendgrouptitle_text</span><span class="o">=</span><span class="s2">&quot;Predictions&quot;</span><span class="p">,</span>
                     <span class="n">visible</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                     <span class="n">legendrank</span><span class="o">=</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
                     <span class="c1"># id=f&quot;trace-{y_axis_label}-{i}&quot;,</span>
@@ -207,8 +207,8 @@
                         <span class="n">shape</span><span class="o">=</span><span class="s2">&quot;hv&quot;</span><span class="p">,</span>
                     <span class="p">),</span>
                     <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">time_converted</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">convert_to</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="n">legendgroup</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Prediction&quot;</span><span class="p">,</span>
-                    <span class="n">legendgrouptitle_text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Predictions&quot;</span><span class="p">,</span>
+                    <span class="n">legendgroup</span><span class="o">=</span><span class="s2">&quot;Prediction&quot;</span><span class="p">,</span>
+                    <span class="n">legendgrouptitle_text</span><span class="o">=</span><span class="s2">&quot;Predictions&quot;</span><span class="p">,</span>
                     <span class="n">visible</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                     <span class="n">legendrank</span><span class="o">=</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span>
                     <span class="c1"># id=f&quot;trace-{y_axis_label}-{i}&quot;,</span>
@@ -299,7 +299,7 @@
     <span class="n">columns_okay</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">fig</span> <span class="o">=</span> <span class="n">plot_mpc_plotly</span><span class="p">(</span>
+            <span class="n">plot_mpc_plotly</span><span class="p">(</span>
                 <span class="n">data</span><span class="p">[</span><span class="s2">&quot;variable&quot;</span><span class="p">][</span><span class="n">column</span><span class="p">],</span>
                 <span class="n">convert_to</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
                 <span class="n">y_axis_label</span><span class="o">=</span><span class="n">column</span><span class="p">,</span>
