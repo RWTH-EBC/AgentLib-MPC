@@ -24,6 +24,9 @@ variables:
 
 
 include:
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
+    file: 'utils.yml'
+    ref: '39-add-option-for-uv'
   #pylint
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/code-quality/ruff-lint.gitlab-ci.yml'
@@ -50,6 +53,7 @@ include:
     file: 'python/pypi-release/release.gitlab-ci.yml'
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: SAST.gitlab-ci.yml
+  -
 
 
 run_example:
