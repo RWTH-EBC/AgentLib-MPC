@@ -2,7 +2,7 @@
 
 import time
 import threading
-from typing import List, Dict, Tuple, Iterable, Optional, TypeVar, Union
+from typing import List, Dict, Iterable, Optional, TypeVar, Union
 import queue
 from enum import Enum, auto
 

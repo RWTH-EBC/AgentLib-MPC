@@ -1,10 +1,9 @@
 import logging
 import platform
 from pathlib import Path
-from typing import Callable, Type, Optional
+from typing import Type, Optional
 
 import casadi as ca
-import pandas as pd
 import pydantic
 from agentlib.core.errors import ConfigurationError
 

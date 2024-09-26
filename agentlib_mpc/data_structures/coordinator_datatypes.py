@@ -4,7 +4,6 @@ from enum import Enum
 
 import numpy as np
 
-from agentlib.core import Source
 
 # Parameter names
 PREDICTION_HORIZON = "prediction_horizon"

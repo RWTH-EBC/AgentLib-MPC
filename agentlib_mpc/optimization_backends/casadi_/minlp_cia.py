@@ -10,12 +10,8 @@ from agentlib_mpc.data_structures.mpc_datamodels import (
     stats_path,
     cia_relaxed_results_path,
 )
-from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
-    OptimizationVariable,
-)
 from agentlib_mpc.optimization_backends.casadi_.core.discretization import Results
 from agentlib_mpc.optimization_backends.casadi_.minlp import CasADiMINLPBackend
-from agentlib_mpc.utils import sampling
 
 try:
     import pycombina

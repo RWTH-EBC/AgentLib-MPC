@@ -201,7 +201,7 @@ class Coordinator(BaseModule):
         )
         # use information in message to set up coordinator
 
-        if not (variable.source in self.agent_dict):  # add agent to dict
+        if variable.source not in self.agent_dict:  # add agent to dict
             entry = cdt.AgentDictEntry(
                 name=variable.source,
                 status=AgentStatus.pending,
