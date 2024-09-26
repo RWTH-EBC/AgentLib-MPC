@@ -24,9 +24,6 @@ variables:
 
 
 include:
-  - project: 'EBC/EBC_all/gitlab_ci/templates'
-    file: 'utils.yml'
-    ref: '39-add-option-for-uv'
   #pylint
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/code-quality/ruff-lint.gitlab-ci.yml'
