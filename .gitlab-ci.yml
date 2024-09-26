@@ -18,6 +18,7 @@ variables:
   GIT_REPO: "RWTH-EBC/AgentLib-MPC"
   EXTRA_REQUIREMENTS_PIP: "[full]"
   INSTALL_REQUIREMENTS_TXT: "false"
+  USE_UV: "true"
 
 
 
@@ -25,8 +26,9 @@ variables:
 include:
   #pylint
   - project: 'EBC/EBC_all/gitlab_ci/templates'
-    file: 'python/code-quality/pylint.gitlab-ci.yml'
-  #sphinxdoc
+    file: 'python/code-quality/ruff-lint.gitlab-ci.yml'
+    ref: '39-add-option-for-uv'
+    #sphinxdoc
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/doc/sphinxdoc.gitlab-ci.yml'
   # pages
@@ -37,6 +39,7 @@ include:
   # pytest & coverage
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/tests/tests.gitlab-ci.yml'
+    ref: '39-add-option-for-uv'
     # Checks the build for pypi
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/build/build.gitlab-ci.yml'
