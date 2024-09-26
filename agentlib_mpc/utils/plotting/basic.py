@@ -3,7 +3,6 @@
 import logging
 import typing
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Tuple, Callable, TypedDict, Annotated
 
 import matplotlib
@@ -68,11 +67,6 @@ class Style:
         self.use_tex = use_tex
 
     def __enter__(self):
-        try:
-            style_path = Path(Path(__file__).parent, "ebc.paper.mplstyle")
-            plt.style.use(style_path)
-        except OSError:
-            logger.warning("Style Sheet could not be loaded, using default style.")
         if self.use_tex:
             matplotlib.rc("text", usetex=True)
             matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"

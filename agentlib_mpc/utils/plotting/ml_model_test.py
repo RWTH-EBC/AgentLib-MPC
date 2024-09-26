@@ -63,7 +63,9 @@ def evaluate_model(
     """Tests the Model on test data"""
 
     if metric is None:
-        metric = lambda x: x * x
+
+        def metric(x):
+            x * x
 
     # make model executable
     if isinstance(model, SerializedMLModel):

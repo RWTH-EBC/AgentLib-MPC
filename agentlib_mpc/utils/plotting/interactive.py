@@ -221,7 +221,7 @@ def show_dashboard(
     columns_okay = []
     for column in columns:
         try:
-            fig = plot_mpc_plotly(
+            plot_mpc_plotly(
                 data["variable"][column],
                 convert_to=scale,
                 y_axis_label=column,
