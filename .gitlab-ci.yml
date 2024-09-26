@@ -57,8 +57,9 @@ run_example:
   stage: test
   before_script:
     - pip install --upgrade pip
-    - test -e requirements.txt && pip install -r requirements.txt || echo no requirements to install
-    - test -e setup.py && pip install -e . || echo no setup.py found
+    - pip install uv
+    - uv pip install --system -e .$EXTRA_REQUIREMENTS_PIP
+    - uv pip install pytest
   script:
     - python ci/test_examples.py
   rules:
