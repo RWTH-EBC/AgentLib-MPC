@@ -50,7 +50,6 @@ include:
     file: 'python/pypi-release/release.gitlab-ci.yml'
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: SAST.gitlab-ci.yml
-  -
 
 
 run_example:
