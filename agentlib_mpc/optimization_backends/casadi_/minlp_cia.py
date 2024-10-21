@@ -1,21 +1,24 @@
+import os
 from typing import Dict
 
 import casadi as ca
 import numpy as np
+import pydantic
 from agentlib.core.errors import OptionalDependencyError
+from pydantic_core.core_schema import FieldValidationInfo
 
+from agentlib_mpc.data_structures import mpc_datamodels
 from agentlib_mpc.data_structures.mpc_datamodels import (
     MPCVariable,
     MINLPVariableReference,
     stats_path,
     cia_relaxed_results_path,
 )
-from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
-    OptimizationVariable,
+from agentlib_mpc.optimization_backends.casadi_.core.casadi_backend import (
+    CasadiBackendConfig,
 )
 from agentlib_mpc.optimization_backends.casadi_.core.discretization import Results
 from agentlib_mpc.optimization_backends.casadi_.minlp import CasADiMINLPBackend
-from agentlib_mpc.utils import sampling
 
 try:
     import pycombina
@@ -27,6 +30,33 @@ except ImportError:
     )
 
 
+class CasadiCIABackendConfig(CasadiBackendConfig):
+    @pydantic.field_validator("overwrite_result_file")
+    @classmethod
+    def check_overwrite(cls, overwrite_result_file: bool, info: FieldValidationInfo):
+        """Checks, whether the overwrite results sttings are valid, and deletes
+        existing result files if applicable."""
+        res_file = info.data.get("results_file")
+        relaxed_res_file = cia_relaxed_results_path(res_file)
+        if res_file and info.data["save_results"]:
+            if overwrite_result_file:
+                try:
+                    os.remove(res_file)
+                    os.remove(mpc_datamodels.stats_path(res_file))
+                    os.remove(relaxed_res_file)
+                    os.remove(mpc_datamodels.stats_path(relaxed_res_file))
+                except FileNotFoundError:
+                    pass
+            else:
+                if os.path.isfile(info.data["results_file"]):
+                    raise FileExistsError(
+                        f"Results file {res_file} already exists and will not be "
+                        f"overwritten automatically. Set 'overwrite_result_file' to "
+                        f"True to enable automatic overwrite it."
+                    )
+        return overwrite_result_file
+
+
 class CasADiCIABackend(CasADiMINLPBackend):
     """
     Class doing optimization with the CIA decomposition algorithm.
@@ -36,6 +66,7 @@ class CasADiCIABackend(CasADiMINLPBackend):
     # discretization_types = {DiscretizationMethod.collocation: DirectCollocation}
     # system: CasadiMINLPSystem
     var_ref: MINLPVariableReference
+    config_type = CasadiCIABackendConfig
 
     def __init__(self, config: dict):
         super().__init__(config)
