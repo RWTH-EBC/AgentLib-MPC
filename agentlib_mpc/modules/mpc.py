@@ -102,7 +102,7 @@ def create_optimization_backend(optimization_backend, agent_id):
     optimization_backend["name"] = agent_id
     if isinstance(_type, dict):
         custom_cls = custom_injection(config=_type)
-        backend = custom_cls(**optimization_backend)
+        backend = custom_cls(config=optimization_backend)
     elif isinstance(_type, str):
         if _type in uninstalled_backend_types:
             raise OptionalDependencyError(
@@ -279,9 +279,9 @@ class BaseMPC(BaseModule):
 
     def re_init_optimization(self, parameter: AgentVariable):
         """Re-initializes the optimization backend with new parameters."""
-        self.optimization_backend.discretization_options[parameter.name] = (
-            parameter.value
-        )
+        self.optimization_backend.discretization_options[
+            parameter.name
+        ] = parameter.value
         self._init_optimization()
 
     @property
