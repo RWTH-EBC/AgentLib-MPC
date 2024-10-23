@@ -80,7 +80,7 @@ class CasadiMLSystem(FullSystem):
             use_in_stage_function=False,
             assert_complete=True,
         )
-         self.initial_output = OptimizationParameter.declare(
+        self.initial_output = OptimizationParameter.declare(
             denotation="initial_output",  # append the 0 as a convention to get initial guess
             variables=model.get_outputs(var_ref.outputs),
             ref_list=var_ref.outputs,
@@ -157,7 +157,9 @@ class MultipleShooting_ML(MultipleShooting):
             )
             mx_dict[time][sys.initial_state.name] = x_past
             y_past = self.add_opt_par(sys.initial_output)
-            mx_dict[time][sys.outputs.name] = self.add_opt_var(sys.outputs, lb=y_past, ub=y_past, guess=y_past)
+            mx_dict[time][sys.outputs.name] = self.add_opt_var(
+                sys.outputs, lb=y_past, ub=y_past, guess=y_past
+            )
             mx_dict[time][sys.initial_output.name] = y_past
 
         # add past inputs
