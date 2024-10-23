@@ -65,7 +65,7 @@ class Results:
                 lookup[label[1]] = index
         return lookup
 
-    @cached_property
+    @property
     def df(self) -> pd.DataFrame:
         return pd.DataFrame(self.matrix, index=self.grid, columns=self.columns)
 
