@@ -80,6 +80,13 @@ class CasadiMLSystem(FullSystem):
             use_in_stage_function=False,
             assert_complete=True,
         )
+         self.initial_output = OptimizationParameter.declare(
+            denotation="initial_output",  # append the 0 as a convention to get initial guess
+            variables=model.get_outputs(var_ref.outputs),
+            ref_list=var_ref.outputs,
+            use_in_stage_function=False,
+            assert_complete=True,
+        )
         self.last_control = OptimizationParameter.declare(
             denotation="initial_control",
             # append the 0 as a convention to get initial guess
