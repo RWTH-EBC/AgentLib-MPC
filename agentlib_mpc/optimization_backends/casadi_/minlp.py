@@ -48,7 +48,6 @@ class CasadiMINLPSystem(basic.BaseSystem):
         constraints = self.model_constraints.function
         outputs = ca.vertcat(ode, constraints)
         jac = ca.jacobian(outputs, inputs)
-        print(jac)
         test_input = [0] * inputs.shape[0]
         jac_func = ca.Function(
             "jac_func",
@@ -164,11 +163,6 @@ class MultipleShooting(basic.MultipleShooting):
             # get stage
             stage = self._stage_function(**stage_arguments)
 
-            self.add_constraint(
-                stage["model_constraints"],
-                lb=stage["lb_model_constraints"],
-                ub=stage["ub_model_constraints"],
-            )
             fk = opt_integrator(
                 x0=xk,
                 p=ca.vertcat(uk, dk, const_par),
@@ -179,7 +173,12 @@ class MultipleShooting(basic.MultipleShooting):
             self.pred_time = ts * self.k
             xk = self.add_opt_var(sys.states)
             vars_dict[sys.states.name][self.k] = xk
-            self.add_constraint(xk_end - xk, gap_closing=True)
+            self.add_constraint(xk - xk_end, gap_closing=True)
+            self.add_constraint(
+                stage["model_constraints"],
+                lb=stage["lb_model_constraints"],
+                ub=stage["ub_model_constraints"],
+            )
             self.objective_function += stage["cost_function"] * ts
 
 

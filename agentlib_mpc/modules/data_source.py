@@ -78,16 +78,27 @@ class DataSource(BaseModule):
         data = self.config.data
         data = self.transform_index(data)
 
+        # Instead of reassignment, modify in place
+        self.config.data.iloc[:] = self.transform_index(self.config.data)
+
         # Filter columns if specified
         if self.config.columns:
             columns_to_keep = [
-                col for col in self.config.columns if col in data.columns
+                col for col in self.config.columns if col in self.config.data.columns
             ]
             if not columns_to_keep:
                 raise ValueError("None of the specified columns exist in the dataframe")
-            data = data[columns_to_keep]
+            # Drop unwanted columns in place
+            self.config.data.drop(
+                columns=[
+                    col
+                    for col in self.config.data.columns
+                    if col not in columns_to_keep
+                ],
+                inplace=True,
+            )
 
-        if data.empty:
+        if self.config.data.empty:
             raise ValueError("Resulting dataframe is empty after processing")
 
     def transform_index(self, data: pd.DataFrame) -> pd.DataFrame:
