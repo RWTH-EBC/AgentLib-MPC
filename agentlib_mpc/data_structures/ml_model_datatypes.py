@@ -2,7 +2,7 @@ import dataclasses
 from pathlib import Path
 from typing import Literal
 
-import keras
+import keras.callbacks
 import pandas as pd
 import pydantic
 from enum import Enum

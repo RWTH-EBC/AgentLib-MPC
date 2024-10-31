@@ -1,9 +1,8 @@
 # Changelog
 
-
 ## 0.6.2
-- bugfixes regarding euler for admm
-- include proxqp and osqp as qp solver options
+- Add moving horizon estimator. Use it as ``"agentlib_mpc.mhe"``
+
 
 ## 0.6.1
 

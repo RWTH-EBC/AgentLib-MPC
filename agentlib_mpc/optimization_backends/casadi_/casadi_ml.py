@@ -28,7 +28,7 @@ from agentlib_mpc.optimization_backends.casadi_.basic import (
 from agentlib_mpc.optimization_backends.casadi_.full import FullSystem
 
 
-class CasadiMLSystem(FullSystem):
+class CasadiNNSystem(FullSystem):
     # multiple possibilities of using the MLModel
     # stage function for neural networks
     model: CasadiMLModel
@@ -124,10 +124,10 @@ class CasadiMLSystem(FullSystem):
         return {var.name: var for var in self.quantities}
 
 
-class MultipleShooting_ML(MultipleShooting):
+class MultipleShooting_NN(MultipleShooting):
     max_lag: int
 
-    def _discretize(self, sys: CasadiMLSystem):
+    def _discretize(self, sys: CasadiNNSystem):
         n = self.options.prediction_horizon
         ts = self.options.time_step
         const_par = self.add_opt_par(sys.model_parameters)
@@ -245,13 +245,13 @@ class MultipleShooting_ML(MultipleShooting):
             )
             self.objective_function += stage_result["cost_function"] * ts
 
-    def initialize(self, system: CasadiMLSystem, solver_factory: SolverFactory):
+    def initialize(self, system: CasadiNNSystem, solver_factory: SolverFactory):
         """Initializes the trajectory optimization problem, creating all symbolic
         variables of the OCP, the mapping function and the numerical solver."""
         self._construct_stage_function(system)
         super().initialize(system=system, solver_factory=solver_factory)
 
-    def _construct_stage_function(self, system: CasadiMLSystem):
+    def _construct_stage_function(self, system: CasadiNNSystem):
         """
         Combine information from the model and the var_ref to create CasADi
         functions which describe the system dynamics and constraints at each
@@ -357,7 +357,7 @@ class MultipleShooting_ML(MultipleShooting):
             output_denotations,
         )
 
-    def _create_lag_structure_for_denotations(self, system: CasadiMLSystem):
+    def _create_lag_structure_for_denotations(self, system: CasadiNNSystem):
         all_system_quantities = self.all_system_quantities(system)
         all_input_variables = {}
         lagged_inputs: dict[int, dict[str, ca.MX]] = {}
@@ -395,9 +395,9 @@ class CasADiBBBackend(CasADiBaseBackend):
     Class doing optimization with a MLModel.
     """
 
-    system_type = CasadiMLSystem
-    discretization_types = {DiscretizationMethod.multiple_shooting: MultipleShooting_ML}
-    system: CasadiMLSystem
+    system_type = CasadiNNSystem
+    discretization_types = {DiscretizationMethod.multiple_shooting: MultipleShooting_NN}
+    system: CasadiNNSystem
     # a dictionary of collections of the variable lags
     lag_collection: Dict[str, collections.deque] = {}
     max_lag: int

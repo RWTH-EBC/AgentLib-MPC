@@ -8,8 +8,8 @@ MODEL_TYPES = {
     "casadi": ModuleImport(
         import_path="agentlib_mpc.models.casadi_model", class_name="CasadiModel"
     ),
-    "casadi_ml": ModuleImport(
-        import_path="agentlib_mpc.models.casadi_ml_model", class_name="CasadiMLModel"
+    "casadi_ann": ModuleImport(
+        import_path="agentlib_mpc.models.casadi_model_ann", class_name="CasadiANNModel"
     ),
     "grampc": ModuleImport(
         import_path="agentlib_mpc.models.grampc_model", class_name="GrampcModel"

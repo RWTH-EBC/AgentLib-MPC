@@ -13,9 +13,9 @@ from agentlib_mpc.data_structures.casadi_utils import (
 from agentlib_mpc.data_structures.ml_model_datatypes import name_with_lag
 from agentlib_mpc.models.casadi_ml_model import CasadiMLModel
 from agentlib_mpc.optimization_backends.casadi_.casadi_ml import (
-    CasadiMLSystem,
+    CasadiNNSystem,
     CasADiBBBackend,
-    MultipleShooting_ML,
+    MultipleShooting_NN,
 )
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
     OptimizationVariable,
@@ -31,7 +31,7 @@ from agentlib_mpc.optimization_backends.casadi_.admm import (
 logger = logging.getLogger(__name__)
 
 
-class CasadiADMMMLSystem(CasadiADMMSystem, CasadiMLSystem):
+class CasadiADMMNNSystem(CasadiADMMSystem, CasadiNNSystem):
     """
     In this class, the lags are determined by the trainer alone and the lags are
     saved in the serialized MLModel so that it doesn't have to be defined in the
@@ -236,10 +236,10 @@ class CasadiADMMMLSystem(CasadiADMMSystem, CasadiMLSystem):
         }
 
 
-class MultipleShootingADMMML(ADMMMultipleShooting, MultipleShooting_ML):
+class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_NN):
     max_lag: int
 
-    def _discretize(self, sys: CasadiADMMMLSystem):
+    def _discretize(self, sys: CasadiADMMNNSystem):
         n = self.options.prediction_horizon
         ts = self.options.time_step
 
@@ -389,7 +389,7 @@ class MultipleShootingADMMML(ADMMMultipleShooting, MultipleShooting_ML):
             )
             self.objective_function += stage_result["cost_function"] * ts
 
-    def _construct_stage_function(self, system: CasadiADMMMLSystem):
+    def _construct_stage_function(self, system: CasadiADMMNNSystem):
         """
         Combine information from the model and the var_ref to create CasADi
         functions which describe the system dynamics and constraints at each
@@ -498,14 +498,14 @@ class MultipleShootingADMMML(ADMMMultipleShooting, MultipleShooting_ML):
         )
 
 
-class CasADiADMMBackend_ML(CasADiADMMBackend, CasADiBBBackend):
+class CasADiADMMBackend_NN(CasADiADMMBackend, CasADiBBBackend):
     """
     Class doing optimization with an MLModel.
     """
 
-    system_type = CasadiADMMMLSystem
+    system_type = CasadiADMMNNSystem
     discretization_types = {
-        DiscretizationMethod.multiple_shooting: MultipleShootingADMMML
+        DiscretizationMethod.multiple_shooting: MultipleShootingADMMNN
     }
-    system: CasadiADMMMLSystem
+    system: CasadiADMMNNSystem
     # a dictionary of collections of the variable lags

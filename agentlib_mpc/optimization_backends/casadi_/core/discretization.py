@@ -104,6 +104,7 @@ class Discretization(abc.ABC):
     _nlp_outputs_to_mpc_outputs: ca.Function
     _optimizer: ca.Function
     _result_map: ca.Function
+    only_positive_times_in_results = True
 
     def __init__(self, options: CasadiDiscretizationOptions):
         self.options = options
@@ -408,9 +409,9 @@ class Discretization(abc.ABC):
                 if time in grid:
                     index = grid.index(time)
                     entry = mx_list[index].T
-                    if time >= 0:
-                        # with NARX there can be times smaller 0, however we don't
-                        # want them in the results slice
+                    if not self.only_positive_times_in_results or time >= 0:
+                        # with NARX there can be times smaller 0, however sometimes
+                        # we dont want them in the results slice.
                         non_nan_entries.append(index_full)
                 else:
                     entry = np.full((1, vars_in_quantity), np.nan)
