@@ -15,7 +15,7 @@ from agentlib.core import (
     AgentVariable,
     Source,
 )
-from agentlib.core.errors import ConfigurationError
+from agentlib.core.errors import ConfigurationError, OptionalDependencyError
 from pydantic_core.core_schema import FieldValidationInfo
 
 from agentlib_mpc.data_structures.ml_model_datatypes import name_with_lag
@@ -27,13 +27,15 @@ from agentlib_mpc.models.serialized_ml_model import (
     SerializedGPR,
     SerializedLinReg,
 )
-from agentlib_mpc.models.serialized_ml_model import CustomGPR, MLModels
+from agentlib_mpc.models.serialized_ml_model import CustomGPR
 from agentlib_mpc.data_structures import ml_model_datatypes
 from agentlib_mpc.data_structures.interpolation import InterpolationMethods
 from agentlib_mpc.utils.plotting.ml_model_test import evaluate_model
 from agentlib_mpc.utils.sampling import sample_values_to_target_grid
 
-from keras import Sequential
+if TYPE_CHECKING:
+    from keras import Sequential
+    from sklearn.linear_model import LinearRegression
 
 
 logger = logging.getLogger(__name__)
@@ -614,9 +616,15 @@ class ANNTrainer(MLModelTrainer):
     def __init__(self, config: dict, agent: Agent):
         super().__init__(config, agent)
 
-    def build_ml_model(self) -> Sequential:
+    def build_ml_model(self) -> "Sequential":
         """Build an ANN with a one layer structure, can only create one ANN"""
-        from keras import layers
+        try:
+            from keras import layers, Sequential
+        except ImportError as err:
+            raise OptionalDependencyError(
+                dependency_install="keras",
+                used_object="Neural Networks",
+            ) from err
 
         ann = Sequential()
         ann.add(layers.BatchNormalization(axis=1))
@@ -681,9 +689,19 @@ class GPRTrainer(MLModelTrainer):
     def __init__(self, config: dict, agent: Agent):
         super().__init__(config, agent)
 
-    def build_ml_model(self):
+    def build_ml_model(self) -> CustomGPR:
         """Build a GPR with a constant Kernel in combination with a white kernel."""
-        from sklearn.gaussian_process.kernels import ConstantKernel, RBF, WhiteKernel
+        try:
+            from sklearn.gaussian_process.kernels import (
+                ConstantKernel,
+                RBF,
+                WhiteKernel,
+            )
+        except ImportError as err:
+            raise OptionalDependencyError(
+                dependency_install="scikit-learn",
+                used_object="Gaussian Process Regression",
+            ) from err
 
         kernel = ConstantKernel(
             constant_value_bounds=self.config.constant_value_bounds
@@ -752,9 +770,15 @@ class LinRegTrainer(MLModelTrainer):
     def __init__(self, config: dict, agent: Agent):
         super().__init__(config, agent)
 
-    def build_ml_model(self):
+    def build_ml_model(self) -> "LinearRegression":
         """Build a linear model."""
-        from sklearn.linear_model import LinearRegression
+        try:
+            from sklearn.linear_model import LinearRegression
+        except ImportError as err:
+            raise OptionalDependencyError(
+                dependency_install="scikit-learn",
+                used_object="Linear Regression",
+            ) from err
 
         linear_model = LinearRegression()
         return linear_model
@@ -765,10 +789,3 @@ class LinRegTrainer(MLModelTrainer):
             X=training_data.training_inputs,
             y=training_data.training_outputs,
         )
-
-
-ml_model_trainer = {
-    MLModels.ANN: ANNTrainer,
-    MLModels.GPR: GPRTrainer,
-    MLModels.LINREG: LinRegTrainer,
-}
