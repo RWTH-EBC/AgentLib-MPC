@@ -430,7 +430,7 @@ class MultipleShooting(Discretization):
             )
             fk = opt_integrator(
                 x0=xk,
-                p=ca.vertcat(uk, dk, const_par),
+                p=ca.vertcat(uk, dk, const_par, zk, yk),
             )
             xk_end = fk["xf"]
             # calculate model constraint
@@ -449,10 +449,13 @@ class MultipleShooting(Discretization):
         ode = sys.ode
         # create inputs
         x = sys.states.full_symbolic
+        # the order of elements here is important when calling the integrator!
         p = ca.vertcat(
             sys.controls.full_symbolic,
             sys.non_controlled_inputs.full_symbolic,
             sys.model_parameters.full_symbolic,
+            sys.algebraics.full_symbolic,
+            sys.outputs.full_symbolic,
         )
         integrator_ode = {"x": x, "p": p, "ode": ode}
 
