@@ -2016,8 +2016,8 @@
                 "agentlib_mpc"
             ],
             "pandas": [
-                "test_mpc",
-                "test_examples"
+                "test_examples",
+                "test_mpc"
             ],
             "agentlib.utils": [
                 "test_examples",
@@ -2028,11 +2028,11 @@
                 "test_admm"
             ],
             "numpy": [
-                "test_mpc",
-                "test_serialized_linreg",
                 "test_serialized_ann",
-                "test_admm",
-                "test_serialized_gpr"
+                "test_mpc",
+                "test_serialized_gpr",
+                "test_serialized_linreg",
+                "test_admm"
             ],
             "agentlib.core": [
                 "test_admm"
@@ -2053,8 +2053,8 @@
                 "test_casadi_backend"
             ],
             "agentlib_mpc.models.casadi_model": [
-                "test_casadi_ml_model",
-                "test_casadi_backend"
+                "test_casadi_backend",
+                "test_casadi_ml_model"
             ],
             "agentlib_mpc.optimization_backends.casadi_.basic": [
                 "test_casadi_backend"
@@ -2308,8 +2308,8 @@
                 "agentlib_mpc"
             ],
             "pandas": [
-                "test_mpc",
-                "test_examples"
+                "test_examples",
+                "test_mpc"
             ],
             "agentlib.utils": [
                 "test_examples",
@@ -2320,11 +2320,11 @@
                 "test_admm"
             ],
             "numpy": [
-                "test_mpc",
-                "test_serialized_linreg",
                 "test_serialized_ann",
-                "test_admm",
-                "test_serialized_gpr"
+                "test_mpc",
+                "test_serialized_gpr",
+                "test_serialized_linreg",
+                "test_admm"
             ],
             "agentlib.core": [
                 "test_admm"
@@ -2345,8 +2345,8 @@
                 "test_casadi_backend"
             ],
             "agentlib_mpc.models.casadi_model": [
-                "test_casadi_ml_model",
-                "test_casadi_backend"
+                "test_casadi_backend",
+                "test_casadi_ml_model"
             ],
             "agentlib_mpc.optimization_backends.casadi_.basic": [
                 "test_casadi_backend"
