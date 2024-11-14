@@ -33,6 +33,7 @@ class CoordinatedADMMConfig(MiniEmployeeConfig, ADMMConfig):
                     "Couplings and Exchange Variables should have a value, as it is "
                     "required for the initial guess."
                 )
+        return value
 
 
 class CoordinatedADMM(MiniEmployee, ADMM):
