@@ -120,6 +120,91 @@ ADMM convergence</p>
 </dd></dl>
 
 </section>
+<section id="module-agentlib_mpc.utils.plotting.admm_dashboard">
+<span id="agentlib-mpc-utils-plotting-admm-dashboard-module"></span><h2>agentlib_mpc.utils.plotting.admm_dashboard module<a class="headerlink" href="#module-agentlib_mpc.utils.plotting.admm_dashboard" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.admm_dashboard.create_app">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.admm_dashboard.</span></span><span class="sig-name descname"><span class="pre">create_app</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residuals_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/utils/plotting/admm_dashboard.html#create_app"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.admm_dashboard.create_app" title="Permalink to this definition"></a></dt>
+<dd><p>Create and configure the Dash app.</p>
+<p>Args:
+agent_data (Dict[str, pd.DataFrame]): Dictionary containing data for each agent.
+residuals_df (pd.DataFrame): DataFrame containing residuals data.</p>
+<p>Returns:
+dash.Dash: Configured Dash app.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.admm_dashboard.create_coupling_var_plot">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.admm_dashboard.</span></span><span class="sig-name descname"><span class="pre">create_coupling_var_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prediction_grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coupling_var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils/plotting/admm_dashboard.html#create_coupling_var_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.admm_dashboard.create_coupling_var_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Create a plotly figure for the coupling variable plot.</p>
+<p>Args:
+plot_data (Dict[str, List[float]]): Dictionary with agent names as keys and their values as lists.
+prediction_grid (List[float]): List of prediction grid values.
+coupling_var (str): Name of the coupling variable.</p>
+<p>Returns:
+go.Figure: Plotly figure object.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.admm_dashboard.create_residuals_plot">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.admm_dashboard.</span></span><span class="sig-name descname"><span class="pre">create_residuals_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">residuals_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils/plotting/admm_dashboard.html#create_residuals_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.admm_dashboard.create_residuals_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Create a plotly figure for the residuals plot.</p>
+<p>Args:
+residuals_df (pd.DataFrame): DataFrame containing residuals data.
+time_step (float): Selected time step.</p>
+<p>Returns:
+go.Figure: Plotly figure object.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.admm_dashboard.get_coupling_variables">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.admm_dashboard.</span></span><span class="sig-name descname"><span class="pre">get_coupling_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils/plotting/admm_dashboard.html#get_coupling_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.admm_dashboard.get_coupling_variables" title="Permalink to this definition"></a></dt>
+<dd><p>Identify coupling variables in the dataframe.</p>
+<p>Args:
+df (pd.DataFrame): The MPC data for an agent.</p>
+<p>Returns:
+List[str]: List of coupling variable names.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.admm_dashboard.get_data_for_plot">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.admm_dashboard.</span></span><span class="sig-name descname"><span class="pre">get_data_for_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coupling_var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils/plotting/admm_dashboard.html#get_data_for_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.admm_dashboard.get_data_for_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Extract data for the coupling variable plot.</p>
+<p>Args:
+agent_data (Dict[str, pd.DataFrame]): Dictionary containing data for each agent.
+time_step (float): Selected time step.
+iteration (int): Selected iteration number.
+coupling_var (str): Name of the selected coupling variable.</p>
+<p>Returns:
+Dict[str, List[float]]: Dictionary with agent names as keys and their values as lists.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.admm_dashboard.get_max_iterations_per_timestep">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.admm_dashboard.</span></span><span class="sig-name descname"><span class="pre">get_max_iterations_per_timestep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils/plotting/admm_dashboard.html#get_max_iterations_per_timestep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.admm_dashboard.get_max_iterations_per_timestep" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.admm_dashboard.load_agent_data">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.admm_dashboard.</span></span><span class="sig-name descname"><span class="pre">load_agent_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils/plotting/admm_dashboard.html#load_agent_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.admm_dashboard.load_agent_data" title="Permalink to this definition"></a></dt>
+<dd><p>Load MPC data for multiple agents from files containing ‘admm’ in their name.</p>
+<p>Args:
+directory (str): Directory path containing the data files.</p>
+<p>Returns:
+Dict[str, pd.DataFrame]: Dictionary with agent names as keys and their data as values.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.admm_dashboard.main">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.admm_dashboard.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/utils/plotting/admm_dashboard.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.admm_dashboard.main" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.admm_dashboard.show_admm_dashboard">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.admm_dashboard.</span></span><span class="sig-name descname"><span class="pre">show_admm_dashboard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residuals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'seconds'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'minutes'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'hours'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'days'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'seconds'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/utils/plotting/admm_dashboard.html#show_admm_dashboard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.admm_dashboard.show_admm_dashboard" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
 <section id="module-agentlib_mpc.utils.plotting.admm_residuals">
 <span id="agentlib-mpc-utils-plotting-admm-residuals-module"></span><h2>agentlib_mpc.utils.plotting.admm_residuals module<a class="headerlink" href="#module-agentlib_mpc.utils.plotting.admm_residuals" title="Permalink to this heading"></a></h2>
 <dl class="py function">
