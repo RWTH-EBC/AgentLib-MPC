@@ -282,7 +282,7 @@ class CasadiMLModel(CasadiModel):
             bb_results: The results of the evaluation of the blackbox functions
         """
         all_inputs = self._all_inputs()
-        exclude = [v.name for v in self.differentials + self.outputs]
+        exclude = [v.name for v in self.differentials + self.outputs + self.algebraics]
         # take the mean of start/finish values of variables that have already been
         # integrated by a discrete blackbox function
         if bb_results:
@@ -311,12 +311,16 @@ class CasadiMLModel(CasadiModel):
         par = ca.vertcat(*integration_params.values())
 
         # if we have no differentials and no algebraics, this function should do nothing
-        if (not self.differentials) and (ignore_algebraics or not self.outputs):
+        if (not self.differentials) and (
+            ignore_algebraics or not self.outputs + self.algebraics
+        ):
             return ca.Function("empty", [[], par], [[], []], ["x0", "p"], ["xf", "zf"])
 
         x = ca.vertcat(*[sta.sym for sta in self.differentials])
         # if we have a pure ode, we can use an ode solver which is more efficient
-        if self.differentials and (ignore_algebraics or not self.outputs):
+        if self.differentials and (
+            ignore_algebraics or not self.outputs + self.algebraics
+        ):
             ode = {
                 "x": x,
                 "p": par,
@@ -329,7 +333,7 @@ class CasadiMLModel(CasadiModel):
             "x": x,
             "p": par,
             "ode": self.system,
-            "z": ca.vertcat(*[var.sym for var in self.outputs]),
+            "z": ca.vertcat(*[var.sym for var in self.outputs + self.algebraics]),
             "alg": ca.vertcat(*self.output_equations),
         }
         # if there are no differential values, we create a dummy to make integrator
@@ -507,7 +511,7 @@ class CasadiMLModel(CasadiModel):
         # with keywords names
         differentials_dict = {var.name: var.sym for var in self.differentials}
         if not ignore_algebraics:
-            alg_dict = {var.name: var.sym for var in self.outputs}
+            alg_dict = {var.name: var.sym for var in self.outputs + self.algebraics}
         else:
             alg_dict = {}
         stacked_alg = ca.vertcat(*[mx for mx in alg_dict.values()])
