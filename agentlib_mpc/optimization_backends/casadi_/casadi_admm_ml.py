@@ -331,9 +331,6 @@ class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_ML):
         self.pred_time += ts
         mx_dict[self.pred_time] = {sys.states.name: self.add_opt_var(sys.states)}
 
-        # control of last time step
-        mx_dict[0 - ts][sys.controls.name] = self.add_opt_par(sys.last_control)
-
         all_quantities = sys.all_system_quantities()
         # add constraints and create the objective function for all stages
         for time in prediction_grid:
