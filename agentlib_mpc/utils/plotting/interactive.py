@@ -14,7 +14,7 @@ from agentlib_mpc.utils.plotting.mpc import interpolate_colors
 try:
     import dash
     from dash import html, dcc
-    from dash.dependencies import Input, Output
+    from dash.dependencies import Input, Output, State
     import plotly.graph_objects as go
 except ImportError as e:
     raise OptionalDependencyError(
@@ -173,6 +173,7 @@ def plot_mpc_plotly(
         ),
         xaxis_title=x_axis_label,
         yaxis_title=y_axis_label,
+        uirevision="same",  # Add this line
     )
 
     return fig
@@ -230,46 +231,72 @@ def show_dashboard(
         except Exception:
             pass
 
+    # Store initial figures
+    initial_figures = {}
+    for column in columns_okay:
+        fig = plot_mpc_plotly(
+            data["variable"][column],
+            convert_to=scale,
+            y_axis_label=column,
+        )
+        # Add uirevision to maintain legend state
+        fig.update_layout(uirevision="same")
+        initial_figures[column] = fig
+
     # Define the layout of the webpage
     app.layout = html.Div(
         [
             html.H1("MPC Results"),
+            # Store for keeping track of trace visibility
+            dcc.Store(id="trace-visibility", data={}),
             make_components(columns_okay, data, stats=stats, convert_to=scale),
         ]
     )
 
     port = get_port()
 
-    webbrowser.open_new_tab(f"http://localhost:{port}")
-    app.run(debug=False, port=port)
-
-    # Create a callback to update the visibility of traces in all plots
     @app.callback(
-        [Output(f"plot-{column}", "figure") for column in columns],
-        [Input(f"plot-{column}", "clickData") for column in columns],
+        [Output(f"plot-{column}", "figure") for column in columns_okay],
+        [Input(f"plot-{column}", "restyleData") for column in columns_okay],
+        [State(f"plot-{column}", "figure") for column in columns_okay],
     )
-    def update_trace_visibility(*args):
-        clickData = args[: len(columns)]
-        figures = args[len(columns) :]
+    def update_plots(*args):
+        ctx = dash.callback_context
+        if not ctx.triggered:
+            return [dash.no_update] * len(columns_okay)
 
-        print(f"in callback, {figures} and clickdata {clickData}")
+        n_plots = len(columns_okay)
+        restyle_data = args[:n_plots]
+        current_figures = args[n_plots:]
 
-        # Get the name of the clicked legend item
-        clicked_legend = None
-        for click in clickData:
-            if click and "curveNumber" in click:
-                clicked_legend = figures[0]["data"][click["curveNumber"]]["name"]
-                break
+        # Find which plot was changed
+        triggered_prop = ctx.triggered[0]["prop_id"].split(".")[0]
+        triggered_index = next(
+            i for i, col in enumerate(columns_okay) if f"plot-{col}" == triggered_prop
+        )
+        triggered_data = restyle_data[triggered_index]
 
-        # Update the visibility of traces in all plots based on the clicked legend item
+        if not triggered_data:
+            return [dash.no_update] * n_plots
+
+        # Get the visibility update from the triggered plot
+        visibility_update = triggered_data[0].get("visible", [None])[0]
+        trace_indices = triggered_data[1]
+
+        # Update all figures
         updated_figures = []
-        for fig in figures:
-            for trace in fig["data"]:
-                if trace["name"] == clicked_legend:
-                    trace["visible"] = not trace["visible"]
+        for fig in current_figures:
+            # Ensure uirevision is set
+            fig["layout"]["uirevision"] = "same"
+            # Update visibility for the corresponding traces
+            for idx in trace_indices:
+                fig["data"][idx]["visible"] = visibility_update
             updated_figures.append(fig)
 
         return updated_figures
+
+    webbrowser.open_new_tab(f"http://localhost:{port}")
+    app.run(debug=False, port=port)
 
 
 def make_components(

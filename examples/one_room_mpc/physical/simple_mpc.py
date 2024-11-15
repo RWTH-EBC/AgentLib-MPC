@@ -138,7 +138,7 @@ AGENT_MPC = {
                     "collocation_method": "legendre",
                 },
                 "solver": {
-                    "name": "ipopt",  # use fatrop with casadi 3.6.6 for speedup
+                    "name": "fatrop",  # use fatrop with casadi 3.6.6 for speedup
                 },
                 "results_file": "results//mpc.csv",
                 "save_results": True,
@@ -208,7 +208,7 @@ def run_example(
     )
     mas.run(until=until)
     try:
-        stats = load_mpc_stats("results/stats_mpc_fatropfull.csv")
+        stats = load_mpc_stats("results/__mpc.csv")
     except Exception:
         stats = None
     results = mas.get_results(cleanup=False)
@@ -267,5 +267,5 @@ def plot(mpc_results: pd.DataFrame, sim_res: pd.DataFrame, until: float):
 
 if __name__ == "__main__":
     run_example(
-        with_plots=True, with_dashboard=False, until=7200, log_level=logging.CRITICAL
+        with_plots=True, with_dashboard=True, until=7200, log_level=logging.INFO
     )

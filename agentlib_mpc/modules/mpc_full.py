@@ -62,7 +62,7 @@ class MPC(BaseMPC):
             history[v] = {}
             # store scalar values as initial if they exist
             if isinstance(var.value, (float, int)):
-                timestamp = var.timestamp or self.env.now
+                timestamp = var.timestamp or self.env.time
                 value = var.value
             elif var.value is None:
                 self.logger.info(
@@ -93,7 +93,7 @@ class MPC(BaseMPC):
 
             # iterate over all saved values and delete them, if they are too old
             for timestamp in list(var_history):
-                if timestamp < (self.env.now - lag_in_seconds):
+                if timestamp < (self.env.time - lag_in_seconds):
                     var_history.pop(timestamp)
 
     def _callback_hist_vars(self, variable: AgentVariable, name: str):

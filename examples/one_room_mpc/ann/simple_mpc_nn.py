@@ -21,7 +21,7 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                 "module_id": "myMPC",
                 "type": "agentlib_mpc.mpc",
                 "optimization_backend": {
-                    "type": "casadi_nn",
+                    "type": "casadi_ml",
                     "model": {
                         "type": {
                             "file": "model.py",
