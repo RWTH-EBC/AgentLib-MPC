@@ -12,7 +12,7 @@ from pydantic import ConfigDict, Field, BaseModel
 # from sklearn.gaussian_process import GaussianProcessRegressor
 # from sklearn.gaussian_process.kernels import ConstantKernel, WhiteKernel, RBF
 # from sklearn.linear_model import LinearRegression
-from typing import Union, Optional, TYPE_CHECKING
+from typing import Union, Optional, TYPE_CHECKING, TypeVar, Type
 
 if TYPE_CHECKING:
     from sklearn.gaussian_process import GaussianProcessRegressor
@@ -155,7 +155,7 @@ class SerializedMLModel(BaseModel, abc.ABC):
             SerializedMLModel object with data from json file.
         """
         model_type = model_data["model_type"]
-        return serialized_models[model_type](**model_data)
+        return get_serialized_model(model_type)(**model_data)
 
     @classmethod
     def load_serialized_model(cls, model_data: Union[dict, str, Path]):
@@ -168,15 +168,18 @@ class SerializedMLModel(BaseModel, abc.ABC):
         return cls.load_serialized_model_from_string(model_data)
 
 
-try:
-    from agentlib_mpc.models.serialized_ml_model.serialized_ann import SerializedANN
-except ImportError:
-    keras_avai
-from agentlib_mpc.models.serialized_ml_model.serialized_gpr import SerializedGPR
-from agentlib_mpc.models.serialized_ml_model.serialized_linreg import SerializedLinReg
+def get_serialized_model(model_type: MLModels) -> Type["SerializedMLModel"]:
+    if model_type == MLModels.ANN:
+        from agentlib_mpc.models.serialized_ml_model.serialized_ann import SerializedANN
 
-serialized_models = {
-    MLModels.ANN: SerializedANN,
-    MLModels.GPR: SerializedGPR,
-    MLModels.LINREG: SerializedLinReg,
-}
+        return SerializedANN
+    if model_type == MLModels.GPR:
+        from agentlib_mpc.models.serialized_ml_model.serialized_gpr import SerializedGPR
+
+        return SerializedGPR
+    if model_type == MLModels.LINREG:
+        from agentlib_mpc.models.serialized_ml_model.serialized_linreg import (
+            SerializedLinReg,
+        )
+
+        return SerializedLinReg

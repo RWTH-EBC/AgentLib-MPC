@@ -1,9 +1,18 @@
 from typing import Optional, Union
 
 import numpy as np
+from agentlib.core.errors import OptionalDependencyError
 from pydantic import BaseModel, Field, ConfigDict
-from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.gaussian_process.kernels import ConstantKernel, RBF, WhiteKernel
+
+try:
+    from sklearn.gaussian_process import GaussianProcessRegressor
+    from sklearn.gaussian_process.kernels import ConstantKernel, RBF, WhiteKernel
+except ImportError as err:
+    raise OptionalDependencyError(
+        dependency_install="scikit-learn",
+        used_object="Gaussian Process Regression",
+    ) from err
+
 
 from agentlib_mpc.data_structures.ml_model_datatypes import Feature, OutputFeature
 from agentlib_mpc.models.serialized_ml_model.serialized_ml_model import (

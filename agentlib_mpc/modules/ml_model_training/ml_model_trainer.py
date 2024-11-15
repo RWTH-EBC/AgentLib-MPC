@@ -15,27 +15,19 @@ from agentlib.core import (
     AgentVariable,
     Source,
 )
-from agentlib.core.errors import ConfigurationError, OptionalDependencyError
+from agentlib.core.errors import ConfigurationError
 from pydantic_core.core_schema import FieldValidationInfo
 
 from agentlib_mpc.data_structures.ml_model_datatypes import name_with_lag
-from agentlib_mpc.models.casadi_predictor import CasadiPredictor
+from agentlib_mpc.models.casadi_predictor.casadi_predictor import CasadiPredictor
 from agentlib_mpc.utils.analysis import load_sim
 from agentlib_mpc.models.serialized_ml_model import (
     SerializedMLModel,
-    SerializedANN,
-    SerializedGPR,
-    SerializedLinReg,
 )
-from agentlib_mpc.models.serialized_ml_model import CustomGPR
 from agentlib_mpc.data_structures import ml_model_datatypes
 from agentlib_mpc.data_structures.interpolation import InterpolationMethods
 from agentlib_mpc.utils.plotting.ml_model_test import evaluate_model
 from agentlib_mpc.utils.sampling import sample_values_to_target_grid
-
-if TYPE_CHECKING:
-    from keras import Sequential
-    from sklearn.linear_model import LinearRegression
 
 
 logger = logging.getLogger(__name__)
@@ -581,211 +573,4 @@ class MLModelTrainer(BaseModule, abc.ABC):
             validation_outputs=outputs.iloc[n_training:n_validation],
             test_inputs=inputs.iloc[n_validation:],
             test_outputs=outputs.iloc[n_validation:],
-        )
-
-
-class ANNTrainerConfig(MLModelTrainerConfig):
-    """
-    Pydantic data model for ANNTrainer configuration parser
-    """
-
-    epochs: int = 100
-    batch_size: int = 100
-    layers: list[tuple[int, ml_model_datatypes.Activation]] = pydantic.Field(
-        default=[(16, "sigmoid")],
-        description="Hidden layers which should be created for the ANN. An ANN always "
-        "has a BatchNormalization Layer, and an Output Layer the size of "
-        "the output dimensions. Additional hidden layers can be specified "
-        "here as a list of tuples: "
-        "(#neurons of layer, activation function).",
-    )
-    early_stopping: ml_model_datatypes.EarlyStoppingCallback = pydantic.Field(
-        default=ml_model_datatypes.EarlyStoppingCallback(),
-        description="Specification of the EarlyStopping Callback for training",
-    )
-
-
-class ANNTrainer(MLModelTrainer):
-    """
-    Module that generates ANNs based on received data.
-    """
-
-    config: ANNTrainerConfig
-    model_type = SerializedANN
-
-    def __init__(self, config: dict, agent: Agent):
-        super().__init__(config, agent)
-
-    def build_ml_model(self) -> "Sequential":
-        """Build an ANN with a one layer structure, can only create one ANN"""
-        try:
-            from keras import layers, Sequential
-        except ImportError as err:
-            raise OptionalDependencyError(
-                dependency_install="keras",
-                used_object="Neural Networks",
-            ) from err
-
-        ann = Sequential()
-        ann.add(layers.BatchNormalization(axis=1))
-        for units, activation in self.config.layers:
-            ann.add(layers.Dense(units=units, activation=activation))
-        ann.add(layers.Dense(units=len(self.config.outputs), activation="linear"))
-        ann.compile(loss="mse", optimizer="adam")
-        return ann
-
-    def fit_ml_model(self, training_data: ml_model_datatypes.TrainingData):
-        callbacks = []
-        if self.config.early_stopping.activate:
-            callbacks.append(self.config.early_stopping.callback())
-
-        self.ml_model.fit(
-            x=training_data.training_inputs,
-            y=training_data.training_outputs,
-            validation_data=(
-                training_data.validation_inputs,
-                training_data.validation_outputs,
-            ),
-            epochs=self.config.epochs,
-            batch_size=self.config.batch_size,
-            callbacks=callbacks,
-        )
-
-
-class GPRTrainerConfig(MLModelTrainerConfig):
-    """
-    Pydantic data model for GPRTrainer configuration parser
-    """
-
-    constant_value_bounds: tuple = (1e-3, 1e5)
-    length_scale_bounds: tuple = (1e-3, 1e5)
-    noise_level_bounds: tuple = (1e-3, 1e5)
-    noise_level: float = 1.5
-    normalize: bool = pydantic.Field(
-        default=False,
-        description="Defines whether the training data and the inputs are for prediction"
-        "are normalized before given to GPR.",
-    )
-    scale: float = pydantic.Field(
-        default=1.0,
-        description="Defines by which value the output data is divided for training and "
-        "multiplied after prediction.",
-    )
-    n_restarts_optimizer: int = pydantic.Field(
-        default=0,
-        description="Defines the number of restarts of the Optimizer for the "
-        "gpr_parameters of the kernel.",
-    )
-
-
-class GPRTrainer(MLModelTrainer):
-    """
-    Module that generates ANNs based on received data.
-    """
-
-    config: GPRTrainerConfig
-    model_type = SerializedGPR
-
-    def __init__(self, config: dict, agent: Agent):
-        super().__init__(config, agent)
-
-    def build_ml_model(self) -> CustomGPR:
-        """Build a GPR with a constant Kernel in combination with a white kernel."""
-        try:
-            from sklearn.gaussian_process.kernels import (
-                ConstantKernel,
-                RBF,
-                WhiteKernel,
-            )
-        except ImportError as err:
-            raise OptionalDependencyError(
-                dependency_install="scikit-learn",
-                used_object="Gaussian Process Regression",
-            ) from err
-
-        kernel = ConstantKernel(
-            constant_value_bounds=self.config.constant_value_bounds
-        ) * RBF(length_scale_bounds=self.config.length_scale_bounds) + WhiteKernel(
-            noise_level=self.config.noise_level,
-            noise_level_bounds=self.config.noise_level_bounds,
-        )
-
-        gpr = CustomGPR(
-            kernel=kernel,
-            copy_X_train=False,
-            n_restarts_optimizer=self.config.n_restarts_optimizer,
-        )
-        gpr.data_handling.normalize = self.config.normalize
-        gpr.data_handling.scale = self.config.scale
-        return gpr
-
-    def fit_ml_model(self, training_data: ml_model_datatypes.TrainingData):
-        """Fits GPR to training data"""
-        if self.config.normalize:
-            x_train = self._normalize(training_data.training_inputs.to_numpy())
-        else:
-            x_train = training_data.training_inputs
-        y_train = training_data.training_outputs / self.config.scale
-        self.ml_model.fit(
-            X=x_train,
-            y=y_train,
-        )
-
-    def _normalize(self, x: np.ndarray):
-        # update the normal and the mean
-        mean = x.mean(axis=0, dtype=float)
-        std = x.std(axis=0, dtype=float)
-        for idx, val in enumerate(std):
-            if val == 0:
-                logger.info(
-                    "Encountered zero while normalizing. Continuing with a std of one for this Input."
-                )
-                std[idx] = 1.0
-
-        if mean is None and std is not None:
-            raise ValueError("Please update std and mean.")
-
-        # save mean and standard deviation to data_handling
-        self.ml_model.data_handling.mean = mean.tolist()
-        self.ml_model.data_handling.std = std.tolist()
-
-        # normalize x and return
-        return (x - mean) / std
-
-
-class LinRegTrainerConfig(MLModelTrainerConfig):
-    """
-    Pydantic data model for GPRTrainer configuration parser
-    """
-
-
-class LinRegTrainer(MLModelTrainer):
-    """
-    Module that generates ANNs based on received data.
-    """
-
-    config: LinRegTrainerConfig
-    model_type = SerializedLinReg
-
-    def __init__(self, config: dict, agent: Agent):
-        super().__init__(config, agent)
-
-    def build_ml_model(self) -> "LinearRegression":
-        """Build a linear model."""
-        try:
-            from sklearn.linear_model import LinearRegression
-        except ImportError as err:
-            raise OptionalDependencyError(
-                dependency_install="scikit-learn",
-                used_object="Linear Regression",
-            ) from err
-
-        linear_model = LinearRegression()
-        return linear_model
-
-    def fit_ml_model(self, training_data: ml_model_datatypes.TrainingData):
-        """Fits linear model to training data"""
-        self.ml_model.fit(
-            X=training_data.training_inputs,
-            y=training_data.training_outputs,
         )

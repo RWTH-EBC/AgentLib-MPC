@@ -12,7 +12,7 @@ from agentlib_mpc.models.casadi_model import (
     CasadiOutput,
     CasadiModel,
 )
-from agentlib_mpc.modules.ml_model_training.ml_model_trainer import ANNTrainer
+from agentlib_mpc.modules.ml_model_training.ann_trainer import ANNTrainer
 
 
 def read_weather(file_path):
@@ -511,9 +511,8 @@ class Datagenerator:
         x.append(input_data[: round(input_data.shape[0] * training)])
         x.append(
             input_data[
-                round(input_data.shape[0] * training) - 1 : round(
-                    input_data.shape[0] * (training + validation)
-                )
+                round(input_data.shape[0] * training)
+                - 1 : round(input_data.shape[0] * (training + validation))
             ]
         )
         x.append(input_data[round(input_data.shape[0] * (training + validation)) - 1 :])
@@ -521,9 +520,8 @@ class Datagenerator:
         y.append(output_data[: round(output_data.shape[0] * training)])
         y.append(
             output_data[
-                round(output_data.shape[0] * training) - 1 : round(
-                    output_data.shape[0] * (training + validation)
-                )
+                round(output_data.shape[0] * training)
+                - 1 : round(output_data.shape[0] * (training + validation))
             ]
         )
         y.append(

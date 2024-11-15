@@ -2,7 +2,15 @@ from copy import deepcopy
 from typing import Union, Optional
 
 import numpy as np
-from keras import Sequential
+from agentlib.core.errors import OptionalDependencyError
+
+try:
+    from keras import Sequential
+except ImportError as err:
+    raise OptionalDependencyError(
+        dependency_install="keras",
+        used_object="Neural Networks",
+    ) from err
 from pydantic import Field, ConfigDict
 
 from agentlib_mpc.data_structures.ml_model_datatypes import Feature, OutputFeature

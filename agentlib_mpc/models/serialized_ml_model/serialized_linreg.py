@@ -1,8 +1,17 @@
 from typing import Union, Optional
 
 import numpy as np
+from agentlib.core.errors import OptionalDependencyError
 from pydantic import BaseModel, Field, ConfigDict
-from sklearn.linear_model import LinearRegression
+
+try:
+    from sklearn.linear_model import LinearRegression
+except ImportError as err:
+    raise OptionalDependencyError(
+        dependency_install="scikit-learn",
+        used_object="Linear Regression",
+    ) from err
+
 
 from agentlib_mpc.data_structures.ml_model_datatypes import Feature, OutputFeature
 from agentlib_mpc.models.serialized_ml_model.serialized_ml_model import (

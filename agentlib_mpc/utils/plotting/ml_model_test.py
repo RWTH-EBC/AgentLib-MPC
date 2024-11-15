@@ -5,7 +5,10 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from agentlib_mpc.models.casadi_predictor import CasadiPredictor, casadi_predictors
+from agentlib_mpc.models.casadi_predictor.casadi_predictor import (
+    CasadiPredictor,
+    casadi_predictors,
+)
 from agentlib_mpc.models.serialized_ml_model import SerializedMLModel
 from agentlib_mpc.utils.plotting import basic
 from agentlib_mpc.data_structures import ml_model_datatypes
