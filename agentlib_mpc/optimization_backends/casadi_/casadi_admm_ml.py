@@ -59,7 +59,7 @@ class CasadiADMMNNSystem(CasadiADMMSystem, CasadiMLSystem):
         )
         self.algebraics = OptimizationVariable.declare(
             denotation="z",
-            variables=model.auxiliaries + model.algebraics,
+            variables=model.auxiliaries,
             ref_list=[],
         )
         self.outputs = OptimizationVariable.declare(

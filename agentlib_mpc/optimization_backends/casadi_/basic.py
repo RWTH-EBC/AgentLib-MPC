@@ -58,7 +58,7 @@ class BaseSystem(System):
         )
         self.algebraics = OptimizationVariable.declare(
             denotation="z",
-            variables=model.algebraics + model.auxiliaries,
+            variables=model.auxiliaries,
             ref_list=[],
         )
         self.outputs = OptimizationVariable.declare(

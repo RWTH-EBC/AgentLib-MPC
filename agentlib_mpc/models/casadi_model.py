@@ -166,7 +166,6 @@ class CasadiState(CasadiVariable):
     Class that stores various attributes of CasADi differential variables.
     """
 
-    _alg: Optional[CasadiTypes] = attrs.field(default=None, alias="_alg")
     _ode: Optional[CasadiTypes] = attrs.field(default=None, alias="_ode")
 
     def __attrs_post_init__(self):
@@ -176,12 +175,22 @@ class CasadiState(CasadiVariable):
 
     @property
     def alg(self) -> CasadiTypes:
-        return self._alg
+        raise AttributeError(
+            "Casadi States should not have .alg assignments. If you wish to provide "
+            "algebraic relationships to states, add them in the constraints."
+        )
+        return -1
 
     @alg.setter
     def alg(self, equation: Union[CasadiTypes, CasadiVariable]):
-        self._alg = get_symbolic(equation)
-        self.exclusive_ode_or_alg()
+        raise AttributeError(
+            "Casadi States should not have .alg assignments. Consider the following: \n"
+            " 1. If you need equality constraints in your MPC, please add them in the "
+            "constraints. \n"
+            " 2. If you use this to bundle an expression, consider using a regular "
+            "Python variable. \n"
+            " 3. Implicit algebraic equations are currently not supported."
+        )
 
     @property
     def ode(self) -> CasadiTypes:
@@ -190,7 +199,6 @@ class CasadiState(CasadiVariable):
     @ode.setter
     def ode(self, equation: Union[CasadiTypes, CasadiVariable]):
         self._ode = get_symbolic(equation)
-        self.exclusive_ode_or_alg()
 
     def json(self, indent: int = 2, **kwargs):
         data = self.dict(**kwargs)
@@ -199,18 +207,6 @@ class CasadiState(CasadiVariable):
         data.pop("_ode")
         data.pop("_alg")
         json.dumps(data, indent=indent)
-
-    def exclusive_ode_or_alg(self):
-        """Ensures a CasadiState cannot have both a differential and an
-        algebraic equation."""
-        if (self.ode is not None) and (self.alg is not None):
-            raise ValueError(
-                f"CasadiStates can be exclusively differential or algebraic "
-                f"variables. However, CasadiState '{self.name}' was "
-                f"assigned both a differential equation and an algebraic "
-                f"equation."
-            )
-        return self
 
 
 @attrs.define(slots=True, weakref_slot=False, kw_only=True)
@@ -326,13 +322,6 @@ class CasadiModel(Model):
                     f"sure you specify '{out.name}.alg' in 'setup_system()'."
                 )
 
-    def _setup_algebraic_equations(self) -> list[ca.MX]:
-        """Collects the algebraic equations defined in setup_system and also adds them
-        to constraints."""
-        equality_constraints = [(0, alg, 0) for alg in self.algebraic_equations]
-        self.constraints = self.constraints + equality_constraints
-        return self.constraints + equality_constraints
-
     def do_step(self, *, t_start, t_sample=None):
         if t_sample is None:
             t_sample = self.dt
@@ -348,8 +337,8 @@ class CasadiModel(Model):
             self.set_differential_values(np.array(result["xf"]).flatten())
         else:
             result = self.integrator(p=pars)
-        if self.algebraics + self.outputs:
-            self.set_algebraic_values(np.array(result["zf"]).flatten())
+        if self.outputs:
+            self.set_output_values(np.array(result["zf"]).flatten())
 
     def _make_integrator(self) -> ca.Function:
         """Creates the integrator to be used in do_step(). The integrator takes the
@@ -360,8 +349,8 @@ class CasadiModel(Model):
             *[inp.sym for inp in chain.from_iterable([self.inputs, self.parameters])]
         )
         x = ca.vertcat(*[sta.sym for sta in self.differentials])
-        z = ca.vertcat(*[var.sym for var in self.outputs + self.algebraics])
-        algebraic_equations = ca.vertcat(*self.algebraic_equations)
+        z = ca.vertcat(*[var.sym for var in self.outputs])
+        algebraic_equations = ca.vertcat(*self.output_equations)
 
         if not algebraic_equations.shape[0] and self.differentials:
             # case of pure ode
@@ -409,7 +398,7 @@ class CasadiModel(Model):
             for lb, func, ub in self.constraints
         ]
         equality_constraints = [
-            ModelConstraint(0, alg, 0) for alg in self.algebraic_equations
+            ModelConstraint(0, alg, 0) for alg in self.output_equations
         ]
         return base_constraints + equality_constraints
 
@@ -434,15 +423,10 @@ class CasadiModel(Model):
         return list(self._parameters.values())
 
     @property
-    def algebraic_equations(self) -> List[CasadiTypes]:
+    def output_equations(self) -> List[CasadiTypes]:
         """List of algebraic equations RHS in the form
         0 = z - g(x, z, p, ... )"""
-        return [alg_var - alg_var.alg for alg_var in self.algebraics + self.outputs]
-
-    @property
-    def algebraics(self) -> List[CasadiState]:
-        """List of all CasadiStates with an associated algebraic equation."""
-        return [var for var in self.states if var.alg is not None]
+        return [alg_var - alg_var.alg for alg_var in self.outputs]
 
     @property
     def differentials(self) -> List[CasadiState]:
@@ -454,7 +438,7 @@ class CasadiModel(Model):
         """List of all CasadiStates without an associated equation. Common
         uses for this are slack variables that appear in cost functions and
         constraints of optimization models."""
-        return [var for var in self.states if (var.alg is None and var.ode is None)]
+        return [var for var in self.states if var.ode is None]
 
     @abc.abstractmethod
     def setup_system(self):
@@ -476,18 +460,11 @@ class CasadiModel(Model):
         for state, value in zip(self.differentials, values):
             self._states[state.name].value = value
 
-    def set_algebraic_values(self, values: Union[List, np.ndarray]):
-        """
-        Sets the values for all algebraic states and outputs. Provided
-        values list MUST match the correct order.
-        Correct order is:
-        All variables in self.algebraics, then all variables in self.outputs
-        """
-        for var, value in zip(self.algebraics + self.outputs, values):
-            try:
-                self._outputs[var.name].value = value
-            except KeyError:
-                self._states[var.name].value = value
+    def set_output_values(self, values: Union[List, np.ndarray]):
+        """Sets the values for all outputs. Provided values list MUST match the order
+        in which outputs are saved, there is no check."""
+        for var, value in zip(self.outputs, values):
+            self._outputs[var.name].value = value
 
     def get(self, name: str) -> CasadiVariable:
         return super().get(name)

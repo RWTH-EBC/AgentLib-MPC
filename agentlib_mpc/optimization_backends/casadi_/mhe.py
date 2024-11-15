@@ -70,7 +70,7 @@ class MHESystem(System):
         )
         self.algebraics = OptimizationVariable.declare(
             denotation="algebraics",
-            variables=model.auxiliaries + model.algebraics,
+            variables=model.auxiliaries,
             ref_list=[],
         )
         self.outputs = OptimizationVariable.declare(
