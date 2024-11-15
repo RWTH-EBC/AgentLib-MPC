@@ -305,7 +305,6 @@ def make_components(
     components = [
         html.Div(
             [
-                # html.H3(column),
                 dcc.Graph(
                     id=f"plot-{column}",
                     figure=plot_mpc_plotly(
@@ -325,11 +324,21 @@ def make_components(
         )
         for column in columns
     ]
+
     if stats is not None:
-        components.insert(0, html.Div([solver_return(stats, convert_to)]))
-        components.insert(
-            1, html.Div([obj_plot(stats, convert_to)])
-        )  # Add the "obj" plot
+        # Add solver iterations plot if available
+        solver_plot = solver_return(stats, convert_to)
+        if solver_plot is not None:
+            components.insert(0, html.Div([solver_plot]))
+
+        # Add computing time plot if available
+        if "t_wall_total" in stats.columns:
+            components.insert(1, html.Div([compute_time_plot(stats, convert_to)]))
+
+        # Add objective plot if available
+        obj_value_plot = obj_plot(stats, convert_to)
+        if obj_value_plot is not None:
+            components.insert(2, html.Div([obj_value_plot]))
 
     return html.Div(
         components,
@@ -347,28 +356,69 @@ def make_components(
 
 def obj_plot(
     data, convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds"
+) -> Optional[dcc.Graph]:
+    try:
+        if "obj" not in data.columns:
+            return None
+
+        df = data.copy()
+        index = df.index.values / TIME_CONVERSION[convert_to]
+
+        trace = go.Scatter(
+            x=index,
+            y=df["obj"],
+            mode="lines",
+            name="Objective Value",
+        )
+
+        layout = go.Layout(
+            title="Objective Value",
+            xaxis_title=f"Time in {convert_to}",
+            yaxis_title="Objective Value",
+            showlegend=True,
+        )
+
+        fig = go.Figure(data=[trace], layout=layout)
+
+        return dcc.Graph(
+            id="plot-obj",
+            figure=fig,
+            style={
+                "min-width": "600px",
+                "min-height": "400px",
+                "max-width": "900px",
+                "max-height": "450px",
+            },
+        )
+    except Exception:
+        return None
+
+
+def compute_time_plot(
+    data, convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds"
 ) -> dcc.Graph:
     df = data.copy()
     index = df.index.values / TIME_CONVERSION[convert_to]
 
     trace = go.Scatter(
         x=index,
-        y=df["obj"],
+        y=df["t_wall_total"],
         mode="lines",
-        name="Objective Value",
+        name="Computing Time",
+        line=dict(color="blue", width=2),
     )
 
     layout = go.Layout(
-        title="Objective Value",
+        title="Solver Computing Time",
         xaxis_title=f"Time in {convert_to}",
-        yaxis_title="Objective Value",
+        yaxis_title="Time (s)",
         showlegend=True,
     )
 
     fig = go.Figure(data=[trace], layout=layout)
 
     return dcc.Graph(
-        id="plot-obj",
+        id="plot-compute-time",
         figure=fig,
         style={
             "min-width": "600px",
@@ -381,87 +431,130 @@ def obj_plot(
 
 def solver_return(
     data, convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds"
-) -> dcc.Graph:
-    solver_data = []
-    indices = []
-    j = 0
-    for i in reversed(data.index.values):
-        if i in indices:
-            break
-        j += 1
-        indices.append(i)
-        solver_data.append(data.iloc[len(data) - j])
-    df = pd.DataFrame(solver_data)
-    df = df.iloc[::-1]
+) -> Optional[dcc.Graph]:
+    try:
+        solver_data = []
+        indices = []
+        j = 0
+        for i in reversed(data.index.values):
+            if i in indices:
+                break
+            j += 1
+            indices.append(i)
+            solver_data.append(data.iloc[len(data) - j])
+        df = pd.DataFrame(solver_data)
+        df = df.iloc[::-1]
 
-    return_status = {}
-    for idx, success in df.success.items():
-        if success:
-            solver_return = df.return_status[idx]
+        # Check if required columns exist
+        if "success" not in df.columns or "iter_count" not in df.columns:
+            return None
+
+        # Determine solver type based on return_status column type and values
+        is_ipopt = (
+            "return_status" in df.columns
+            and df["return_status"].dtype == "object"
+            and not (df["return_status"] == 0).all()
+        )
+
+        if is_ipopt:
+            return_status = {}
+            for idx, success in df.success.items():
+                if success:
+                    solver_return = df.return_status[idx]
+                else:
+                    solver_return = "Solve_Not_Succeeded"
+                return_status[idx] = solver_return
+
+            solver_returns = pd.Series(return_status)
+            index = solver_returns.index.values / TIME_CONVERSION[convert_to]
+
+            colors = {
+                "Solve_Succeeded": "green",
+                "Solved_To_Acceptable_Level": "orange",
+                "Solve_Not_Succeeded": "red",
+            }
+            legend_names = {
+                "Solved_To_Acceptable_Level": "Acceptable",
+                "Solve_Succeeded": "Optimal",
+                "Solve_Not_Succeeded": "Failure",
+            }
+
+            traces = []
+            for status in colors:
+                mask = solver_returns.values == status
+                if mask.any():
+                    trace = go.Scatter(
+                        x=index[mask],
+                        y=df.loc[solver_returns.index[mask], "iter_count"],
+                        mode="markers",
+                        marker=dict(
+                            color=colors[status],
+                            size=10,
+                        ),
+                        name=legend_names[status],
+                    )
+                else:
+                    trace = go.Scatter(
+                        x=[None],
+                        y=[None],
+                        mode="markers",
+                        marker=dict(
+                            color=colors[status],
+                            size=10,
+                        ),
+                        name=legend_names[status],
+                    )
+                traces.append(trace)
         else:
-            solver_return = "Solve_Not_Succeeded"
-        return_status[idx] = solver_return
+            # FATROP solver or other - only use success column
+            index = df.index.values / TIME_CONVERSION[convert_to]
+            traces = []
 
-    solver_returns = pd.Series(return_status)
-    index = solver_returns.index.values / TIME_CONVERSION[convert_to]
-
-    colors = {
-        "Solve_Succeeded": "green",
-        "Solved_To_Acceptable_Level": "orange",
-        "Solve_Not_Succeeded": "red",
-    }
-    legend_names = {
-        "Solved_To_Acceptable_Level": "Acceptable",
-        "Solve_Succeeded": "Optimal",
-        "Solve_Not_Succeeded": "Failure",
-    }
-
-    traces = []
-    for status in colors:
-        mask = solver_returns.values == status
-        if mask.any():
-            trace = go.Scatter(
-                x=index[mask],
-                y=df.loc[solver_returns.index[mask], "iter_count"],
-                mode="markers",
-                marker=dict(
-                    color=colors[status],
-                    size=10,
-                ),
-                name=legend_names[status],
+            # Success markers
+            success_mask = df.success.values
+            traces.append(
+                go.Scatter(
+                    x=index[success_mask],
+                    y=df.loc[success_mask, "iter_count"],
+                    mode="markers",
+                    marker=dict(color="green", size=10),
+                    name="Success",
+                )
             )
-        else:
-            trace = go.Scatter(
-                x=[None],
-                y=[None],
-                mode="markers",
-                marker=dict(
-                    color=colors[status],
-                    size=10,
-                ),
-                name=legend_names[status],
+
+            # Failure markers
+            failure_mask = ~success_mask
+            traces.append(
+                go.Scatter(
+                    x=index[failure_mask],
+                    y=df.loc[failure_mask, "iter_count"],
+                    mode="markers",
+                    marker=dict(color="red", size=10),
+                    name="Failure",
+                )
             )
-        traces.append(trace)
 
-    layout = go.Layout(
-        title="Solver Return Status",
-        xaxis_title=f"Time in {convert_to}",
-        yaxis_title="Iterations",
-        showlegend=True,
-    )
+        layout = go.Layout(
+            title="Solver Iterations",
+            xaxis_title=f"Time in {convert_to}",
+            yaxis_title="Iterations",
+            showlegend=True,
+        )
 
-    fig = go.Figure(data=traces, layout=layout)
+        fig = go.Figure(data=traces, layout=layout)
 
-    return dcc.Graph(
-        id="plot-solver-return",
-        figure=fig,
-        style={
-            "min-width": "600px",
-            "min-height": "400px",
-            "max-width": "900px",
-            "max-height": "450px",
-        },
-    )
+        return dcc.Graph(
+            id="plot-solver-return",
+            figure=fig,
+            style={
+                "min-width": "600px",
+                "min-height": "400px",
+                "max-width": "900px",
+                "max-height": "450px",
+            },
+        )
+    except Exception:
+        return None
 
 
 def draggable_script():
