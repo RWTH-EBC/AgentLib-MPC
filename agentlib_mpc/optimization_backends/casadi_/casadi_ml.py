@@ -147,11 +147,6 @@ class MultipleShooting_ML(MultipleShooting):
                 sys.states, lb=x_past, ub=x_past, guess=x_past
             )
             mx_dict[time][sys.initial_state.name] = x_past
-            y_past = self.add_opt_par(sys.initial_output)
-            mx_dict[time][sys.outputs.name] = self.add_opt_var(
-                sys.outputs, lb=y_past, ub=y_past, guess=y_past
-            )
-            mx_dict[time][sys.initial_output.name] = y_past
 
         # add past inputs
         for time in pre_grid_inputs:
