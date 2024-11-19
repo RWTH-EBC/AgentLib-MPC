@@ -223,7 +223,7 @@ class CasadiInput(CasadiVariable):
     @property
     def alg(self) -> CasadiTypes:
         raise AttributeError(
-            "Casadi States should not have .alg assignments. If you wish to provide "
+            "Casadi Inputs should not have .alg assignments. If you wish to provide "
             "algebraic relationships to states, add them in the constraints."
         )
         return -1

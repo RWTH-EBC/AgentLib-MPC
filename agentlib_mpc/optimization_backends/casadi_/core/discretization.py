@@ -2,7 +2,6 @@
 
 import abc
 import dataclasses
-from functools import cached_property
 from pathlib import Path
 from typing import TypeVar, Union, Callable, Optional
 
@@ -65,7 +64,7 @@ class Results:
                 lookup[label[1]] = index
         return lookup
 
-    @cached_property
+    @property
     def df(self) -> pd.DataFrame:
         return pd.DataFrame(self.matrix, index=self.grid, columns=self.columns)
 

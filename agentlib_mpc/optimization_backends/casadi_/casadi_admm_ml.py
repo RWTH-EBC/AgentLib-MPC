@@ -12,10 +12,10 @@ from agentlib_mpc.data_structures.casadi_utils import (
 )
 from agentlib_mpc.data_structures.ml_model_datatypes import name_with_lag
 from agentlib_mpc.models.casadi_ml_model import CasadiMLModel
-from agentlib_mpc.optimization_backends.casadi_.casadi_nn import (
-    CasadiNNSystem,
+from agentlib_mpc.optimization_backends.casadi_.casadi_ml import (
+    CasadiMLSystem,
     CasADiBBBackend,
-    MultipleShooting_NN,
+    MultipleShooting_ML,
 )
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
     OptimizationVariable,
@@ -31,7 +31,7 @@ from agentlib_mpc.optimization_backends.casadi_.admm import (
 logger = logging.getLogger(__name__)
 
 
-class CasadiADMMNNSystem(CasadiADMMSystem, CasadiNNSystem):
+class CasadiADMMNNSystem(CasadiADMMSystem, CasadiMLSystem):
     """
     In this class, the lags are determined by the trainer alone and the lags are
     saved in the serialized MLModel so that it doesn't have to be defined in the
@@ -236,7 +236,7 @@ class CasadiADMMNNSystem(CasadiADMMSystem, CasadiNNSystem):
         }
 
 
-class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_NN):
+class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_ML):
     max_lag: int
 
     def _discretize(self, sys: CasadiADMMNNSystem):
@@ -330,9 +330,6 @@ class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_NN):
             mx_dict[time][sys.states.name] = self.add_opt_var(sys.states)
         self.pred_time += ts
         mx_dict[self.pred_time] = {sys.states.name: self.add_opt_var(sys.states)}
-
-        # control of last time step
-        mx_dict[0 - ts][sys.controls.name] = self.add_opt_par(sys.last_control)
 
         all_quantities = sys.all_system_quantities()
         # add constraints and create the objective function for all stages

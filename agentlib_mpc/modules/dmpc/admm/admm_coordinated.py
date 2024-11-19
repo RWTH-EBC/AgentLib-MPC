@@ -2,8 +2,9 @@
 with a coordinator."""
 
 from collections import namedtuple
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 import pandas as pd
+import pydantic
 
 from agentlib_mpc.data_structures.mpc_datamodels import MPCVariable
 from .admm import ADMM, ADMMConfig
@@ -21,6 +22,18 @@ class CoordinatedADMMConfig(MiniEmployeeConfig, ADMMConfig):
     shared_variable_fields: list[str] = MiniEmployeeConfig.default(
         "shared_variable_fields"
     ) + ADMMConfig.default("shared_variable_fields")
+
+    @pydantic.field_validator("couplings", "exchange")
+    def couplings_should_have_values(cls, value: List[AgentVariable]):
+        """Asserts that couplings and exchange have values, as they are needed for
+        initial guess."""
+        for var in value:
+            if var.value is None:
+                raise ValueError(
+                    "Couplings and Exchange Variables should have a value, as it is "
+                    "required for the initial guess."
+                )
+        return value
 
 
 class CoordinatedADMM(MiniEmployee, ADMM):

@@ -86,6 +86,7 @@ def sample(
             f"does not match target ({target_grid_length})."
         )
     if isinstance(trajectory, pd.Series):
+        trajectory = trajectory.dropna()
         source_grid = np.array(trajectory.index)
         values = trajectory.values
     elif isinstance(trajectory, dict):

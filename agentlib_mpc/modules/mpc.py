@@ -279,9 +279,9 @@ class BaseMPC(BaseModule):
 
     def re_init_optimization(self, parameter: AgentVariable):
         """Re-initializes the optimization backend with new parameters."""
-        self.optimization_backend.discretization_options[parameter.name] = (
-            parameter.value
-        )
+        self.optimization_backend.discretization_options[
+            parameter.name
+        ] = parameter.value
         self._init_optimization()
 
     @property

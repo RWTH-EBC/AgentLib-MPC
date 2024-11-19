@@ -257,7 +257,7 @@ class ADMMMultipleShooting(MultipleShooting):
             # integral and multiple shooting constraint
             fk = opt_integrator(
                 x0=xk,
-                p=ca.vertcat(uk, v_localk, dk, const_par),
+                p=ca.vertcat(uk, v_localk, dk, const_par, zk, yk),
             )
             xk_end = fk["xf"]
             self.k += 1
@@ -289,10 +289,17 @@ class ADMMMultipleShooting(MultipleShooting):
             sys.local_couplings.full_symbolic,
             sys.non_controlled_inputs.full_symbolic,
             sys.model_parameters.full_symbolic,
+            sys.algebraics.full_symbolic,
+            sys.outputs.full_symbolic,
         )
         integrator_ode = {"x": x, "p": p, "ode": ode}
-        opt_integrator = ca.integrator("system", integrator, integrator_ode, opts)
-
+        if integrator == Integrators.euler:
+            xk_end = x + ode * opts["tf"]
+            opt_integrator = ca.Function(
+                "system", [x, p], [xk_end], ["x0", "p"], ["xf"]
+            )
+        else:  # rk, cvodes
+            opt_integrator = ca.integrator("system", integrator, integrator_ode, opts)
         return opt_integrator
 
 
