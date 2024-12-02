@@ -21,13 +21,12 @@ from pydantic import (
 from agentlib_mpc.data_structures import ml_model_datatypes
 from agentlib_mpc.data_structures.ml_model_datatypes import OutputType, name_with_lag
 
-from agentlib_mpc.models.casadi_predictor import CasadiPredictor
+from agentlib_mpc.models.casadi_predictor.casadi_predictor import CasadiPredictor
 from agentlib_mpc.models.casadi_model import (
     CasadiModel,
     CasadiModelConfig,
     CasadiState,
     CasadiOutput,
-    CasadiTypes,
 )
 from agentlib_mpc.models.serialized_ml_model import (
     SerializedMLModel,

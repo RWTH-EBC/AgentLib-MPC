@@ -138,7 +138,7 @@ AGENT_MPC = {
                     "collocation_method": "legendre",
                 },
                 "solver": {
-                    "name": "fatrop",  # use fatrop with casadi 3.6.6 for speedup
+                    "name": "ipopt",  # use fatrop with casadi 3.6.6 for speedup
                 },
                 "results_file": "results//mpc.csv",
                 "save_results": True,
@@ -208,7 +208,7 @@ def run_example(
     )
     mas.run(until=until)
     try:
-        stats = load_mpc_stats("results/__mpc.csv")
+        stats = load_mpc_stats("results/mpc.csv")
     except Exception:
         stats = None
     results = mas.get_results(cleanup=False)
