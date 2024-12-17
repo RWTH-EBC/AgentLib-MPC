@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.4
+- Fix exchange ADMM
+
 ## 0.6.3
 - Dashboard now synchronously updates traces of all plots when changing one plot
 - Fix some smaller issues with lag structure in data driven mpc

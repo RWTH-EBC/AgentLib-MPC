@@ -1,7 +1,7 @@
 {
   "id": "room_3",
   "modules": [
-        "configs/local_broadcast.json",
+    "configs/local_broadcast.json",
     {
       "module_id": "admm_module",
       "type": "agentlib_mpc.admm_local",
@@ -19,10 +19,13 @@
             "ipopt.print_level": 0
           }
         },
-                "discretization_options": {"method": "multiple_shooting"},
-"results_file": "results//admm_opt_3.csv"
+        "discretization_options": {
+          "method": "multiple_shooting",
+          "integrator": "euler"
+        },
+        "results_file": "results//admm_opt_3.csv"
       },
-            "coordinator": {
+      "coordinator": {
         "agent_id": "Coordinator",
         "module_id": "admm_coordinator"
       },
@@ -59,7 +62,7 @@
         }
       ],
       "controls": [
-                        {
+        {
           "name": "mDot",
           "value": 0.02,
           "ub": 0.05,
