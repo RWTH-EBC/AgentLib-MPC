@@ -1,24 +1,22 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.models package &mdash; agentlib_mpc 0.6.2 documentation</title>
+  <title>agentlib_mpc.models package &mdash; agentlib_mpc 0.6.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+      <script src="../_static/jquery.js"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+      <script src="../_static/doctools.js"></script>
+      <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
@@ -35,9 +33,6 @@
           <a href="../index.html" class="icon icon-home">
             agentlib_mpc
           </a>
-              <div class="version">
-                0.6
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -82,8 +77,184 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
-<section id="agentlib-mpc-models-casadi-ml-model-module">
-<h2>agentlib_mpc.models.casadi_ml_model module<a class="headerlink" href="#agentlib-mpc-models-casadi-ml-model-module" title="Permalink to this heading"></a></h2>
+<section id="module-agentlib_mpc.models.casadi_ml_model">
+<span id="agentlib-mpc-models-casadi-ml-model-module"></span><h2>agentlib_mpc.models.casadi_ml_model module<a class="headerlink" href="#module-agentlib_mpc.models.casadi_ml_model" title="Permalink to this heading"></a></h2>
+<p>Holds the classes for CasADi variables and the CasADi model.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_ml_model.</span></span><span class="sig-name descname"><span class="pre">CasadiMLModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#CasadiMLModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.models.casadi_model.CasadiModel" title="agentlib_mpc.models.casadi_model.CasadiModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">CasadiModel</span></code></a></p>
+<p>This class is created to handle one or multiple ML models
+used to predict the states. Compared to previous version, it is now
+only dependent on the trained models which provides information about the lags
+with the serialized_ML_Models. This way, there is no need to define the lags
+again in the model class</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModel.auxiliaries">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">auxiliaries</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#agentlib_mpc.models.casadi_model.CasadiState" title="agentlib_mpc.models.casadi_model.CasadiState"><span class="pre">CasadiState</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.auxiliaries" title="Permalink to this definition"></a></dt>
+<dd><p>List of all CasadiStates without an associated equation. Common
+uses for this are slack variables that appear in cost functions and
+constraints of optimization models.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModel.bb_outputs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bb_outputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#agentlib_mpc.models.casadi_model.CasadiOutput" title="agentlib_mpc.models.casadi_model.CasadiOutput"><span class="pre">CasadiOutput</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.bb_outputs" title="Permalink to this definition"></a></dt>
+<dd><p>List of all CasadiStates with an associated black box equation.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModel.bb_states">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bb_states</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#agentlib_mpc.models.casadi_model.CasadiState" title="agentlib_mpc.models.casadi_model.CasadiState"><span class="pre">CasadiState</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.bb_states" title="Permalink to this definition"></a></dt>
+<dd><p>List of all CasadiStates with an associated black box equation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModel.config_type">
+<span class="sig-name descname"><span class="pre">config_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig" title="agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig"><span class="pre">CasadiMLModelConfig</span></a></em><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.config_type" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModel.do_step">
+<span class="sig-name descname"><span class="pre">do_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_sample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#CasadiMLModel.do_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.do_step" title="Permalink to this definition"></a></dt>
+<dd><p>Simulates a time step of the simulation model. In CasADi MLModel model, both black-
+and white-box models can be used in the simulation to be combined into a grey-box</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModel.get_ml_model_values">
+<span class="sig-name descname"><span class="pre">get_ml_model_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#CasadiMLModel.get_ml_model_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.get_ml_model_values" title="Permalink to this definition"></a></dt>
+<dd><p>gets the inputs values with the correct lags or all MLModels</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModel.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">ignored</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#CasadiMLModel.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.initialize" title="Permalink to this definition"></a></dt>
+<dd><p>Prepare the black- and white-box models for CasADi backend optimization and
+simulation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModel.make_predict_function_for_mpc">
+<span class="sig-name descname"><span class="pre">make_predict_function_for_mpc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Function</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#CasadiMLModel.make_predict_function_for_mpc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.make_predict_function_for_mpc" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a prediction step function which is suitable for MPC with multiple
+shooting.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModel.register_ml_models">
+<span class="sig-name descname"><span class="pre">register_ml_models</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#agentlib_mpc.models.serialized_ml_model.SerializedMLModel" title="agentlib_mpc.models.serialized_ml_model.SerializedMLModel"><span class="pre">agentlib_mpc.models.serialized_ml_model.SerializedMLModel</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#agentlib_mpc.models.casadi_predictor.CasadiPredictor" title="agentlib_mpc.models.casadi_predictor.CasadiPredictor"><span class="pre">agentlib_mpc.models.casadi_predictor.CasadiPredictor</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#CasadiMLModel.register_ml_models"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.register_ml_models" title="Permalink to this definition"></a></dt>
+<dd><p>Loads a serialized MLModel and find the output states of the MLModel
+Divides the differential states of the model into states determined by white-box
+model (self._differentials) and by black-box model (self._differentials_network)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModel.set_with_timestamp">
+<span class="sig-name descname"><span class="pre">set_with_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#CasadiMLModel.set_with_timestamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.set_with_timestamp" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModel.setup_system">
+<span class="sig-name descname"><span class="pre">setup_system</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#CasadiMLModel.setup_system"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.setup_system" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModel.update_ml_models">
+<span class="sig-name descname"><span class="pre">update_ml_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">ml_models</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#agentlib_mpc.models.serialized_ml_model.SerializedMLModel" title="agentlib_mpc.models.serialized_ml_model.SerializedMLModel"><span class="pre">SerializedMLModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#CasadiMLModel.update_ml_models"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.update_ml_models" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the internal MLModels with the passed MLModels.</p>
+<p>Warning: This function does not fully check, if the result makes sense!
+Consider the following case:
+You have two ml_models with outputs out1 in ml_model1, and out2 and out3 in ml_model2.
+You call this function with an ml_model3 that defines out2.
+This function would replace ml_model2 with ml_model3, leaving the out3 undefined, causing
+an error in subequent functions. Try to make sure you specify all outputs when
+supplying ml_models, that make parts of other ml_models obsolete.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_ml_model.</span></span><span class="sig-name descname"><span class="pre">CasadiMLModelConfig</span></span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#CasadiMLModelConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.models.casadi_model.CasadiModelConfig" title="agentlib_mpc.models.casadi_model.CasadiModelConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CasadiModelConfig</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>validate_assignment</strong>: <em>bool = True</em></p></li>
+<li><p><strong>arbitrary_types_allowed</strong>: <em>bool = True</em></p></li>
+<li><p><strong>extra</strong>: <em>str = forbid</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.dt" title="agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dt</span> <span class="pre">(float</span> <span class="pre">|</span> <span class="pre">int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.ml_model_sources" title="agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.ml_model_sources"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ml_model_sources</span> <span class="pre">(list[typing.Union[agentlib_mpc.models.serialized_ml_model.SerializedMLModel,</span> <span class="pre">pathlib.Path]])</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-odd">Validators<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.check_dt" title="agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.check_dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_dt</span></code></a> » <code class="xref py py-obj docutils literal notranslate"><span class="pre">all</span> <span class="pre">fields</span></code></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.check_or_load_models" title="agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.check_or_load_models"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_or_load_models</span></code></a> » <a class="reference internal" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.ml_model_sources" title="agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.ml_model_sources"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ml_model_sources</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.dt">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.dt" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Validated by<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.check_dt" title="agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.check_dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_dt</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.ml_model_sources">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ml_model_sources</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#agentlib_mpc.models.serialized_ml_model.SerializedMLModel" title="agentlib_mpc.models.serialized_ml_model.SerializedMLModel"><span class="pre">agentlib_mpc.models.serialized_ml_model.SerializedMLModel</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.ml_model_sources" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Validated by<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.check_dt" title="agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.check_dt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_dt</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.check_or_load_models" title="agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.check_or_load_models"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_or_load_models</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method pydantic_validator">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.check_dt">
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_dt</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">all</span> <span class="pre">fields</span></em><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#CasadiMLModelConfig.check_dt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.check_dt" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method pydantic_validator">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.check_or_load_models">
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_or_load_models</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><a class="reference internal" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.ml_model_sources" title="agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.ml_model_sources"><em class="xref py py-obj"><span class="pre">ml_model_sources</span></em></a><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#CasadiMLModelConfig.check_or_load_models"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.check_or_load_models" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.model_post_init">
+<span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.model_post_init" title="Permalink to this definition"></a></dt>
+<dd><p>We need to both initialize private attributes and call the user-defined model_post_init
+method.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.assert_recursive_outputs_are_states">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_ml_model.</span></span><span class="sig-name descname"><span class="pre">assert_recursive_outputs_are_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serialized</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#agentlib_mpc.models.serialized_ml_model.SerializedMLModel" title="agentlib_mpc.models.serialized_ml_model.SerializedMLModel"><span class="pre">SerializedMLModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">agentlib.core.datamodels.AgentVariable</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#assert_recursive_outputs_are_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.assert_recursive_outputs_are_states" title="Permalink to this definition"></a></dt>
+<dd><p>Raises a ConfigurationError if there are recursive ML-models for outputs.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.compute_dupes">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_ml_model.</span></span><span class="sig-name descname"><span class="pre">compute_dupes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#compute_dupes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.compute_dupes" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the duplicate elements in a collection</p>
+</dd></dl>
+
 </section>
 <section id="module-agentlib_mpc.models.casadi_model">
 <span id="agentlib-mpc-models-casadi-model-module"></span><h2>agentlib_mpc.models.casadi_model module<a class="headerlink" href="#module-agentlib_mpc.models.casadi_model" title="Permalink to this heading"></a></h2>

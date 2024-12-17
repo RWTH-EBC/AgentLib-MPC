@@ -794,7 +794,7 @@
         },
         {
             "type": "error",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "",
             "line": 9,
             "column": 0,
@@ -805,7 +805,7 @@
         },
         {
             "type": "warning",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "TestExamples.test_mpc",
             "line": 65,
             "column": 8,
@@ -816,7 +816,7 @@
         },
         {
             "type": "convention",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "TestExamples.test_admm_local",
             "line": 73,
             "column": 4,
@@ -827,7 +827,7 @@
         },
         {
             "type": "convention",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "TestExamples.test_admm_coordinated",
             "line": 83,
             "column": 4,
@@ -838,7 +838,7 @@
         },
         {
             "type": "convention",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "TestExamples.test_exchange_admm",
             "line": 93,
             "column": 4,
@@ -849,7 +849,7 @@
         },
         {
             "type": "convention",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "TestExamples.test_admm_mp_broadcast",
             "line": 109,
             "column": 4,
@@ -860,7 +860,7 @@
         },
         {
             "type": "warning",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "",
             "line": 5,
             "column": 0,
@@ -1651,28 +1651,6 @@
             "message-id": "W0611"
         },
         {
-            "type": "error",
-            "module": "test_serialized_ann",
-            "obj": "TestSerializedANN.test_serialize",
-            "line": 44,
-            "column": 30,
-            "path": "tests/test_serialized_ann.py",
-            "symbol": "unsubscriptable-object",
-            "message": "Value 'serialized_ann.weights' is unsubscriptable",
-            "message-id": "E1136"
-        },
-        {
-            "type": "error",
-            "module": "test_serialized_ann",
-            "obj": "TestSerializedANN.test_serialize",
-            "line": 45,
-            "column": 30,
-            "path": "tests/test_serialized_ann.py",
-            "symbol": "unsubscriptable-object",
-            "message": "Value 'serialized_ann.weights' is unsubscriptable",
-            "message-id": "E1136"
-        },
-        {
             "type": "convention",
             "module": "test_serialized_ann",
             "obj": "",
@@ -1886,7 +1864,7 @@
                 "statement": 3,
                 "warning": 0
             },
-            "test_examples": {
+            "ci.test_examples": {
                 "convention": 4,
                 "error": 1,
                 "fatal": 0,
@@ -1960,7 +1938,7 @@
             },
             "test_serialized_ann": {
                 "convention": 4,
-                "error": 2,
+                "error": 0,
                 "fatal": 0,
                 "info": 0,
                 "refactor": 0,
@@ -1998,8 +1976,7 @@
             "unused-variable": 4,
             "protected-access": 14,
             "attribute-defined-outside-init": 4,
-            "wrong-import-order": 15,
-            "unsubscriptable-object": 2
+            "wrong-import-order": 15
         },
         "code_type_count": {
             "code": 0,
@@ -2017,22 +1994,22 @@
             ],
             "pandas": [
                 "test_mpc",
-                "test_examples"
+                "ci.test_examples"
             ],
             "agentlib.utils": [
-                "conftest",
-                "test_examples"
+                "ci.test_examples",
+                "conftest"
             ],
             "agentlib.utils.local_broadcast_broker": [
                 "test_admm",
-                "test_examples"
+                "ci.test_examples"
             ],
             "numpy": [
-                "test_serialized_ann",
-                "test_serialized_gpr",
-                "test_admm",
                 "test_mpc",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_admm",
+                "test_serialized_ann",
+                "test_serialized_gpr"
             ],
             "agentlib.core": [
                 "test_admm"
@@ -2091,26 +2068,26 @@
             ],
             "agentlib_mpc.data_structures.ml_model_datatypes": [
                 "test_serialized_ann",
-                "test_serialized_gpr",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_gpr"
             ],
             "agentlib_mpc.models.casadi_predictor": [
                 "test_serialized_ann",
-                "test_serialized_gpr",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_gpr"
             ],
             "agentlib_mpc.models.serialized_ml_model": [
                 "test_serialized_ann",
-                "test_serialized_gpr",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_gpr"
             ],
             "fixtures.ann": [
                 "test_serialized_ann"
             ],
             "fixtures.data_generator": [
                 "test_serialized_ann",
-                "test_serialized_gpr",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_serialized_gpr"
             ],
             "sklearn.gaussian_process": [
                 "test_serialized_gpr"
@@ -2142,7 +2119,7 @@
             "module": 6
         },
         "convention": 56,
-        "error": 6,
+        "error": 4,
         "fatal": 0,
         "info": 0,
         "refactor": 0,
@@ -2252,7 +2229,7 @@
             },
             "test_serialized_ann": {
                 "convention": 4,
-                "error": 2,
+                "error": 0,
                 "fatal": 0,
                 "info": 0,
                 "refactor": 0,
@@ -2290,8 +2267,7 @@
             "unused-variable": 4,
             "protected-access": 14,
             "attribute-defined-outside-init": 4,
-            "wrong-import-order": 15,
-            "unsubscriptable-object": 2
+            "wrong-import-order": 15
         },
         "code_type_count": {
             "code": 0,
@@ -2312,19 +2288,19 @@
                 "ci.test_examples"
             ],
             "agentlib.utils": [
-                "conftest",
-                "ci.test_examples"
+                "ci.test_examples",
+                "conftest"
             ],
             "agentlib.utils.local_broadcast_broker": [
-                "ci.test_examples",
-                "test_admm"
+                "test_admm",
+                "ci.test_examples"
             ],
             "numpy": [
-                "test_serialized_ann",
-                "test_serialized_gpr",
-                "test_admm",
                 "test_mpc",
-                "test_serialized_linreg"
+                "test_serialized_linreg",
+                "test_admm",
+                "test_serialized_ann",
+                "test_serialized_gpr"
             ],
             "agentlib.core": [
                 "test_admm"
@@ -2382,27 +2358,27 @@
                 "test_serialized_ann"
             ],
             "agentlib_mpc.data_structures.ml_model_datatypes": [
+                "test_serialized_linreg",
                 "test_serialized_ann",
-                "test_serialized_gpr",
-                "test_serialized_linreg"
+                "test_serialized_gpr"
             ],
             "agentlib_mpc.models.casadi_predictor": [
+                "test_serialized_linreg",
                 "test_serialized_ann",
-                "test_serialized_gpr",
-                "test_serialized_linreg"
+                "test_serialized_gpr"
             ],
             "agentlib_mpc.models.serialized_ml_model": [
+                "test_serialized_linreg",
                 "test_serialized_ann",
-                "test_serialized_gpr",
-                "test_serialized_linreg"
+                "test_serialized_gpr"
             ],
             "fixtures.ann": [
                 "test_serialized_ann"
             ],
             "fixtures.data_generator": [
+                "test_serialized_linreg",
                 "test_serialized_ann",
-                "test_serialized_gpr",
-                "test_serialized_linreg"
+                "test_serialized_gpr"
             ],
             "sklearn.gaussian_process": [
                 "test_serialized_gpr"
@@ -2434,13 +2410,13 @@
             "module": 6
         },
         "convention": 56,
-        "error": 6,
+        "error": 4,
         "fatal": 0,
         "info": 0,
         "refactor": 0,
         "statement": 419,
         "warning": 35,
-        "global_note": 7.11217183770883,
+        "global_note": 7.350835322195704,
         "nb_duplicated_lines": 0,
         "percent_duplicated_lines": 0.0
     }
