@@ -212,8 +212,6 @@ class ADMMMultipleShooting(MultipleShooting):
         du_weights = self.add_opt_par(sys.r_del_u)
         const_par = self.add_opt_par(sys.model_parameters)
         rho = self.add_opt_par(sys.penalty_factor)
-        e_diff0 = self.add_opt_par(sys.exchange_diff)
-        e_multi0 = self.add_opt_par(sys.exchange_multipliers)
 
         # create integrator
         opt_integrator = self._create_ode(sys, opts, self.options.integrator)
@@ -229,6 +227,8 @@ class ADMMMultipleShooting(MultipleShooting):
             v_localk = self.add_opt_var(sys.local_couplings)
             v_meank = self.add_opt_par(sys.global_couplings)
             lamk = self.add_opt_par(sys.multipliers)
+            e_diff0 = self.add_opt_par(sys.exchange_diff)
+            e_multi0 = self.add_opt_par(sys.exchange_multipliers)
             vars_dict[sys.global_couplings.name][self.k] = v_meank
 
             e_localk = self.add_opt_var(sys.local_exchange)
