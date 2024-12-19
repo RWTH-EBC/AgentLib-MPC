@@ -26,6 +26,7 @@ from agentlib_mpc.optimization_backends.backend import (
 )
 from agentlib_mpc.data_structures import mpc_datamodels
 from agentlib_mpc.utils.analysis import load_mpc, load_mpc_stats
+from agentlib_mpc import utils
 
 
 class BaseMPCConfig(BaseModuleConfig):
@@ -82,6 +83,15 @@ class BaseMPCConfig(BaseModuleConfig):
         description="Sets the full output time series to the data broker.",
     )
     shared_variable_fields: list[str] = ["outputs", "controls"]
+    skip_mpc_in_intervals: list[tuple[float, float]] = Field(
+        default=[],
+        description="If environment time is within these intervals"
+    )
+    skip_mpc_interval_time_unit: utils.TimeConversionTypes = Field(
+        default="seconds",
+        description="Specifies the unit of the given "
+                    "`skip_mpc_in_intervals`, e.g. seconds or days."
+    )
 
     @field_validator("sampling_time")
     @classmethod
@@ -308,6 +318,12 @@ class BaseMPC(BaseModule):
         """
         if not self.init_status == InitStatus.ready:
             self.logger.warning("Skipping step, optimization_backend is not ready.")
+            return
+        if utils.is_time_in_intervals(
+                time=self.env.now*utils.TIME_CONVERSION[self.config.skip_mpc_interval_time_unit],
+                intervals=self.config.skip_mpc_in_intervals
+        ):
+            self.logger.info("Skipping step as current time is in time intervals to skip")
             return
 
         self.pre_computation_hook()
