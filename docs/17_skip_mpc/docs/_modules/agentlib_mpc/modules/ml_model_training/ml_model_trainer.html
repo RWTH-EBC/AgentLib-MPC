@@ -1,0 +1,878 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>agentlib_mpc.modules.ml_model_training.ml_model_trainer &mdash; agentlib_mpc 0.6.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../../../_static/jquery.js"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+      <script src="../../../../_static/doctools.js"></script>
+      <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            agentlib_mpc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../PackageReference.html">Package Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">agentlib_mpc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../modules.html">agentlib_mpc.modules</a></li>
+      <li class="breadcrumb-item active">agentlib_mpc.modules.ml_model_training.ml_model_trainer</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for agentlib_mpc.modules.ml_model_training.ml_model_trainer</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pydantic</span>
+<span class="kn">from</span> <span class="nn">agentlib.core</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">BaseModuleConfig</span><span class="p">,</span>
+    <span class="n">Agent</span><span class="p">,</span>
+    <span class="n">BaseModule</span><span class="p">,</span>
+    <span class="n">AgentVariables</span><span class="p">,</span>
+    <span class="n">AgentVariable</span><span class="p">,</span>
+    <span class="n">Source</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">agentlib.core.errors</span> <span class="kn">import</span> <span class="n">ConfigurationError</span>
+<span class="kn">from</span> <span class="nn">pydantic_core.core_schema</span> <span class="kn">import</span> <span class="n">FieldValidationInfo</span>
+
+<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures.ml_model_datatypes</span> <span class="kn">import</span> <span class="n">name_with_lag</span>
+<span class="kn">from</span> <span class="nn">agentlib_mpc.models.casadi_predictor</span> <span class="kn">import</span> <span class="n">CasadiPredictor</span>
+<span class="kn">from</span> <span class="nn">agentlib_mpc.utils.analysis</span> <span class="kn">import</span> <span class="n">load_sim</span>
+<span class="kn">from</span> <span class="nn">agentlib_mpc.models.serialized_ml_model</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SerializedMLModel</span><span class="p">,</span>
+    <span class="n">SerializedANN</span><span class="p">,</span>
+    <span class="n">SerializedGPR</span><span class="p">,</span>
+    <span class="n">SerializedLinReg</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">agentlib_mpc.models.serialized_ml_model</span> <span class="kn">import</span> <span class="n">CustomGPR</span><span class="p">,</span> <span class="n">MLModels</span>
+<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures</span> <span class="kn">import</span> <span class="n">ml_model_datatypes</span>
+<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures.interpolation</span> <span class="kn">import</span> <span class="n">InterpolationMethods</span>
+<span class="kn">from</span> <span class="nn">agentlib_mpc.utils.plotting.ml_model_test</span> <span class="kn">import</span> <span class="n">evaluate_model</span>
+<span class="kn">from</span> <span class="nn">agentlib_mpc.utils.sampling</span> <span class="kn">import</span> <span class="n">sample_values_to_target_grid</span>
+
+<span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="n">Sequential</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="MLModelTrainerConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig">[docs]</a><span class="k">class</span> <span class="nc">MLModelTrainerConfig</span><span class="p">(</span><span class="n">BaseModuleConfig</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract Base Class for all Trainer Configs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">step_size</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">retrain_delay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">10000000000</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Time in seconds, after which retraining is triggered in regular&quot;</span>
+        <span class="s2">&quot; intervals&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">inputs</span><span class="p">:</span> <span class="n">AgentVariables</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Variables which are inputs of the ML Model that should be trained.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">outputs</span><span class="p">:</span> <span class="n">AgentVariables</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Variables which are outputs of the ML Model that should be trained.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">lags</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Dictionary specifying the lags of each input and output variable. &quot;</span>
+        <span class="s2">&quot;If not specified, will be set to one.&quot;</span><span class="p">,</span>
+        <span class="n">validate_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">output_types</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">OutputType</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Dictionary specifying the output types of output variables. &quot;</span>
+        <span class="s2">&quot;If not specified, will be set to &#39;difference&#39;.&quot;</span><span class="p">,</span>
+        <span class="n">validate_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">interpolations</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">InterpolationMethods</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Dictionary specifying the interpolation types of output variables. &quot;</span>
+        <span class="s2">&quot;If not specified, will be set to &#39;linear&#39;.&quot;</span><span class="p">,</span>
+        <span class="n">validate_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">recursive_outputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Dictionary specifying whether output variables are recursive, i.e.&quot;</span>
+        <span class="s2">&quot; automatically appear as an input as well. If not specified, will&quot;</span>
+        <span class="s2">&quot; be set to &#39;recursive&#39;.&quot;</span><span class="p">,</span>
+        <span class="n">validate_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">train_share</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span>
+    <span class="n">validation_share</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.15</span>
+    <span class="n">test_share</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.15</span>
+    <span class="n">save_directory</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path, where created ML Models should be saved.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">save_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Whether the training data should be saved.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">save_ml_model</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Whether the created ML Models should be saved.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">save_plots</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Whether a plot of the created ML Models performance should be saved.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">MLModel</span><span class="p">:</span> <span class="n">AgentVariable</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">AgentVariable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;MLModel&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Serialized ML Model which can be sent to other Agents.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">time_series_memory_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">1_000_000_000</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum size of the data which is kept in memory for the ML Model &quot;</span>
+        <span class="s2">&quot;training. If saved data exceeds this value, the oldest data is &quot;</span>
+        <span class="s2">&quot;deleted.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">time_series_length</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">365</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">3600</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum time window of data which is kept for the ML Model training. If&quot;</span>
+        <span class="s2">&quot; saved data is older than current time minus time_series_length, &quot;</span>
+        <span class="s2">&quot;it will be deleted.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">use_values_for_incomplete_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Default False. If True, the values of inputs and outputs which are&quot;</span>
+        <span class="s2">&quot; defined in the config will be used for training, in case historic&quot;</span>
+        <span class="s2">&quot; data has not reached the trainer. If False, an Error will be &quot;</span>
+        <span class="s2">&quot;raised when the data is not sufficient.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">data_sources</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;List of paths to time series data, which can be loaded on &quot;</span>
+        <span class="s2">&quot;initialization of the agent.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">shared_variable_fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;MLModel&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="MLModelTrainerConfig.check_shares_amount_to_one"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.check_shares_amount_to_one">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;train_share&quot;</span><span class="p">,</span> <span class="s2">&quot;validation_share&quot;</span><span class="p">,</span> <span class="s2">&quot;test_share&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">check_shares_amount_to_one</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">current_share</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Makes sure, the shares amount to one.&quot;&quot;&quot;</span>
+        <span class="n">shares</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="s2">&quot;train_share&quot;</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="n">shares</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;train_share&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;validation_share&quot;</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="n">shares</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;validation_share&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;test_share&quot;</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="n">shares</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;test_share&quot;</span><span class="p">])</span>
+        <span class="n">shares</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_share</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shares</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">math</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">shares</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">abs_tol</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Provided training, validation and testing shares do not equal &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;one. Got </span><span class="si">{</span><span class="nb">sum</span><span class="p">(</span><span class="n">shares</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> instead.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">current_share</span></div>
+
+<div class="viewcode-block" id="MLModelTrainerConfig.fill_lags"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.fill_lags">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;lags&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">fill_lags</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds lag one to all unspecified lags.&quot;&quot;&quot;</span>
+        <span class="n">all_features</span> <span class="o">=</span> <span class="p">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]}</span>
+        <span class="n">lag_to_var_diff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">lags</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">all_features</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lag_to_var_diff</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Specified lags do not appear in variables. The following lags do not&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; appear in the inputs or outputs of the ML Model: &#39;</span><span class="si">{</span><span class="n">lag_to_var_diff</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="p">)</span>
+        <span class="n">all_lags</span> <span class="o">=</span> <span class="p">{</span><span class="n">feat</span><span class="p">:</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">all_features</span><span class="p">}</span>
+        <span class="n">all_lags</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">lags</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">all_lags</span></div>
+
+<div class="viewcode-block" id="MLModelTrainerConfig.fill_output_types"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.fill_output_types">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;output_types&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">fill_output_types</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">output_types</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds output type one to all unspecified output types.&quot;&quot;&quot;</span>
+        <span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">out</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">out</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]}</span>
+        <span class="n">type_to_var_diff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">output_types</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">output_names</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">type_to_var_diff</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Specified outputs for output_types do not appear in variables. The &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;following lags do not appear in the inputs or outputs of the ML Model: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">type_to_var_diff</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="p">)</span>
+        <span class="n">all_output_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">feat</span><span class="p">:</span> <span class="s2">&quot;absolute&quot;</span> <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">output_names</span><span class="p">}</span>
+        <span class="n">all_output_types</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">output_types</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">all_output_types</span></div>
+
+<div class="viewcode-block" id="MLModelTrainerConfig.fill_interpolations"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.fill_interpolations">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;interpolations&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">fill_interpolations</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">interpolations</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds interpolation method to all unspecified methods.&quot;&quot;&quot;</span>
+        <span class="n">all_features</span> <span class="o">=</span> <span class="p">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]}</span>
+        <span class="n">interp_to_var_diff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">interpolations</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">all_features</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">interp_to_var_diff</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Specified outputs for output_types do not appear in variables. The &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;following features do not appear in the inputs or outputs of the ML Model: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">interp_to_var_diff</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="p">)</span>
+        <span class="n">all_interp_methods</span> <span class="o">=</span> <span class="p">{</span><span class="n">feat</span><span class="p">:</span> <span class="s2">&quot;linear&quot;</span> <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">all_features</span><span class="p">}</span>
+        <span class="n">all_interp_methods</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">interpolations</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">all_interp_methods</span></div>
+
+<div class="viewcode-block" id="MLModelTrainerConfig.fill_recursive_outputs"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.fill_recursive_outputs">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;recursive_outputs&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">fill_recursive_outputs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">recursives</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds recursive flag to all unspecified outputs.&quot;&quot;&quot;</span>
+        <span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]}</span>
+        <span class="n">recursives_to_var_diff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">recursives</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">output_names</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">recursives_to_var_diff</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Specified outputs for recursive_outputs do not appear in variables. The &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;following features do not appear in the inputs or outputs of the ML Model: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">recursives_to_var_diff</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="p">)</span>
+        <span class="n">all_recursive_flags</span> <span class="o">=</span> <span class="p">{</span><span class="n">feat</span><span class="p">:</span> <span class="kc">True</span> <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">output_names</span><span class="p">}</span>
+        <span class="n">all_recursive_flags</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">recursives</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">all_recursive_flags</span></div>
+
+<div class="viewcode-block" id="MLModelTrainerConfig.check_data_sources_exist"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.check_data_sources_exist">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;data_sources&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">check_data_sources_exist</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_sources</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if all given data sources exist&quot;&quot;&quot;</span>
+        <span class="n">existing_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">data_src</span> <span class="ow">in</span> <span class="n">data_sources</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data_src</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="n">existing_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data_src</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Given data source file </span><span class="si">{</span><span class="n">data_src</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">existing_data</span></div>
+
+<div class="viewcode-block" id="MLModelTrainerConfig.check_if_save_path_is_there"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.check_if_save_path_is_there">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;save_data&quot;</span><span class="p">,</span> <span class="s2">&quot;save_ml_model&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">check_if_save_path_is_there</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">save_on</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
+        <span class="n">save_path</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;save_directory&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">save_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
+                <span class="s2">&quot;ML Model saving is on, but no save_directory was specified.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">save_on</span></div></div>
+
+
+<div class="viewcode-block" id="MLModelTrainer"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer">[docs]</a><span class="k">class</span> <span class="nc">MLModelTrainer</span><span class="p">(</span><span class="n">BaseModule</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract Base Class for all Trainer classes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">config</span><span class="p">:</span> <span class="n">MLModelTrainerConfig</span>
+    <span class="n">model_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">SerializedMLModel</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor for model predictive controller (MPC).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_series_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_time_series_data</span><span class="p">()</span>
+        <span class="n">history_type</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_dict</span><span class="p">:</span> <span class="n">history_type</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">col</span><span class="p">:</span> <span class="p">([],</span> <span class="p">[])</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series_data</span><span class="o">.</span><span class="n">columns</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_sources</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Source</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">var</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series_data</span><span class="o">.</span><span class="n">columns</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_ml_model</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_define_features</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">training_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a dict with relevant config parameters regarding the training.&quot;&quot;&quot;</span>
+        <span class="c1"># We exclude all fields of the Base Trainer, as its fields are with regard to</span>
+        <span class="c1"># data handling etc., and other relevant things from base trainer are already</span>
+        <span class="c1"># in the serialized model.</span>
+        <span class="c1"># However, parameters from child classes are relevant to the training of that</span>
+        <span class="c1"># model, and will be included</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">MLModelTrainerConfig</span><span class="o">.</span><span class="n">model_fields</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MLModelTrainer.register_callbacks"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.register_callbacks">[docs]</a>    <span class="k">def</span> <span class="nf">register_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">inputs</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span>
+            <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">feat</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">data_broker</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span>
+                <span class="n">alias</span><span class="o">=</span><span class="n">var</span><span class="o">.</span><span class="n">alias</span><span class="p">,</span>
+                <span class="n">source</span><span class="o">=</span><span class="n">var</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
+                <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_callback_data</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="MLModelTrainer.process"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">retrain_delay</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_time_series_data</span><span class="p">()</span>
+            <span class="n">serialized_ml_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrain_model</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">MLModel</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">serialized_ml_model</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_initialize_time_series_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Loads simulation data to initialize the time_series data&quot;&quot;&quot;</span>
+        <span class="n">feature_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">lags</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">time_series_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">feature_names</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">ann_src</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">data_sources</span><span class="p">:</span>
+            <span class="n">loaded_time_series</span> <span class="o">=</span> <span class="n">load_sim</span><span class="p">(</span><span class="n">ann_src</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">loaded_time_series</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">feature_names</span><span class="p">:</span>
+                    <span class="n">srs</span> <span class="o">=</span> <span class="n">loaded_time_series</span><span class="p">[</span><span class="n">column</span><span class="p">]</span>
+                    <span class="n">time_series_data</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+                        <span class="p">[</span><span class="n">time_series_data</span><span class="p">[</span><span class="n">column</span><span class="p">],</span> <span class="n">srs</span><span class="p">]</span>
+                    <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">time_series_data</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MLModelTrainer.retrain_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.retrain_model">[docs]</a>    <span class="k">def</span> <span class="nf">retrain_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Trains the model based on the current historic data.&quot;&quot;&quot;</span>
+        <span class="n">sampled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resample</span><span class="p">()</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_inputs_and_outputs</span><span class="p">(</span><span class="n">sampled</span><span class="p">)</span>
+        <span class="n">training_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">divide_in_tvt</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit_ml_model</span><span class="p">(</span><span class="n">training_data</span><span class="p">)</span>
+        <span class="n">serialized_ml_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serialize_ml_model</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_all</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">,</span> <span class="n">training_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">serialized_ml_model</span></div>
+
+<div class="viewcode-block" id="MLModelTrainer.save_all"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.save_all">[docs]</a>    <span class="k">def</span> <span class="nf">save_all</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">serialized_ml_model</span><span class="p">:</span> <span class="n">SerializedMLModel</span><span class="p">,</span>
+        <span class="n">training_data</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves all relevant data and results of the training process if desired.&quot;&quot;&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_directory</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_and_time</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_data</span><span class="p">:</span>
+            <span class="n">training_data</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_ml_model</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_ml_model</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_plots</span><span class="p">:</span>
+            <span class="n">evaluate_model</span><span class="p">(</span>
+                <span class="n">training_data</span><span class="p">,</span>
+                <span class="n">CasadiPredictor</span><span class="o">.</span><span class="n">from_serialized_model</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">),</span>
+                <span class="n">save_path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+                <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_callback_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds received measured inputs to the past trajectory.&quot;&quot;&quot;</span>
+        <span class="c1"># check that only data from the same source is used</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_sources</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_sources</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">variable</span><span class="o">.</span><span class="n">source</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_sources</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">!=</span> <span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The trainer module got data from different sources &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_sources</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">). This is likely not &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;intended. Please specify the intended source in the trainer config.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">time_list</span><span class="p">,</span> <span class="n">value_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_dict</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">time_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">variable</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span>
+        <span class="n">value_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">variable</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Updated variable </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">timestamp</span><span class="si">}</span><span class="s2"> s.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_update_time_series_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clears the history of all entries that are older than current time minus</span>
+<span class="sd">        horizon length.&quot;&quot;&quot;</span>
+        <span class="n">df_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">feature_name</span><span class="p">,</span> <span class="p">(</span><span class="n">time_stamps</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="n">feature_name</span><span class="p">:</span> <span class="n">values</span><span class="p">},</span> <span class="n">index</span><span class="o">=</span><span class="n">time_stamps</span><span class="p">)</span>
+            <span class="n">df_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_series_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">df_list</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series_data</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># delete rows based on how old the data is</span>
+        <span class="n">cut_off_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">time_series_length</span>
+        <span class="n">cut_off_index</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_indexer</span><span class="p">([</span><span class="n">cut_off_time</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;backfill&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">[:</span><span class="n">cut_off_index</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># delete rows if the memory usage is too high</span>
+        <span class="n">del_rows_at_once</span> <span class="o">=</span> <span class="mi">20</span>  <span class="c1"># currently hard-coded</span>
+        <span class="k">while</span> <span class="n">data</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">time_series_memory_size</span><span class="p">:</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">[:</span><span class="n">del_rows_at_once</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MLModelTrainer.build_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.build_ml_model">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">build_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds and returns an ann model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="MLModelTrainer.fit_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.fit_ml_model">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">fit_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">training_data</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fits the ML Model with the training data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="MLModelTrainer.resample"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.resample">[docs]</a>    <span class="k">def</span> <span class="nf">resample</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Samples the available time_series data to the required step size.&quot;&quot;&quot;</span>
+        <span class="n">source_grids</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">col</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series_data</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">index</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series_data</span><span class="o">.</span><span class="n">columns</span>
+        <span class="p">}</span>
+
+        <span class="c1"># check if data for all features is sufficient</span>
+        <span class="n">features_with_insufficient_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">feat_name</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">source_grids</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">source_grids</span><span class="p">[</span><span class="n">feat_name</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">source_grids</span><span class="p">[</span><span class="n">feat_name</span><span class="p">]</span>
+                <span class="n">features_with_insufficient_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feat_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">use_values_for_incomplete_data</span>
+            <span class="ow">and</span> <span class="n">features_with_insufficient_data</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Called ANN Trainer in strict mode but there was insufficient data.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; Features with insufficient data are: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">features_with_insufficient_data</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># make target grid, which spans the maximum length, where data for every feature</span>
+        <span class="c1"># is available</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">sg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sg</span> <span class="ow">in</span> <span class="n">source_grids</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">sg</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">sg</span> <span class="ow">in</span> <span class="n">source_grids</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">target_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">step_size</span><span class="p">)</span>
+
+        <span class="c1"># perform interpolation for all features with sufficient length</span>
+        <span class="n">sampled</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">sg</span> <span class="ow">in</span> <span class="n">source_grids</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">single_sampled</span> <span class="o">=</span> <span class="n">sample_values_to_target_grid</span><span class="p">(</span>
+                <span class="n">values</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">time_series_data</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span>
+                <span class="n">original_grid</span><span class="o">=</span><span class="n">sg</span><span class="p">,</span>
+                <span class="n">target_grid</span><span class="o">=</span><span class="n">target_grid</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">interpolations</span><span class="p">[</span><span class="n">name</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">sampled</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">single_sampled</span>
+        <span class="n">sampled_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">sampled</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">target_grid</span><span class="p">)</span>
+
+        <span class="c1"># pad data with fix values when data is incomplete</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">use_values_for_incomplete_data</span><span class="p">:</span>
+            <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">target_grid</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">feat_name</span> <span class="ow">in</span> <span class="n">features_with_insufficient_data</span><span class="p">:</span>
+                <span class="n">sampled_data</span><span class="p">[</span><span class="n">feat_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">feat_name</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">*</span> <span class="n">length</span>
+
+        <span class="k">return</span> <span class="n">sampled_data</span></div>
+
+<div class="viewcode-block" id="MLModelTrainer.serialize_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.serialize_ml_model">[docs]</a>    <span class="k">def</span> <span class="nf">serialize_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SerializedMLModel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Serializes the ML Model, sa that it can be saved</span>
+<span class="sd">        as json file.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            SerializedMLModel version of the passed ML Model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ann_inputs</span><span class="p">,</span> <span class="n">ann_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_define_features</span><span class="p">()</span>
+
+        <span class="n">serialized_ann</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ml_model</span><span class="p">,</span>
+            <span class="n">dt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">step_size</span><span class="p">,</span>
+            <span class="nb">input</span><span class="o">=</span><span class="n">ann_inputs</span><span class="p">,</span>
+            <span class="n">output</span><span class="o">=</span><span class="n">ann_outputs</span><span class="p">,</span>
+            <span class="n">training_info</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">training_info</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">serialized_ann</span></div>
+
+<div class="viewcode-block" id="MLModelTrainer.save_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.save_ml_model">[docs]</a>    <span class="k">def</span> <span class="nf">save_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serialized_ml_model</span><span class="p">:</span> <span class="n">SerializedMLModel</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves the ML Model in serialized format.&quot;&quot;&quot;</span>
+        <span class="n">serialized_ml_model</span><span class="o">.</span><span class="n">save_serialized_model</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;ml_model.json&quot;</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">_define_features</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span>
+        <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">Feature</span><span class="p">],</span>
+        <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">OutputFeature</span><span class="p">],</span>
+    <span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Defines dictionaries for all features of the ANN based on the inputs and</span>
+<span class="sd">        outputs. This will also be the order, in which the serialized ann is exported&quot;&quot;&quot;</span>
+        <span class="n">ann_inputs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="p">:</span>
+            <span class="n">ann_inputs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">Feature</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">lag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">lags</span><span class="p">[</span><span class="n">name</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="n">ann_outputs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="p">:</span>
+            <span class="n">ann_outputs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">OutputFeature</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">lag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">lags</span><span class="p">[</span><span class="n">name</span><span class="p">],</span>
+                <span class="n">output_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">output_types</span><span class="p">[</span><span class="n">name</span><span class="p">],</span>
+                <span class="n">recursive</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">recursive_outputs</span><span class="p">[</span><span class="n">name</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">ann_inputs</span><span class="p">,</span> <span class="n">ann_outputs</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">agent_and_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A string that specifies id and time. Used to create save paths&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">input_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">inp</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">inputs</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">output_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">out</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">out</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span>
+
+<div class="viewcode-block" id="MLModelTrainer.create_inputs_and_outputs"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.create_inputs_and_outputs">[docs]</a>    <span class="k">def</span> <span class="nf">create_inputs_and_outputs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">full_data_sampled</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates extra columns in the data which contain the shifted time-series data</span>
+<span class="sd">        which is lagged accordingly. Returns a tuple (input_data, output_data)&quot;&quot;&quot;</span>
+        <span class="c1"># inputs are all inputs, plus recursive outputs with lag</span>
+        <span class="n">inps</span> <span class="o">=</span> <span class="p">[</span><span class="n">name_with_lag</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">inputs</span><span class="p">]</span>
+        <span class="n">inps</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">name_with_lag</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">outputs</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">recursive_outputs</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">outs</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span>
+        <span class="n">input_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">inps</span><span class="p">)</span>
+        <span class="n">output_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="n">outs</span><span class="p">))</span>
+
+        <span class="c1"># inputs</span>
+        <span class="k">for</span> <span class="n">input_name</span> <span class="ow">in</span> <span class="n">input_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">lag</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">lags</span><span class="p">[</span><span class="n">input_name</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">lag</span><span class="p">):</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">name_with_lag</span><span class="p">(</span><span class="n">input_name</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+                <span class="n">input_df</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">full_data_sampled</span><span class="p">[</span><span class="n">input_name</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+
+        <span class="c1"># output</span>
+        <span class="k">for</span> <span class="n">output_name</span> <span class="ow">in</span> <span class="n">output_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">output_df</span><span class="p">[</span><span class="n">output_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_output_column</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">output_name</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="n">full_data_sampled</span><span class="p">[</span><span class="n">output_name</span><span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="c1"># some rows have nan now due to lags and output shift, we remove them</span>
+        <span class="n">na_rows</span> <span class="o">=</span> <span class="n">input_df</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">output_df</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">input_df</span> <span class="o">=</span> <span class="n">input_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">na_rows</span><span class="p">]</span>
+        <span class="n">output_df</span> <span class="o">=</span> <span class="n">output_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">na_rows</span><span class="p">]</span>
+
+        <span class="c1"># we have to make sure the columns are in consistent order, so the network is</span>
+        <span class="c1"># trained in the same way, that its features are defined when exported</span>
+        <span class="n">columns_ordered</span> <span class="o">=</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">column_order</span><span class="p">(</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">input_features</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_features</span>
+        <span class="p">)</span>
+        <span class="n">input_df</span> <span class="o">=</span> <span class="n">input_df</span><span class="p">[</span><span class="n">columns_ordered</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">input_df</span><span class="p">,</span> <span class="n">output_df</span></div>
+
+    <span class="k">def</span> <span class="nf">_create_output_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an output column in the table for training data. Depending on</span>
+<span class="sd">        whether the feature is recursive, or represents a time delta, some changes have</span>
+<span class="sd">         to be made.&quot;&quot;&quot;</span>
+        <span class="n">output_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">output_types</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">recursive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">recursive_outputs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">recursive</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">column</span>
+        <span class="k">if</span> <span class="n">output_type</span> <span class="o">==</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">OutputType</span><span class="o">.</span><span class="n">difference</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">column</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">column</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># output_type == OutputType.absolute</span>
+            <span class="k">return</span> <span class="n">column</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MLModelTrainer.divide_in_tvt"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.divide_in_tvt">[docs]</a>    <span class="k">def</span> <span class="nf">divide_in_tvt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">outputs</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;splits the samples into mpc, validating and testing sets&quot;&quot;&quot;</span>
+
+        <span class="c1"># calculate the sample count and shares</span>
+        <span class="n">num_of_samples</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">n_training</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">train_share</span> <span class="o">*</span> <span class="n">num_of_samples</span><span class="p">)</span>
+        <span class="n">n_validation</span> <span class="o">=</span> <span class="n">n_training</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">validation_share</span> <span class="o">*</span> <span class="n">num_of_samples</span><span class="p">)</span>
+
+        <span class="c1"># shuffle the data</span>
+        <span class="n">permutation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="n">num_of_samples</span><span class="p">)</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">permutation</span><span class="p">]</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">outputs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">permutation</span><span class="p">]</span>
+
+        <span class="c1"># split the data</span>
+        <span class="k">return</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">(</span>
+            <span class="n">training_inputs</span><span class="o">=</span><span class="n">inputs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n_training</span><span class="p">],</span>
+            <span class="n">training_outputs</span><span class="o">=</span><span class="n">outputs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">n_training</span><span class="p">],</span>
+            <span class="n">validation_inputs</span><span class="o">=</span><span class="n">inputs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">n_training</span><span class="p">:</span><span class="n">n_validation</span><span class="p">],</span>
+            <span class="n">validation_outputs</span><span class="o">=</span><span class="n">outputs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">n_training</span><span class="p">:</span><span class="n">n_validation</span><span class="p">],</span>
+            <span class="n">test_inputs</span><span class="o">=</span><span class="n">inputs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">n_validation</span><span class="p">:],</span>
+            <span class="n">test_outputs</span><span class="o">=</span><span class="n">outputs</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">n_validation</span><span class="p">:],</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ANNTrainerConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.ANNTrainerConfig">[docs]</a><span class="k">class</span> <span class="nc">ANNTrainerConfig</span><span class="p">(</span><span class="n">MLModelTrainerConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pydantic data model for ANNTrainer configuration parser</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">layers</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">Activation</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[(</span><span class="mi">16</span><span class="p">,</span> <span class="s2">&quot;sigmoid&quot;</span><span class="p">)],</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Hidden layers which should be created for the ANN. An ANN always &quot;</span>
+        <span class="s2">&quot;has a BatchNormalization Layer, and an Output Layer the size of &quot;</span>
+        <span class="s2">&quot;the output dimensions. Additional hidden layers can be specified &quot;</span>
+        <span class="s2">&quot;here as a list of tuples: &quot;</span>
+        <span class="s2">&quot;(#neurons of layer, activation function).&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">early_stopping</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">EarlyStoppingCallback</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">EarlyStoppingCallback</span><span class="p">(),</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Specification of the EarlyStopping Callback for training&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ANNTrainer"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.ANNTrainer">[docs]</a><span class="k">class</span> <span class="nc">ANNTrainer</span><span class="p">(</span><span class="n">MLModelTrainer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Module that generates ANNs based on received data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">config</span><span class="p">:</span> <span class="n">ANNTrainerConfig</span>
+    <span class="n">model_type</span> <span class="o">=</span> <span class="n">SerializedANN</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">agent</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ANNTrainer.build_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.ANNTrainer.build_ml_model">[docs]</a>    <span class="k">def</span> <span class="nf">build_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequential</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build an ANN with a one layer structure, can only create one ANN&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="n">layers</span>
+
+        <span class="n">ann</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+        <span class="n">ann</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">units</span><span class="p">,</span> <span class="n">activation</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">ann</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">))</span>
+        <span class="n">ann</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">outputs</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">))</span>
+        <span class="n">ann</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s2">&quot;mse&quot;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="s2">&quot;adam&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ann</span></div>
+
+<div class="viewcode-block" id="ANNTrainer.fit_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.ANNTrainer.fit_ml_model">[docs]</a>    <span class="k">def</span> <span class="nf">fit_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">training_data</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">):</span>
+        <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">early_stopping</span><span class="o">.</span><span class="n">activate</span><span class="p">:</span>
+            <span class="n">callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">early_stopping</span><span class="o">.</span><span class="n">callback</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">training_data</span><span class="o">.</span><span class="n">training_inputs</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">training_data</span><span class="o">.</span><span class="n">training_outputs</span><span class="p">,</span>
+            <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">training_data</span><span class="o">.</span><span class="n">validation_inputs</span><span class="p">,</span>
+                <span class="n">training_data</span><span class="o">.</span><span class="n">validation_outputs</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">epochs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">epochs</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="n">callbacks</span><span class="o">=</span><span class="n">callbacks</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="GPRTrainerConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.GPRTrainerConfig">[docs]</a><span class="k">class</span> <span class="nc">GPRTrainerConfig</span><span class="p">(</span><span class="n">MLModelTrainerConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pydantic data model for GPRTrainer configuration parser</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">constant_value_bounds</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e5</span><span class="p">)</span>
+    <span class="n">length_scale_bounds</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e5</span><span class="p">)</span>
+    <span class="n">noise_level_bounds</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e5</span><span class="p">)</span>
+    <span class="n">noise_level</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span>
+    <span class="n">normalize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Defines whether the training data and the inputs are for prediction&quot;</span>
+        <span class="s2">&quot;are normalized before given to GPR.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Defines by which value the output data is divided for training and &quot;</span>
+        <span class="s2">&quot;multiplied after prediction.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">n_restarts_optimizer</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Defines the number of restarts of the Optimizer for the &quot;</span>
+        <span class="s2">&quot;gpr_parameters of the kernel.&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GPRTrainer"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.GPRTrainer">[docs]</a><span class="k">class</span> <span class="nc">GPRTrainer</span><span class="p">(</span><span class="n">MLModelTrainer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Module that generates ANNs based on received data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">config</span><span class="p">:</span> <span class="n">GPRTrainerConfig</span>
+    <span class="n">model_type</span> <span class="o">=</span> <span class="n">SerializedGPR</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">agent</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GPRTrainer.build_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.GPRTrainer.build_ml_model">[docs]</a>    <span class="k">def</span> <span class="nf">build_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a GPR with a constant Kernel in combination with a white kernel.&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">sklearn.gaussian_process.kernels</span> <span class="kn">import</span> <span class="n">ConstantKernel</span><span class="p">,</span> <span class="n">RBF</span><span class="p">,</span> <span class="n">WhiteKernel</span>
+
+        <span class="n">kernel</span> <span class="o">=</span> <span class="n">ConstantKernel</span><span class="p">(</span>
+            <span class="n">constant_value_bounds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">constant_value_bounds</span>
+        <span class="p">)</span> <span class="o">*</span> <span class="n">RBF</span><span class="p">(</span><span class="n">length_scale_bounds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">length_scale_bounds</span><span class="p">)</span> <span class="o">+</span> <span class="n">WhiteKernel</span><span class="p">(</span>
+            <span class="n">noise_level</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">noise_level</span><span class="p">,</span>
+            <span class="n">noise_level_bounds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">noise_level_bounds</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">gpr</span> <span class="o">=</span> <span class="n">CustomGPR</span><span class="p">(</span>
+            <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span>
+            <span class="n">copy_X_train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">n_restarts_optimizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">n_restarts_optimizer</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">gpr</span><span class="o">.</span><span class="n">data_handling</span><span class="o">.</span><span class="n">normalize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">normalize</span>
+        <span class="n">gpr</span><span class="o">.</span><span class="n">data_handling</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scale</span>
+        <span class="k">return</span> <span class="n">gpr</span></div>
+
+<div class="viewcode-block" id="GPRTrainer.fit_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.GPRTrainer.fit_ml_model">[docs]</a>    <span class="k">def</span> <span class="nf">fit_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">training_data</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fits GPR to training data&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">normalize</span><span class="p">:</span>
+            <span class="n">x_train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize</span><span class="p">(</span><span class="n">training_data</span><span class="o">.</span><span class="n">training_inputs</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x_train</span> <span class="o">=</span> <span class="n">training_data</span><span class="o">.</span><span class="n">training_inputs</span>
+        <span class="n">y_train</span> <span class="o">=</span> <span class="n">training_data</span><span class="o">.</span><span class="n">training_outputs</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+            <span class="n">X</span><span class="o">=</span><span class="n">x_train</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">y_train</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="c1"># update the normal and the mean</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">std</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">std</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;Encountered zero while normalizing. Continuing with a std of one for this Input.&quot;</span>
+                <span class="p">)</span>
+                <span class="n">std</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="k">if</span> <span class="n">mean</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">std</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please update std and mean.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># save mean and standard deviation to data_handling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_model</span><span class="o">.</span><span class="n">data_handling</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="n">mean</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_model</span><span class="o">.</span><span class="n">data_handling</span><span class="o">.</span><span class="n">std</span> <span class="o">=</span> <span class="n">std</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+        <span class="c1"># normalize x and return</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">/</span> <span class="n">std</span></div>
+
+
+<div class="viewcode-block" id="LinRegTrainerConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.LinRegTrainerConfig">[docs]</a><span class="k">class</span> <span class="nc">LinRegTrainerConfig</span><span class="p">(</span><span class="n">MLModelTrainerConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pydantic data model for GPRTrainer configuration parser</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="LinRegTrainer"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.LinRegTrainer">[docs]</a><span class="k">class</span> <span class="nc">LinRegTrainer</span><span class="p">(</span><span class="n">MLModelTrainer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Module that generates ANNs based on received data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">config</span><span class="p">:</span> <span class="n">LinRegTrainerConfig</span>
+    <span class="n">model_type</span> <span class="o">=</span> <span class="n">SerializedLinReg</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">agent</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LinRegTrainer.build_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.LinRegTrainer.build_ml_model">[docs]</a>    <span class="k">def</span> <span class="nf">build_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a linear model.&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span>
+
+        <span class="n">linear_model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">linear_model</span></div>
+
+<div class="viewcode-block" id="LinRegTrainer.fit_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.LinRegTrainer.fit_ml_model">[docs]</a>    <span class="k">def</span> <span class="nf">fit_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">training_data</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fits linear model to training data&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+            <span class="n">X</span><span class="o">=</span><span class="n">training_data</span><span class="o">.</span><span class="n">training_inputs</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">training_data</span><span class="o">.</span><span class="n">training_outputs</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<span class="n">ml_model_trainer</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">MLModels</span><span class="o">.</span><span class="n">ANN</span><span class="p">:</span> <span class="n">ANNTrainer</span><span class="p">,</span>
+    <span class="n">MLModels</span><span class="o">.</span><span class="n">GPR</span><span class="p">:</span> <span class="n">GPRTrainer</span><span class="p">,</span>
+    <span class="n">MLModels</span><span class="o">.</span><span class="n">LINREG</span><span class="p">:</span> <span class="n">LinRegTrainer</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, AGENT-Project Associates.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

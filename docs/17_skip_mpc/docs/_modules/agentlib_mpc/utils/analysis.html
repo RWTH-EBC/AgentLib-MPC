@@ -1,0 +1,394 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>agentlib_mpc.utils.analysis &mdash; agentlib_mpc 0.6.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../../_static/jquery.js"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+      <script src="../../../_static/doctools.js"></script>
+      <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            agentlib_mpc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../PackageReference.html">Package Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">agentlib_mpc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../utils.html">agentlib_mpc.utils</a></li>
+      <li class="breadcrumb-item active">agentlib_mpc.utils.analysis</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for agentlib_mpc.utils.analysis</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">NewType</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterable</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">pandas.api.types</span> <span class="kn">import</span> <span class="n">is_float_dtype</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures</span> <span class="kn">import</span> <span class="n">mpc_datamodels</span>
+<span class="kn">from</span> <span class="nn">agentlib_mpc.utils</span> <span class="kn">import</span> <span class="n">TimeConversionTypes</span><span class="p">,</span> <span class="n">TIME_CONVERSION</span>
+
+<span class="n">SimulationTime</span> <span class="o">=</span> <span class="n">NewType</span><span class="p">(</span><span class="s2">&quot;SimulationTime&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="load_admm"><a class="viewcode-back" href="../../../code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.load_admm">[docs]</a><span class="k">def</span> <span class="nf">load_admm</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">load_mpc</span><span class="p">(</span><span class="n">file</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_mpc"><a class="viewcode-back" href="../../../code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.load_mpc">[docs]</a><span class="k">def</span> <span class="nf">load_mpc</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">header</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">new_ind</span> <span class="o">=</span> <span class="p">[</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">(</span><span class="n">new_ind</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="load_mpc_stats"><a class="viewcode-back" href="../../../code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.load_mpc_stats">[docs]</a><span class="k">def</span> <span class="nf">load_mpc_stats</span><span class="p">(</span><span class="n">results_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+    <span class="n">stats_file</span> <span class="o">=</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">stats_path</span><span class="p">(</span><span class="n">results_file</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">stats_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">is_float_dtype</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">df</span>
+    <span class="n">new_ind</span> <span class="o">=</span> <span class="p">[</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">(</span><span class="n">new_ind</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="load_sim"><a class="viewcode-back" href="../../../code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.load_sim">[docs]</a><span class="k">def</span> <span class="nf">load_sim</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">causality</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">causality</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">causality</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">droplevel</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">droplevel</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">droplevel</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="convert_multi_index"><a class="viewcode-back" href="../../../code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.convert_multi_index">[docs]</a><span class="k">def</span> <span class="nf">convert_multi_index</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">convert_to</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TimeConversionTypes</span><span class="p">,</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">]]</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts an index of an MPC or ADMM results Dataframe to a different unit,</span>
+<span class="sd">    assuming it is passed in seconds.&quot;&quot;&quot;</span>
+    <span class="c1"># last = data.index.nlevels - 1  # should be 1 for mpc, 2 for admm</span>
+    <span class="n">outer</span> <span class="o">=</span> <span class="n">convert_index</span><span class="p">(</span><span class="n">convert_to</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">set_levels</span><span class="p">(</span><span class="n">outer</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="p">)</span>  <span class="c1"># .set_levels(inner, level=last)</span></div>
+
+
+<div class="viewcode-block" id="convert_index"><a class="viewcode-back" href="../../../code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.convert_index">[docs]</a><span class="k">def</span> <span class="nf">convert_index</span><span class="p">(</span>
+    <span class="n">convert_to</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">TimeConversionTypes</span><span class="p">,</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;datetime&quot;</span><span class="p">]],</span> <span class="n">index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts an index from seconds to datetime or another unit</span>
+<span class="sd">    Args:</span>
+<span class="sd">        convert_to: unit, e.g. minutes, hours, datetime</span>
+<span class="sd">        index: pandas index object</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">convert_to</span> <span class="o">==</span> <span class="s2">&quot;datetime&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">index</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">index</span> <span class="o">/</span> <span class="n">TIME_CONVERSION</span><span class="p">[</span><span class="n">convert_to</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="perform_index_update"><a class="viewcode-back" href="../../../code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.perform_index_update">[docs]</a><span class="k">def</span> <span class="nf">perform_index_update</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;auto&quot;</span><span class="p">],</span> <span class="nb">bool</span><span class="p">],</span> <span class="n">admm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Updates the index of a raw mpc/admm result dataframe, to be offset by a desired</span>
+<span class="sd">    time value.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">offset</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">data</span>
+    <span class="n">outer_index</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">offset</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span> <span class="ow">or</span> <span class="n">offset</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">_index_offset</span> <span class="o">=</span> <span class="n">outer_index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_index_offset</span> <span class="o">=</span> <span class="n">offset</span>
+    <span class="n">outer_index</span> <span class="o">=</span> <span class="n">outer_index</span> <span class="o">-</span> <span class="n">_index_offset</span>
+
+    <span class="k">if</span> <span class="n">admm</span><span class="p">:</span>
+        <span class="n">arrays</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">outer_index</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span>
+        <span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># mpc</span>
+        <span class="n">arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">outer_index</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span>
+
+    <span class="c1"># set index like this, because set_index() only works for dataframes, not series</span>
+    <span class="n">data_copy</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">data_copy</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_arrays</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data_copy</span></div>
+
+
+<div class="viewcode-block" id="mpc_at_time_step"><a class="viewcode-back" href="../../../code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.mpc_at_time_step">[docs]</a><span class="k">def</span> <span class="nf">mpc_at_time_step</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">time_step</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">variable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">variable_type</span><span class="o">=</span><span class="s2">&quot;variable&quot;</span><span class="p">,</span>
+    <span class="n">index_offset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;auto&quot;</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets the results of an optimization at a time step.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data: The multi-indexed results data frame from the mpc</span>
+<span class="sd">        time_step: The time step from which results should be shown.</span>
+<span class="sd">            If no exact match, shows closest.</span>
+<span class="sd">        variable: If specified, only returns results</span>
+<span class="sd">            with regard to a certain variable.</span>
+<span class="sd">        variable_type: The type of the variable provided (parameter, variable, lower, ...)</span>
+<span class="sd">        index_offset: Determines how the index will be updated when loading the data.</span>
+<span class="sd">        The offset will be subtracted from the time-index. This is useful for results</span>
+<span class="sd">        of realtime systems, where the time value with be a unix time stamp and we want</span>
+<span class="sd">         to cut the number down to something understandable. For example, if the time</span>
+<span class="sd">         index (level 0 of the input Dataframe) is [105, 115, 125] and we give an</span>
+<span class="sd">         index_offset of 100, the data will be handled as if the index was [5, 15, 25].</span>
+<span class="sd">          If &quot;auto&quot; or True is provided as an argument, the index will be modified to</span>
+<span class="sd">           start at 0. If 0 or False are provided, no modifications will be made.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: A single-indexed Dataframe of the optimization results</span>
+<span class="sd">            at the specified time step. If variable is not specified,</span>
+<span class="sd">            returns all variables with a double column index, if it</span>
+<span class="sd">            is specified returns only values and/or bounds with</span>
+<span class="sd">            single indexed columns.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get the closest matching (outer) index matching the requested time step</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">perform_index_update</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index_offset</span><span class="p">,</span> <span class="n">admm</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">outer_index</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">outer_index</span><span class="p">,</span> <span class="n">time_step</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">idx</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="n">idx</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">outer_index</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="n">time_step</span> <span class="o">-</span> <span class="n">outer_index</span><span class="p">[</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="n">time_step</span> <span class="o">-</span> <span class="n">outer_index</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+    <span class="p">):</span>
+        <span class="n">closest</span> <span class="o">=</span> <span class="n">outer_index</span><span class="p">[</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">closest</span> <span class="o">=</span> <span class="n">outer_index</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="c1"># select the data at this index and increment the inner index</span>
+    <span class="k">if</span> <span class="n">variable</span><span class="p">:</span>
+        <span class="n">data_at_ts</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">variable_type</span><span class="p">][</span><span class="n">variable</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">closest</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data_at_ts</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">closest</span><span class="p">]</span>
+    <span class="n">data_at_ts</span> <span class="o">=</span> <span class="n">data_at_ts</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">data_at_ts</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">data_at_ts</span><span class="o">.</span><span class="n">index</span> <span class="o">+</span> <span class="n">closest</span>
+
+    <span class="k">return</span> <span class="n">data_at_ts</span></div>
+
+
+<div class="viewcode-block" id="admm_at_time_step"><a class="viewcode-back" href="../../../code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.admm_at_time_step">[docs]</a><span class="k">def</span> <span class="nf">admm_at_time_step</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">],</span>
+    <span class="n">time_step</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">variable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">iteration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">index_offset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;auto&quot;</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">convert_to</span><span class="p">:</span> <span class="n">TimeConversionTypes</span> <span class="o">=</span> <span class="s2">&quot;seconds&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets the results of an optimization at a time step.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        index_offset: Determines how the index will be updated when loading the data.</span>
+<span class="sd">        The offset will be subtracted from the time-index. This is useful for results</span>
+<span class="sd">        of realtime systems, where the time value with be a unix time stamp and we want</span>
+<span class="sd">         to cut the number down to something understandable. For example, if the time</span>
+<span class="sd">         index (level 0 of the input Dataframe) is [105, 115, 125] and we give an</span>
+<span class="sd">         index_offset of 100, the data will be handled as if the index was [5, 15, 25].</span>
+<span class="sd">          If &quot;auto&quot; or True is provided as an argument, the index will be modified to</span>
+<span class="sd">           start at 0. If 0 or False are provided, no modifications will be made.</span>
+<span class="sd">        data: The multi-indexed results data frame from the mpc</span>
+<span class="sd">        time_step: The time step from which results should be shown.</span>
+<span class="sd">                   If no exact match, shows closest.</span>
+<span class="sd">        variable: If specified, only returns results</span>
+<span class="sd">                  with regard to a certain variable.</span>
+<span class="sd">        iteration: Specifies, from which inner ADMM iteration data should be</span>
+<span class="sd">            from. If negative, counts from last iteration. Default -1.</span>
+<span class="sd">        convert_to: Whether the data should be converted to datetime, minutes etc.</span>
+
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A single-indexed Dataframe of the optimization results</span>
+<span class="sd">        at the specified time step. If variable is not specified,</span>
+<span class="sd">        returns all variables with a double column index, if it</span>
+<span class="sd">        is specified returns only values and/or bounds with</span>
+<span class="sd">        single indexed columns.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get the closest matching (outer) index matching the requested time step</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">convert_multi_index</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">convert_to</span><span class="o">=</span><span class="n">convert_to</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">convert_to</span> <span class="o">==</span> <span class="s2">&quot;datetime&quot;</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">perform_index_update</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index_offset</span><span class="p">,</span> <span class="n">admm</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">outer_index</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">time_step</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">time_step</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">convert_to</span> <span class="o">==</span> <span class="s2">&quot;datetime&quot;</span> <span class="k">else</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">outer_index</span><span class="p">,</span> <span class="n">time_step</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">idx</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="n">idx</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">outer_index</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="n">time_step</span> <span class="o">-</span> <span class="n">outer_index</span><span class="p">[</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="n">time_step</span> <span class="o">-</span> <span class="n">outer_index</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+    <span class="p">):</span>
+        <span class="n">closest</span> <span class="o">=</span> <span class="n">outer_index</span><span class="p">[</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">closest</span> <span class="o">=</span> <span class="n">outer_index</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="n">data_at_ts</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">closest</span><span class="p">]</span>
+
+    <span class="c1"># if iteration provided is negative we count backwards (like list indexing)</span>
+    <span class="k">if</span> <span class="n">iteration</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">number_of_admm_iterations</span> <span class="o">=</span> <span class="n">data_at_ts</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">iteration</span> <span class="o">=</span> <span class="n">number_of_admm_iterations</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">iteration</span>
+
+    <span class="c1"># select the data at this index and increment the inner index</span>
+    <span class="k">if</span> <span class="n">variable</span><span class="p">:</span>
+        <span class="n">data_at_it</span> <span class="o">=</span> <span class="n">data_at_ts</span><span class="o">.</span><span class="n">xs</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s2">&quot;variable&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">iteration</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data_at_it</span> <span class="o">=</span> <span class="n">data_at_ts</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">iteration</span><span class="p">]</span>
+    <span class="n">data_at_it</span> <span class="o">=</span> <span class="n">data_at_it</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">convert_to</span> <span class="o">==</span> <span class="s2">&quot;datetime&quot;</span><span class="p">:</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">convert_index</span><span class="p">(</span><span class="n">convert_to</span><span class="p">,</span> <span class="n">data_at_it</span><span class="o">.</span><span class="n">index</span> <span class="o">+</span> <span class="n">closest</span><span class="o">.</span><span class="n">value</span> <span class="o">//</span> <span class="mf">1e9</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">convert_index</span><span class="p">(</span><span class="n">convert_to</span><span class="p">,</span> <span class="n">data_at_it</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">+</span> <span class="n">closest</span>
+    <span class="n">data_at_it</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
+    <span class="k">return</span> <span class="n">data_at_it</span></div>
+
+
+<div class="viewcode-block" id="get_number_of_iterations"><a class="viewcode-back" href="../../../code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.get_number_of_iterations">[docs]</a><span class="k">def</span> <span class="nf">get_number_of_iterations</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">SimulationTime</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the number of iterations at each time instance of the ADMM simulation.&quot;&quot;&quot;</span>
+
+    <span class="n">ind_full</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">ind_full</span><span class="o">.</span><span class="n">droplevel</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
+    <span class="n">time_stamps</span> <span class="o">=</span> <span class="n">ind</span><span class="o">.</span><span class="n">droplevel</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">time_stamps</span><span class="p">:</span>
+        <span class="n">_slice</span> <span class="o">=</span> <span class="n">ind</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">SimulationTime</span><span class="p">(</span><span class="n">t</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">[</span><span class="n">_slice</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="get_time_steps"><a class="viewcode-back" href="../../../code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.get_time_steps">[docs]</a><span class="k">def</span> <span class="nf">get_time_steps</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the time steps at which an MPC step was performed.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="first_vals_at_trajectory_index"><a class="viewcode-back" href="../../../code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.first_vals_at_trajectory_index">[docs]</a><span class="k">def</span> <span class="nf">first_vals_at_trajectory_index</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gets the first values at each time step of a results trajectory.&quot;&quot;&quot;</span>
+    <span class="n">time_steps</span> <span class="o">=</span> <span class="n">get_time_steps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">first_vals</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+        <span class="p">{</span><span class="n">time_step</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">time_step</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">time_step</span> <span class="ow">in</span> <span class="n">time_steps</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="ow">in</span> <span class="n">first_vals</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Nan detected in first values. You may need to select the &quot;</span>
+            <span class="s2">&quot;correct column of the DataFrame and drop NaN before.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">first_vals</span></div>
+
+
+<div class="viewcode-block" id="last_vals_at_trajectory_index"><a class="viewcode-back" href="../../../code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.last_vals_at_trajectory_index">[docs]</a><span class="k">def</span> <span class="nf">last_vals_at_trajectory_index</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gets the last values at each time step of a results trajectory.&quot;&quot;&quot;</span>
+    <span class="n">time_steps</span> <span class="o">=</span> <span class="n">get_time_steps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="c1"># -1 covers for parameters (only one entry) and states (-horizon until 0)</span>
+    <span class="n">last_vals</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+        <span class="p">{</span><span class="n">time_step</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">time_step</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">time_step</span> <span class="ow">in</span> <span class="n">time_steps</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="ow">in</span> <span class="n">last_vals</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Nan detected in first values. You may need to select the &quot;</span>
+            <span class="s2">&quot;correct column of the DataFrame and drop NaN before.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">last_vals</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, AGENT-Project Associates.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
