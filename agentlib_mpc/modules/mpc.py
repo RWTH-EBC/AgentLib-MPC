@@ -1,7 +1,7 @@
 """Holds the base class for MPCs."""
 
 import os
-from typing import Tuple, Dict, Optional
+from typing import Tuple, Dict, Optional, Union
 
 import pandas as pd
 from pydantic import Field, field_validator
@@ -91,6 +91,14 @@ class BaseMPCConfig(BaseModuleConfig):
         default="seconds",
         description="Specifies the unit of the given "
                     "`skip_mpc_in_intervals`, e.g. seconds or days."
+    )
+    controls_when_skipping: Dict[str, Union[float, bool, int]] = Field(
+        default={},
+        description="When skipping the MPC, send the controls with these values"
+                    "specified via control-name as key and control-value as value."
+                    "In case of variables to send which are not listed as model variables,"
+                    "a plain AgentVariable is send. This may used to deactivate supervisory control"
+                    "in a simulation / real PLC."
     )
 
     @field_validator("sampling_time")
@@ -320,10 +328,17 @@ class BaseMPC(BaseModule):
             self.logger.warning("Skipping step, optimization_backend is not ready.")
             return
         if utils.is_time_in_intervals(
-                time=self.env.now*utils.TIME_CONVERSION[self.config.skip_mpc_interval_time_unit],
+                time=self.env.now/utils.TIME_CONVERSION[self.config.skip_mpc_interval_time_unit],
                 intervals=self.config.skip_mpc_in_intervals
         ):
-            self.logger.info("Skipping step as current time is in time intervals to skip")
+            self.logger.info("Current time is in skip_mpc_in_intervals, sending specified controls_when_skipping")
+            for control_name, value in self.config.controls_when_skipping.items():
+                if control_name in self.config.controls:
+                    self.set(control_name, value)
+                else:
+                    self.agent.data_broker.send_variable(AgentVariable(
+                        name=control_name, value=value, source=self.source, shared=True
+                    ))
             return
 
         self.pre_computation_hook()
