@@ -355,7 +355,7 @@ class CasADiADMMBackend(CasADiBaseBackend, ADMMBackend):
 
         res_file = self.config.results_file
 
-        if self.results_file_exists():
+        if self.results_folder_exists():
             self.it += 1
             if now != self.now:  # means we advanced to next step
                 self.it = 0
