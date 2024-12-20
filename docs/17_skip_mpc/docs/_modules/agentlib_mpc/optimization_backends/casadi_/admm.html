@@ -429,7 +429,7 @@
 
         <span class="n">res_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">results_file</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">results_file_exists</span><span class="p">():</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">results_folder_exists</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">it</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">if</span> <span class="n">now</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">now</span><span class="p">:</span>  <span class="c1"># means we advanced to next step</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">it</span> <span class="o">=</span> <span class="mi">0</span>
