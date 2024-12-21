@@ -258,6 +258,15 @@
 
         <span class="c1"># format and return solution</span>
         <span class="n">mpc_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nlp_outputs_to_mpc_outputs</span><span class="p">(</span><span class="n">vars_at_optimum</span><span class="o">=</span><span class="n">nlp_output</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">])</span>
+        <span class="c1"># clip binary values within tolerance</span>
+        <span class="k">if</span> <span class="s2">&quot;w&quot;</span> <span class="ow">in</span> <span class="n">mpc_output</span><span class="p">:</span>
+            <span class="n">tolerance</span> <span class="o">=</span> <span class="mf">1e-5</span>
+            <span class="n">mpc_output</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">if_else</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">logic_and</span><span class="p">(</span><span class="n">mpc_output</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">,</span>
+                                                      <span class="n">mpc_output</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="o">-</span><span class="n">tolerance</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span>
+                              <span class="n">ca</span><span class="o">.</span><span class="n">if_else</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">logic_and</span><span class="p">(</span><span class="n">mpc_output</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span>
+                                                      <span class="n">mpc_output</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">tolerance</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span>
+                              <span class="n">mpc_output</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">]))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_remember_solution</span><span class="p">(</span><span class="n">mpc_output</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_solution</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">mpc_inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">mpc_output</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
@@ -318,7 +327,7 @@
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>
             <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">GUESS_PREFIX</span><span class="p">):</span>
-                <span class="n">out_key</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">GUESS_PREFIX</span><span class="p">)</span> <span class="p">:]</span>
+                <span class="n">out_key</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">GUESS_PREFIX</span><span class="p">):]</span>
                 <span class="n">inputs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">outputs</span><span class="p">[</span><span class="n">out_key</span><span class="p">]</span>
 
         <span class="n">result_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_map</span><span class="p">(</span><span class="o">**</span><span class="n">inputs</span><span class="p">)[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
