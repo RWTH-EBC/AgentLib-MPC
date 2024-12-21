@@ -326,9 +326,15 @@ class BaseMPC(BaseModule):
         """Takes the solution from optimization backend and sends the first
         step to AgentVariables."""
         self.logger.info("Sending optimal control values to data_broker.")
+        tolerance = 1e-5
         for control in self.var_ref.controls:
             # take the first entry of the control trajectory
             actuation = solution[control][0]
+            # if variables only slightly breach boundaries, clip
+            if self.get(control).ub < actuation < self.get(control).ub + tolerance:
+                actuation = self.get(control).ub
+            if self.get(control).lb - tolerance < actuation < self.get(control).lb:
+                actuation = self.get(control).lb
             self.set(control, actuation)
 
     def set_output(self, solution: Results):
