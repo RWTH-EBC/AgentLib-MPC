@@ -24,7 +24,7 @@ class MINLPMPCConfig(BaseMPCConfig):
     def validate_binary_bounds(cls, binary_controls: mpc_datamodels.MPCVariables):
         """Assures all binary variables have 0 and 1 as boundaries."""
         for bc in binary_controls:
-            if bc.ub == 1 and bc.lb == 1:
+            if bc.ub == 1 and bc.lb == 0:
                 continue
             logger.warning(
                 f"Binary variable {bc.name} does not have bounds '0, 1'. This will be"
