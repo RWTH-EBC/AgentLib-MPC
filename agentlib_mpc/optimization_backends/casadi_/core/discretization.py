@@ -378,7 +378,7 @@ class Discretization(abc.ABC):
         return self.binary_opt_vars
 
     def _create_result_format(
-            self, system: System
+        self, system: System
     ) -> (ca.MX, pd.MultiIndex, list[float], dict[str, list[int]]):
         """
         Creates an MX matrix that includes all inputs and outputs of the nlp
@@ -466,12 +466,12 @@ class Discretization(abc.ABC):
         return output_matrix, result_columns, full_grid, variable_grids
 
     def add_opt_var(
-            self,
-            quantity: OptimizationVariable,
-            lb: ca.MX = None,
-            ub: ca.MX = None,
-            guess: float = None,
-            post_den: str = "",
+        self,
+        quantity: OptimizationVariable,
+        lb: ca.MX = None,
+        ub: ca.MX = None,
+        guess: float = None,
+        post_den: str = "",
     ):
         """
         Create an optimization variable and append to all the associated
@@ -544,12 +544,12 @@ class Discretization(abc.ABC):
         return opt_par
 
     def add_constraint(
-            self,
-            constraint_function: CaFuncInputs,
-            lb: CaFuncInputs = None,
-            ub: CaFuncInputs = None,
-            *,
-            gap_closing: bool = False,
+        self,
+        constraint_function: CaFuncInputs,
+        lb: CaFuncInputs = None,
+        ub: CaFuncInputs = None,
+        *,
+        gap_closing: bool = False,
     ):
         """
         Add a constraint to the optimization problem. If no bounds are given,
