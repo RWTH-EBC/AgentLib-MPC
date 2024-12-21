@@ -185,12 +185,13 @@ class Discretization(abc.ABC):
         # format and return solution
         mpc_output = self._nlp_outputs_to_mpc_outputs(vars_at_optimum=nlp_output["x"])
         # clip binary values within tolerance
-        tolerance = 1e-5
-        mpc_output["w"] = ca.if_else(ca.logic_and(mpc_output["w"] < 0,
-                                                  mpc_output["w"] > -tolerance), 0,
-                          ca.if_else(ca.logic_and(mpc_output["w"] > 1,
-                                                  mpc_output["w"] < 1 + tolerance), 1,
-                          mpc_output["w"]))
+        if "w" in mpc_output:
+            tolerance = 1e-5
+            mpc_output["w"] = ca.if_else(ca.logic_and(mpc_output["w"] < 0,
+                                                      mpc_output["w"] > -tolerance), 0,
+                              ca.if_else(ca.logic_and(mpc_output["w"] > 1,
+                                                      mpc_output["w"] < 1 + tolerance), 1,
+                              mpc_output["w"]))
 
         self._remember_solution(mpc_output)
         result = self._process_solution(inputs=mpc_inputs, outputs=mpc_output)
