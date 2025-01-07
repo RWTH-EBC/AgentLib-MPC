@@ -3,6 +3,7 @@ import logging
 import math
 from pathlib import Path
 from typing import Type, TYPE_CHECKING
+import json
 
 import numpy as np
 import pandas as pd
@@ -30,7 +31,7 @@ from agentlib_mpc.models.serialized_ml_model import (
 from agentlib_mpc.models.serialized_ml_model import CustomGPR, MLModels
 from agentlib_mpc.data_structures import ml_model_datatypes
 from agentlib_mpc.data_structures.interpolation import InterpolationMethods
-from agentlib_mpc.utils.plotting.ml_model_test import evaluate_model
+from agentlib_mpc.utils.ml_model_eval_plotting import evaluate_model, plot_model_evaluation
 from agentlib_mpc.utils.sampling import sample_values_to_target_grid
 
 from keras import Sequential
@@ -86,6 +87,10 @@ class MLModelTrainerConfig(BaseModuleConfig, abc.ABC):
     train_share: float = 0.7
     validation_share: float = 0.15
     test_share: float = 0.15
+    number_of_training_repetitions: int = pydantic.Field(
+        default=1,
+        despription="Number of repeated trainings with the same configuration to avoid random initialisation"
+    )
     save_directory: Path = pydantic.Field(
         default=None, description="Path, where created ML Models should be saved."
     )
@@ -128,6 +133,10 @@ class MLModelTrainerConfig(BaseModuleConfig, abc.ABC):
         "initialization of the agent.",
     )
     shared_variable_fields: list[str] = ["MLModel"]
+    mpc_id_for_online_learning: str = pydantic.Field(
+        default=[],
+        description="ML Model which will be updated via online learning"
+    )
 
     @pydantic.field_validator("train_share", "validation_share", "test_share")
     @classmethod
@@ -256,7 +265,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
         self._data_sources: dict[str, Source] = {
             var: None for var in self.time_series_data.columns
         }
-        self.ml_model = self.build_ml_model()
+        self.ml_models = self.build_ml_model_sequence()
         self.input_features, self.output_features = self._define_features()
 
     @property
@@ -284,8 +293,9 @@ class MLModelTrainer(BaseModule, abc.ABC):
         while True:
             yield self.env.timeout(self.config.retrain_delay)
             self._update_time_series_data()
-            serialized_ml_model = self.retrain_model()
+            serialized_ml_model, best_model_path = self.retrain_model()
             self.set(self.config.MLModel.name, serialized_ml_model)
+            self._update_ml_mpc_config(serialized_ml_model, best_model_path)
 
     def _initialize_time_series_data(self) -> pd.DataFrame:
         """Loads simulation data to initialize the time_series data"""
@@ -302,34 +312,66 @@ class MLModelTrainer(BaseModule, abc.ABC):
 
         return pd.DataFrame(time_series_data)
 
+
     def retrain_model(self):
         """Trains the model based on the current historic data."""
         sampled = self.resample()
         inputs, outputs = self.create_inputs_and_outputs(sampled)
         training_data = self.divide_in_tvt(inputs, outputs)
-        self.fit_ml_model(training_data)
-        serialized_ml_model = self.serialize_ml_model()
-        self.save_all(serialized_ml_model, training_data)
-        return serialized_ml_model
+
+        best_serialized_ml_model = None
+        best_score = float('inf')
+        i = 1
+        for self.ml_model in self.ml_models:
+            self.fit_ml_model(training_data)
+            serialized_ml_model = self.serialize_ml_model()
+            total_score = evaluate_model(training_data, CasadiPredictor.from_serialized_model(serialized_ml_model))
+
+            if total_score < best_score:
+                best_score = total_score
+                best_serialized_ml_model = serialized_ml_model
+            path = Path(self.config.save_directory, self.agent_and_time, f"Iteration_{i}")
+            if self.config.save_plots:
+                path.mkdir(parents=True, exist_ok=True)
+                plot_model_evaluation(
+                    training_data,
+                    total_score,
+                    CasadiPredictor.from_serialized_model(serialized_ml_model),
+                    show_plot=False,
+                    save_path=path
+                )
+            i += 1
+
+        best_model_path = Path(self.config.save_directory, "best_model", self.agent_and_time)
+        self.save_all(best_serialized_ml_model, training_data, best_model_path, best_score)
+        return best_serialized_ml_model, best_model_path
+
 
     def save_all(
-        self,
-        serialized_ml_model: SerializedMLModel,
-        training_data: ml_model_datatypes.TrainingData,
+            self,
+            serialized_ml_model: SerializedMLModel,
+            training_data: ml_model_datatypes.TrainingData,
+            best_model_path,
+            total_score: float = None
     ):
         """Saves all relevant data and results of the training process if desired."""
-        path = Path(self.config.save_directory, self.agent_and_time)
+
+        
         if self.config.save_data:
-            training_data.save(path)
+            training_data.save(best_model_path)
+
         if self.config.save_ml_model:
-            self.save_ml_model(serialized_ml_model, path=path)
+            self.save_ml_model(serialized_ml_model, path=best_model_path)
+
         if self.config.save_plots:
-            evaluate_model(
+            plot_model_evaluation(
                 training_data,
+                total_score,
                 CasadiPredictor.from_serialized_model(serialized_ml_model),
-                save_path=path,
                 show_plot=False,
+                save_path=best_model_path,
             )
+
 
     def _callback_data(self, variable: AgentVariable, name: str):
         """Adds received measured inputs to the past trajectory."""
@@ -350,9 +392,10 @@ class MLModelTrainer(BaseModule, abc.ABC):
             f"Updated variable {name} with {variable.value} at {variable.timestamp} s."
         )
 
-    def _update_time_series_data(self):
-        """Clears the history of all entries that are older than current time minus
-        horizon length."""
+    def _update_time_series_data(self, sample_size:int=20000):
+        """
+        
+        """
         df_list: list[pd.DataFrame] = []
         for feature_name, (time_stamps, values) in self.history_dict.items():
             df = pd.DataFrame({feature_name: values}, index=time_stamps)
@@ -362,16 +405,130 @@ class MLModelTrainer(BaseModule, abc.ABC):
         data = self.time_series_data
         if not data.size:
             return
+        # # delete rows based on how old the data is
+        # cut_off_time = self.env.now - self.config.time_series_length
+        # cut_off_index = data.index.get_indexer([cut_off_time], method="backfill")[0]
+        # data.drop(data.index[:cut_off_index], inplace=True)
+        
+        if len(data) > sample_size:
+            data = self.sample_data_max_variation(data, sample_size=sample_size)
 
-        # delete rows based on how old the data is
-        cut_off_time = self.env.now - self.config.time_series_length
-        cut_off_index = data.index.get_indexer([cut_off_time], method="backfill")[0]
-        data.drop(data.index[:cut_off_index], inplace=True)
+        self.time_series_data = data
 
-        # delete rows if the memory usage is too high
-        del_rows_at_once = 20  # currently hard-coded
-        while data.memory_usage().sum() > self.config.time_series_memory_size:
-            data.drop(data.index[:del_rows_at_once], inplace=True)
+
+    def sample_data_max_variation(self, data: pd.DataFrame, sample_size) -> pd.DataFrame:
+        """
+        Samples the time series data to maintain data quality and variety.
+
+        Args:
+            data: Input DataFrame with time series data
+            sample_size: Target number of samples
+
+        Returns:
+            Sampled DataFrame maintaining data characteristics
+        """
+
+        # 1. Ensure we keep the most recent data (last 20% of sample_size)
+        recent_size = int(0.2 * sample_size)
+        recent_data = data.iloc[-recent_size:]
+
+        # 2. Calculate statistics for each column
+        remaining_data = data.iloc[:-recent_size].copy()
+
+        # 3. Identify important points for each column
+        important_indices = set()
+        for column in data.columns:
+            series = remaining_data[column]
+
+            # Keep global min and max points
+            important_indices.update([
+                series.idxmin(),
+                series.idxmax()
+            ])
+
+            # Find points with significant changes using rolling standard deviation
+            rolling_std = series.rolling(window=5).std()
+            high_variance_points = rolling_std.nlargest(int(sample_size * 0.1)).index
+            important_indices.update(high_variance_points)
+
+        # 4. Stratified sampling for the remaining points
+        remaining_size = sample_size - recent_size - len(important_indices)
+        if remaining_size > 0:
+            # Divide data into bins and sample from each bin
+            n_bins = 10
+            bins = pd.qcut(remaining_data.index, n_bins, duplicates='drop')
+            stratified_samples = []
+
+            samples_per_bin = remaining_size // len(bins.categories)
+            for bin_label in bins.categories:
+                bin_data = remaining_data[bins == bin_label]
+                if not bin_data.empty:
+                    stratified_samples.append(bin_data.sample(
+                        n=min(samples_per_bin, len(bin_data)),
+                        random_state=42
+                    ))
+
+            # Combine all samples
+            sampled_data = pd.concat([
+                remaining_data.loc[list(important_indices)],  # Important points
+                pd.concat(stratified_samples),  # Stratified samples
+                recent_data  # Recent data
+            ]).sort_index()
+        else:
+            sampled_data = pd.concat([
+                remaining_data.loc[list(important_indices)],
+                recent_data
+            ]).sort_index()
+
+        return sampled_data
+
+
+    def _update_ml_mpc_config(self, new_model_config: dict, new_model_path: str):
+        """
+        Update ml_model_sources in original_config_file based on output variables.
+
+        Args:
+            new_model_path: Path to the new model file
+            new_model_config: Configuration of the new model
+        """
+        original_config_file = self.config.mpc_id_for_online_learning
+        with open(original_config_file, mode="r") as config_data:
+            original_config_data = json.load(config_data)
+
+        new_output = new_model_config.output
+        new_output_name = [feature.name for feature in new_output.values()]
+
+        for module in original_config_data.get("modules", []):
+            if "optimization_backend" not in module:
+                continue
+
+            backend = module["optimization_backend"]
+            if "model" not in backend or "ml_model_sources" not in backend["model"]:
+                continue
+
+            ml_sources = backend["model"]["ml_model_sources"]
+            if isinstance(ml_sources, str):
+                ml_sources = [ml_sources]
+
+            for i, source in enumerate(ml_sources):
+                try:
+                    with open(source, 'r') as f:
+                        source_config = json.load(f)
+                    source_output = source_config["output"]
+                    source_output_name = [feature["name"] for feature in source_output.values()]
+
+                    if source_output_name == new_output_name:
+                        if isinstance(backend["model"]["ml_model_sources"], str):
+                            backend["model"]["ml_model_sources"] = new_model_path
+                        else:
+                            backend["model"]["ml_model_sources"][i] = f"{new_model_path}\\ml_model.json"
+                except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
+                    continue
+
+        with open(original_config_file, mode="w") as config_data:
+            json.dump(original_config_data, config_data, indent=4)
+
+
 
     @abc.abstractmethod
     def build_ml_model(self):
@@ -379,6 +536,18 @@ class MLModelTrainer(BaseModule, abc.ABC):
         Builds and returns an ann model
         """
         pass
+
+    def build_ml_model_sequence(self, training_data=None):
+        """
+        Builds and returns an ml model sequence
+        Build several trainer from same configuration and fit, to avoid bad results due to random initialisation
+        """
+        mls = list()
+        n = self.config.number_of_training_repetitions
+        for i in range(n):
+            ml_model = self.build_ml_model()
+            mls.append(ml_model)
+        return mls
 
     @abc.abstractmethod
     def fit_ml_model(self, training_data: ml_model_datatypes.TrainingData):
@@ -405,7 +574,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
             and features_with_insufficient_data
         ):
             raise RuntimeError(
-                f"Called ANN Trainer in strict mode but there was insufficient data."
+                f"Called ML Trainer in strict mode but there was insufficient data."
                 f" Features with insufficient data are: "
                 f"{features_with_insufficient_data}"
             )
@@ -563,8 +732,8 @@ class MLModelTrainer(BaseModule, abc.ABC):
 
         # calculate the sample count and shares
         num_of_samples = inputs.shape[0]
-        n_training = int(self.config.train_share * num_of_samples)
-        n_validation = n_training + int(self.config.validation_share * num_of_samples)
+        n_training = max(int(self.config.train_share * num_of_samples),1)
+        n_validation = n_training + max(int(self.config.validation_share * num_of_samples),1)
 
         # shuffle the data
         permutation = np.random.permutation(num_of_samples)
