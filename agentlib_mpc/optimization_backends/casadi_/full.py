@@ -134,6 +134,7 @@ class MultipleShooting(basic.MultipleShooting):
         opt_integrator = self._create_ode(sys, opts, self.options.integrator)
         # initiate states
         while self.k < n:
+            self.add_opt_var(sys.time, lb=self.pred_time, ub=self.pred_time)
             u_prev = uk
             uk = self.add_opt_var(sys.controls)
             # penalty for control change between time steps
