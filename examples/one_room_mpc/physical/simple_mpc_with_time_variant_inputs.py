@@ -26,9 +26,7 @@ def heat_load_func(current):
 
 
 class LoadSensorConfig(al.ModelConfig):
-    outputs: al.ModelOutputs = [
-        al.ModelOutput(name="load_measurement"),
-    ]
+    outputs: al.ModelOutputs = [al.ModelOutput(name="load_measurement")]
 
     parameters: al.ModelParameters = [
         al.ModelParameter(name="uncertainty", value=0.2),

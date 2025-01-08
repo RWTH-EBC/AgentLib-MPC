@@ -456,6 +456,7 @@ class MultipleShooting(Discretization):
             sys.model_parameters.full_symbolic,
             sys.algebraics.full_symbolic,
             sys.outputs.full_symbolic,
+            sys.time.full_symbolic,
         )
         integrator_ode = {"x": x, "p": p, "ode": ode}
 

@@ -35,6 +35,12 @@ class FullSystem(basic.BaseSystem):
             use_in_stage_function=False,
             assert_complete=True,
         )
+        self.time = OptimizationParameter.declare(
+            denotation="time",
+            variables=[model.time],
+            ref_list=[],
+            use_in_stage_function=True,
+        )
 
 
 class DirectCollocation(basic.DirectCollocation):

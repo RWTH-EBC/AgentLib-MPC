@@ -312,6 +312,7 @@ class CasadiModel(Model):
         self.system = ca.reshape(system, system.shape[0], 1)
         self.integrator = None  # set in intitialize
         self.initialize()
+        self.time = ca.MX.sym(1, 1)
 
     def _assert_outputs_are_defined(self):
         """Raises an Error, if the output variables are not defined with an equation"""
