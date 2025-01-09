@@ -187,11 +187,11 @@ class Discretization(abc.ABC):
         # clip binary values within tolerance
         if "w" in mpc_output:
             tolerance = 1e-5
-            mpc_output["w"] = ca.if_else(ca.logic_and(mpc_output["w"] < 0,
-                                                      mpc_output["w"] > -tolerance), 0,
-                              ca.if_else(ca.logic_and(mpc_output["w"] > 1,
-                                                      mpc_output["w"] < 1 + tolerance), 1,
-                              mpc_output["w"]))
+            bin_array = mpc_output["w"].full()
+            bin_array = np.where((-tolerance < bin_array) & (bin_array < 0), 0,
+                                 np.where((1 < bin_array) & (bin_array < 1 + tolerance),
+                                          1, bin_array))
+            mpc_output["w"] = bin_array
 
         self._remember_solution(mpc_output)
         result = self._process_solution(inputs=mpc_inputs, outputs=mpc_output)

@@ -328,13 +328,15 @@ class BaseMPC(BaseModule):
         self.logger.info("Sending optimal control values to data_broker.")
         tolerance = 1e-5
         for control in self.var_ref.controls:
+            ub = self.get(control).ub
+            lb = self.get(control).lb
             # take the first entry of the control trajectory
             actuation = solution[control][0]
             # if variables only slightly breach boundaries, clip
-            if self.get(control).ub < actuation < self.get(control).ub + tolerance:
-                actuation = self.get(control).ub
-            if self.get(control).lb - tolerance < actuation < self.get(control).lb:
-                actuation = self.get(control).lb
+            if ub < actuation < ub + tolerance:
+                actuation = ub
+            if lb - tolerance < actuation < lb:
+                actuation = lb
             self.set(control, actuation)
 
     def set_output(self, solution: Results):
