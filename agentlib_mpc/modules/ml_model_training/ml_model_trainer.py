@@ -2,7 +2,7 @@ import abc
 import logging
 import math
 from pathlib import Path
-from typing import Type, TYPE_CHECKING
+from typing import Type, TYPE_CHECKING, Optional, List, Union
 import json
 
 import numpy as np
@@ -46,11 +46,11 @@ class MLModelTrainerConfig(BaseModuleConfig, abc.ABC):
     """
 
     step_size: float
-    retrain_delay: float = pydantic.Field(
-        default=10000000000,
-        description="Time in seconds, after which retraining is triggered in regular"
-        " intervals",
-    )
+    # retrain_delay: float = pydantic.Field(
+    #     default=10000000000,
+    #     description="Time in seconds, after which retraining is triggered in regular"
+    #     " intervals",
+    # )
     inputs: AgentVariables = pydantic.Field(
         default=[],
         description="Variables which are inputs of the ML Model that should be trained.",
@@ -108,18 +108,6 @@ class MLModelTrainerConfig(BaseModuleConfig, abc.ABC):
         default=AgentVariable(name="MLModel", value=None),
         description="Serialized ML Model which can be sent to other Agents.",
     )
-    time_series_memory_size: int = pydantic.Field(
-        default=1_000_000_000,
-        description="Maximum size of the data which is kept in memory for the ML Model "
-        "training. If saved data exceeds this value, the oldest data is "
-        "deleted.",
-    )
-    time_series_length: float = pydantic.Field(
-        default=10 * 365 * 24 * 3600,
-        description="Maximum time window of data which is kept for the ML Model training. If"
-        " saved data is older than current time minus time_series_length, "
-        "it will be deleted.",
-    )
     use_values_for_incomplete_data: bool = pydantic.Field(
         default=False,
         description="Default False. If True, the values of inputs and outputs which are"
@@ -133,10 +121,15 @@ class MLModelTrainerConfig(BaseModuleConfig, abc.ABC):
         "initialization of the agent.",
     )
     shared_variable_fields: list[str] = ["MLModel"]
-    mpc_id_for_online_learning: str = pydantic.Field(
-        default=[],
-        description="ML Model which will be updated via online learning"
+    online_learning: List[Union[bool, Optional[str], float]] = pydantic.Field(
+        default=[False, None, float('inf')],
+        description="Online learning configuration: "
+                    "[enable_online_learning, path of ML Model which will be updated via online learning, Time in seconds, after which retraining is triggered in regular]"
     )
+    # path_ml_mpc_config: Optional[str] = pydantic.Field(
+    #     default=None,
+    #     description="ML Model which will be updated via online learning"
+    # )
 
     @pydantic.field_validator("train_share", "validation_share", "test_share")
     @classmethod
@@ -243,6 +236,42 @@ class MLModelTrainerConfig(BaseModuleConfig, abc.ABC):
             )
         return save_on
 
+    @pydantic.validator('online_learning')
+    @classmethod
+    def validate_online_learning_config(cls, v):
+        if len(v) != 3:
+            raise ValueError("online_learning must contain exactly 3 elements")
+
+        enable_online_learning, path_config, retrain_delay = v
+
+        if not isinstance(enable_online_learning, bool):
+            raise ValueError("First element must be a boolean")
+
+        if enable_online_learning:
+            if path_config is None:
+                raise ValueError(
+                    "path_ml_mpc_config (second element) needs to be specified when online_learning is True")
+
+            if not isinstance(retrain_delay, (int, float)):
+                raise ValueError("retrain_delay (third element) must be a number")
+
+            if retrain_delay <= 0:
+                raise ValueError("retrain_delay must be positive")
+
+        return v
+
+    @property
+    def enable_online_learning(self) -> bool:
+        return self.online_learning[0]
+
+    @property
+    def path_ml_mpc_config(self) -> Optional[str]:
+        return self.online_learning[1]
+
+    @property
+    def retrain_delay(self) -> float:
+        return self.online_learning[2]
+
 
 class MLModelTrainer(BaseModule, abc.ABC):
     """
@@ -291,11 +320,12 @@ class MLModelTrainer(BaseModule, abc.ABC):
 
     def process(self):
         while True:
-            yield self.env.timeout(self.config.retrain_delay)
-            self._update_time_series_data()
-            serialized_ml_model, best_model_path = self.retrain_model()
-            self.set(self.config.MLModel.name, serialized_ml_model)
-            self._update_ml_mpc_config(serialized_ml_model, best_model_path)
+            if self.config.enable_online_learning:
+                yield self.env.timeout(self.config.retrain_delay)
+                self._update_time_series_data()
+                serialized_ml_model, best_model_path = self.retrain_model()
+                self.set(self.config.MLModel.name, serialized_ml_model)
+                self._update_ml_mpc_config(serialized_ml_model, best_model_path)
 
     def _initialize_time_series_data(self) -> pd.DataFrame:
         """Loads simulation data to initialize the time_series data"""
@@ -320,57 +350,69 @@ class MLModelTrainer(BaseModule, abc.ABC):
         training_data = self.divide_in_tvt(inputs, outputs)
 
         best_serialized_ml_model = None
-        best_score = float('inf')
+        best_score = 0
+        best_metrics = None
+        #evaluation_metric = self.config.evaluation_metric  # "singlestep", or "multistep"
         i = 1
+
         for self.ml_model in self.ml_models:
             self.fit_ml_model(training_data)
             serialized_ml_model = self.serialize_ml_model()
-            total_score = evaluate_model(training_data, CasadiPredictor.from_serialized_model(serialized_ml_model))
+            outputs = training_data.training_outputs.columns
+            for name in outputs:
+                total_score_mse, metrics_dict = evaluate_model(name, training_data, CasadiPredictor.from_serialized_model(serialized_ml_model))
+                train_r2 = metrics_dict[name]["train_score_r2"]
 
-            if total_score < best_score:
-                best_score = total_score
-                best_serialized_ml_model = serialized_ml_model
-            path = Path(self.config.save_directory, self.agent_and_time, f"Iteration_{i}")
-            if self.config.save_plots:
-                path.mkdir(parents=True, exist_ok=True)
-                plot_model_evaluation(
-                    training_data,
-                    total_score,
-                    CasadiPredictor.from_serialized_model(serialized_ml_model),
-                    show_plot=False,
-                    save_path=path
-                )
-            i += 1
+                if abs(1 - train_r2) < abs(1 - best_score):
+                    best_score = train_r2
+                    best_serialized_ml_model = serialized_ml_model
+                    best_metrics = metrics_dict
+                    best_cross_check = total_score_mse
+
+                path = Path(self.config.save_directory, self.agent_and_time, f"Iteration_{i}")
+                if self.config.save_plots:
+                    path.mkdir(parents=True, exist_ok=True)
+                    plot_model_evaluation(
+                        training_data,
+                        name,
+                        total_score_mse,
+                        metrics_dict,
+                        CasadiPredictor.from_serialized_model(serialized_ml_model),
+                        show_plot=False,
+                        save_path=path
+                    )
+                i += 1
 
         best_model_path = Path(self.config.save_directory, "best_model", self.agent_and_time)
-        self.save_all(best_serialized_ml_model, training_data, best_model_path, best_score)
+        self.save_all(best_serialized_ml_model, training_data, best_model_path, name, best_metrics, best_cross_check)
         return best_serialized_ml_model, best_model_path
-
 
     def save_all(
             self,
             serialized_ml_model: SerializedMLModel,
             training_data: ml_model_datatypes.TrainingData,
             best_model_path,
-            total_score: float = None
+            name,
+            metrics_dict: dict,
+            cross_check_score: float
     ):
         """Saves all relevant data and results of the training process if desired."""
 
-        
         if self.config.save_data:
             training_data.save(best_model_path)
 
         if self.config.save_ml_model:
             self.save_ml_model(serialized_ml_model, path=best_model_path)
 
-        if self.config.save_plots:
-            plot_model_evaluation(
-                training_data,
-                total_score,
-                CasadiPredictor.from_serialized_model(serialized_ml_model),
-                show_plot=False,
-                save_path=best_model_path,
-            )
+        plot_model_evaluation(
+            training_data,
+            name,
+            cross_check_score,
+            metrics_dict,
+            CasadiPredictor.from_serialized_model(serialized_ml_model),
+            show_plot=False,
+            save_path=best_model_path
+        )
 
 
     def _callback_data(self, variable: AgentVariable, name: str):
@@ -394,7 +436,13 @@ class MLModelTrainer(BaseModule, abc.ABC):
 
     def _update_time_series_data(self, sample_size:int=20000):
         """
-        
+        Update Trainings Dataset with collected dara during simulation
+
+        Args:
+            sample_size: default=20000, If the amount of data exceeds sample_size, the data set is resampled
+
+        Returns:
+            Merged and resampled dataset for retraining
         """
         df_list: list[pd.DataFrame] = []
         for feature_name, (time_stamps, values) in self.history_dict.items():
@@ -405,11 +453,28 @@ class MLModelTrainer(BaseModule, abc.ABC):
         data = self.time_series_data
         if not data.size:
             return
-        # # delete rows based on how old the data is
-        # cut_off_time = self.env.now - self.config.time_series_length
-        # cut_off_index = data.index.get_indexer([cut_off_time], method="backfill")[0]
-        # data.drop(data.index[:cut_off_index], inplace=True)
+
+        #todo: Prüfen dieser Funktion
+        # nan_columns = data.columns[data.isna().all()].tolist()
+        # if nan_columns:
+        #     raise ValueError(f"Variables to check subscription: {nan_columns}")
         
+        training_dataset = self.config.data_sources
+        feature_names = list(self.history_dict.keys())
+        dfs = []
+        for path in training_dataset:
+            var_names = pd.read_csv(path).iloc[0].values
+            if any(feature in var_names for feature in feature_names):
+                df = pd.read_csv(path, skiprows=2)
+                df.columns = var_names
+                columns_to_keep = ['Time'] + [col for col in df.columns if col in feature_names]
+                df = df[columns_to_keep]
+                dfs.append(df)
+        trainings_data = pd.concat(dfs, ignore_index=True)
+        trainings_data.set_index("Time", inplace=True)
+
+        data = pd.concat([trainings_data, data])
+   
         if len(data) > sample_size:
             data = self.sample_data_max_variation(data, sample_size=sample_size)
 
@@ -428,33 +493,27 @@ class MLModelTrainer(BaseModule, abc.ABC):
             Sampled DataFrame maintaining data characteristics
         """
 
-        # 1. Ensure we keep the most recent data (last 20% of sample_size)
+        # Ensure we keep the most recent data (last 20% of sample_size)
         recent_size = int(0.2 * sample_size)
         recent_data = data.iloc[-recent_size:]
 
-        # 2. Calculate statistics for each column
         remaining_data = data.iloc[:-recent_size].copy()
 
-        # 3. Identify important points for each column
         important_indices = set()
         for column in data.columns:
             series = remaining_data[column]
 
-            # Keep global min and max points
             important_indices.update([
                 series.idxmin(),
                 series.idxmax()
             ])
 
-            # Find points with significant changes using rolling standard deviation
             rolling_std = series.rolling(window=5).std()
             high_variance_points = rolling_std.nlargest(int(sample_size * 0.1)).index
             important_indices.update(high_variance_points)
 
-        # 4. Stratified sampling for the remaining points
         remaining_size = sample_size - recent_size - len(important_indices)
         if remaining_size > 0:
-            # Divide data into bins and sample from each bin
             n_bins = 10
             bins = pd.qcut(remaining_data.index, n_bins, duplicates='drop')
             stratified_samples = []
@@ -468,7 +527,6 @@ class MLModelTrainer(BaseModule, abc.ABC):
                         random_state=42
                     ))
 
-            # Combine all samples
             sampled_data = pd.concat([
                 remaining_data.loc[list(important_indices)],  # Important points
                 pd.concat(stratified_samples),  # Stratified samples
@@ -491,7 +549,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
             new_model_path: Path to the new model file
             new_model_config: Configuration of the new model
         """
-        original_config_file = self.config.mpc_id_for_online_learning
+        original_config_file = self.config.path_ml_mpc_config
         with open(original_config_file, mode="r") as config_data:
             original_config_data = json.load(config_data)
 
@@ -612,16 +670,16 @@ class MLModelTrainer(BaseModule, abc.ABC):
         Returns:
             SerializedMLModel version of the passed ML Model.
         """
-        ann_inputs, ann_outputs = self._define_features()
+        ml_inputs, ml_outputs = self._define_features()
 
-        serialized_ann = self.model_type.serialize(
+        serialized_ml = self.model_type.serialize(
             model=self.ml_model,
             dt=self.config.step_size,
-            input=ann_inputs,
-            output=ann_outputs,
+            input=ml_inputs,
+            output=ml_outputs,
             training_info=self.training_info,
         )
-        return serialized_ann
+        return serialized_ml
 
     def save_ml_model(self, serialized_ml_model: SerializedMLModel, path: Path):
         """Saves the ML Model in serialized format."""
