@@ -76,7 +76,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -120,11 +120,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">step_size</span><span class="p">:</span> <span class="nb">float</span>
-    <span class="n">retrain_delay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mi">10000000000</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Time in seconds, after which retraining is triggered in regular&quot;</span>
-        <span class="s2">&quot; intervals&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="c1"># retrain_delay: float = pydantic.Field(</span>
+    <span class="c1">#     default=10000000000,</span>
+    <span class="c1">#     description=&quot;Time in seconds, after which retraining is triggered in regular&quot;</span>
+    <span class="c1">#     &quot; intervals&quot;,</span>
+    <span class="c1"># )</span>
     <span class="n">inputs</span><span class="p">:</span> <span class="n">AgentVariables</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Variables which are inputs of the ML Model that should be trained.&quot;</span><span class="p">,</span>
@@ -182,18 +182,6 @@
         <span class="n">default</span><span class="o">=</span><span class="n">AgentVariable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;MLModel&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Serialized ML Model which can be sent to other Agents.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">time_series_memory_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mi">1_000_000_000</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum size of the data which is kept in memory for the ML Model &quot;</span>
-        <span class="s2">&quot;training. If saved data exceeds this value, the oldest data is &quot;</span>
-        <span class="s2">&quot;deleted.&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">time_series_length</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">365</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">3600</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum time window of data which is kept for the ML Model training. If&quot;</span>
-        <span class="s2">&quot; saved data is older than current time minus time_series_length, &quot;</span>
-        <span class="s2">&quot;it will be deleted.&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
     <span class="n">use_values_for_incomplete_data</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Default False. If True, the values of inputs and outputs which are&quot;</span>
@@ -207,10 +195,15 @@
         <span class="s2">&quot;initialization of the agent.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">shared_variable_fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;MLModel&quot;</span><span class="p">]</span>
-    <span class="n">mpc_id_for_online_learning</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;ML Model which will be updated via online learning&quot;</span>
+    <span class="n">online_learning</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)],</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Online learning configuration: &quot;</span>
+                    <span class="s2">&quot;[enable_online_learning, path of ML Model which will be updated via online learning, Time in seconds, after which retraining is triggered in regular]&quot;</span>
     <span class="p">)</span>
+    <span class="c1"># path_ml_mpc_config: Optional[str] = pydantic.Field(</span>
+    <span class="c1">#     default=None,</span>
+    <span class="c1">#     description=&quot;ML Model which will be updated via online learning&quot;</span>
+    <span class="c1"># )</span>
 
 <div class="viewcode-block" id="MLModelTrainerConfig.check_shares_amount_to_one"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.check_shares_amount_to_one">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;train_share&quot;</span><span class="p">,</span> <span class="s2">&quot;validation_share&quot;</span><span class="p">,</span> <span class="s2">&quot;test_share&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
@@ -315,7 +308,43 @@
             <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
                 <span class="s2">&quot;ML Model saving is on, but no save_directory was specified.&quot;</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="n">save_on</span></div></div>
+        <span class="k">return</span> <span class="n">save_on</span></div>
+
+<div class="viewcode-block" id="MLModelTrainerConfig.validate_online_learning_config"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.validate_online_learning_config">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">validator</span><span class="p">(</span><span class="s1">&#39;online_learning&#39;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_online_learning_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;online_learning must contain exactly 3 elements&quot;</span><span class="p">)</span>
+
+        <span class="n">enable_online_learning</span><span class="p">,</span> <span class="n">path_config</span><span class="p">,</span> <span class="n">retrain_delay</span> <span class="o">=</span> <span class="n">v</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">enable_online_learning</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;First element must be a boolean&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">enable_online_learning</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">path_config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;path_ml_mpc_config (second element) needs to be specified when online_learning is True&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">retrain_delay</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;retrain_delay (third element) must be a number&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">retrain_delay</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;retrain_delay must be positive&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">v</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">enable_online_learning</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">online_learning</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">path_ml_mpc_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">online_learning</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">retrain_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">online_learning</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="MLModelTrainer"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MLModelTrainer</span><span class="p">(</span><span class="n">BaseModule</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
@@ -365,11 +394,12 @@
 
 <div class="viewcode-block" id="MLModelTrainer.process"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.process">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">retrain_delay</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_update_time_series_data</span><span class="p">()</span>
-            <span class="n">serialized_ml_model</span><span class="p">,</span> <span class="n">best_model_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrain_model</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">MLModel</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">serialized_ml_model</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_update_ml_mpc_config</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">,</span> <span class="n">best_model_path</span><span class="p">)</span></div>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_online_learning</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">retrain_delay</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_time_series_data</span><span class="p">()</span>
+                <span class="n">serialized_ml_model</span><span class="p">,</span> <span class="n">best_model_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrain_model</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">MLModel</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">serialized_ml_model</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_ml_mpc_config</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">,</span> <span class="n">best_model_path</span><span class="p">)</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_initialize_time_series_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Loads simulation data to initialize the time_series data&quot;&quot;&quot;</span>
@@ -394,57 +424,69 @@
         <span class="n">training_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">divide_in_tvt</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span>
 
         <span class="n">best_serialized_ml_model</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">best_score</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
+        <span class="n">best_score</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">best_metrics</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1">#evaluation_metric = self.config.evaluation_metric  # &quot;singlestep&quot;, or &quot;multistep&quot;</span>
         <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+
         <span class="k">for</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml_model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml_models</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fit_ml_model</span><span class="p">(</span><span class="n">training_data</span><span class="p">)</span>
             <span class="n">serialized_ml_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serialize_ml_model</span><span class="p">()</span>
-            <span class="n">total_score</span> <span class="o">=</span> <span class="n">evaluate_model</span><span class="p">(</span><span class="n">training_data</span><span class="p">,</span> <span class="n">CasadiPredictor</span><span class="o">.</span><span class="n">from_serialized_model</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">))</span>
+            <span class="n">outputs</span> <span class="o">=</span> <span class="n">training_data</span><span class="o">.</span><span class="n">training_outputs</span><span class="o">.</span><span class="n">columns</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">outputs</span><span class="p">:</span>
+                <span class="n">total_score_mse</span><span class="p">,</span> <span class="n">metrics_dict</span> <span class="o">=</span> <span class="n">evaluate_model</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">training_data</span><span class="p">,</span> <span class="n">CasadiPredictor</span><span class="o">.</span><span class="n">from_serialized_model</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">))</span>
+                <span class="n">train_r2</span> <span class="o">=</span> <span class="n">metrics_dict</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;train_score_r2&quot;</span><span class="p">]</span>
 
-            <span class="k">if</span> <span class="n">total_score</span> <span class="o">&lt;</span> <span class="n">best_score</span><span class="p">:</span>
-                <span class="n">best_score</span> <span class="o">=</span> <span class="n">total_score</span>
-                <span class="n">best_serialized_ml_model</span> <span class="o">=</span> <span class="n">serialized_ml_model</span>
-            <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_directory</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_and_time</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Iteration_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_plots</span><span class="p">:</span>
-                <span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                <span class="n">plot_model_evaluation</span><span class="p">(</span>
-                    <span class="n">training_data</span><span class="p">,</span>
-                    <span class="n">total_score</span><span class="p">,</span>
-                    <span class="n">CasadiPredictor</span><span class="o">.</span><span class="n">from_serialized_model</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">),</span>
-                    <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                    <span class="n">save_path</span><span class="o">=</span><span class="n">path</span>
-                <span class="p">)</span>
-            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">train_r2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">abs</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">best_score</span><span class="p">):</span>
+                    <span class="n">best_score</span> <span class="o">=</span> <span class="n">train_r2</span>
+                    <span class="n">best_serialized_ml_model</span> <span class="o">=</span> <span class="n">serialized_ml_model</span>
+                    <span class="n">best_metrics</span> <span class="o">=</span> <span class="n">metrics_dict</span>
+                    <span class="n">best_cross_check</span> <span class="o">=</span> <span class="n">total_score_mse</span>
+
+                <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_directory</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_and_time</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Iteration_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_plots</span><span class="p">:</span>
+                    <span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">plot_model_evaluation</span><span class="p">(</span>
+                        <span class="n">training_data</span><span class="p">,</span>
+                        <span class="n">name</span><span class="p">,</span>
+                        <span class="n">total_score_mse</span><span class="p">,</span>
+                        <span class="n">metrics_dict</span><span class="p">,</span>
+                        <span class="n">CasadiPredictor</span><span class="o">.</span><span class="n">from_serialized_model</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">),</span>
+                        <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">save_path</span><span class="o">=</span><span class="n">path</span>
+                    <span class="p">)</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="n">best_model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_directory</span><span class="p">,</span> <span class="s2">&quot;best_model&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_and_time</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">save_all</span><span class="p">(</span><span class="n">best_serialized_ml_model</span><span class="p">,</span> <span class="n">training_data</span><span class="p">,</span> <span class="n">best_model_path</span><span class="p">,</span> <span class="n">best_score</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_all</span><span class="p">(</span><span class="n">best_serialized_ml_model</span><span class="p">,</span> <span class="n">training_data</span><span class="p">,</span> <span class="n">best_model_path</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">best_metrics</span><span class="p">,</span> <span class="n">best_cross_check</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">best_serialized_ml_model</span><span class="p">,</span> <span class="n">best_model_path</span></div>
-
 
 <div class="viewcode-block" id="MLModelTrainer.save_all"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.save_all">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_all</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">serialized_ml_model</span><span class="p">:</span> <span class="n">SerializedMLModel</span><span class="p">,</span>
             <span class="n">training_data</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">,</span>
             <span class="n">best_model_path</span><span class="p">,</span>
-            <span class="n">total_score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="n">metrics_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+            <span class="n">cross_check_score</span><span class="p">:</span> <span class="nb">float</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves all relevant data and results of the training process if desired.&quot;&quot;&quot;</span>
 
-        
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_data</span><span class="p">:</span>
             <span class="n">training_data</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">best_model_path</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_ml_model</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">save_ml_model</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">best_model_path</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_plots</span><span class="p">:</span>
-            <span class="n">plot_model_evaluation</span><span class="p">(</span>
-                <span class="n">training_data</span><span class="p">,</span>
-                <span class="n">total_score</span><span class="p">,</span>
-                <span class="n">CasadiPredictor</span><span class="o">.</span><span class="n">from_serialized_model</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">),</span>
-                <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="n">save_path</span><span class="o">=</span><span class="n">best_model_path</span><span class="p">,</span>
-            <span class="p">)</span></div>
+        <span class="n">plot_model_evaluation</span><span class="p">(</span>
+            <span class="n">training_data</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="n">cross_check_score</span><span class="p">,</span>
+            <span class="n">metrics_dict</span><span class="p">,</span>
+            <span class="n">CasadiPredictor</span><span class="o">.</span><span class="n">from_serialized_model</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">),</span>
+            <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">save_path</span><span class="o">=</span><span class="n">best_model_path</span>
+        <span class="p">)</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_callback_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -468,7 +510,13 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_time_series_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">20000</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        </span>
+<span class="sd">        Update Trainings Dataset with collected dara during simulation</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sample_size: default=20000, If the amount of data exceeds sample_size, the data set is resampled</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Merged and resampled dataset for retraining</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">df_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">feature_name</span><span class="p">,</span> <span class="p">(</span><span class="n">time_stamps</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -479,11 +527,28 @@
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series_data</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="c1"># # delete rows based on how old the data is</span>
-        <span class="c1"># cut_off_time = self.env.now - self.config.time_series_length</span>
-        <span class="c1"># cut_off_index = data.index.get_indexer([cut_off_time], method=&quot;backfill&quot;)[0]</span>
-        <span class="c1"># data.drop(data.index[:cut_off_index], inplace=True)</span>
+
+        <span class="c1">#todo: Prüfen dieser Funktion</span>
+        <span class="c1"># nan_columns = data.columns[data.isna().all()].tolist()</span>
+        <span class="c1"># if nan_columns:</span>
+        <span class="c1">#     raise ValueError(f&quot;Variables to check subscription: {nan_columns}&quot;)</span>
         
+        <span class="n">training_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">data_sources</span>
+        <span class="n">feature_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">training_dataset</span><span class="p">:</span>
+            <span class="n">var_names</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">feature</span> <span class="ow">in</span> <span class="n">var_names</span> <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">feature_names</span><span class="p">):</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">var_names</span>
+                <span class="n">columns_to_keep</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">feature_names</span><span class="p">]</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">columns_to_keep</span><span class="p">]</span>
+                <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">trainings_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">trainings_data</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">trainings_data</span><span class="p">,</span> <span class="n">data</span><span class="p">])</span>
+   
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">sample_size</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_data_max_variation</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sample_size</span><span class="o">=</span><span class="n">sample_size</span><span class="p">)</span>
 
@@ -502,33 +567,27 @@
 <span class="sd">            Sampled DataFrame maintaining data characteristics</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="c1"># 1. Ensure we keep the most recent data (last 20% of sample_size)</span>
+        <span class="c1"># Ensure we keep the most recent data (last 20% of sample_size)</span>
         <span class="n">recent_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">0.2</span> <span class="o">*</span> <span class="n">sample_size</span><span class="p">)</span>
         <span class="n">recent_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="n">recent_size</span><span class="p">:]</span>
 
-        <span class="c1"># 2. Calculate statistics for each column</span>
         <span class="n">remaining_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="o">-</span><span class="n">recent_size</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
-        <span class="c1"># 3. Identify important points for each column</span>
         <span class="n">important_indices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
             <span class="n">series</span> <span class="o">=</span> <span class="n">remaining_data</span><span class="p">[</span><span class="n">column</span><span class="p">]</span>
 
-            <span class="c1"># Keep global min and max points</span>
             <span class="n">important_indices</span><span class="o">.</span><span class="n">update</span><span class="p">([</span>
                 <span class="n">series</span><span class="o">.</span><span class="n">idxmin</span><span class="p">(),</span>
                 <span class="n">series</span><span class="o">.</span><span class="n">idxmax</span><span class="p">()</span>
             <span class="p">])</span>
 
-            <span class="c1"># Find points with significant changes using rolling standard deviation</span>
             <span class="n">rolling_std</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
             <span class="n">high_variance_points</span> <span class="o">=</span> <span class="n">rolling_std</span><span class="o">.</span><span class="n">nlargest</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">sample_size</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">))</span><span class="o">.</span><span class="n">index</span>
             <span class="n">important_indices</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">high_variance_points</span><span class="p">)</span>
 
-        <span class="c1"># 4. Stratified sampling for the remaining points</span>
         <span class="n">remaining_size</span> <span class="o">=</span> <span class="n">sample_size</span> <span class="o">-</span> <span class="n">recent_size</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">important_indices</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">remaining_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># Divide data into bins and sample from each bin</span>
             <span class="n">n_bins</span> <span class="o">=</span> <span class="mi">10</span>
             <span class="n">bins</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">qcut</span><span class="p">(</span><span class="n">remaining_data</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">n_bins</span><span class="p">,</span> <span class="n">duplicates</span><span class="o">=</span><span class="s1">&#39;drop&#39;</span><span class="p">)</span>
             <span class="n">stratified_samples</span> <span class="o">=</span> <span class="p">[]</span>
@@ -542,7 +601,6 @@
                         <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span>
                     <span class="p">))</span>
 
-            <span class="c1"># Combine all samples</span>
             <span class="n">sampled_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span>
                 <span class="n">remaining_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">important_indices</span><span class="p">)],</span>  <span class="c1"># Important points</span>
                 <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">stratified_samples</span><span class="p">),</span>  <span class="c1"># Stratified samples</span>
@@ -565,7 +623,7 @@
 <span class="sd">            new_model_path: Path to the new model file</span>
 <span class="sd">            new_model_config: Configuration of the new model</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">original_config_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">mpc_id_for_online_learning</span>
+        <span class="n">original_config_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">path_ml_mpc_config</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">original_config_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">config_data</span><span class="p">:</span>
             <span class="n">original_config_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">config_data</span><span class="p">)</span>
 
@@ -686,16 +744,16 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            SerializedMLModel version of the passed ML Model.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ann_inputs</span><span class="p">,</span> <span class="n">ann_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_define_features</span><span class="p">()</span>
+        <span class="n">ml_inputs</span><span class="p">,</span> <span class="n">ml_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_define_features</span><span class="p">()</span>
 
-        <span class="n">serialized_ann</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
+        <span class="n">serialized_ml</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_type</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
             <span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ml_model</span><span class="p">,</span>
             <span class="n">dt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">step_size</span><span class="p">,</span>
-            <span class="nb">input</span><span class="o">=</span><span class="n">ann_inputs</span><span class="p">,</span>
-            <span class="n">output</span><span class="o">=</span><span class="n">ann_outputs</span><span class="p">,</span>
+            <span class="nb">input</span><span class="o">=</span><span class="n">ml_inputs</span><span class="p">,</span>
+            <span class="n">output</span><span class="o">=</span><span class="n">ml_outputs</span><span class="p">,</span>
             <span class="n">training_info</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">training_info</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">serialized_ann</span></div>
+        <span class="k">return</span> <span class="n">serialized_ml</span></div>
 
 <div class="viewcode-block" id="MLModelTrainer.save_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.save_ml_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serialized_ml_model</span><span class="p">:</span> <span class="n">SerializedMLModel</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves the ML Model in serialized format.&quot;&quot;&quot;</span>

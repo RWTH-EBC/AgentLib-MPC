@@ -1225,6 +1225,8 @@
 </li>
       <li><a href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMMParticipation.empty_memory">empty_memory() (agentlib_mpc.modules.dmpc.admm.admm.ADMMParticipation method)</a>, <a href="code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMMParticipation.empty_memory">[1]</a>
 </li>
+      <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.enable_online_learning">enable_online_learning (agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig property)</a>
+</li>
       <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.ANNTrainerConfig.epochs">epochs (agentlib_mpc.modules.ml_model_training.ml_model_trainer.ANNTrainerConfig attribute)</a>
 </li>
       <li><a href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.equalities">equalities (agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization attribute)</a>
@@ -2192,8 +2194,6 @@
 </li>
       <li><a href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.mpc_backend_parameters">mpc_backend_parameters (agentlib_mpc.optimization_backends.backend.OptimizationBackend attribute)</a>, <a href="code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.mpc_backend_parameters">[1]</a>
 </li>
-      <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.mpc_id_for_online_learning">mpc_id_for_online_learning (agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig attribute)</a>
-</li>
       <li><a href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.mpc_opt_pars">mpc_opt_pars (agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization attribute)</a>
 </li>
       <li><a href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.mpc_opt_vars">mpc_opt_vars (agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization attribute)</a>
@@ -2348,6 +2348,8 @@
         <li><a href="code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.minlp.CasadiMINLPSystem.ode">(agentlib_mpc.optimization_backends.casadi_.minlp.CasadiMINLPSystem attribute)</a>
 </li>
       </ul></li>
+      <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.online_learning">online_learning (agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig attribute)</a>
+</li>
       <li><a href="agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.only_positive_times_in_results">only_positive_times_in_results (agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization attribute)</a>, <a href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.only_positive_times_in_results">[1]</a>
 
       <ul>
@@ -2404,14 +2406,14 @@
       </ul></li>
       <li><a href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ModuleStatus.optimizing">optimizing (agentlib_mpc.modules.dmpc.admm.admm.ModuleStatus attribute)</a>, <a href="code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ModuleStatus.optimizing">[1]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.options">options (agentlib_mpc.data_structures.casadi_utils.SolverFactory attribute)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.options">[1]</a>
 
       <ul>
         <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverOptions.options">(agentlib_mpc.data_structures.casadi_utils.SolverOptions attribute)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverOptions.options">[1]</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.OptParMXContainer">OptParMXContainer (class in agentlib_mpc.data_structures.casadi_utils)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.OptParMXContainer">[1]</a>
 </li>
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.RegistrationMessage.opts">opts (agentlib_mpc.data_structures.coordinator_datatypes.RegistrationMessage attribute)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.RegistrationMessage.opts">[1]</a>
@@ -2533,6 +2535,8 @@
       <li><a href="code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml.CasadiADMMNNSystem.past_couplings">past_couplings (agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml.CasadiADMMNNSystem attribute)</a>
 </li>
       <li><a href="code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml.CasadiADMMNNSystem.past_exchange">past_exchange (agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml.CasadiADMMNNSystem attribute)</a>
+</li>
+      <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.path_ml_mpc_config">path_ml_mpc_config (agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig property)</a>
 </li>
       <li><a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.ml_model_datatypes.EarlyStoppingCallback.patience">patience (agentlib_mpc.data_structures.ml_model_datatypes.EarlyStoppingCallback attribute)</a>
 </li>
@@ -2848,7 +2852,7 @@
       </ul></li>
       <li><a href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.results_file_exists">results_file_exists() (agentlib_mpc.optimization_backends.backend.OptimizationBackend method)</a>, <a href="code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.results_file_exists">[1]</a>
 </li>
-      <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.retrain_delay">retrain_delay (agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig attribute)</a>
+      <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.retrain_delay">retrain_delay (agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig property)</a>
 </li>
       <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.retrain_model">retrain_model() (agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer method)</a>
 </li>
@@ -3212,10 +3216,6 @@
         <li><a href="agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.CoordinatorConfig.time_out_non_responders">(agentlib_mpc.modules.dmpc.coordinator.CoordinatorConfig attribute)</a>, <a href="code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.CoordinatorConfig.time_out_non_responders">[1]</a>
 </li>
       </ul></li>
-      <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.time_series_length">time_series_length (agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig attribute)</a>
-</li>
-      <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.time_series_memory_size">time_series_memory_size (agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig attribute)</a>
-</li>
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ADMMParameters.time_step">time_step (agentlib_mpc.data_structures.admm_datatypes.ADMMParameters attribute)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ADMMParameters.time_step">[1]</a>
 
       <ul>
@@ -3370,6 +3370,8 @@
         <li><a href="code/agentlib_mpc.modules.html#agentlib_mpc.modules.mpc.BaseMPCConfig.validate_incoming_values">(agentlib_mpc.modules.mpc.BaseMPCConfig attribute)</a>
 </li>
       </ul></li>
+      <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.validate_online_learning_config">validate_online_learning_config() (agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig class method)</a>
+</li>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.validate_variables">validate_variables (agentlib_mpc.models.casadi_model.CasadiModelConfig attribute)</a>
 </li>
       <li><a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.ml_model_datatypes.TrainingData.validation_inputs">validation_inputs (agentlib_mpc.data_structures.ml_model_datatypes.TrainingData attribute)</a>
