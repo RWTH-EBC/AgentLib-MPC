@@ -400,7 +400,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Takes the solution from optimization backend and sends the first</span>
 <span class="sd">        step to AgentVariables.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Sending optimal control values to data_broker.&quot;</span><span class="p">)</span>
-        <span class="n">tolerance</span> <span class="o">=</span> <span class="mf">1e-7</span>
+        <span class="n">tolerance</span> <span class="o">=</span> <span class="mf">1e-5</span>
         <span class="k">for</span> <span class="n">control</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_ref</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span>
             <span class="n">ub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">control</span><span class="p">)</span><span class="o">.</span><span class="n">ub</span>
             <span class="n">lb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">control</span><span class="p">)</span><span class="o">.</span><span class="n">lb</span>
