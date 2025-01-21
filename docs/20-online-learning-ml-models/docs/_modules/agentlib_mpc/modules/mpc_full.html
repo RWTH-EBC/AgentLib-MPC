@@ -170,6 +170,16 @@
                 <span class="k">if</span> <span class="n">timestamp</span> <span class="o">&lt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">time</span> <span class="o">-</span> <span class="n">lag_in_seconds</span><span class="p">):</span>
                     <span class="n">var_history</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">timestamp</span><span class="p">)</span>
 
+<div class="viewcode-block" id="MPC.register_callbacks"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.mpc_full.MPC.register_callbacks">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">register_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">register_callbacks</span><span class="p">()</span>
+        <span class="n">opti_back</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">optimization_backend</span>
+        <span class="k">if</span> <span class="n">opti_back</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;casadi_ml&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">data_broker</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span>
+                <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;MLModel&quot;</span><span class="p">,</span>
+                <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_ml_model</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_callback_hist_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds received measured inputs to the past trajectory.&quot;&quot;&quot;</span>
         <span class="c1"># if variables are intentionally sent as series, we don&#39;t need to store them</span>
@@ -195,6 +205,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_after_config_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_internal_variables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_internal_variables</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_after_config_update</span><span class="p">()</span>
+
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_setup_var_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">VariableReferenceT</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">FullVariableReference</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
