@@ -126,10 +126,6 @@ class MLModelTrainerConfig(BaseModuleConfig, abc.ABC):
         description="Online learning configuration: "
                     "[enable_online_learning, path of ML Model which will be updated via online learning, Time in seconds, after which retraining is triggered in regular]"
     )
-    # path_ml_mpc_config: Optional[str] = pydantic.Field(
-    #     default=None,
-    #     description="ML Model which will be updated via online learning"
-    # )
 
     @pydantic.field_validator("train_share", "validation_share", "test_share")
     @classmethod
@@ -297,6 +293,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
         self.ml_models = self.build_ml_model_sequence()
         self.input_features, self.output_features = self._define_features()
 
+
     @property
     def training_info(self) -> dict:
         """Returns a dict with relevant config parameters regarding the training."""
@@ -325,7 +322,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
                 self._update_time_series_data()
                 serialized_ml_model, best_model_path = self.retrain_model()
                 self.set(self.config.MLModel.name, serialized_ml_model)
-                self._update_ml_mpc_config(serialized_ml_model, best_model_path)
+                self._update_ml_mpc_config(serialized_ml_model)
 
     def _initialize_time_series_data(self) -> pd.DataFrame:
         """Loads simulation data to initialize the time_series data"""
@@ -434,7 +431,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
             f"Updated variable {name} with {variable.value} at {variable.timestamp} s."
         )
 
-    def _update_time_series_data(self, sample_size:int=20000):
+    def _update_time_series_data(self, sample_size:int=100000):
         """
         Update Trainings Dataset with collected dara during simulation
 
@@ -451,6 +448,8 @@ class MLModelTrainer(BaseModule, abc.ABC):
         self.time_series_data = pd.concat(df_list, axis=1).sort_index()
 
         data = self.time_series_data
+        mask = data.index % self.config.step_size == 0
+        data = data[mask]
         if not data.size:
             return
 
@@ -474,6 +473,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
         trainings_data.set_index("Time", inplace=True)
 
         data = pd.concat([trainings_data, data])
+        data = data.fillna(method='ffill')
    
         if len(data) > sample_size:
             data = self.sample_data_max_variation(data, sample_size=sample_size)
@@ -541,52 +541,13 @@ class MLModelTrainer(BaseModule, abc.ABC):
         return sampled_data
 
 
-    def _update_ml_mpc_config(self, new_model_config: dict, new_model_path: str):
-        """
-        Update ml_model_sources in original_config_file based on output variables.
-
-        Args:
-            new_model_path: Path to the new model file
-            new_model_config: Configuration of the new model
-        """
-        original_config_file = self.config.path_ml_mpc_config
-        with open(original_config_file, mode="r") as config_data:
-            original_config_data = json.load(config_data)
-
-        new_output = new_model_config.output
-        new_output_name = [feature.name for feature in new_output.values()]
-
-        for module in original_config_data.get("modules", []):
-            if "optimization_backend" not in module:
-                continue
-
-            backend = module["optimization_backend"]
-            if "model" not in backend or "ml_model_sources" not in backend["model"]:
-                continue
-
-            ml_sources = backend["model"]["ml_model_sources"]
-            if isinstance(ml_sources, str):
-                ml_sources = [ml_sources]
-
-            for i, source in enumerate(ml_sources):
-                try:
-                    with open(source, 'r') as f:
-                        source_config = json.load(f)
-                    source_output = source_config["output"]
-                    source_output_name = [feature["name"] for feature in source_output.values()]
-
-                    if source_output_name == new_output_name:
-                        if isinstance(backend["model"]["ml_model_sources"], str):
-                            backend["model"]["ml_model_sources"] = new_model_path
-                        else:
-                            backend["model"]["ml_model_sources"][i] = f"{new_model_path}\\ml_model.json"
-                except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
-                    continue
-
-        with open(original_config_file, mode="w") as config_data:
-            json.dump(original_config_data, config_data, indent=4)
-
-
+    def _update_ml_mpc_config(self, serialized_ml_model):
+        ml_model_variable = AgentVariable(
+            name=self.config.MLModel.name,
+            value=json.dumps(serialized_ml_model.dict()),
+            timestamp=self.env.now
+        )
+        self.set(self.config.MLModel.name, ml_model_variable)
 
     @abc.abstractmethod
     def build_ml_model(self):
