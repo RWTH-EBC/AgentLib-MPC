@@ -422,6 +422,7 @@ class MultipleShooting(Discretization):
                 sys.controls.name: uk,
                 sys.non_controlled_inputs.name: dk,
                 sys.model_parameters.name: const_par,
+                "time": self.pred_time,
             }
             # get stage
             stage = self._stage_function(**stage_arguments)
