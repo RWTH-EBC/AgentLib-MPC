@@ -499,11 +499,13 @@ class MultipleShooting(Discretization):
             for q in all_system_quantities.values()
             if q.use_in_stage_function
         ]
+        inputs.append(system.time)
         input_denotations = [
             q.name
             for denotation, q in all_system_quantities.items()
             if q.use_in_stage_function
         ]
+        input_denotations.append("time")
 
         # aggregate constraints
         constraints_func = [c.function for c in constraints.values()]
