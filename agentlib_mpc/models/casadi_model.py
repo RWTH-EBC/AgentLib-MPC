@@ -302,6 +302,8 @@ class CasadiModel(Model):
         super().__init__(**kwargs)
 
         self.constraints = []  # constraint functions
+        self.time = CasadiParameter(name="time", value=0)
+
         # read constraints, assign ode's and return cost function
         self.cost_func = self.setup_system()
         self._assert_outputs_are_defined()
@@ -312,7 +314,7 @@ class CasadiModel(Model):
         self.system = ca.reshape(system, system.shape[0], 1)
         self.integrator = None  # set in intitialize
         self.initialize()
-        self.time = ca.MX.sym(1, 1)
+
 
     def _assert_outputs_are_defined(self):
         """Raises an Error, if the output variables are not defined with an equation"""
@@ -347,7 +349,7 @@ class CasadiModel(Model):
         algebraic values at the end of the interval."""
         opts = {"t0": 0, "tf": self.dt}
         par = ca.vertcat(
-            *[inp.sym for inp in chain.from_iterable([self.inputs, self.parameters])]
+            *[inp.sym for inp in chain.from_iterable([self.inputs, self.parameters])], self.time.sym
         )
         x = ca.vertcat(*[sta.sym for sta in self.differentials])
         z = ca.vertcat(*[var.sym for var in self.outputs])
@@ -449,7 +451,7 @@ class CasadiModel(Model):
 
     def get_input_values(self):
         return ca.vertcat(
-            *[inp.value for inp in chain.from_iterable([self.inputs, self.parameters])]
+            *[inp.value for inp in chain.from_iterable([self.inputs, self.parameters])], self.time.value
         )
 
     def get_differential_values(self):

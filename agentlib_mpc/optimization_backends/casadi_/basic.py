@@ -96,6 +96,7 @@ class BaseSystem(System):
             lb=ca.vertcat(*[c.lb for c in model.get_constraints()]),
             ub=ca.vertcat(*[c.ub for c in model.get_constraints()]),
         )
+        self.time = model.time.sym
 
 
 @dataclasses.dataclass
@@ -134,7 +135,6 @@ class DirectCollocation(Discretization):
         while k < n:
             # New NLP variable for the control
             uk = self.add_opt_var(sys.controls)
-
             # New parameter for inputs
             dk = self.add_opt_par(sys.non_controlled_inputs)
 
@@ -197,11 +197,13 @@ class DirectCollocation(Discretization):
             for q in all_system_quantities.values()
             if q.use_in_stage_function
         ]
+        inputs.append(system.time)
         input_denotations = [
             q.name
             for denotation, q in all_system_quantities.items()
             if q.use_in_stage_function
         ]
+        input_denotations.append("time")
 
         # aggregate constraints
         constraints_func = [c.function for c in constraints.values()]
@@ -251,7 +253,7 @@ class DirectCollocation(Discretization):
         states: OptimizationVariable,
         opt_vars: list[OptimizationVariable],
         opt_pars: list[OptimizationParameter],
-        const: dict[OptimizationQuantity, ca.MX],
+        const: dict[OptimizationQuantity, ca.MX]
     ) -> tuple[ca.MX, tuple]:
         """
         Constructs the inner loop of a collocation discretization. Takes the
@@ -303,6 +305,7 @@ class DirectCollocation(Discretization):
             for opt_par in opt_pars:
                 par_kj = self.add_opt_par(opt_par, post_den=f"_{j}")
                 opt_pars_collocation[-1].update({opt_par.name: par_kj})
+            opt_pars_collocation[-1].update({"time": self.pred_time})
 
         # Loop over collocation points
         state_k_end = collocation.D[0] * state_at_beginning
@@ -316,7 +319,7 @@ class DirectCollocation(Discretization):
                 **{states.name: state_collocation[j - 1]},
                 **opt_pars_collocation[j - 1],
                 **opt_vars_collocation[j - 1],
-                **constants,
+                **constants
             )
 
             constraints.append((ts * stage["ode"] - xp,))
@@ -456,7 +459,6 @@ class MultipleShooting(Discretization):
             sys.model_parameters.full_symbolic,
             sys.algebraics.full_symbolic,
             sys.outputs.full_symbolic,
-            sys.time.full_symbolic,
         )
         integrator_ode = {"x": x, "p": p, "ode": ode}
 
