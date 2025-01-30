@@ -96,7 +96,7 @@ class BaseSystem(System):
             lb=ca.vertcat(*[c.lb for c in model.get_constraints()]),
             ub=ca.vertcat(*[c.ub for c in model.get_constraints()]),
         )
-        self.time = model.time.sym
+        self.time = model.time
 
 
 @dataclasses.dataclass
@@ -253,7 +253,7 @@ class DirectCollocation(Discretization):
         states: OptimizationVariable,
         opt_vars: list[OptimizationVariable],
         opt_pars: list[OptimizationParameter],
-        const: dict[OptimizationQuantity, ca.MX]
+        const: dict[OptimizationQuantity, ca.MX],
     ) -> tuple[ca.MX, tuple]:
         """
         Constructs the inner loop of a collocation discretization. Takes the
@@ -319,7 +319,7 @@ class DirectCollocation(Discretization):
                 **{states.name: state_collocation[j - 1]},
                 **opt_pars_collocation[j - 1],
                 **opt_vars_collocation[j - 1],
-                **constants
+                **constants,
             )
 
             constraints.append((ts * stage["ode"] - xp,))
