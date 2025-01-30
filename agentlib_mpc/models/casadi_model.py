@@ -302,7 +302,7 @@ class CasadiModel(Model):
         super().__init__(**kwargs)
 
         self.constraints = []  # constraint functions
-        self.time = CasadiParameter(name="time", value=0)
+        self.time = ca.MX.sym("time", 1, 1)
 
         # read constraints, assign ode's and return cost function
         self.cost_func = self.setup_system()
@@ -328,7 +328,7 @@ class CasadiModel(Model):
     def do_step(self, *, t_start, t_sample=None):
         if t_sample is None:
             t_sample = self.dt
-        pars = self.get_input_values()
+        pars = self.get_input_values(t_start)
         t_sim = 0
         if self.differentials:
             x0 = self.get_differential_values()
@@ -349,7 +349,7 @@ class CasadiModel(Model):
         algebraic values at the end of the interval."""
         opts = {"t0": 0, "tf": self.dt}
         par = ca.vertcat(
-            *[inp.sym for inp in chain.from_iterable([self.inputs, self.parameters])], self.time.sym
+            *[inp.sym for inp in chain.from_iterable([self.inputs, self.parameters])], self.time
         )
         x = ca.vertcat(*[sta.sym for sta in self.differentials])
         z = ca.vertcat(*[var.sym for var in self.outputs])
@@ -449,9 +449,9 @@ class CasadiModel(Model):
             "The ode is defined by the actual models " "inheriting from this class."
         )
 
-    def get_input_values(self):
+    def get_input_values(self, t_start):
         return ca.vertcat(
-            *[inp.value for inp in chain.from_iterable([self.inputs, self.parameters])], self.time.value
+            *[inp.value for inp in chain.from_iterable([self.inputs, self.parameters])],t_start
         )
 
     def get_differential_values(self):

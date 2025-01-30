@@ -36,6 +36,8 @@ class FullSystem(basic.BaseSystem):
             assert_complete=True,
         )
 
+        self.time = model.time
+
 
 class DirectCollocation(basic.DirectCollocation):
     def _discretize(self, sys: FullSystem):
