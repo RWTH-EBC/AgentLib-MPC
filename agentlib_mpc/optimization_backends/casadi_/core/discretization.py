@@ -2,6 +2,7 @@
 
 import abc
 import dataclasses
+import logging
 from functools import cached_property
 from pathlib import Path
 from typing import TypeVar, Union, Callable, Optional
@@ -26,6 +27,7 @@ from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
 )
 from agentlib_mpc.optimization_backends.casadi_.core.system import System
 
+logger = logging.getLogger(__name__)
 
 CasadiVariableList = Union[list[ca.MX], ca.MX]
 
@@ -179,9 +181,19 @@ class Discretization(abc.ABC):
         guesses = self._determine_initial_guess(mpc_inputs)
         mpc_inputs.update(guesses)
         nlp_inputs: dict[str, ca.DM] = self._mpc_inputs_to_nlp_inputs(**mpc_inputs)
-
         # perform optimization
         nlp_output = self._optimizer(**nlp_inputs)
+
+        if (self._optimizer.stats()["success"] is False):
+            logger.debug("Optimization failed, trying random restart.")
+            for i in range(5):
+                guesses = self._determine_initial_guess(mpc_inputs, warmstart=False)
+                mpc_inputs.update(guesses)
+                nlp_inputs: dict[str, ca.DM] = self._mpc_inputs_to_nlp_inputs(**mpc_inputs)
+                nlp_output = self._optimizer(**nlp_inputs)
+                if (self._optimizer.stats()["success"] is True):
+                    logger.debug("Optimization succeeded after random restart.")
+                    break
 
         # format and return solution
         mpc_output = self._nlp_outputs_to_mpc_outputs(vars_at_optimum=nlp_output["x"])
@@ -189,7 +201,7 @@ class Discretization(abc.ABC):
         result = self._process_solution(inputs=mpc_inputs, outputs=mpc_output)
         return result
 
-    def _determine_initial_guess(self, mpc_inputs: MPCInputs) -> MPCInputs:
+    def _determine_initial_guess(self, mpc_inputs: MPCInputs, warmstart: bool=True) -> MPCInputs:
         """
         Collects initial guesses for all mpc variables. If possible, uses result
         of last optimization.
@@ -200,7 +212,7 @@ class Discretization(abc.ABC):
 
         for denotation, var in self.mpc_opt_vars.items():
             guess = var.opt
-            if guess is None:
+            if ((guess is None) or (warmstart == False)):
                 # if initial value is available, assume it is constant and make guess
                 guess_denotation = f"initial_{denotation}"
                 if guess_denotation in mpc_inputs:
@@ -212,13 +224,23 @@ class Discretization(abc.ABC):
                     guess = np.tile(state_measurements, len(var.grid))
                 # get guess from boundaries if last optimum is not available
                 else:
-                    guess = np.array(
-                        0.5
-                        * (
-                            mpc_inputs[f"lb_{denotation}"]
-                            + mpc_inputs[f"ub_{denotation}"]
-                        )
-                    )
+                    #guess = np.array(
+                    #    0.5
+                    #    * (
+                    #        mpc_inputs[f"lb_{denotation}"]
+                    #        + mpc_inputs[f"ub_{denotation}"]
+                    #    )
+                    #)
+
+                    # Uniform distribution
+                    #guess = np.random.uniform(low=mpc_inputs[f"lb_{denotation}"][:, 0], high=mpc_inputs[f"ub_{denotation}"][:, 0]).reshape(-1, 1)
+                    #guess = np.tile(guess2, mpc_inputs[f"lb_{denotation}"].shape[1])
+
+                    # Normal distribution
+                    mean = 0.5 * (mpc_inputs[f"lb_{denotation}"][:, 0] + mpc_inputs[f"ub_{denotation}"][:, 0])
+                    std_dev = (mpc_inputs[f"ub_{denotation}"][:, 0] - mpc_inputs[f"lb_{denotation}"][:, 0]) / 16
+                    guess = np.random.normal(loc=mean, scale=std_dev).reshape(-1, 1)
+                    guess = np.tile(guess, mpc_inputs[f"lb_{denotation}"].shape[1])
                     guess = np.nan_to_num(
                         guess, posinf=100_000_000, neginf=-100_000_000
                     )
