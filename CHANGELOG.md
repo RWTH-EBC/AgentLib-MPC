@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.5
+- Add option to skip MPC calculation in given time intervals, e.g. during summer period
+
+## 0.6.4
+- Fix exchange ADMM
+
 ## 0.6.4
 - Add option to skip MPC calculation in given time intervals, e.g. during summer period
 
