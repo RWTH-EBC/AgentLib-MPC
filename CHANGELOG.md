@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.5
+- Fix faulty warning about boundaries of binary controls
+- Implement rounding for controls to fix pycombina errors and AgentVariable warnings for minor outliers (tolerance 1e-5)
+
 ## 0.6.4
 - Fix exchange ADMM
 
