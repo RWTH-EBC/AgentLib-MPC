@@ -49,21 +49,21 @@ class BaseMPCConfig(BaseModuleConfig):
     sampling_time: Optional[float] = Field(
         default=None,  # seconds
         description="Sampling interval for control steps. If None, will be the same as"
-        " time step. Does not affect the discretization of the MPC, "
-        "only the interval with which there will be optimization steps.",
+                    " time step. Does not affect the discretization of the MPC, "
+                    "only the interval with which there will be optimization steps.",
         validate_default=True,
     )
     parameters: mpc_datamodels.MPCVariables = Field(
         default=[],
         description="List of model parameters of the MPC. They are "
-        "constant over the horizon. Parameters not listed "
-        "here will have their default from the model file.",
+                    "constant over the horizon. Parameters not listed "
+                    "here will have their default from the model file.",
     )
     inputs: mpc_datamodels.MPCVariables = Field(
         default=[],
         description="List of all input variables of the MPC. Includes "
-        "predictions for disturbances, set_points, dynamic "
-        "constraint boundaries etc.",
+                    "predictions for disturbances, set_points, dynamic "
+                    "constraint boundaries etc.",
     )
     outputs: mpc_datamodels.MPCVariables = Field(
         default=[], description="List of all shared outputs of the MPC. "
@@ -76,26 +76,26 @@ class BaseMPCConfig(BaseModuleConfig):
     states: mpc_datamodels.MPCVariables = Field(
         default=[],
         description="List of all differential states of the MPC. The "
-        "entries can define the boundaries and the source for the measurements",
+                    "entries can define the boundaries and the source for the measurements",
     )
     set_outputs: bool = Field(
         default=False,
         description="Sets the full output time series to the data broker.",
     )
     shared_variable_fields: list[str] = ["outputs", "controls"]
-    skip_mpc_in_intervals: list[tuple[float, float]] = Field(
-        default=[],
-        description="If environment time is within these intervals"
+    enable_deactivate_mpc: bool = Field(
+        default="If true, the MPC module uses an AgentVariable `active` which"
+                "other modules may change to disable the MPC operation "
+                "temporarily"
     )
-    skip_mpc_interval_time_unit: utils.TimeConversionTypes = Field(
-        default="seconds",
-        description="Specifies the unit of the given "
-                    "`skip_mpc_in_intervals`, e.g. seconds or days."
+    active: AgentVariable = Field(
+        default=AgentVariable(name="active", description="MPC is active", type="bool", value=True, shared=False),
+        description="Variable used to activate or deactivate the MPC operation"
     )
-    controls_when_skipping: Dict[str, Union[float, bool, int]] = Field(
+    control_values_when_deactivated: Dict[str, Union[float, bool, int]] = Field(
         default={},
-        description="When skipping the MPC, send the controls with these values"
-                    "specified via control-name as key and control-value as value."
+        description="When the MPC is deactivated, send the controls with these values"
+                    "specified as `{control_name: control_value}`."
                     "In case of variables to send which are not listed as model variables,"
                     "a plain AgentVariable is send. This may used to deactivate supervisory control"
                     "in a simulation / real PLC."
@@ -257,7 +257,7 @@ class BaseMPC(BaseModule):
         return unassigned_by_model_var
 
     def collect_variables_for_optimization(
-        self, var_ref: mpc_datamodels.VariableReference = None
+            self, var_ref: mpc_datamodels.VariableReference = None
     ) -> Dict[str, AgentVariable]:
         """Gets all variables noted in the var ref and puts them in a flat
         dictionary."""
@@ -327,19 +327,27 @@ class BaseMPC(BaseModule):
         if not self.init_status == InitStatus.ready:
             self.logger.warning("Skipping step, optimization_backend is not ready.")
             return
-        if utils.is_time_in_intervals(
-                time=self.env.now/utils.TIME_CONVERSION[self.config.skip_mpc_interval_time_unit],
-                intervals=self.config.skip_mpc_in_intervals
-        ):
-            self.logger.info("Current time is in skip_mpc_in_intervals, sending specified controls_when_skipping")
-            for control_name, value in self.config.controls_when_skipping.items():
-                if control_name in self.config.controls:
-                    self.set(control_name, value)
-                else:
-                    self.agent.data_broker.send_variable(AgentVariable(
-                        name=control_name, value=value, source=self.source, shared=True
-                    ))
-            return
+        if self.config.enable_deactivate_mpc:
+            active = self.get("active")
+            if not active.value:
+                source = str(active.source)
+                if source == "None_None":
+                    source = "unknown (not specified in config)"
+                if not self.config.control_values_when_deactivated:
+                    self.logger.info("MPC was deactivated by source %s", source)
+                    return
+                self.logger.info(
+                    "MPC was deactivated by source %s, sending control_values_when_deactivated %s",
+                    source, self.config.control_values_when_deactivated
+                )
+                for control_name, value in self.config.control_values_when_deactivated.items():
+                    if control_name in self.config.controls:
+                        self.set(control_name, value)
+                    else:
+                        self.agent.data_broker.send_variable(AgentVariable(
+                            name=control_name, value=value, source=self.source, shared=True
+                        ))
+                return
 
         self.pre_computation_hook()
 
