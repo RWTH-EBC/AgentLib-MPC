@@ -28,6 +28,9 @@ import logging
 from agentlib.utils import MultiProcessingBroker
 from agentlib.utils.multi_agent_system import LocalMASAgency
 
+from agentlib_mpc.utils.plotting import admm_dashboard
+from agentlib_mpc.utils.plotting.admm_dashboard import show_admm_dashboard
+from agentlib_mpc.utils.plotting.interactive import show_dashboard
 
 agent_configs = [
     # use MS discretization method
@@ -64,7 +67,12 @@ def plot(results, start_pred=0):
 
 
 def run_example(
-    until=3000, with_plots=True, start_pred=0, log_level=logging.INFO, cleanup=True
+    until=3000,
+    with_plots=True,
+    start_pred=0,
+    log_level=logging.INFO,
+    cleanup=True,
+    show_dashboard: bool = False,
 ):
     # Set the log-level
     logging.basicConfig(level=log_level)
@@ -94,6 +102,15 @@ def run_example(
     mas.run(until=until)
     results = mas.get_results(cleanup=cleanup)
 
+    if show_dashboard:
+        show_admm_dashboard(
+            data={
+                "Cooler": results["Cooler"]["admm_module"],
+                "CooledRoom": results["CooledRoom"]["admm_module"],
+            },
+            residuals=results["Coordinator"]["admm_coordinator"],
+        )
+
     if with_plots:
         plot(results, start_pred=start_pred)
     return results
@@ -104,6 +121,7 @@ if __name__ == "__main__":
         with_plots=True,
         until=1800,
         start_pred=0,
+        show_dashboard=False,
         cleanup=True,
         log_level=logging.INFO,
     )

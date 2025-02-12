@@ -28,7 +28,7 @@ from agentlib_mpc.optimization_backends.casadi_.basic import (
 from agentlib_mpc.optimization_backends.casadi_.full import FullSystem
 
 
-class CasadiNNSystem(FullSystem):
+class CasadiMLSystem(FullSystem):
     # multiple possibilities of using the MLModel
     # stage function for neural networks
     model: CasadiMLModel
@@ -73,14 +73,14 @@ class CasadiNNSystem(FullSystem):
             ref_list=var_ref.parameters,
         )
         self.initial_state = OptimizationParameter.declare(
-            denotation="initial_state",  # append the 0 as a convention to get initial guess
+            denotation="initial_state",
             variables=model.get_states(var_ref.states),
             ref_list=var_ref.states,
             use_in_stage_function=False,
             assert_complete=True,
         )
         self.last_control = OptimizationParameter.declare(
-            denotation="initial_control",  # append the 0 as a convention to get initial guess
+            denotation="initial_control",
             variables=model.get_inputs(var_ref.controls),
             ref_list=var_ref.controls,
             use_in_stage_function=False,
@@ -115,10 +115,10 @@ class CasadiNNSystem(FullSystem):
         return {var.name: var for var in self.quantities}
 
 
-class MultipleShooting_NN(MultipleShooting):
+class MultipleShooting_ML(MultipleShooting):
     max_lag: int
 
-    def _discretize(self, sys: CasadiNNSystem):
+    def _discretize(self, sys: CasadiMLSystem):
         n = self.options.prediction_horizon
         ts = self.options.time_step
         const_par = self.add_opt_par(sys.model_parameters)
@@ -179,9 +179,6 @@ class MultipleShooting_NN(MultipleShooting):
         self.pred_time += ts
         mx_dict[self.pred_time] = {sys.states.name: self.add_opt_var(sys.states)}
 
-        # control of last time step
-        mx_dict[0 - ts][sys.controls.name] = self.add_opt_par(sys.last_control)
-
         all_quantities = sys.all_system_quantities()
         # add constraints and create the objective function for all stages
         for time in prediction_grid:
@@ -231,13 +228,13 @@ class MultipleShooting_NN(MultipleShooting):
             )
             self.objective_function += stage_result["cost_function"] * ts
 
-    def initialize(self, system: CasadiNNSystem, solver_factory: SolverFactory):
+    def initialize(self, system: CasadiMLSystem, solver_factory: SolverFactory):
         """Initializes the trajectory optimization problem, creating all symbolic
         variables of the OCP, the mapping function and the numerical solver."""
         self._construct_stage_function(system)
         super().initialize(system=system, solver_factory=solver_factory)
 
-    def _construct_stage_function(self, system: CasadiNNSystem):
+    def _construct_stage_function(self, system: CasadiMLSystem):
         """
         Combine information from the model and the var_ref to create CasADi
         functions which describe the system dynamics and constraints at each
@@ -343,7 +340,7 @@ class MultipleShooting_NN(MultipleShooting):
             output_denotations,
         )
 
-    def _create_lag_structure_for_denotations(self, system: CasadiNNSystem):
+    def _create_lag_structure_for_denotations(self, system: CasadiMLSystem):
         all_system_quantities = self.all_system_quantities(system)
         all_input_variables = {}
         lagged_inputs: dict[int, dict[str, ca.MX]] = {}
@@ -381,9 +378,9 @@ class CasADiBBBackend(CasADiBaseBackend):
     Class doing optimization with a MLModel.
     """
 
-    system_type = CasadiNNSystem
-    discretization_types = {DiscretizationMethod.multiple_shooting: MultipleShooting_NN}
-    system: CasadiNNSystem
+    system_type = CasadiMLSystem
+    discretization_types = {DiscretizationMethod.multiple_shooting: MultipleShooting_ML}
+    system: CasadiMLSystem
     # a dictionary of collections of the variable lags
     lag_collection: Dict[str, collections.deque] = {}
     max_lag: int

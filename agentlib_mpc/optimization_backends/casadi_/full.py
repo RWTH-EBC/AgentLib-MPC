@@ -152,7 +152,7 @@ class MultipleShooting(basic.MultipleShooting):
             # integral and multiple shooting constraint
             fk = opt_integrator(
                 x0=xk,
-                p=ca.vertcat(uk, dk, const_par),
+                p=ca.vertcat(uk, dk, const_par, zk, yk),
             )
             xk_end = fk["xf"]
             self.k += 1
