@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.6
+- self.time available in mpc and ml mpc (not yet available for admm, minlp, etc)
+
 ## 0.6.4
 - Fix exchange ADMM
 
