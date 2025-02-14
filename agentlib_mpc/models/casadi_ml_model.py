@@ -308,7 +308,7 @@ class CasadiMLModel(CasadiModel):
         # the ml_model outputs cannot be changed during integration, so they are a
         # parameter here
         integration_params = self._fixed_during_integration()
-        par = ca.vertcat(*integration_params.values())
+        par = ca.vertcat(*integration_params.values(), self.time)
 
         # if we have no differentials and no algebraics, this function should do nothing
         if (not self.differentials) and (ignore_algebraics or not self.outputs):
@@ -542,7 +542,7 @@ class CasadiMLModel(CasadiModel):
             # CasADi will return a dict instead of an MX if the input is empty.
             int_x0_in = ca.DM([])
 
-        int_p_in = ca.vertcat(*wb_inputs.values())
+        int_p_in = ca.vertcat(*wb_inputs.values(), self.time)
         integrator = self._make_integrator(ignore_algebraics=ignore_algebraics)
         int_result = integrator(x0=int_x0_in, p=int_p_in)
         x_names = stacked_x_to_names(x0=int_result["xf"])
@@ -551,11 +551,11 @@ class CasadiMLModel(CasadiModel):
         opts = {"allow_duplicate_io_names": True} if CASADI_VERSION >= 3.6 else {}
         return ca.Function(
             "full_step",
-            list(all_variables.values()),
+            list(all_variables.values()) + [self.time],
             list(x_names.values())
             + list(z_names.values())
             + list(bb_result_mx.values()),
-            list(all_variables),
+            list(all_variables) + ["__time"],
             list(x_names) + list(z_names) + list(bb_result_mx),
             opts,
         )
@@ -575,6 +575,7 @@ class CasadiMLModel(CasadiModel):
             var.name: var.value for var in self.variables if var.value is not None
         }
         full_input.update(ml_model_input)
+
 
         result = self.sim_step(**full_input)
         end_time = t_start + self.dt
