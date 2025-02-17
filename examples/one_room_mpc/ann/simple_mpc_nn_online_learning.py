@@ -116,6 +116,7 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                 "save_results": True,
                 "update_inputs_on_callback": False,
                 "overwrite_result_file": True,
+                "result_filename": "results//simulation_data_onlinelearning.csv",
                 "outputs": [
                     {"name": "T_out", "value": 298, "alias": "T"},
                     {"name": "T_in_sim", "value": 290.15},
@@ -141,22 +142,14 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000, initial_tra
     os.chdir(os.path.abspath(os.path.dirname(__file__)))
     logging.basicConfig(level=log_level)
 
-    # gets the subdirectory of anns with the highest number, i.e. the longest training
-    # time
-    # try:
-    #     ann_path = list(Path.cwd().glob("anns/best_model/*/ml_model.json"))[-1]
-    # except IndexError:
-    #     import training_nn
-    #
-    #     training_nn.main(initial_training_time, plot_results=False, step_size=300)
-    #     ann_path = list(Path.cwd().glob("anns/best_model/*/ml_model.json"))[-1]
+    #Initial Training
     import training_nn
     training_nn.main(initial_training_time, plot_results=False, step_size=300)
     ann_path = list(Path.cwd().glob("anns/best_model/*/ml_model.json"))[-1]
-    #todo: MAS muss neu initialisiert werden
 
+    #Run with Online Learning
     agent_config = agent_configs(ml_model_path=str(ann_path))
-    if retrain_delay>0:
+    if retrain_delay > 0:
         import training_nn_onlinelearning
         trainer = training_nn_onlinelearning.get_trainer(retrain_delay, ann_path)
         agent_config.append(trainer)
@@ -215,4 +208,4 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000, initial_tra
 
 
 if __name__ == "__main__":
-    run_example(until=86400, retrain_delay=2000)
+    run_example(until=86400, retrain_delay=43200)
