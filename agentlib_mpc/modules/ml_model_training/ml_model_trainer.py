@@ -89,7 +89,7 @@ class MLModelTrainerConfig(BaseModuleConfig, abc.ABC):
     test_share: float = 0.15
     number_of_training_repetitions: int = pydantic.Field(
         default=1,
-        despription="Number of repeated trainings with the same configuration to avoid random initialisation"
+        despription="Number of repeated trainings for the initial training with the same configuration to avoid random initialisation"
     )
     save_directory: Path = pydantic.Field(
         default=None, description="Path, where created ML Models should be saved."
@@ -267,7 +267,7 @@ class MLModelTrainerConfig(BaseModuleConfig, abc.ABC):
         enable_online_learning, retrain_delay, ml_model_path = v
 
         if not isinstance(enable_online_learning, bool):
-            raise ValueError("First element must be a boolean")
+            raise ValueError("Online Learning: First element must be a boolean")
 
         if enable_online_learning:
             if not isinstance(retrain_delay, (int, float)):
@@ -275,9 +275,6 @@ class MLModelTrainerConfig(BaseModuleConfig, abc.ABC):
 
             if retrain_delay <= 0:
                 raise ValueError("retrain_delay must be positive")
-
-            #todo: add validation for ml_model_path
-            # if None but initial_training false, than ValueError
 
         return v
 
@@ -315,7 +312,6 @@ class MLModelTrainer(BaseModule, abc.ABC):
         self._data_sources: dict[str, Source] = {var: None for var in self.time_series_data.columns}
         self.initial_training_done = False
         self.ml_model_path = None
-        self.ml_models = self.build_ml_model_sequence()
         self.input_features, self.output_features = self._define_features()
 
 
@@ -343,14 +339,6 @@ class MLModelTrainer(BaseModule, abc.ABC):
 
     def process(self):
         while True:
-            # if not self.initial_training_done:
-            #     yield self.env.timeout(self.config.training_time)
-            #     self._update_time_series_data()
-            #     serialized_ml_model, best_model_path = self.retrain_model()
-            #     self.set(self.config.MLModel.name, serialized_ml_model)
-            #     self._update_ml_mpc_config(serialized_ml_model)
-            #     self.initial_training_done = True
-            # else:
             yield self.env.timeout(self.config.retrain_delay)
             self._update_time_series_data()
             serialized_ml_model, best_model_path = self.retrain_model()
@@ -367,54 +355,9 @@ class MLModelTrainer(BaseModule, abc.ABC):
             for column in loaded_time_series.columns:
                 if column in feature_names:
                     srs = loaded_time_series[column]
-                    time_series_data[column] = pd.concat(
-                        [time_series_data[column], srs]
-                    )
-
+                    time_series_data[column] = pd.concat([time_series_data[column], srs])
         return pd.DataFrame(time_series_data)
 
-    def initial_train_model(self):
-        """Trains the model based on the current historic data."""
-        sampled = self.resample()
-        inputs, outputs = self.create_inputs_and_outputs(sampled)
-        training_data = self.divide_in_tvt(inputs, outputs)
-
-        best_serialized_ml_model = None
-        best_score = 0
-        best_metrics = None
-        i = 1
-
-        for self.ml_model in self.ml_models:
-            self.fit_ml_model(training_data)
-            serialized_ml_model = self.serialize_ml_model()
-            outputs = training_data.training_outputs.columns
-            for name in outputs:
-                total_score_mse, metrics_dict = evaluate_model(name, training_data, CasadiPredictor.from_serialized_model(serialized_ml_model))
-                train_r2 = metrics_dict[name]["train_score_r2"]
-
-                if abs(1 - train_r2) < abs(1 - best_score):
-                    best_score = train_r2
-                    best_serialized_ml_model = serialized_ml_model
-                    best_metrics = metrics_dict
-                    best_cross_check = total_score_mse
-
-                path = Path(self.config.save_directory, self.agent_and_time, f"Iteration_{i}")
-                if self.config.save_plots:
-                    path.mkdir(parents=True, exist_ok=True)
-                    plot_model_evaluation(
-                        training_data,
-                        name,
-                        total_score_mse,
-                        metrics_dict,
-                        CasadiPredictor.from_serialized_model(serialized_ml_model),
-                        show_plot=False,
-                        save_path=path
-                    )
-                i += 1
-
-        best_model_path = Path(self.config.save_directory, "best_model", self.agent_and_time)
-        self.save_all(best_serialized_ml_model, training_data, best_model_path, name, best_metrics, best_cross_check)
-        return best_serialized_ml_model, best_model_path
 
     def retrain_model(self):
         """Trains the model based on the current historic data."""
@@ -428,9 +371,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
         #evaluation_metric = self.config.evaluation_metric  # "singlestep", or "multistep"
         i = 1
 
-        # if self.config.enable_online_learning and self.initial_training_done:
-        if self.config.enable_online_learning:
-            self.ml_models = self.build_ml_model_sequence()
+        self.ml_models = self.build_ml_model_sequence()
 
         for self.ml_model in self.ml_models:
             self.fit_ml_model(training_data)
@@ -523,6 +464,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
         Returns:
             Merged and resampled dataset for retraining
         """
+
         training_dataset = self.config.data_sources
         feature_names = list(self.history_dict.keys())
         dfs = []
@@ -575,8 +517,6 @@ class MLModelTrainer(BaseModule, abc.ABC):
                 combined_data = self.sample_data_max_variation(combined_data, sample_size=sample_size)
             self.time_series_data = combined_data
 
-        # else:
-        #     self.time_series_data = trainings_data
 
 
 
@@ -668,7 +608,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
         """
         mls = list()
         n = self.config.number_of_training_repetitions
-        if self.config.enable_online_learning and not (self.config.ml_model_path == None or self.ml_model_path == None):
+        if self.config.enable_online_learning and (self.config.ml_model_path is not None or self.ml_model_path is not None):
             ml_model = self.build_ml_model_onlinelearning()
             mls.append(ml_model)
         else:
@@ -925,7 +865,7 @@ class ANNTrainer(MLModelTrainer):
 
     def build_ml_model_onlinelearning(self) -> Sequential:
         if hasattr(self, 'ml_model_path') and self.ml_model_path is not None:
-            path = self.ml_model_path
+            path = f"{self.ml_model_path}\\ml_model.json"
         else:
             path = self.config.ml_model_path
 
