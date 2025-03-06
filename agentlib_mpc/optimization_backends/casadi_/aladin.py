@@ -473,7 +473,7 @@ class ALADINCollocation(ALADINDiscretization, DirectCollocation):
                 sys.model_parameters: const_par,
                 sys.penalty_factor: rho,
             }
-            xk_end = self._collocation_inner_loop(
+            xk_end, constraints = self._collocation_inner_loop(
                 collocation=collocation_matrices,
                 state_at_beginning=xk,
                 states=sys.states,
@@ -490,7 +490,11 @@ class ALADINCollocation(ALADINDiscretization, DirectCollocation):
             xk = self.add_opt_var(sys.states)
 
             # Add continuity constraint
-            self.add_constraint(xk_end - xk)
+            self.add_constraint(xk - xk_end, gap_closing=True)
+
+            # add collocation constraints later for fatrop
+            for constraint in constraints:
+                self.add_constraint(*constraint)
 
     def initialize(self, system: CasadiALADINSystem, solver_factory: SolverFactory):
         """Initializes the trajectory optimization problem, creating all symbolic

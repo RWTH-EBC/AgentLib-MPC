@@ -271,7 +271,7 @@ class DirectCollocation(Discretization):
                 constant over the inner loop. Value is the current MX to be used.
 
         Returns:
-            state_k_end[MX]: state at the end of collocation interval
+            Tuple[state_k_end[MX], constraints]: state at the end of collocation interval
         """
         constraints = []
         constants = {var.name: mx for var, mx in const.items()}
