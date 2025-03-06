@@ -1,4 +1,5 @@
 """Holds the class for full featured MPCs."""
+from typing import Dict, Union
 
 import numpy as np
 import pandas as pd
@@ -19,6 +20,30 @@ class MPCConfig(BaseMPCConfig):
     r_del_u: dict[str, float] = Field(
         default={},
         description="Weights that are applied to the change in control variables.",
+    )
+    enable_deactivate_mpc: bool = Field(
+        default=False,
+        description="If true, the MPC module uses an AgentVariable `active` which"
+        "other modules may change to disable the MPC operation "
+        "temporarily",
+    )
+    active: AgentVariable = Field(
+        default=AgentVariable(
+            name="active",
+            description="MPC is active",
+            type="bool",
+            value=True,
+            shared=False,
+        ),
+        description="Variable used to activate or deactivate the MPC operation",
+    )
+    control_values_when_deactivated: Dict[str, Union[float, bool, int]] = Field(
+        default={},
+        description="When the MPC is deactivated, send the controls with these values"
+        "specified as `{control_name: control_value}`."
+        "In case of variables to send which are not listed as model variables,"
+        "a plain AgentVariable is send. This may be used to deactivate "
+        "supervisory control in a simulation / real PLC.",
     )
 
     @field_validator("r_del_u")
@@ -80,7 +105,37 @@ class MPC(BaseMPC):
         self.history: dict[str, dict[float, float]] = history
         self.register_callbacks_for_lagged_variables()
 
+    def check_if_mpc_step_should_be_skipped(self):
+        """Checks if mpc steps should be skipped based on external activation flag."""
+        if not self.config.enable_deactivate_mpc:
+            return False
+        active = self.get("active")
+        if active:
+            return False
+        source = str(active.source)
+        if source == "None_None":
+            source = "unknown (not specified in config)"
+        if not self.config.control_values_when_deactivated:
+            self.logger.info("MPC was deactivated by source %s", source)
+            return True
+        self.logger.info(
+            "MPC was deactivated by source %s, sending control_values_when_deactivated %s",
+            source,
+            self.config.control_values_when_deactivated,
+        )
+        for control_name, value in self.config.control_values_when_deactivated.items():
+            if control_name in self.config.controls:
+                self.set(control_name, value)
+            else:
+                self.agent.data_broker.send_variable(
+                    AgentVariable(
+                        name=control_name, value=value, source=self.source, shared=True
+                    )
+                )
+        return True
+
     def do_step(self):
+
         super().do_step()
         self._remove_old_values_from_history()
 
