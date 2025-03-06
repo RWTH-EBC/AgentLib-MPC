@@ -1,13 +1,18 @@
 # Changelog
 
-## 0.6.5
+## 0.6.7
 - Add option to skip MPC calculation in given time intervals, e.g. during summer period
+
+## 0.6.6
+- self.time available in mpc and ml mpc (not yet available for admm, minlp, etc)
+
+
+## 0.6.5
+- Fix faulty warning about boundaries of binary controls
+- Implement rounding for controls to fix pycombina errors and AgentVariable warnings for minor outliers (tolerance 1e-5)
 
 ## 0.6.4
 - Fix exchange ADMM
-
-## 0.6.4
-- Add option to skip MPC calculation in given time intervals, e.g. during summer period
 
 ## 0.6.3
 - Dashboard now synchronously updates traces of all plots when changing one plot
