@@ -3,6 +3,7 @@ from itertools import chain
 from typing import Dict, List, Literal, Union
 
 import numpy as np
+import orjson
 import pandas as pd
 import scipy
 from agentlib.core.module import BaseModuleConfigClass
@@ -91,6 +92,7 @@ class VariableReference(mpc_datamodels.FullVariableReference):
     problem."""
 
     couplings: list[CouplingEntry] = dataclasses.field(default_factory=list)
+    exchange: list[CouplingEntry] = dataclasses.field(default_factory=list)
 
     @classmethod
     def from_config(cls, config: BaseModuleConfigClass):
@@ -98,6 +100,7 @@ class VariableReference(mpc_datamodels.FullVariableReference):
         AgentVariables with the keys corresponding to 'states', 'inputs', etc.."""
         var_ref: cls = super().from_config(config)
         var_ref.couplings = [CouplingEntry(name=c.name) for c in config.couplings]
+        var_ref.exchange = []  # exchange not supported currently but maybe future
         return var_ref
 
     def all_variables(self) -> List[str]:
@@ -112,6 +115,20 @@ class VariableReference(mpc_datamodels.FullVariableReference):
 
     def __contains__(self, item):
         return item in set(self.all_variables())
+
+
+@dataclasses.dataclass
+class ALADINParameters:
+    """Collection of parameters which have to be shared across all agents in ALADIN."""
+
+    prediction_horizon: int
+    time_step: float
+    penalty_factor: float
+    receiver_agent_id: str = None
+
+    def to_dict(self):
+        """Convert parameters to dictionary for transmission."""
+        return dataclasses.asdict(self)
 
 
 @dataclasses.dataclass

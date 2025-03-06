@@ -3,7 +3,7 @@
 import logging
 import abc
 from dataclasses import asdict
-from typing import Dict, Optional
+from typing import Dict, Optional, NamedTuple
 
 from pydantic import Field
 

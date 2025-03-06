@@ -397,12 +397,15 @@ class Coordinator(BaseModule):
             self.logger.error("Agent did not respond in time!")
             return None
 
-        if not variable.value:
+        if variable.value is False:
             return None
 
         try:
             ag_dict_entry = self.agent_dict[variable.source]
         except KeyError:
+            # likely did not finish registration of an agent yet, but the agent
+            # already has its end registered and responds to the init_iterations.
+            # Let it wait one round.
             return None
 
         self.logger.debug(

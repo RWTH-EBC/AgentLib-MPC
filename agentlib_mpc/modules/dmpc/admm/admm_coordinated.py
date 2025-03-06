@@ -1,7 +1,7 @@
 """Module implementing the coordinated ADMM module."""
 
 from collections import namedtuple
-from typing import Dict, Tuple, List, Optional
+from typing import Dict, Tuple, List, Optional, NamedTuple
 import pandas as pd
 import numpy as np
 
@@ -19,7 +19,9 @@ from agentlib_mpc.optimization_backends.backend import ADMMBackend
 from agentlib_mpc.modules.dmpc.admm.admm import ADMMConfig
 
 
-coupInput = namedtuple("coup_input", ["mean", "lam"])
+class CouplingInput(NamedTuple):
+    mean: str
+    lam: str
 
 
 class CoordinatedADMMConfig(CoordinatedMPCConfig, ADMMConfig):
@@ -56,6 +58,22 @@ class CoordinatedADMM(CoordinatedMPC):
         """Override to set up ADMM-specific backend with coupling variables."""
         self._admm_variables = self._create_couplings()
         return super()._setup_optimization_backend()
+
+    def _create_coupling_alias_to_name_mapping(self):
+        """
+        creates a mapping of alias to the variable names for multiplier and
+        global mean that the optimization backend recognizes
+        """
+        alias_to_input_names = {}
+        for coupling in self.var_ref.couplings:
+            coup_variable = self.get(coupling.name)
+            coup_in = CouplingInput(mean=coupling.mean, lam=coupling.multiplier)
+            alias_to_input_names[coup_variable.alias] = coup_in
+        for coupling in self.var_ref.exchange:
+            coup_variable = self.get(coupling.name)
+            coup_in = CouplingInput(mean=coupling.mean_diff, lam=coupling.multiplier)
+            alias_to_input_names[coup_variable.alias] = coup_in
+        self._alias_to_input_names = alias_to_input_names
 
     def assert_mpc_variables_are_in_model(self):
         """
@@ -232,22 +250,6 @@ class CoordinatedADMM(CoordinatedMPC):
     @property
     def penalty_factor_var(self) -> MPCVariable:
         return MPCVariable(name=adt.PENALTY_FACTOR, value=self.config.penalty_factor)
-
-    def _create_coupling_alias_to_name_mapping(self):
-        """
-        creates a mapping of alias to the variable names for multiplier and
-        global mean that the optimization backend recognizes
-        """
-        alias_to_input_names = {}
-        for coupling in self.var_ref.couplings:
-            coup_variable = self.get(coupling.name)
-            coup_in = coupInput(mean=coupling.mean, lam=coupling.multiplier)
-            alias_to_input_names[coup_variable.alias] = coup_in
-        for coupling in self.var_ref.exchange:
-            coup_variable = self.get(coupling.name)
-            coup_in = coupInput(mean=coupling.mean_diff, lam=coupling.multiplier)
-            alias_to_input_names[coup_variable.alias] = coup_in
-        self._alias_to_input_names = alias_to_input_names
 
     def collect_variables_for_optimization(self, var_ref=None):
         """Gets all variables noted in the var ref and puts them in a flat dictionary."""

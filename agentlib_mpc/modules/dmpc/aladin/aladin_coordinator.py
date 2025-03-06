@@ -1,5 +1,6 @@
 import itertools
 import time
+from dataclasses import asdict
 from typing import Dict, Tuple, Set, Optional
 
 import casadi as ca
@@ -210,6 +211,7 @@ class ALADINCoordinator(Coordinator):
     def _send_parameters_to_agent(self, variable: AgentVariable):
         """Send global parameters to an agent after registration request."""
         aladin_parameters = ald.ALADINParameters(
+            receiver_agent_id=variable.source.agent_id,
             prediction_horizon=self.config.prediction_horizon,
             time_step=self.config.time_step,
             penalty_factor=self.config.penalty_factor,

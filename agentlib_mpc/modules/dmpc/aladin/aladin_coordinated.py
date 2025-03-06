@@ -1,13 +1,12 @@
 """Module implementing the coordinated ALADIN module."""
 
 from collections import defaultdict
-from typing import Dict, Optional, List, Tuple
+from typing import Dict, Optional, List, Tuple, NamedTuple
 
-import numpy as np
 from agentlib import Agent, AgentVariable
-from agentlib.core.datamodels import Source
+from pydantic import Field
 
-from agentlib_mpc.data_structures.mpc_datamodels import MPCVariable
+from agentlib_mpc.data_structures.mpc_datamodels import MPCVariable, MPCVariables
 from agentlib_mpc.modules.dmpc.coordinated_mpc import (
     CoordinatedMPC,
     CoordinatedMPCConfig,
@@ -15,14 +14,27 @@ from agentlib_mpc.modules.dmpc.coordinated_mpc import (
 from agentlib_mpc.data_structures import coordinator_datatypes as cdt
 import agentlib_mpc.modules.dmpc.aladin.aladin_datatypes as ald
 from agentlib_mpc.optimization_backends.casadi_.aladin import CasADiALADINBackend
-from agentlib.utils.validators import convert_to_list
+
+
+class CouplingInput(NamedTuple):
+    multiplier: str
 
 
 class CoordinatedALADINConfig(CoordinatedMPCConfig):
     """Configuration for the coordinated ALADIN agent."""
 
-    # ALADIN-specific configuration parameters if needed
-    pass
+    # ALADIN-specific configuration parameters
+    couplings: MPCVariables = Field(
+        default=[], description="List of coupling variables between subsystems"
+    )
+    max_iterations: int = Field(
+        default=20,
+        ge=1,
+        description="Maximum number of ALADIN iterations before termination of control step.",
+    )
+    penalty_factor: float = Field(
+        default=10.0, ge=0, description="Penalty factor of the ALADIN algorithm."
+    )
 
 
 class CoordinatedALADIN(CoordinatedMPC):
@@ -36,14 +48,12 @@ class CoordinatedALADIN(CoordinatedMPC):
 
     def __init__(self, *, config: dict, agent: Agent):
         super().__init__(config=config, agent=agent)
-        self._alias_to_input_names = {}  # Will be populated during registration
+        self._alias_to_input_names: dict[str, CouplingInput] = {}
+        self._create_coupling_alias_to_name_mapping()
 
     def _setup_var_ref(self):
         """Set up appropriate variable reference for ALADIN."""
-        # Use the appropriate variable reference class for ALADIN
-        # If ALADIN needs a special VariableReference like ADMM does, use it here
-        # Otherwise, rely on the parent class implementation
-        return super()._setup_var_ref()
+        return ald.VariableReference.from_config(self.config)
 
     def process(self):
         # send registration request to coordinator
@@ -53,6 +63,19 @@ class CoordinatedALADIN(CoordinatedMPC):
             if not self._registered_coordinator:
                 self.set(cdt.REGISTRATION_A2C, "")
             yield self.env.timeout(timeout)
+
+    def _create_coupling_alias_to_name_mapping(self):
+        """
+        creates a mapping of alias to the variable names for multiplier and
+        global mean that the optimization backend recognizes
+        """
+        alias_to_input_names = {}
+        for coupling in self.var_ref.couplings:
+            coup_variable = self.get(coupling.name)
+            coup_in = CouplingInput(multiplier=coupling.multiplier)
+            alias_to_input_names[coup_variable.alias] = coup_in
+
+        self._alias_to_input_names = alias_to_input_names
 
     def registration_callback(self, variable: AgentVariable):
         """callback for registration"""
@@ -64,7 +87,8 @@ class CoordinatedALADIN(CoordinatedMPC):
             f"receiving {variable.name}={variable.value} from {variable.source}"
         )
         # global parameters to define optimisation problem
-        options = cdt.ParametersC2A.from_json(variable.value)
+        msg = cdt.RegistrationMessage(**variable.value)
+        options = ald.ALADINParameters(**msg.opts)
         if not options.receiver_agent_id == self.source.agent_id:
             return
         self._set_mpc_parameters(options=options)
@@ -164,7 +188,9 @@ class CoordinatedALADIN(CoordinatedMPC):
         # add the coupling inputs of this iteration to the other mpc inputs
         for alias, multiplier in updates.lam.items():
             coup_in = self._alias_to_input_names[alias]
-            opt_inputs[coup_in.lam] = MPCVariable(name=coup_in.lam, value=multiplier)
+            opt_inputs[coup_in.multiplier] = MPCVariable(
+                name=coup_in.multiplier, value=multiplier
+            )
 
         opt_inputs[ald.LOCAL_PENALTY_FACTOR].value = updates.rho
         # perform optimization
