@@ -57,6 +57,28 @@ class CoordinatedADMM(CoordinatedMPC):
         self._admm_variables = self._create_couplings()
         return super()._setup_optimization_backend()
 
+    def assert_mpc_variables_are_in_model(self):
+        """
+        Checks whether all variables of var_ref are contained in the model.
+        Extends the base method to account for coupling and exchange variables.
+        """
+        unassigned_model = super().assert_mpc_variables_are_in_model()
+
+        for coup in self.config.couplings + self.config.exchange:
+            if coup.name in unassigned_model["inputs"]:
+                unassigned_model["inputs"] = self.assert_subset(
+                    [coup.name], unassigned_model["inputs"], "Couplings"
+                )
+            elif coup.name in unassigned_model["outputs"]:
+                unassigned_model["outputs"] = self.assert_subset(
+                    [coup.name], unassigned_model["outputs"], "Couplings"
+                )
+            elif coup.name in unassigned_model["states"]:
+                unassigned_model["states"] = self.assert_subset(
+                    [coup.name], unassigned_model["states"], "Couplings"
+                )
+        return unassigned_model
+
     def _create_couplings(self) -> dict[str, MPCVariable]:
         """Map coupling variables based on already setup model"""
         # Map couplings:
