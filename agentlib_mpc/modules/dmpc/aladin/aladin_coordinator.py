@@ -8,17 +8,26 @@ from scipy import sparse
 from agentlib import Agent, AgentVariable, Source
 from pydantic import Field
 
-from agentlib_mpc.modules.dmpc.admm.admm_coordinator import (
-    ADMMCoordinatorConfig,
-    ADMMCoordinator,
-)
+from agentlib_mpc.modules.dmpc.coordinator import Coordinator, CoordinatorConfig
 from agentlib_mpc.data_structures import coordinator_datatypes as cdt
 import agentlib_mpc.modules.dmpc.aladin.aladin_datatypes as ald
 
 
-class ALADINCoordinatorConfig(ADMMCoordinatorConfig):
-    """Hold the config for ADMMCoordinator"""
+class ALADINCoordinatorConfig(CoordinatorConfig):
+    """Hold the config for ALADINCoordinator"""
 
+    penalty_factor: float = Field(
+        title="penalty_factor",
+        default=10,
+        description="Penalty factor of the ALADIN algorithm. Should be equal "
+        "for all agents.",
+    )
+    iter_max: int = Field(
+        title="iter_max",
+        default=20,
+        description="Maximum number of ALADIN iterations before termination of control "
+        "step.",
+    )
     qp_penalty: float = Field(
         default=100, description="Mu parameter of the ALADIN algorithm."
     )
@@ -33,61 +42,104 @@ class ALADINCoordinatorConfig(ADMMCoordinatorConfig):
         default=0.001, gt=0, description="Threshold for active set detection."
     )
     regularization_parameter: float = Field(default=0, ge=0)
+    solve_stats_file: str = Field(
+        default="aladin_stats.csv",
+        description="File name for the solve stats.",
+    )
 
 
-class ALADINCoordinator(ADMMCoordinator):
+class ALADINCoordinator(Coordinator):
+    """Coordinator implementation for the ALADIN algorithm"""
 
     config: ALADINCoordinatorConfig
 
     def __init__(self, *, config: dict, agent: Agent):
-
-        self.current_healthy_agents: Optional[Set[str]] = None
-        if agent.env.config.rt:
-            self.process = self._realtime_process
-            self.registration_callback = self._real_time_registration_callback
-        else:
-            self.process = self._fast_process
-            self.registration_callback = self._sequential_registration_callback
-
         super().__init__(config=config, agent=agent)
         self.agent_dict: Dict[Source, ald.AgentDictEntry] = {}
+        self.current_healthy_agents: Optional[Set[str]] = None
 
-        # parameters
+        # ALADIN-specific parameters
+        self.penalty_parameter: float = self.config.penalty_factor
         self.qp_penalty: float = self.config.qp_penalty
         self.lambda_: np.ndarray = None
         self.lambda_old: np.ndarray = None
         self.alias_to_parent: Dict[str, str] = {}
 
-    def trigger_optimizations(self):
-        """
-        Triggers the optimization for all agents with status ready.
-        Returns:
-
-        """
-
-        # create an iterator for all agents which are ready for this round
-        active_agents = self._active_agents()
-
-        # aggregate and send trajectories per agent
-        for source, agent in active_agents.items():
-            # package all coupling inputs needed for an agent
-            coordi_to_agent = ald.CoordinatorToAgent(
-                z=agent.local_target.ravel(),
-                lam=agent.multipliers,
-                target=source.agent_id,
-                rho=self.penalty_parameter,
+    def _initial_registration(self, variable: AgentVariable):
+        """Handles initial registration of an agent with ALADIN-specific entry type."""
+        if not (variable.source in self.agent_dict):
+            entry = ald.AgentDictEntry(  # Use ALADIN-specific type
+                name=variable.source,
+                status=cdt.AgentStatus.pending,
             )
+            self.agent_dict[variable.source] = entry
+            self._send_parameters_to_agent(variable)
+            self.logger.info(
+                f"Coordinator got request from agent {variable.source} and set to 'pending'."
+            )
+        elif self.agent_dict[variable.source].status is cdt.AgentStatus.pending:
+            self.register_agent(variable=variable)
 
-            self.logger.debug("Sending to %s with source %s", agent.name, source)
-            self.logger.debug("Set %s to busy.", agent.name)
+    def _realtime_step(self):
+        """Implement one step of the ALADIN algorithm in realtime mode."""
+        # ------------------
+        # start iteration
+        # ------------------
+        self.status = cdt.CoordinatorStatus.init_iterations
+        self.start_algorithm_at = self.env.time
+        self._performance_counter = time.perf_counter()
+        # maybe this will hold information instead of "True"
+        self.set(cdt.START_ITERATION_C2A, True)
+        # check for all_finished here
+        time.sleep(self.config.wait_time_on_start_iters)
+        if not list(self._agents_with_status(status=cdt.AgentStatus.ready)):
+            self.logger.info(f"No Agents available at time {self.env.now}.")
+            return  # if no agents registered return early
 
-            # send values
-            agent.status = cdt.AgentStatus.busy
-            self.set(cdt.OPTIMIZATION_C2A, coordi_to_agent.to_json())
+        # Create couplings on first iteration or if agents change
+        self.create_couplings()
+
+        # ------------------
+        # iteration loop
+        # ------------------
+        iteration: int = 0
+        for iteration in range(1, self.config.iter_max + 1):
+            # ------------------
+            # optimization
+            # ------------------
+            # send
+            self.status = cdt.CoordinatorStatus.optimization
+            # set all agents to busy
+            self.trigger_optimizations()
+
+            # check for all finished here
+            self._wait_for_ready()
+
+            # ------------------
+            # perform update steps
+            # ------------------
+            self.status = cdt.CoordinatorStatus.updating
+            AQP, bQP, HQP, gQP = self.setup_qp_params()
+            self._solve_coordination_qp(AQP, bQP, HQP, gQP)
+            self.compute_al_step()
+
+            # ------------------
+            # check convergence
+            # ------------------
+            converged = self._check_convergence(iteration)
+            if converged:
+                self.logger.info("Converged within %s iterations. ", iteration)
+                break
+        else:
+            self.logger.warning(
+                "Did not converge within the maximum number of iterations " "%s. ",
+                self.config.iter_max,
+            )
+        self._wrap_up_algorithm(iterations=iteration)
+        self.set(cdt.START_ITERATION_C2A, False)  # this signals the finish
 
     def _fast_process(self):
-        """Process function for use in fast-as-possible simulations. Regularly yields
-        control back to the environment, to allow the callbacks to run."""
+        """Process function for use in fast-as-possible simulations."""
         yield self._wait_non_rt()
 
         while True:
@@ -104,7 +156,9 @@ class ALADINCoordinator(ADMMCoordinator):
                 communication_time = self.env.time - self.start_algorithm_at
                 yield self.env.timeout(self.config.sampling_time - communication_time)
                 continue  # if no agents registered return early
+
             self.create_couplings()
+
             # ------------------
             # iteration loop
             # ------------------
@@ -141,17 +195,11 @@ class ALADINCoordinator(ADMMCoordinator):
             )
 
     def init_iteration_callback(self, variable: AgentVariable):
-        """
-        Processes and Agents InitIteration confirmation.
-        Args:
-            variable:
-
-        Returns:
-
-        """
+        """Process an agent's InitIteration confirmation."""
         ag_dict_entry = self._confirm_init_iteration(variable)
         if ag_dict_entry is None:
             return
+
         # if there is a list value, that means we get a shifted trajectory
         if isinstance(variable.value, list):
             ag_dict_entry.local_solution = variable.value
@@ -159,112 +207,66 @@ class ALADINCoordinator(ADMMCoordinator):
         ag_dict_entry.status = cdt.AgentStatus.ready
         self.received_variable.set()
 
-    def _realtime_step(self):
-        # ------------------
-        # start iteration
-        # ------------------
-        self.status = cdt.CoordinatorStatus.init_iterations
-        self.start_algorithm_at = self.env.time
-        self._performance_counter = time.perf_counter()
-        # maybe this will hold information instead of "True"
-        self.set(cdt.START_ITERATION_C2A, True)
-        # check for all_finished here
-        time.sleep(self.config.wait_time_on_start_iters)
-        if not list(self._agents_with_status(status=cdt.AgentStatus.ready)):
-            self.logger.info(f"No Agents available at time {self.env.now}.")
-            return  # if no agents registered return early
-        # todo how is initial guess and initial z, lambda computed
-        self._update_mean_coupling_variables()
-        self._shift_coupling_variables()
-        # ------------------
-        # iteration loop
-        # ------------------
-        iteration: int = 0
-        for iteration in range(1, self.config.iter_max + 1):
-            # ------------------
-            # optimization
-            # ------------------
-            # send
-            self.status = cdt.CoordinatorStatus.optimization
-            # set all agents to busy
-            self.trigger_optimizations()
-
-            # check for all finished here
-            self._wait_for_ready()
-
-            # ------------------
-            # perform update steps
-            # ------------------
-            self.status = cdt.CoordinatorStatus.updating
-            self._solve_coordination_qp()
-            self._update_multipliers()
-            # ------------------
-            # check convergence
-            # ------------------
-            converged = self._check_convergence(iteration)
-            if converged:
-                self.logger.info("Converged within %s iterations. ", iteration)
-                break
-        else:
-            self.logger.warning(
-                "Did not converge within the maximum number of iterations " "%s. ",
-                self.config.iter_max,
-            )
-        self._wrap_up_algorithm(iterations=iteration)
-        self.set(cdt.START_ITERATION_C2A, False)  # this signals the finish
-
-    def _solve_coordination_qp(
-        self,
-        AQP: sparse.csc_matrix,
-        bQP: np.ndarray,
-        HQP: sparse.csc_matrix,
-        gQP: np.ndarray,
-    ):
-        def debug_show_matrices():
-            A = AQP.toarray()
-            b = HQP.toarray()
-            return A, b
-
-        Anp, Hnp = debug_show_matrices()
-
-        # casadi
-        cqp = {"a": ca.DM(AQP).sparsity(), "h": ca.DM(HQP).sparsity()}
-        solver = ca.conic("QPSolver", "osqp", cqp, {"error_on_fail": False})
-        solution = solver(
-            h=ca.DM(HQP), g=ca.DM(gQP), a=ca.DM(AQP), lba=ca.DM(bQP), uba=ca.DM(bQP)
+    def _send_parameters_to_agent(self, variable: AgentVariable):
+        """Send global parameters to an agent after registration request."""
+        aladin_parameters = ald.ALADINParameters(
+            prediction_horizon=self.config.prediction_horizon,
+            time_step=self.config.time_step,
+            penalty_factor=self.config.penalty_factor,
         )
 
-        from pprint import pprint
+        message = cdt.RegistrationMessage(
+            agent_id=variable.source.agent_id, opts=aladin_parameters.to_dict()
+        )
+        self.set(cdt.REGISTRATION_C2A, asdict(message))
 
-        stats = solver.stats()
-        pprint(stats)
+    def register_agent(self, variable: AgentVariable):
+        """Register an agent after it sends its initial data."""
+        reg_msg: ald.RegistrationA2C = ald.RegistrationA2C.from_json(variable.value)
+        src = variable.source
+        ag_dict_entry = self.agent_dict[variable.source]
+        ag_dict_entry.opt_var_length = len(reg_msg.local_solution)
+        ag_dict_entry.local_solution = reg_msg.local_solution
+        ag_dict_entry.local_target = np.array(reg_msg.local_solution)
+        ag_dict_entry.local_update = np.full_like(reg_msg.local_solution, 0)
+        ag_dict_entry.coup_vars = {
+            k: np.array(v, dtype=int) for k, v in reg_msg.coup_vars.items()
+        }
 
-        primal_solution = solution["x"].toarray()
-        dual_solution = solution["lam_a"]
+        # loop over coupling variables of this agent
+        for alias, traj in ag_dict_entry.coup_vars.items():
+            ag_dict_entry.multipliers[alias] = np.full_like(traj, 0, dtype=int)
 
-        self.lambda_old = self.lambda_
-        # lambda is set here to full step. We keep old lambda, so we can do partial
-        # step later
-        self.lambda_ = dual_solution[: len(self.lambda_)].toarray()
+        # set agent from pending to standby
+        ag_dict_entry.status = cdt.AgentStatus.standby
+        self.logger.info(
+            f"Coordinator successfully registered agent {variable.source}."
+        )
 
-        # split solution to agents
-        index = 0
-        for source, entry in self._active_agents().items():
-            end = index + entry.opt_var_length
-            entry.local_update = primal_solution[index:end]
-            index = end
+    def trigger_optimizations(self):
+        """Trigger optimizations for all agents with ready status."""
+        # create an iterator for all agents which are ready for this round
+        active_agents = self._active_agents()
 
-        return primal_solution
+        # aggregate and send trajectories per agent
+        for source, agent in active_agents.items():
+            # package all coupling inputs needed for an agent
+            coordi_to_agent = ald.CoordinatorToAgent(
+                z=agent.local_target.ravel(),
+                lam=agent.multipliers,
+                target=source.agent_id,
+                rho=self.penalty_parameter,
+            )
+
+            self.logger.debug("Sending to %s with source %s", agent.name, source)
+            self.logger.debug("Set %s to busy.", agent.name)
+
+            # send values
+            agent.status = cdt.AgentStatus.busy
+            self.set(cdt.OPTIMIZATION_C2A, coordi_to_agent.to_json())
 
     def optim_results_callback(self, variable: AgentVariable):
-        """
-        Saves the results of a local optimization.
-        Args:
-            variable:
-
-        Returns:
-
-        """
+        """Process the results from a local optimization."""
         local_result = ald.AgentToCoordinator.from_json(variable.value)
         agent = self.agent_dict[variable.source]
         agent.hessian = local_result.H
@@ -274,27 +276,8 @@ class ALADINCoordinator(ADMMCoordinator):
         agent.status = cdt.AgentStatus.ready
         self.received_variable.set()
 
-    def _sequential_registration_callback(self, variable: AgentVariable):
-        """Handles initial registration of a variable. If it is unknown, add it to
-        the agent_dict and send it the global parameters. If it is sending its
-        confirmation with initial trajectories,
-        refer to the actual registration function."""
-        if not (variable.source in self.agent_dict):
-            self.agent_dict[variable.source] = ald.AgentDictEntry(
-                name=variable.source,
-                status=cdt.AgentStatus.pending,
-            )
-            self._send_parameters_to_agent(variable)
-            self.logger.info(
-                f"Coordinator got request agent {variable.source} and set to "
-                f"'pending'."
-            )
-
-        # complete registration of pending agents
-        elif self.agent_dict[variable.source].status is cdt.AgentStatus.pending:
-            self.register_agent(variable=variable)
-
     def _active_agents(self) -> Dict[Source, ald.AgentDictEntry]:
+        """Get a dictionary of active agents (with ready status)."""
         active_agents = {
             key: ag
             for key, ag in self.agent_dict.items()
@@ -309,12 +292,10 @@ class ALADINCoordinator(ADMMCoordinator):
         return active_agents
 
     def create_couplings(self):
-        """Creates coupling matrices for all agents. Returns the length of the global
-        variable."""
-
+        """Create coupling matrices for all agents."""
         # Check agents that are currently registered and on standby
         active_agents = self._active_agents()
-        # if agents are the same as last time, we do not need to remake coupligs
+        # if agents are the same as last time, we do not need to remake couplings
         if set(active_agents) == self.current_healthy_agents:
             return
 
@@ -357,37 +338,58 @@ class ALADINCoordinator(ADMMCoordinator):
         self.lambda_ = np.zeros((global_var_len, 1), dtype=float)
         self.lambda_old = self.lambda_
 
-    def register_agent(self, variable: AgentVariable):
-        """Registers the agent, after it sent its initial guess with correct
-        vector length."""
-        reg_msg: ald.RegistrationA2C = ald.RegistrationA2C.from_json(variable.value)
-        src = variable.source
-        ag_dict_entry = self.agent_dict[variable.source]
-        ag_dict_entry.opt_var_length = len(reg_msg.local_solution)
-        ag_dict_entry.local_solution = reg_msg.local_solution
-        ag_dict_entry.local_target = np.array(reg_msg.local_solution)
-        ag_dict_entry.local_update = np.full_like(reg_msg.local_solution, 0)
-        ag_dict_entry.coup_vars = {
-            k: np.array(v, dtype=int) for k, v in reg_msg.coup_vars.items()
-        }
+    def _solve_coordination_qp(
+        self,
+        AQP: sparse.csc_matrix,
+        bQP: np.ndarray,
+        HQP: sparse.csc_matrix,
+        gQP: np.ndarray,
+    ):
+        """Solve the coordination QP problem."""
 
-        # loop over coupling variables of this agent
-        for alias, traj in ag_dict_entry.coup_vars.items():
-            ag_dict_entry.multipliers[alias] = np.full_like(traj, 0, dtype=int)
+        def debug_show_matrices():
+            A = AQP.toarray()
+            b = HQP.toarray()
+            return A, b
 
-        # set agent from pending to standby
-        ag_dict_entry.status = cdt.AgentStatus.standby
-        self.logger.info(
-            f"Coordinator successfully registered agent {variable.source}."
+        Anp, Hnp = debug_show_matrices()
+
+        # casadi
+        cqp = {"a": ca.DM(AQP).sparsity(), "h": ca.DM(HQP).sparsity()}
+        solver = ca.conic("QPSolver", "osqp", cqp, {"error_on_fail": False})
+        solution = solver(
+            h=ca.DM(HQP), g=ca.DM(gQP), a=ca.DM(AQP), lba=ca.DM(bQP), uba=ca.DM(bQP)
         )
+
+        from pprint import pprint
+
+        stats = solver.stats()
+        pprint(stats)
+
+        primal_solution = solution["x"].toarray()
+        dual_solution = solution["lam_a"]
+
+        self.lambda_old = self.lambda_
+        # lambda is set here to full step. We keep old lambda, so we can do partial
+        # step later
+        self.lambda_ = dual_solution[: len(self.lambda_)].toarray()
+
+        # split solution to agents
+        index = 0
+        for source, entry in self._active_agents().items():
+            end = index + entry.opt_var_length
+            entry.local_update = primal_solution[index:end]
+            index = end
+
+        return primal_solution
 
     def setup_qp_params(
         self,
     ) -> Tuple[sparse.csr_matrix, np.ndarray, sparse.csr_matrix, np.ndarray]:
-        """Creates the parameters for the coordination QP."""
+        """Create the parameters for the coordination QP."""
         active_agents = self._active_agents().values()
         # Construct A matrix
-        # todo build sparse only when needed
+        # build sparse only when needed
         full_coupling_matrix: sparse.csr_matrix = sparse.hstack(
             [a.coupling_matrix for a in active_agents]
         ).tocsr()
@@ -395,7 +397,6 @@ class ALADINCoordinator(ADMMCoordinator):
         len_global_var = full_coupling_matrix.shape[0]
 
         # Compute rhsQP vector
-        # xx = np.concatenate([xx_vec for xx_vec in active_agents.local_solution])
         full_local_sol = np.array(
             list(itertools.chain.from_iterable(a.local_solution for a in active_agents))
         )
@@ -435,30 +436,14 @@ class ALADINCoordinator(ADMMCoordinator):
         gradients.append(self.lambda_)
         gQP = np.concatenate(gradients)
 
-        # todo remove debug
+        # Debug info
         _debug_AQP_dense = AQP.toarray()
         _debug_HQP_dense = HQP.toarray()
-
-        # Create the dictionary with numpy arrays
-        qp_params = {
-            "AQP": _debug_AQP_dense,
-            "bQP": bQP,
-            "HQP": _debug_HQP_dense,
-            "gQP": gQP,
-        }
 
         return AQP, bQP, HQP, gQP
 
     def compute_al_step(self):
-        """
-        Computes the ALADIN step.
-
-        Args:
-            iter (dict): Dictionary containing relevant variables.
-
-        Returns:
-            tuple: Tuple containing yy (list of updated values) and lam (updated lambda).
-        """
+        """Compute the ALADIN step."""
         alpha = self.config.qp_step_size
         self.lambda_ = self.lambda_old + alpha * (self.lambda_ - self.lambda_old)
         for source, entry in self._active_agents().items():
@@ -471,10 +456,61 @@ class ALADINCoordinator(ADMMCoordinator):
             for alias, indices in entry.coup_vars.items():
                 entry.multipliers[alias] = full_multiplier[indices]
 
-    def _update_local_targets(self):
-        for alias, parent in self.alias_to_parent.items():
-            ...
+    def _check_convergence(self, iteration) -> bool:
+        """Check if the algorithm has converged."""
+        # Implement ALADIN-specific convergence check
+        # For now, using a simple implementation based on the norm of updates
+        active_agents = self._active_agents()
 
-        for agent_id, entry in self._active_agents():
+        # Compute primal and dual residuals
+        primal_residual = 0
+        dual_residual = 0
 
-            ...
+        for source, entry in active_agents.items():
+            # Primal residual: norm of updates
+            primal_update = np.linalg.norm(entry.local_update)
+            primal_residual += primal_update**2
+
+            # Dual residual: norm of multiplier changes
+            if self.lambda_old is not None:
+                dual_update = np.linalg.norm(self.lambda_ - self.lambda_old)
+                dual_residual += dual_update**2
+
+        primal_residual = np.sqrt(primal_residual)
+        dual_residual = np.sqrt(dual_residual) if dual_residual > 0 else 0
+
+        # Track residuals for stats
+        self._primal_residuals_tracker.append(primal_residual)
+        self._dual_residuals_tracker.append(dual_residual)
+        self._performance_tracker.append(
+            time.perf_counter() - self._performance_counter
+        )
+
+        self.logger.debug(
+            "Finished iteration %s . \n Primal residual: %s \n Dual residual: %s",
+            iteration,
+            primal_residual,
+            dual_residual,
+        )
+
+        if iteration % self.config.save_iter_interval == 0:
+            self._save_stats(iterations=iteration)
+
+        # Check convergence against tolerance
+        return (
+            primal_residual < self.config.abs_tol
+            and dual_residual < self.config.abs_tol
+        )
+
+    def _save_stats(self, iterations: int) -> None:
+        """Save iteration statistics to a file."""
+        data_dict = {
+            "primal_residual": self._primal_residuals_tracker,
+            "dual_residual": self._dual_residuals_tracker,
+            "wall_time": self._performance_tracker,
+        }
+        super()._save_stats(iterations=iterations, data_dict=data_dict)
+
+    def _wrap_up_algorithm(self, iterations):
+        """Clean up at the end of an algorithm execution."""
+        self._save_stats(iterations=iterations)

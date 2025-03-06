@@ -88,13 +88,13 @@ def run_example(
                 with open(mod) as f:
                     mod = json.load(f)
             if mod["type"] == "mqtt" or mod["type"] == "local_broadcast":
-                conf_dict["modules"][i] = (
-                    "configs//communicators//multiprocessing_broadcast.json"
-                )
+                conf_dict["modules"][
+                    i
+                ] = "configs//communicators//multiprocessing_broadcast.json"
 
         conf_dicts.append(conf_dict)
 
-    broker = MultiProcessingBroker(config={"port": 32300})
+    broker = MultiProcessingBroker(config={"port": 32400})
     mas = MultiProcessingMAS(
         agent_configs=conf_dicts,
         env=env_config,
