@@ -88,9 +88,9 @@ def run_example(
                 with open(mod) as f:
                     mod = json.load(f)
             if mod["type"] == "mqtt" or mod["type"] == "local_broadcast":
-                conf_dict["modules"][i] = (
-                    "configs//communicators//multiprocessing_broadcast.json"
-                )
+                conf_dict["modules"][
+                    i
+                ] = "configs//communicators//multiprocessing_broadcast.json"
 
         conf_dicts.append(conf_dict)
 
@@ -124,5 +124,5 @@ if __name__ == "__main__":
         with_plots=True,
         until=500,
         log_level=logging.DEBUG,
-        cleanup=True,
+        cleanup=False,
     )

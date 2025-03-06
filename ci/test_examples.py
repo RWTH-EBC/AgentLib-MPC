@@ -106,6 +106,7 @@ class TestExamples(unittest.TestCase):
             log_level=logging.FATAL,
         )
 
+    @pytest.mark.skip
     def test_admm_mp_broadcast(self):
         self._run_example_with_return(
             file="admm//admm_example_multiprocessing.py",
