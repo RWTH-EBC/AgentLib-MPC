@@ -1,55 +1,152 @@
-"""Module implementing the coordinated ADMM module, which works together
-with a coordinator."""
+"""Module implementing the coordinated ADMM module."""
 
 from collections import namedtuple
-from typing import Dict, Optional, List
+from typing import Dict, Tuple, List, Optional
 import pandas as pd
-import pydantic
+import numpy as np
 
-from agentlib_mpc.data_structures.mpc_datamodels import MPCVariable
-from .admm import ADMM, ADMMConfig
-from agentlib_mpc.modules.dmpc.employee import MiniEmployee, MiniEmployeeConfig
+from agentlib import Agent, AgentVariable
+from agentlib.core.datamodels import Source
+from agentlib_mpc.data_structures.mpc_datamodels import MPCVariable, Results
+from agentlib_mpc.modules.dmpc.coordinated_mpc import (
+    CoordinatedMPC,
+    CoordinatedMPCConfig,
+)
 from agentlib.utils.validators import convert_to_list
 import agentlib_mpc.data_structures.coordinator_datatypes as cdt
 import agentlib_mpc.data_structures.admm_datatypes as adt
-from agentlib.core import AgentVariable, Agent
+from agentlib_mpc.optimization_backends.backend import ADMMBackend
+from agentlib_mpc.modules.dmpc.admm.admm import ADMMConfig
 
 
 coupInput = namedtuple("coup_input", ["mean", "lam"])
 
 
-class CoordinatedADMMConfig(MiniEmployeeConfig, ADMMConfig):
-    shared_variable_fields: list[str] = MiniEmployeeConfig.default(
+class CoordinatedADMMConfig(CoordinatedMPCConfig, ADMMConfig):
+    """Configuration for CoordinatedADMM."""
+
+    shared_variable_fields: list[str] = CoordinatedMPCConfig.default(
         "shared_variable_fields"
     ) + ADMMConfig.default("shared_variable_fields")
 
-    @pydantic.field_validator("couplings", "exchange")
-    def couplings_should_have_values(cls, value: List[AgentVariable]):
-        """Asserts that couplings and exchange have values, as they are needed for
-        initial guess."""
-        for var in value:
-            if var.value is None:
-                raise ValueError(
-                    "Couplings and Exchange Variables should have a value, as it is "
-                    "required for the initial guess."
-                )
-        return value
 
-
-class CoordinatedADMM(MiniEmployee, ADMM):
+class CoordinatedADMM(CoordinatedMPC):
     """
     Module to implement an ADMM agent, which is guided by a coordinator.
     Only optimizes based on callbacks.
     """
 
     config: CoordinatedADMMConfig
+    var_ref: (
+        adt.VariableReference
+    )  # Explicitly typing var_ref to help with type checking
 
     def __init__(self, *, config: dict, agent: Agent):
         self._initial_setup = True  # flag to check that we don't compile ipopt twice
+        self._admm_variables: dict[str, AgentVariable] = {}
         super().__init__(config=config, agent=agent)
-        self._optimization_inputs: Dict[str, AgentVariable] = {}
+        self._alias_to_input_names = {}
         self._create_coupling_alias_to_name_mapping()
-        self._result: Optional[pd.DataFrame] = None
+
+    def _setup_var_ref(self) -> adt.VariableReference:
+        """Override to return the ADMM-specific variable reference."""
+        return adt.VariableReference.from_config(self.config)
+
+    def _setup_optimization_backend(self) -> ADMMBackend:
+        """Override to set up ADMM-specific backend with coupling variables."""
+        self._admm_variables = self._create_couplings()
+        return super()._setup_optimization_backend()
+
+    def _create_couplings(self) -> dict[str, MPCVariable]:
+        """Map coupling variables based on already setup model"""
+        # Map couplings:
+        _admm_variables: dict[str, MPCVariable] = {}
+        for coupling in self.config.couplings:
+            coupling.source = Source(agent_id=self.agent.id)
+            coupling.shared = True
+
+            # Create new variables for each coupling:
+            include = {"unit": coupling.unit, "description": coupling.description}
+            coupling_entry = adt.CouplingEntry(name=coupling.name)
+            alias = adt.coupling_alias(coupling.alias)
+            _admm_variables[coupling_entry.multiplier] = MPCVariable(
+                name=coupling_entry.multiplier,
+                value=[0],
+                type="list",
+                source=Source(module_id=self.id),
+                **include,
+            )
+            _admm_variables[coupling_entry.local] = MPCVariable(
+                name=coupling_entry.local,
+                value=convert_to_list(coupling.value),
+                alias=alias,
+                type="list",
+                source=Source(agent_id=self.agent.id),
+                shared=True,
+                **include,
+            )
+            _admm_variables[coupling_entry.mean] = MPCVariable(
+                name=coupling_entry.mean,
+                type="list",
+                source=Source(module_id=self.id),
+                **include,
+            )
+            lag_val = coupling.value or np.nan_to_num(
+                (coupling.ub + coupling.lb) / 2, posinf=1000, neginf=1000
+            )
+            _admm_variables[coupling_entry.lagged] = MPCVariable(
+                name=coupling_entry.lagged,
+                value=lag_val,
+                source=Source(module_id=self.id),
+                **include,
+            )
+
+        # Exchange variables
+        for exchange_var in self.config.exchange:
+            exchange_var.source = Source(agent_id=self.agent.id)
+            exchange_var.shared = True
+
+            # Create new variables for each exchange:
+            include = {
+                "unit": exchange_var.unit,
+                "description": exchange_var.description,
+            }
+
+            exchange_entry = adt.ExchangeEntry(name=exchange_var.name)
+            alias = adt.exchange_alias(exchange_var.alias)
+            _admm_variables[exchange_entry.multiplier] = MPCVariable(
+                name=exchange_entry.multiplier,
+                value=[0],
+                type="list",
+                source=Source(module_id=self.id),
+                **include,
+            )
+            _admm_variables[exchange_entry.local] = MPCVariable(
+                name=exchange_entry.local,
+                value=convert_to_list(exchange_var.value),
+                alias=alias,
+                type="list",
+                source=Source(agent_id=self.agent.id),
+                shared=True,
+                **include,
+            )
+            _admm_variables[exchange_entry.mean_diff] = MPCVariable(
+                name=exchange_entry.mean_diff,
+                type="list",
+                source=Source(module_id=self.id),
+                **include,
+            )
+            lag_val = exchange_var.value or np.nan_to_num(
+                (exchange_var.ub + exchange_var.lb) / 2, posinf=1000, neginf=1000
+            )
+            _admm_variables[exchange_entry.lagged] = MPCVariable(
+                name=exchange_entry.lagged,
+                value=lag_val,
+                source=Source(module_id=self.id),
+                **include,
+            )
+
+        return _admm_variables
 
     def process(self):
         # send registration request to coordinator
@@ -78,7 +175,7 @@ class CoordinatedADMM(MiniEmployee, ADMM):
         if not value.agent_id == self.source.agent_id:
             return
         options = adt.ADMMParameters(**value.opts)
-        self._set_admm_parameters(options=options)
+        self._set_algorithm_parameters(options=options)
         guesses, ex_guess = self._initial_coupling_values()
         answer = adt.AgentToCoordinator(
             local_trajectory=guesses, local_exchange_trajectory=ex_guess
@@ -105,19 +202,19 @@ class CoordinatedADMM(MiniEmployee, ADMM):
     def get_new_measurement(self):
         """
         Retrieve new measurement from relevant sensors
-        Returns:
-
         """
         opt_inputs = self.collect_variables_for_optimization()
         opt_inputs[adt.PENALTY_FACTOR] = self.penalty_factor_var
         self._optimization_inputs = opt_inputs
 
+    @property
+    def penalty_factor_var(self) -> MPCVariable:
+        return MPCVariable(name=adt.PENALTY_FACTOR, value=self.config.penalty_factor)
+
     def _create_coupling_alias_to_name_mapping(self):
         """
         creates a mapping of alias to the variable names for multiplier and
         global mean that the optimization backend recognizes
-        Returns:
-
         """
         alias_to_input_names = {}
         for coupling in self.var_ref.couplings:
@@ -130,13 +227,38 @@ class CoordinatedADMM(MiniEmployee, ADMM):
             alias_to_input_names[coup_variable.alias] = coup_in
         self._alias_to_input_names = alias_to_input_names
 
+    def collect_variables_for_optimization(self, var_ref=None):
+        """Gets all variables noted in the var ref and puts them in a flat dictionary."""
+        if var_ref is None:
+            var_ref = self.var_ref
+
+        # config variables
+        variables = {v: self.get(v) for v in var_ref.all_variables()}
+
+        # Add ADMM coupling variables
+        variables.update(self._admm_variables)
+
+        # history variables
+        for hist_var in getattr(self, "_lags_dict_seconds", {}):
+            past_values = self.history[hist_var]
+            if not past_values:
+                # if the history of a variable is empty, fallback to the scalar value
+                continue
+
+            # create copy to not mess up scalar value of original variable in case
+            # fallback is needed
+            updated_var = variables[hist_var].copy(
+                update={"value": pd.Series(past_values)}
+            )
+            variables[hist_var] = updated_var
+
+        return {**variables, **getattr(self, "_internal_variables", {})}
+
     def optimize(self, variable: AgentVariable):
         """
         Performs the optimization given the mean trajectories and multipliers from the
         coordinator.
         Replies with the local optimal trajectories.
-        Returns:
-
         """
         # unpack message
         updates = adt.CoordinatorToAgent.from_json(variable.value)
@@ -173,9 +295,7 @@ class CoordinatedADMM(MiniEmployee, ADMM):
         cons_traj = {}
         exchange_traj = {}
         for coup in self.config.couplings:
-            cons_traj[coup.alias] = self._result[
-                coup.name
-            ]  # we can serialize numpy now, maybe make this easier
+            cons_traj[coup.alias] = self._result[coup.name]
         for exchange in self.config.exchange:
             exchange_traj[exchange.alias] = self._result[exchange.name]
 
@@ -188,18 +308,14 @@ class CoordinatedADMM(MiniEmployee, ADMM):
     def _finish_optimization(self):
         """
         Finalize an iteration. Usually, this includes setting the actuation.
-        Returns:
-
         """
         # this check catches the case, where the agent was not alive / registered at
         # the start of the round and thus did not participate and has no result
-        # Since the finish-signal of the coordinator is broadcast, it will trigger this
-        # function even if the agent did not participate in the optimization before
         if self._result is not None:
             self.set_actuation(self._result)
         self._result = None
 
-    def _set_admm_parameters(self, options: adt.ADMMParameters):
+    def _set_algorithm_parameters(self, options: adt.ADMMParameters):
         """Sets new admm parameters, re-initializes the optimization problem
         and returns an initial guess of the coupling variables."""
 
@@ -215,7 +331,7 @@ class CoordinatedADMM(MiniEmployee, ADMM):
         self.config = new_config_dict
         self.logger.info("%s: Reinitialized optimization problem.", self.agent.id)
 
-    def _initial_coupling_values(self) -> tuple[Dict[str, list], Dict[str, list]]:
+    def _initial_coupling_values(self) -> Tuple[Dict[str, list], Dict[str, list]]:
         """Gets the initial coupling values with correct trajectory length."""
         grid_len = len(self.optimization_backend.coupling_grid)
         guesses = {}
@@ -229,7 +345,7 @@ class CoordinatedADMM(MiniEmployee, ADMM):
             exchange_guesses[var.alias] = [val[0]] * grid_len
         return guesses, exchange_guesses
 
-    def init_iteration_callback(self, variable: AgentVariable):
-        """Callback that answers the coordinators init_iteration flag."""
-        if self._registered_coordinator:
-            super().init_iteration_callback(variable)
+    def shift_trajectories(self):
+        """Shifts algorithm specific trajectories."""
+        # Implementation specific for ADMM if needed
+        pass

@@ -1,24 +1,31 @@
+"""Module implementing the coordinated ALADIN module."""
+
 from collections import defaultdict
-from typing import Optional, List
+from typing import Dict, Optional, List, Tuple
 
 import numpy as np
 from agentlib import Agent, AgentVariable
+from agentlib.core.datamodels import Source
 
 from agentlib_mpc.data_structures.mpc_datamodels import MPCVariable
-from agentlib_mpc.modules.dmpc.admm.admm_coordinated import (
-    CoordinatedADMM,
-    CoordinatedADMMConfig,
+from agentlib_mpc.modules.dmpc.coordinated_mpc import (
+    CoordinatedMPC,
+    CoordinatedMPCConfig,
 )
 from agentlib_mpc.data_structures import coordinator_datatypes as cdt
 import agentlib_mpc.modules.dmpc.aladin.aladin_datatypes as ald
 from agentlib_mpc.optimization_backends.casadi_.aladin import CasADiALADINBackend
+from agentlib.utils.validators import convert_to_list
 
 
-class CoordinatedALADINConfig(CoordinatedADMMConfig):
-    ...
+class CoordinatedALADINConfig(CoordinatedMPCConfig):
+    """Configuration for the coordinated ALADIN agent."""
+
+    # ALADIN-specific configuration parameters if needed
+    pass
 
 
-class CoordinatedALADIN(CoordinatedADMM):
+class CoordinatedALADIN(CoordinatedMPC):
     """
     Module to implement an ALADIN agent, which is guided by a coordinator.
     Only optimizes based on callbacks.
@@ -29,9 +36,16 @@ class CoordinatedALADIN(CoordinatedADMM):
 
     def __init__(self, *, config: dict, agent: Agent):
         super().__init__(config=config, agent=agent)
+        self._alias_to_input_names = {}  # Will be populated during registration
+
+    def _setup_var_ref(self):
+        """Set up appropriate variable reference for ALADIN."""
+        # Use the appropriate variable reference class for ALADIN
+        # If ALADIN needs a special VariableReference like ADMM does, use it here
+        # Otherwise, rely on the parent class implementation
+        return super()._setup_var_ref()
 
     def process(self):
-
         # send registration request to coordinator
         timeout = self.config.registration_interval
 
@@ -71,9 +85,6 @@ class CoordinatedALADIN(CoordinatedADMM):
     def init_iteration_callback(self, variable: AgentVariable):
         """
         Callback that processes the coordinators 'startIteration' flag.
-        Args:
-            variable:
-
         """
         # value is True on start
         if variable.value:
@@ -92,11 +103,18 @@ class CoordinatedALADIN(CoordinatedADMM):
         else:
             self._finish_optimization()
 
+    def shift_trajectories(self):
+        """Shifts algorithm specific trajectories."""
+        # This is handled in shift_opt_variable for ALADIN
+        self.shift_opt_variable()
+
     def shift_opt_variable(self) -> Optional[List[float]]:
+        """ALADIN-specific method to shift optimization variables."""
         return self.optimization_backend.shift_opt_var()
 
     @property
     def penalty_factor_var(self) -> MPCVariable:
+        """Return the penalty factor variable."""
         return MPCVariable(
             name=ald.LOCAL_PENALTY_FACTOR, value=self.config.penalty_factor
         )
@@ -104,20 +122,35 @@ class CoordinatedALADIN(CoordinatedADMM):
     def get_new_measurement(self):
         """
         Retrieve new measurement from relevant sensors
-        Returns:
-
         """
         opt_inputs = self.collect_variables_for_optimization()
         opt_inputs[ald.LOCAL_PENALTY_FACTOR] = self.penalty_factor_var
         self._optimization_inputs = opt_inputs
 
+    def _set_mpc_parameters(self, options):
+        """Sets MPC parameters and reinitializes the optimization problem."""
+        # Update config with parameters from coordinator
+        new_config_dict = self.config.model_dump()
+        new_config_dict.update(
+            {
+                "penalty_factor": options.penalty_factor,
+                cdt.TIME_STEP: options.time_step,
+                cdt.PREDICTION_HORIZON: options.prediction_horizon,
+            }
+        )
+        self.config = new_config_dict
+        self.logger.info("%s: Reinitialized optimization problem.", self.agent.id)
+
+    def _initial_coupling_values(self) -> Tuple[Dict[str, list], Dict[str, list]]:
+        """Gets the initial coupling values with correct trajectory length."""
+        # For ALADIN, this is mostly handled differently during registration,
+        # but we provide a compatible interface
+        return {}, {}
+
     def optimize(self, variable: AgentVariable):
         """
-        Performs the optimization given the mean trajectories and multipliers from the
-        coordinator.
-        Replies with the local optimal trajectories.
-        Returns:
-
+        Performs the optimization given information from the coordinator.
+        Replies with the necessary sensitivity information.
         """
         # unpack message
         updates = ald.CoordinatorToAgent.from_json(variable.value)
@@ -143,25 +176,10 @@ class CoordinatedALADIN(CoordinatedADMM):
         self.logger.debug("Sent optimal solution.")
         self.set(name=cdt.OPTIMIZATION_A2C, value=opt_return.to_json())
 
-
-def regularizeH(H, opts):
-    # Eigenvalue decomposition of the Hessian
-    V, D = np.linalg.eig(np.asarray(H))
-    e = np.diag(D)
-
-    # Check if regularization is needed
-    didReg = False
-    if np.min(e) < 0:
-        didReg = True
-
-    # Flip the eigenvalues
-    e = np.abs(e)
-
-    # Modify zero and too large eigenvalues (regularization)
-    reg = opts.regParam
-    e[e <= reg] = reg  # 1e-4
-
-    # Regularization for small stepsize
-    Hreg = V @ np.diag(e) @ V.T
-
-    return np.real(Hreg), didReg
+    def _finish_optimization(self):
+        """
+        Finalize an iteration by setting actuation.
+        """
+        if self._result is not None:
+            self.set_actuation(self._result)
+        self._result = None

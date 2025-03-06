@@ -1,12 +1,13 @@
+"""Module implementing base class for coordinated MPC agents."""
+
 import logging
-from dataclasses import asdict
 import abc
+from dataclasses import asdict
+from typing import Dict, Optional
 
 from pydantic import Field
 
 from agentlib.core import (
-    BaseModule,
-    BaseModuleConfig,
     AgentVariable,
     Agent,
     AgentVariables,
@@ -14,15 +15,15 @@ from agentlib.core import (
 from agentlib.core.datamodels import Source
 from agentlib_mpc.data_structures.coordinator_datatypes import RegistrationMessage
 import agentlib_mpc.data_structures.coordinator_datatypes as cdt
+from agentlib_mpc.modules.dmpc import DistributedMPC, DistributedMPCConfig
 
 
 logger = logging.getLogger(__name__)
 
 
-class MiniEmployeeConfig(BaseModuleConfig):
-    request_frequency: float = Field(
-        default=1, description="Wait time between signup_requests"
-    )
+class CoordinatedMPCConfig(DistributedMPCConfig):
+    """Base configuration for MPC agents coordinated by a coordinator."""
+
     coordinator: Source = Field(description="Define the agents coordinator")
     messages_in: AgentVariables = [
         AgentVariable(name=cdt.REGISTRATION_C2A),
@@ -42,13 +43,17 @@ class MiniEmployeeConfig(BaseModuleConfig):
     shared_variable_fields: list[str] = ["messages_out"]
 
 
-class MiniEmployee(BaseModule):
-    config: MiniEmployeeConfig
+class CoordinatedMPC(DistributedMPC):
+    """Base class for MPC agents coordinated by a coordinator."""
+
+    config: CoordinatedMPCConfig
 
     def __init__(self, *, config: dict, agent: Agent):
         super().__init__(config=config, agent=agent)
         self._registered_coordinator: Source = None
         self._start_optimization_at: float = 0
+        self._optimization_inputs: Dict[str, AgentVariable] = {}
+        self._result = None
 
     def process(self):
         # send registration request to coordinator
@@ -66,15 +71,13 @@ class MiniEmployee(BaseModule):
             source=coordinator_agent,
             callback=self.registration_callback,
         )
-        #
-        # call back for iteration start (
+        # call back for iteration start
         self.agent.data_broker.register_callback(
             alias=cdt.START_ITERATION_C2A,
             source=coordinator_agent,
             callback=self.init_iteration_callback,
         )
-        #
-        # call back for optimization (
+        # call back for optimization
         self.agent.data_broker.register_callback(
             alias=cdt.OPTIMIZATION_C2A,
             source=coordinator_agent,
@@ -91,9 +94,6 @@ class MiniEmployee(BaseModule):
     def init_iteration_callback(self, variable: AgentVariable):
         """
         Callback that processes the coordinators 'startIteration' flag.
-        Args:
-            variable:
-
         """
         # value is True on start
         if variable.value:
@@ -112,68 +112,38 @@ class MiniEmployee(BaseModule):
         else:
             self._finish_optimization()
 
+    @abc.abstractmethod
     def get_new_measurement(self):
         """
         Retrieve new measurement from relevant sensors
-        Returns:
-
         """
-        ...
-        # raise NotImplementedError
-
-        # return self.collect_variables_for_optimization()
+        pass
 
     @abc.abstractmethod
     def _finish_optimization(self):
         """
         Finalize an iteration. Usually, this includes setting the actuation.
-        Returns:
-
         """
+        pass
 
     @abc.abstractmethod
     def optimize(self, variable: AgentVariable):
         """
         Performs the optimization given the information from the coordinator.
         Replies with local information.
-        Returns:
-
         """
-        variables = cdt.OptimizationData.from_dict(variable.value)
+        pass
 
-        # perform optimization
-        # send optimizationData back to coordinator to signal finished
-        # optimization
-
-        value = variables.to_dict()
-        self.logger.debug("Sent optimal solution.")
-        self.set(name=cdt.OPTIMIZATION_A2C, value=value)
-
+    @abc.abstractmethod
     def shift_trajectories(self):
         """
         Shifts algorithm specific trajectories.
-        Returns:
-
         """
-        ...
-        # raise NotImplementedError
+        pass
 
     @abc.abstractmethod
     def registration_callback(self, variable: AgentVariable):
-        """callback for registration"""
-        self.logger.info(
-            f"receiving {variable.name}={variable.value} from {variable.source}"
-        )
-        # global parameters to define optimisation problem
-        value = RegistrationMessage(**variable.value)
-
-        # Decide if message from coordinator is for this agent
-        if not (value.agent_id == self.source.agent_id):
-            return
-
-        self.OptimOpts = value.opts
-        status = True
-        answer = RegistrationMessage(status=cdt.AgentStatus.standby)
-        self._registered_coordinator = variable.source
-        if status:
-            self.set("registrationOut", asdict(answer))
+        """
+        Handles registration with the coordinator.
+        """
+        pass
