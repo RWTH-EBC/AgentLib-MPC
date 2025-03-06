@@ -61,6 +61,10 @@ backend_types = {
         import_path="agentlib_mpc.optimization_backends.casadi_.mhe",
         class_name="MHEBackend",
     ),
+    "casadi_aladin": BackendImport(
+        import_path="agentlib_mpc.optimization_backends.casadi_.aladin",
+        class_name="CasADiALADINBackend",
+    ),
 }
 
 

@@ -66,4 +66,12 @@ MODULE_TYPES = {
     "mhe": ModuleImport(
         module_path="agentlib_mpc.modules.estimation.mhe", class_name="MHE"
     ),
+    "aladin": ModuleImport(
+        module_path="agentlib_mpc.modules.dmpc.aladin.aladin_coordinated",
+        class_name="CoordinatedALADIN",
+    ),
+    "aladin_coordinator": ModuleImport(
+        module_path="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator",
+        class_name="ALADINCoordinator",
+    ),
 }

@@ -3,6 +3,7 @@ from dataclasses import dataclass, asdict
 from enum import Enum
 
 import numpy as np
+import orjson
 
 from agentlib.core import Source
 
@@ -87,3 +88,31 @@ class AgentDictEntry:
     name: str
     optimization_data = OptimizationData()
     status: AgentStatus = AgentStatus.pending
+
+
+@dataclasses.dataclass
+class StructuredValue:
+    """Base Class to specify the structure of an AgentVariable Value. It will
+    be efficiently sent and deserialized."""
+
+    def to_json(self) -> str:
+        """Serialize self to json bytes, can be used by the communicator."""
+        return orjson.dumps(
+            self,
+            option=orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_SERIALIZE_DATACLASS,
+            default=np.ndarray.tolist,
+        ).decode()
+
+    @classmethod
+    def from_json(cls, data: str):
+        return cls(**orjson.loads(data))
+
+
+@dataclasses.dataclass
+class ParametersC2A(StructuredValue):
+    """Collection of parameters which have to be shared across all agents in ADMM."""
+
+    penalty_factor: float
+    prediction_horizon: int
+    time_step: float
+    receiver_agent_id: str = None
