@@ -41,6 +41,20 @@ class ALADINCoordinatorConfig(CoordinatorConfig):
         description="Constant step size used for multiplier and primal variables "
         "update.",
     )
+    qp_solver: str = Field(
+        title="qp_solver",
+        default="osqp",
+        description="QP solver to use for coordination problem (osqp, qpoases, proxqp)",
+    )
+
+    qp_solver_verbose: bool = Field(
+        default=False, description="Enable verbose output from QP solver"
+    )
+
+    qp_solver_options: dict = Field(
+        default_factory=dict,
+        description="Additional solver-specific options to pass to the QP solver",
+    )
     activation_margin: float = Field(
         default=0.001, gt=0, description="Threshold for active set detection."
     )
@@ -347,6 +361,51 @@ class ALADINCoordinator(Coordinator):
         self.lambda_ = np.zeros((global_var_len, 1), dtype=float)
         self.lambda_old = self.lambda_
 
+    def _create_qp_solver(self, A_sparsity, H_sparsity):
+        """Create and configure a QP solver based on settings in config."""
+        cqp = {"a": A_sparsity, "h": H_sparsity}
+        solver = self.config.qp_solver.lower()
+
+        # Basic options that apply to most solvers
+        solver_options = {
+            "error_on_fail": False,
+            "print_time": self.config.qp_solver_verbose,
+            solver: {},
+        }
+
+        # Solver-specific options
+        if solver == "osqp":
+            solver_options[solver].update(
+                {
+                    "verbose": self.config.qp_solver_verbose,
+                    "eps_abs": 1e-6,
+                    "eps_rel": 1e-6,
+                    "polish": True,
+                    "max_iter": 10000,
+                }
+            )
+        elif solver == "qpoases":
+            solver_options[solver].update(
+                {
+                    "printLevel": "high" if self.config.qp_solver_verbose else "none",
+                    "enableRegularisation": True,
+                }
+            )
+        elif solver == "proxqp":
+            solver_options[solver].update(
+                {
+                    "verbose": self.config.qp_solver_verbose,
+                    "eps_abs": 1e-6,
+                    "eps_rel": 1e-6,
+                }
+            )
+
+        # Override with any user-specified options
+        solver_options.update(self.config.qp_solver_options)
+
+        # Create and return solver
+        return ca.conic("QPSolver", self.config.qp_solver, cqp, solver_options)
+
     def _solve_coordination_qp(
         self,
         AQP: sparse.csc_matrix,
@@ -356,24 +415,22 @@ class ALADINCoordinator(Coordinator):
     ):
         """Solve the coordination QP problem."""
 
-        # def debug_show_matrices():
-        #     A = AQP.toarray()
-        #     b = HQP.toarray()
-        #     return A, b
-        #
-        # Anp, Hnp = debug_show_matrices()
+        # Create solver with appropriate options
+        solver = self._create_qp_solver(
+            A_sparsity=ca.DM(AQP).sparsity(), H_sparsity=ca.DM(HQP).sparsity()
+        )
 
-        # casadi
-        cqp = {"a": ca.DM(AQP).sparsity(), "h": ca.DM(HQP).sparsity()}
-        solver = ca.conic("QPSolver", "osqp", cqp, {"error_on_fail": False})
+        # Solve the QP
         solution = solver(
             h=ca.DM(HQP), g=ca.DM(gQP), a=ca.DM(AQP), lba=ca.DM(bQP), uba=ca.DM(bQP)
         )
 
-        stats = solver.stats()
-        if hasattr(self, "debug_logger"):
+        # Conditionally log stats only if debugging is enabled
+        if hasattr(self, "debug_enabled") and self.debug_enabled:
+            stats = solver.stats()
             self.debug_logger.debug(f"QP solver stats: {stats}")
 
+        # Process results
         primal_solution = solution["x"].toarray()
         dual_solution = solution["lam_a"]
 
@@ -388,13 +445,6 @@ class ALADINCoordinator(Coordinator):
             end = index + entry.opt_var_length
             entry.local_update = primal_solution[index:end]
             index = end
-
-        # Log detailed QP solution info if debugging is enabled
-        if hasattr(self, "debug_enabled") and self.debug_enabled:
-            current_iteration = len(self._primal_residuals_tracker) + 1
-            self.log_qp_solution(
-                current_iteration, AQP, bQP, HQP, gQP, primal_solution, dual_solution
-            )
 
         return primal_solution
 
@@ -454,12 +504,11 @@ class ALADINCoordinator(Coordinator):
     ) -> Tuple[sparse.csr_matrix, np.ndarray, sparse.csr_matrix, np.ndarray]:
         """Create the parameters for the coordination QP."""
         active_agents = self._active_agents().values()
+
         # Construct A matrix
-        # build sparse only when needed
         full_coupling_matrix: sparse.csr_matrix = sparse.hstack(
             [a.coupling_matrix for a in active_agents]
         ).tocsr()
-        _debug_full_coupling_matrix = full_coupling_matrix.toarray()
         len_global_var = full_coupling_matrix.shape[0]
 
         # Compute rhsQP vector
@@ -468,26 +517,56 @@ class ALADINCoordinator(Coordinator):
         )
         qp_right_hand_side = -full_coupling_matrix @ full_local_sol
 
-        # Construct HQP matrix
-        hessians = [a.hessian for a in active_agents]
+        # Construct HQP matrix with symmetry enforcement
+        hessians = []
+        for agent in active_agents:
+            # Ensure each agent's Hessian is symmetric
+            agent_hessian = ensure_symmetric(agent.hessian)
+            hessians.append(agent_hessian)
+
+        # Add penalty term
         qp_pen = self.qp_penalty / 2
-        hessians.append(sparse.diags([qp_pen], shape=(len_global_var, len_global_var)))
+        penalty_hessian = sparse.diags([qp_pen] * len_global_var, format="csc")
+        hessians.append(penalty_hessian)
+
+        # Create block diagonal Hessian
         HQP = sparse.block_diag(hessians, format="csc")
+
+        # Final symmetry check on full HQP
+        HQP = ensure_symmetric(HQP)
 
         # Construct JacCon matrix
         jac_con = sparse.block_diag([a.jacobian for a in active_agents], format="csc")
 
         # Check condition number of JacCon
-        if np.linalg.cond(jac_con.toarray()) > 1e8:
-            print("Condition number of constraints is greater than 1e8")
+        if (
+            hasattr(self, "debug_enabled")
+            and self.debug_enabled
+            and not sparse.issparse(jac_con)
+        ):
+            try:
+                cond_num = np.linalg.cond(jac_con)
+                if cond_num > 1e8:
+                    self.debug_logger.warning(
+                        f"High condition number in constraints: {cond_num}"
+                    )
+            except:
+                pass
 
         # Construct AQP matrix
         number_of_active_constraints = jac_con.shape[0]
         AQP = sparse.vstack(
             [
-                sparse.hstack([full_coupling_matrix, -np.eye(len_global_var)]),
                 sparse.hstack(
-                    [jac_con, np.zeros((number_of_active_constraints, len_global_var))]
+                    [full_coupling_matrix, -sparse.eye(len_global_var, format="csc")]
+                ),
+                sparse.hstack(
+                    [
+                        jac_con,
+                        sparse.csc_matrix(
+                            (number_of_active_constraints, len_global_var)
+                        ),
+                    ]
                 ),
             ]
         ).tocsc()
@@ -501,10 +580,6 @@ class ALADINCoordinator(Coordinator):
         gradients = list(itertools.chain(a.gradient for a in active_agents))
         gradients.append(self.lambda_)
         gQP = np.concatenate(gradients)
-
-        # Debug info
-        _debug_AQP_dense = AQP.toarray()
-        _debug_HQP_dense = HQP.toarray()
 
         return AQP, bQP, HQP, gQP
 
@@ -846,3 +921,35 @@ class NumpyEncoder(json.JSONEncoder):
         if isinstance(obj, np.bool_):
             return bool(obj)
         return json.JSONEncoder.default(self, obj)
+
+
+def ensure_symmetric(matrix, tol=1e-10):
+    """Ensure a matrix is symmetric by averaging it with its transpose.
+
+    Args:
+        matrix: Input matrix (sparse, dense, or list)
+        tol: Tolerance for checking symmetry
+
+    Returns:
+        Symmetric matrix
+    """
+    # Convert list to numpy array if needed
+    if isinstance(matrix, list):
+        matrix = np.array(matrix)
+
+    if sparse.issparse(matrix):
+        # For sparse matrices
+        matrix_array = matrix.toarray()
+        if np.allclose(matrix_array, matrix_array.T, atol=tol):
+            return matrix  # Already symmetric within tolerance
+
+        # Make symmetric by averaging with transpose
+        symmetric = (matrix + matrix.T) / 2
+        return sparse.csc_matrix(symmetric)
+    else:
+        # For dense matrices
+        if np.allclose(matrix, matrix.T, atol=tol):
+            return matrix  # Already symmetric within tolerance
+
+        # Make symmetric by averaging with transpose
+        return (matrix + matrix.T) / 2

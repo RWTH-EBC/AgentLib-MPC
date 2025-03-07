@@ -193,8 +193,9 @@ class ALADINDiscretization(Discretization):
             active_constraints
         ]
         # todo look at hessian and also with regard to lam_g, maybe this is funky. Alternatively, look at gradient, whether there should be more to that, including constraints
+        original_hessian = self.sensitivities_result["H"]
         self.sensitivities_result["H"] = regularize_h(
-            self.sensitivities_result["H"], regularization_parameter
+            original_hessian, regularization_parameter
         )
         debug_sensitivities = {
             k: np.array(v) for k, v in self.sensitivities_result.items()
@@ -641,19 +642,18 @@ class ALADINMultipleShooting(ALADINDiscretization, ADMMMultipleShooting):
 
 
 def regularize_h(hessian, reg_param: float):
-    """Regularize a Hessian matrix to ensure it is positive definite.
-
-    This function computes an eigenvalue decomposition of the Hessian,
-    takes the absolute value of eigenvalues, and ensures all eigenvalues
-    are above a minimum threshold (reg_param).
+    """Regularize a Hessian matrix to ensure it is positive definite and symmetric.
 
     Args:
         hessian: The Hessian matrix to regularize
         reg_param: Regularization parameter (minimum eigenvalue)
 
     Returns:
-        H_reg: Regularized Hessian matrix
+        H_reg: Regularized, symmetric Hessian matrix
     """
+    # Ensure matrix is symmetric before eigendecomposition
+    hessian = (hessian + hessian.T) / 2
+
     # Eigenvalue decomposition of the Hessian
     e, V = np.linalg.eig(hessian)
 
@@ -665,6 +665,9 @@ def regularize_h(hessian, reg_param: float):
 
     # Regularization for small stepsize
     H_reg = np.real(V @ np.diag(e) @ V.T)
+
+    # Final symmetry enforcement
+    H_reg = (H_reg + H_reg.T) / 2
 
     return H_reg
 

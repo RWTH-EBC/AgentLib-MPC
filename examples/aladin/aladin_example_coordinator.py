@@ -363,14 +363,14 @@ def make_configs() -> List[dict]:
                             "class_name": "CaCooler",
                         }
                     },
-                    "discretization_options": {
-                        "collocation_order": 2,
-                        "collocation_method": "legendre",
-                    },
                     # "discretization_options": {
-                    #     "method": "multiple_shooting",
-                    #     "integrator": "euler",
+                    #     "collocation_order": 2,
+                    #     "collocation_method": "legendre",
                     # },
+                    "discretization_options": {
+                        "method": "multiple_shooting",
+                        "integrator": "euler",
+                    },
                     "solver": {"name": "ipopt", "options": {"ipopt.print_level": 0}},
                     "results_file": "results//cooler_res.csv",
                     "overwrite_result_file": True,
@@ -407,14 +407,14 @@ def make_configs() -> List[dict]:
                             "class_name": "CaCooledRoom",
                         }
                     },
-                    "discretization_options": {
-                        "collocation_order": 2,
-                        "collocation_method": "legendre",
-                    },
                     # "discretization_options": {
-                    #     "method": "multiple_shooting",
-                    #     "integrator": "euler",
+                    #     "collocation_order": 2,
+                    #     "collocation_method": "legendre",
                     # },
+                    "discretization_options": {
+                        "method": "multiple_shooting",
+                        "integrator": "euler",
+                    },
                     "solver": {"name": "ipopt", "options": {"ipopt.print_level": 0}},
                     "results_file": "results//room.csv",
                     "overwrite_result_file": True,
@@ -424,13 +424,13 @@ def make_configs() -> List[dict]:
                 "prediction_horizon": 3,
                 "max_iterations": 20,
                 "parameters": [
-                    {"name": "q_T_0", "value": 1},
-                    {"name": "s_T_0", "value": 0},
+                    # {"name": "q_T_0", "value": 0},
+                    {"name": "s_T_0", "value": 1},
                 ],
                 "inputs": [
                     {"name": "d_0", "value": 150},
                     {"name": "T_0_set", "value": 294.55},
-                    {"name": "T_0_upper", "value": 296.15},
+                    {"name": "T_0_upper", "value": 294.15},
                     {"name": "T_in", "value": 290.15},
                 ],
                 "controls": [],
