@@ -5,7 +5,6 @@ for simulating the system.
 """
 
 import os
-import json
 import logging
 from typing import List
 
@@ -331,12 +330,12 @@ def make_configs() -> List[dict]:
                 "prediction_horizon": 15,
                 "time_step": 300,
                 "sampling_time": 60,
-                "penalty_factor": 10,
+                "penalty_factor": 1,
                 "wait_time_on_start_iters": 0.2,
                 "registration_period": 5,
-                "iter_max": 10,
-                "qp_penalty": 100,
-                "qp_step_size": 0.8,
+                "iter_max": 5,
+                "qp_penalty": 10,
+                "qp_step_size": 0.5,
                 "qp_solver": "proxqp",
                 "save_solve_stats": True,
                 "solve_stats_file": "results//residuals.csv",
@@ -502,7 +501,7 @@ def run_example(
 if __name__ == "__main__":
     run_example(
         with_plots=True,
-        until=1900,
+        until=3600,
         start_pred=0,
         cleanup=False,
         log_level=logging.INFO,

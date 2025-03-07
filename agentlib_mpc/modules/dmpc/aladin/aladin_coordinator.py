@@ -59,6 +59,7 @@ class ALADINCoordinatorConfig(CoordinatorConfig):
         default=0.001, gt=0, description="Threshold for active set detection."
     )
     regularization_parameter: float = Field(default=0, ge=0)
+    lambda_max: float = Field(default=1e4, ge=0)
     solve_stats_file: str = Field(
         default="aladin_stats.csv",
         description="File name for the solve stats.",
@@ -437,7 +438,10 @@ class ALADINCoordinator(Coordinator):
         self.lambda_old = self.lambda_
         # lambda is set here to full step. We keep old lambda, so we can do partial
         # step later
-        self.lambda_ = dual_solution[: len(self.lambda_)].toarray()
+        uncapped_lambda = dual_solution[: len(self.lambda_)].toarray()
+
+        # Apply capping to prevent extreme multipliers
+        self.lambda_ = self._cap_multipliers(uncapped_lambda)
 
         # split solution to agents
         index = 0
@@ -582,6 +586,24 @@ class ALADINCoordinator(Coordinator):
         gQP = np.concatenate(gradients)
 
         return AQP, bQP, HQP, gQP
+
+    def _cap_multipliers(self, multipliers):
+        """Cap multiplier values to prevent numerical issues."""
+        capped = np.copy(multipliers)
+
+        # Find extreme values
+        extreme_indices = np.abs(capped) > self.config.lambda_max
+
+        # Cap them while preserving sign
+        if np.any(extreme_indices):
+            capped[extreme_indices] = (
+                np.sign(capped[extreme_indices]) * self.config.lambda_max
+            )
+            self.debug_logger.warning(
+                f"Capped {np.sum(extreme_indices)} extreme multiplier values"
+            )
+
+        return capped
 
     def compute_al_step(self):
         """Compute the ALADIN step."""
