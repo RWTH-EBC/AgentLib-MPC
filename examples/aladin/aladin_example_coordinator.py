@@ -37,6 +37,7 @@ from agentlib_mpc.models.casadi_model import (
     CasadiOutput,
     CasadiModelConfig,
 )
+from agentlib_mpc.utils.plotting.mpc_dashboard import launch_dashboard_from_results
 
 
 class CaCoolerConfig(CasadiModelConfig):
@@ -481,14 +482,14 @@ def run_example(
     results = mas.get_results(cleanup=cleanup)
 
     if with_plots:
-        plot(results, start_pred=start_pred)
+        launch_dashboard_from_results(results)
     return results
 
 
 if __name__ == "__main__":
     run_example(
         with_plots=True,
-        until=1800,
+        until=900,
         start_pred=0,
         cleanup=False,
         log_level=logging.INFO,
