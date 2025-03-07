@@ -1,6 +1,8 @@
 import itertools
+import json
 import time
 from dataclasses import asdict
+from pathlib import Path
 from typing import Dict, Tuple, Set, Optional
 
 import casadi as ca
@@ -65,6 +67,11 @@ class ALADINCoordinator(Coordinator):
         self.lambda_: np.ndarray = None
         self.lambda_old: np.ndarray = None
         self.alias_to_parent: Dict[str, str] = {}
+
+        # Enable debugging if save_solve_stats is True
+        if self.config.save_solve_stats:
+            debug_dir = str(Path(self.config.solve_stats_file).parent / "debug")
+            self.enable_detailed_debugging(debug_dir)
 
     def _initial_registration(self, variable: AgentVariable):
         """Handles initial registration of an agent with ALADIN-specific entry type."""
@@ -363,10 +370,9 @@ class ALADINCoordinator(Coordinator):
             h=ca.DM(HQP), g=ca.DM(gQP), a=ca.DM(AQP), lba=ca.DM(bQP), uba=ca.DM(bQP)
         )
 
-        from pprint import pprint
-
         stats = solver.stats()
-        pprint(stats)
+        if hasattr(self, "debug_logger"):
+            self.debug_logger.debug(f"QP solver stats: {stats}")
 
         primal_solution = solution["x"].toarray()
         dual_solution = solution["lam_a"]
@@ -383,7 +389,65 @@ class ALADINCoordinator(Coordinator):
             entry.local_update = primal_solution[index:end]
             index = end
 
+        # Log detailed QP solution info if debugging is enabled
+        if hasattr(self, "debug_enabled") and self.debug_enabled:
+            current_iteration = len(self._primal_residuals_tracker) + 1
+            self.log_qp_solution(
+                current_iteration, AQP, bQP, HQP, gQP, primal_solution, dual_solution
+            )
+
         return primal_solution
+
+    def _check_convergence(self, iteration) -> bool:
+        """Check if the algorithm has converged."""
+        # Implement ALADIN-specific convergence check
+        # For now, using a simple implementation based on the norm of updates
+        active_agents = self._active_agents()
+
+        # Compute primal and dual residuals
+        primal_residual = 0
+        dual_residual = 0
+
+        for source, entry in active_agents.items():
+            # Primal residual: norm of updates
+            primal_update = np.linalg.norm(entry.local_update)
+            primal_residual += primal_update**2
+
+            # Dual residual: norm of multiplier changes
+            if self.lambda_old is not None:
+                dual_update = np.linalg.norm(self.lambda_ - self.lambda_old)
+                dual_residual += dual_update**2
+
+        primal_residual = np.sqrt(primal_residual)
+        dual_residual = np.sqrt(dual_residual) if dual_residual > 0 else 0
+
+        # Track residuals for stats
+        self._primal_residuals_tracker.append(primal_residual)
+        self._dual_residuals_tracker.append(dual_residual)
+        self._performance_tracker.append(
+            time.perf_counter() - self._performance_counter
+        )
+
+        self.logger.debug(
+            "Finished iteration %s . \n Primal residual: %s \n Dual residual: %s",
+            iteration,
+            primal_residual,
+            dual_residual,
+        )
+
+        # Log detailed convergence info if debugging is enabled
+        if hasattr(self, "debug_enabled") and self.debug_enabled:
+            self.log_convergence_metrics(iteration, primal_residual, dual_residual)
+            self.log_agent_updates(iteration)
+
+        if iteration % self.config.save_iter_interval == 0:
+            self._save_stats(iterations=iteration)
+
+        # Check convergence against tolerance
+        return (
+            primal_residual < self.config.abs_tol
+            and dual_residual < self.config.abs_tol
+        )
 
     def setup_qp_params(
         self,
@@ -458,51 +522,260 @@ class ALADINCoordinator(Coordinator):
             for alias, indices in entry.coup_vars.items():
                 entry.multipliers[alias] = full_multiplier[indices]
 
-    def _check_convergence(self, iteration) -> bool:
-        """Check if the algorithm has converged."""
-        # Implement ALADIN-specific convergence check
-        # For now, using a simple implementation based on the norm of updates
-        active_agents = self._active_agents()
+    def enable_detailed_debugging(self, log_dir: str = "debug_logs"):
+        """Enable detailed debugging output for ALADIN algorithm."""
 
-        # Compute primal and dual residuals
-        primal_residual = 0
-        dual_residual = 0
+        self.debug_log_dir = Path(log_dir)
+        self.debug_log_dir.mkdir(exist_ok=True, parents=True)
+        self.debug_enabled = True
+        self.iteration_debug_data = []
 
-        for source, entry in active_agents.items():
-            # Primal residual: norm of updates
-            primal_update = np.linalg.norm(entry.local_update)
-            primal_residual += primal_update**2
+        # Setup a specialized debug logger
+        import logging
 
-            # Dual residual: norm of multiplier changes
-            if self.lambda_old is not None:
-                dual_update = np.linalg.norm(self.lambda_ - self.lambda_old)
-                dual_residual += dual_update**2
+        debug_logger = logging.getLogger(f"{self.__class__.__name__}_debug")
+        debug_logger.setLevel(logging.DEBUG)
+        file_handler = logging.FileHandler(self.debug_log_dir / "aladin_debug.log")
+        file_handler.setFormatter(
+            logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        )
+        debug_logger.addHandler(file_handler)
+        self.debug_logger = debug_logger
 
-        primal_residual = np.sqrt(primal_residual)
-        dual_residual = np.sqrt(dual_residual) if dual_residual > 0 else 0
+        self.debug_logger.info("Detailed debugging enabled for ALADIN")
 
-        # Track residuals for stats
-        self._primal_residuals_tracker.append(primal_residual)
-        self._dual_residuals_tracker.append(dual_residual)
-        self._performance_tracker.append(
-            time.perf_counter() - self._performance_counter
+    def log_qp_solution(
+        self, iteration, AQP, bQP, HQP, gQP, primal_solution, dual_solution
+    ):
+        """Log detailed information about QP solution."""
+        if not hasattr(self, "debug_enabled") or not self.debug_enabled:
+            return
+
+        import numpy as np
+        import matplotlib.pyplot as plt
+
+        # Create iteration directory
+        iter_dir = self.debug_log_dir / f"iteration_{iteration}"
+        iter_dir.mkdir(exist_ok=True)
+
+        # Log matrices to files (summary information due to size)
+        matrices_info = {
+            "AQP_shape": AQP.shape,
+            "AQP_nnz": AQP.nnz,
+            "AQP_density": AQP.nnz / (AQP.shape[0] * AQP.shape[1]),
+            "HQP_shape": HQP.shape,
+            "HQP_nnz": HQP.nnz,
+            "HQP_density": HQP.nnz / (HQP.shape[0] * HQP.shape[1]),
+            "bQP_shape": bQP.shape,
+            "gQP_shape": gQP.shape,
+        }
+
+        with open(iter_dir / "matrices_info.json", "w") as f:
+            import json
+
+            json.dump(matrices_info, f, indent=2)
+
+        # Log solution vectors
+        dual_solution = dual_solution.toarray()
+        np.save(iter_dir / "primal_solution.npy", primal_solution)
+        np.save(iter_dir / "dual_solution.npy", dual_solution)
+
+        # Create visualizations
+        fig, ax = plt.subplots(2, 1, figsize=(12, 10))
+        ax[0].plot(primal_solution)
+        ax[0].set_title(f"Primal solution vector (iteration {iteration})")
+        ax[0].set_xlabel("Variable index")
+        ax[0].set_ylabel("Value")
+
+        if dual_solution is not None and len(dual_solution) > 0:
+            ax[1].plot(
+                dual_solution.toarray()
+                if hasattr(dual_solution, "toarray")
+                else dual_solution
+            )
+            ax[1].set_title(f"Dual solution vector (iteration {iteration})")
+            ax[1].set_xlabel("Constraint index")
+            ax[1].set_ylabel("Value")
+
+        plt.tight_layout()
+        plt.savefig(iter_dir / "qp_solution.png")
+        plt.close()
+
+        # Log solution statistics
+        solution_stats = {
+            "primal_solution_norm": float(np.linalg.norm(primal_solution)),
+            "primal_solution_min": float(np.min(primal_solution)),
+            "primal_solution_max": float(np.max(primal_solution)),
+            "dual_solution_norm": float(
+                np.linalg.norm(
+                    dual_solution.toarray()
+                    if hasattr(dual_solution, "toarray")
+                    else dual_solution
+                )
+            ),
+        }
+
+        with open(iter_dir / "solution_stats.json", "w") as f:
+            json.dump(solution_stats, f, indent=2)
+
+        self.debug_logger.info(f"QP solution logged for iteration {iteration}")
+
+    def log_agent_updates(self, iteration):
+        """Log detailed information about agent updates."""
+        if not hasattr(self, "debug_enabled") or not self.debug_enabled:
+            return
+
+        import numpy as np
+        import matplotlib.pyplot as plt
+        import pandas as pd
+
+        # Create iteration directory
+        iter_dir = self.debug_log_dir / f"iteration_{iteration}"
+        iter_dir.mkdir(exist_ok=True)
+
+        # Collect information about each agent
+        agent_data = {}
+        for source, agent in self._active_agents().items():
+            agent_id = f"{source.agent_id}"
+            agent_data[agent_id] = {
+                "local_solution_norm": float(np.linalg.norm(agent.local_solution)),
+                "local_update_norm": float(np.linalg.norm(agent.local_update)),
+                "local_target_norm": float(np.linalg.norm(agent.local_target)),
+                "hessian_condition": float(
+                    np.linalg.cond(
+                        agent.hessian.toarray()
+                        if hasattr(agent.hessian, "toarray")
+                        else agent.hessian
+                    )
+                ),
+                "jacobian_shape": list(agent.jacobian.shape)
+                if hasattr(agent.jacobian, "shape")
+                else None,
+                "gradient_norm": float(np.linalg.norm(agent.gradient)),
+            }
+
+            # Save agent data as arrays
+            agent_dir = iter_dir / agent_id
+            agent_dir.mkdir(exist_ok=True)
+            np.save(agent_dir / "local_solution.npy", agent.local_solution)
+            np.save(agent_dir / "local_update.npy", agent.local_update)
+            np.save(agent_dir / "local_target.npy", agent.local_target)
+
+            # Create visualization of agent trajectories
+            fig, ax = plt.subplots(3, 1, figsize=(12, 15))
+            ax[0].plot(agent.local_solution)
+            ax[0].set_title(f"Agent {agent_id} local solution (iteration {iteration})")
+            ax[0].set_xlabel("Variable index")
+            ax[0].set_ylabel("Value")
+
+            ax[1].plot(agent.local_update)
+            ax[1].set_title(f"Agent {agent_id} local update (iteration {iteration})")
+            ax[1].set_xlabel("Variable index")
+            ax[1].set_ylabel("Value")
+
+            ax[2].plot(agent.local_target)
+            ax[2].set_title(f"Agent {agent_id} local target (iteration {iteration})")
+            ax[2].set_xlabel("Variable index")
+            ax[2].set_ylabel("Value")
+
+            plt.tight_layout()
+            plt.savefig(agent_dir / "trajectories.png")
+            plt.close()
+
+            # Log coupling variables specifically
+            coupling_data = {}
+            for alias, indices in agent.coup_vars.items():
+                values = agent.local_solution[indices]
+                multipliers = agent.multipliers.get(alias)
+                coupling_data[alias] = {
+                    "indices": indices.tolist(),
+                    "values": values.tolist(),
+                    "multipliers": multipliers.tolist()
+                    if multipliers is not None
+                    else None,
+                    "values_norm": float(np.linalg.norm(values)),
+                    "multipliers_norm": float(np.linalg.norm(multipliers))
+                    if multipliers is not None
+                    else None,
+                }
+
+                # Create coupling visualization
+                fig, ax = plt.subplots(2, 1, figsize=(10, 8))
+                ax[0].plot(values)
+                ax[0].set_title(
+                    f"Coupling {alias} values (agent {agent_id}, iteration {iteration})"
+                )
+                ax[0].set_xlabel("Time step")
+                ax[0].set_ylabel("Value")
+
+                if multipliers is not None:
+                    ax[1].plot(multipliers)
+                    ax[1].set_title(
+                        f"Coupling {alias} multipliers (agent {agent_id}, iteration {iteration})"
+                    )
+                    ax[1].set_xlabel("Time step")
+                    ax[1].set_ylabel("Value")
+
+                plt.tight_layout()
+                plt.savefig(agent_dir / f"coupling_{alias}.png")
+                plt.close()
+
+            with open(agent_dir / "coupling_data.json", "w") as f:
+                import json
+
+                json.dump(coupling_data, f, indent=2, cls=NumpyEncoder)
+
+        with open(iter_dir / "agent_data.json", "w") as f:
+            import json
+
+            json.dump(agent_data, f, indent=2)
+
+        self.debug_logger.info(f"Agent updates logged for iteration {iteration}")
+
+    def log_convergence_metrics(self, iteration, primal_residual, dual_residual):
+        """Log detailed convergence metrics."""
+        if not hasattr(self, "debug_enabled") or not self.debug_enabled:
+            return
+
+        # Add to iteration data
+        self.iteration_debug_data.append(
+            {
+                "iteration": iteration,
+                "timestamp": time.time(),
+                "primal_residual": float(primal_residual),
+                "dual_residual": float(dual_residual),
+                "penalty_parameter": float(self.penalty_parameter),
+                "qp_penalty": float(self.qp_penalty),
+            }
         )
 
-        self.logger.debug(
-            "Finished iteration %s . \n Primal residual: %s \n Dual residual: %s",
-            iteration,
-            primal_residual,
-            dual_residual,
-        )
+        # Save to CSV
+        import pandas as pd
 
-        if iteration % self.config.save_iter_interval == 0:
-            self._save_stats(iterations=iteration)
+        df = pd.DataFrame(self.iteration_debug_data)
+        df.to_csv(self.debug_log_dir / "convergence_metrics.csv", index=False)
 
-        # Check convergence against tolerance
-        return (
-            primal_residual < self.config.abs_tol
-            and dual_residual < self.config.abs_tol
-        )
+        # Create convergence plots
+        import matplotlib.pyplot as plt
+
+        fig, ax = plt.subplots(2, 1, figsize=(10, 8))
+        ax[0].semilogy(df["iteration"], df["primal_residual"])
+        ax[0].set_title("Primal residual")
+        ax[0].set_xlabel("Iteration")
+        ax[0].set_ylabel("Residual (log scale)")
+        ax[0].grid(True)
+
+        ax[1].semilogy(df["iteration"], df["dual_residual"])
+        ax[1].set_title("Dual residual")
+        ax[1].set_xlabel("Iteration")
+        ax[1].set_ylabel("Residual (log scale)")
+        ax[1].grid(True)
+
+        plt.tight_layout()
+        plt.savefig(self.debug_log_dir / "convergence.png")
+        plt.close()
+
+        self.debug_logger.info(f"Convergence metrics logged for iteration {iteration}")
 
     def _save_stats(self, iterations: int) -> None:
         """Save iteration statistics to a file."""
@@ -516,3 +789,17 @@ class ALADINCoordinator(Coordinator):
     def _wrap_up_algorithm(self, iterations):
         """Clean up at the end of an algorithm execution."""
         self._save_stats(iterations=iterations)
+
+
+# Helper class for JSON serialization of numpy arrays
+class NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            return float(obj)
+        if isinstance(obj, np.bool_):
+            return bool(obj)
+        return json.JSONEncoder.default(self, obj)

@@ -339,7 +339,7 @@ def make_configs() -> List[dict]:
                 "penalty_factor": 10,
                 "wait_time_on_start_iters": 0.2,
                 "registration_period": 5,
-                "iter_max": 10,
+                "iter_max": 20,
                 "qp_penalty": 100,
                 "qp_step_size": 0.8,
                 "save_solve_stats": True,
@@ -482,6 +482,7 @@ def run_example(
     results = mas.get_results(cleanup=cleanup)
 
     if with_plots:
+        plot(results, start_pred=0)
         launch_dashboard_from_results(results)
     return results
 
