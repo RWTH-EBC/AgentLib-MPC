@@ -545,7 +545,7 @@ class ALADINMultipleShooting(ALADINDiscretization, ADMMMultipleShooting):
 
         # Initialize state trajectory
         initial_state = self.add_opt_par(sys.initial_state)
-        current_state = self.add_opt_var(
+        next_state = self.add_opt_var(
             sys.states, lb=initial_state, ub=initial_state, guess=initial_state
         )
 
@@ -565,6 +565,7 @@ class ALADINMultipleShooting(ALADINDiscretization, ADMMMultipleShooting):
         # Perform multiple shooting discretization
         for k in range(prediction_horizon):
             # 1. Handle control inputs and their rate penalties
+            current_state = next_state
             current_control = self.add_opt_var(sys.controls)
             control_rate_penalty = timestep * ca.dot(
                 control_rate_weights, (previous_control - current_control) ** 2
@@ -625,9 +626,6 @@ class ALADINMultipleShooting(ALADINDiscretization, ADMMMultipleShooting):
                 lb=stage["lb_model_constraints"],
                 ub=stage["ub_model_constraints"],
             )
-
-            # Update current state for next interval
-            current_state = next_state
 
     def initialize(self, system: CasadiALADINSystem, solver_factory: SolverFactory):
         """Initializes the trajectory optimization problem, creating all symbolic

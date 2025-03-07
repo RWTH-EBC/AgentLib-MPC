@@ -593,7 +593,7 @@ class ALADINCoordinator(Coordinator):
                 + (entry.local_solution - entry.local_target)
                 + alpha * entry.local_update
             )
-            full_multiplier = -(self.lambda_.T @ entry.coupling_matrix).ravel()
+            full_multiplier = (self.lambda_.T @ entry.coupling_matrix).ravel()
             for alias, indices in entry.coup_vars.items():
                 entry.multipliers[alias] = full_multiplier[indices]
 

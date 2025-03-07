@@ -1,24 +1,7 @@
 """
 Example for running a multi-agent-system performing a distributed MPC with
-ADMM. Creates three agents, one for the AHU, one for a supplied room and one
+ALADIN. Creates three agents, one for the AHU, one for a supplied room and one
 for simulating the system.
-
-All agents are started within the same Environment. To schedule execution of
-the algorithm within one Environment, the admm_local module has to be used.
-Since no time is required for scheduling, this can and should be run in a
-regular Environment (not RealTime).
-
-With this file belong the models
-    - ca_cooler_model.py
-    - ca_room_model.py
-    - simulation_model.py
-
-And the config files
-    - cooled_room.json
-    - cooler.json
-    - simulator.json
-    - local_broadcast.json
-
 """
 
 import os
@@ -49,8 +32,6 @@ class CaCoolerConfig(CasadiModelConfig):
             unit="kg/s",
             description="Air " "mass flow out of cooler.",
         ),
-        # disturbances
-        # CasadiInput(name="T_oda", value=273.15 + 30, unit="K", description="Ambient air temperature"),
     ]
 
     states: list[CasadiState] = [
@@ -110,7 +91,7 @@ class CaCooledRoomConfig(CasadiModelConfig):
         CasadiInput(
             name="mDot_0",
             value=0.0225,
-            unit="K",
+            unit="kg/s",
             description="Air mass flow into zone 0",
         ),
         # disturbances
@@ -118,19 +99,22 @@ class CaCooledRoomConfig(CasadiModelConfig):
             name="d_0", value=150, unit="W", description="Heat load into zone 0"
         ),
         CasadiInput(
-            name="T_in", value=290.15, unit="K", description="Inflow air temperature"
+            name="T_in",
+            value=17.0,
+            unit="°C",
+            description="Inflow air temperature",  # Changed from 290.15K
         ),
         # settings
         CasadiInput(
             name="T_0_set",
-            value=294.15,
-            unit="K",
+            value=21.0,
+            unit="°C",  # Changed from 294.15K
             description="Set point for T_0 in objective function",
         ),
         CasadiInput(
             name="T_0_upper",
-            value=294.15,
-            unit="K",
+            value=21.0,
+            unit="°C",  # Changed from 294.15K
             description="Upper boundary (soft) for T_0.",
         ),
     ]
@@ -138,14 +122,17 @@ class CaCooledRoomConfig(CasadiModelConfig):
     states: list[CasadiState] = [
         # differential
         CasadiState(
-            name=f"T_0", value=293.15, unit="K", description="Temperature of zone 0"
+            name=f"T_0",
+            value=20.0,
+            unit="°C",
+            description="Temperature of zone 0",  # Changed from 293.15K
         ),
         # algebraic
         # slack variables
         CasadiState(
             name=f"T_0_slack",
             value=0,
-            unit="K",
+            unit="°C",
             description="Slack variable of temperature of zone 0",
         ),
     ]
@@ -213,7 +200,7 @@ class FullModelConfig(CasadiModelConfig):
         CasadiInput(
             name="mDot_0",
             value=0.0225,
-            unit="K",
+            unit="kg/s",
             description="Air mass flow into zone 0",
         ),
         # disturbances
@@ -221,19 +208,22 @@ class FullModelConfig(CasadiModelConfig):
             name="d_0", value=150, unit="W", description="Heat load into zone 0"
         ),
         CasadiInput(
-            name="T_in", value=290.15, unit="K", description="Inflow air temperature"
+            name="T_in",
+            value=17.0,
+            unit="°C",
+            description="Inflow air temperature",  # Changed from 290.15K
         ),
         # settings
         CasadiInput(
             name="T_0_set",
-            value=294.15,
-            unit="K",
+            value=21.0,
+            unit="°C",  # Changed from 294.15K
             description="Set point for T_0 in objective function",
         ),
         CasadiInput(
             name="T_0_upper",
-            value=294.15,
-            unit="K",
+            value=21.0,
+            unit="°C",  # Changed from 294.15K
             description="Upper boundary (soft) for T_0.",
         ),
     ]
@@ -241,14 +231,17 @@ class FullModelConfig(CasadiModelConfig):
     states: List[CasadiState] = [
         # differential
         CasadiState(
-            name=f"T_0", value=293.15, unit="K", description="Temperature of zone 0"
+            name=f"T_0",
+            value=20.0,
+            unit="°C",
+            description="Temperature of zone 0",  # Changed from 293.15K
         ),
         # algebraic
         # slack variables
         CasadiState(
             name=f"T_0_slack",
             value=0,
-            unit="K",
+            unit="°C",
             description="Slack variable of temperature of zone 0",
         ),
     ]
@@ -286,7 +279,7 @@ class FullModelConfig(CasadiModelConfig):
         ),
     ]
     outputs: List[CasadiOutput] = [
-        CasadiOutput(name="T_0_out", unit="K", description="Temperature of zone 0")
+        CasadiOutput(name="T_0_out", unit="°C", description="Temperature of zone 0")
     ]
 
 
@@ -317,11 +310,13 @@ def make_configs() -> List[dict]:
                         "file": __file__,
                         "class_name": "FullModel",
                     },
-                    "states": [{"name": "T_0", "value": 298.16}],
+                    "states": [{"name": "T_0", "value": 25.01}],  # Changed from 298.16K
                 },
                 "t_sample": 15,
                 "save_results": True,
-                "outputs": [{"name": "T_0_out", "value": 298.16, "alias": "T_0"}],
+                "outputs": [
+                    {"name": "T_0_out", "value": 25.01, "alias": "T_0"}
+                ],  # Changed from 298.16K
                 "inputs": [{"name": "mDot_0", "value": 0.02, "alias": "mDot"}],
             },
             {"type": "local_broadcast"},
@@ -339,9 +334,10 @@ def make_configs() -> List[dict]:
                 "penalty_factor": 10,
                 "wait_time_on_start_iters": 0.2,
                 "registration_period": 5,
-                "iter_max": 20,
+                "iter_max": 10,
                 "qp_penalty": 100,
                 "qp_step_size": 0.8,
+                "qp_solver": "proxqp",
                 "save_solve_stats": True,
                 "solve_stats_file": "results//residuals.csv",
             },
@@ -429,13 +425,18 @@ def make_configs() -> List[dict]:
                 ],
                 "inputs": [
                     {"name": "d_0", "value": 150},
-                    {"name": "T_0_set", "value": 294.55},
-                    {"name": "T_0_upper", "value": 294.15},
-                    {"name": "T_in", "value": 290.15},
+                    {"name": "T_0_set", "value": 21.0},  # Changed from 294.55K
+                    {"name": "T_0_upper", "value": 21.0},  # Changed from 294.15K
+                    {"name": "T_in", "value": 17.0},  # Changed from 290.15K
                 ],
                 "controls": [],
                 "states": [
-                    {"name": "T_0", "value": 298.16, "ub": 303.15, "lb": 288.15}
+                    {
+                        "name": "T_0",
+                        "value": 25.01,
+                        "ub": 30.0,
+                        "lb": 15.0,
+                    }  # Changed from Kelvin values
                 ],
                 "couplings": [
                     {
@@ -464,12 +465,15 @@ def plot(results, start_pred=0):
     )
 
     fig, ax = plt.subplots(2, 1)
-    ax[0].axhline(294.55, label="reference value", ls="--")
+    ax[0].axhline(21.0, label="reference value", ls="--")  # Changed from 294.55
     ax[0].plot(res_sim["T_0_out"], label="temperature")
     ax[0].plot(room_res["variable"]["T_0"], label="temperature prediction")
     ax[1].plot(res_sim["mDot_0"], label="air mass flow")
     ax[1].legend()
     ax[0].legend()
+    ax[0].set_ylabel("Temperature (°C)")
+    ax[1].set_ylabel("Mass flow (kg/s)")
+    ax[0].set_title("Room Temperature Control with ALADIN")
     plt.show()
 
 
@@ -498,7 +502,7 @@ def run_example(
 if __name__ == "__main__":
     run_example(
         with_plots=True,
-        until=1800,
+        until=1900,
         start_pred=0,
         cleanup=False,
         log_level=logging.INFO,
