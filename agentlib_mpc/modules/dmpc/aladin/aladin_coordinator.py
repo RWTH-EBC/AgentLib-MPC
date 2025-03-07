@@ -71,7 +71,7 @@ class ALADINCoordinator(Coordinator):
         # Enable debugging if save_solve_stats is True
         if self.config.save_solve_stats:
             debug_dir = str(Path(self.config.solve_stats_file).parent / "debug")
-            self.enable_detailed_debugging(debug_dir)
+            # self.enable_detailed_debugging(debug_dir)
 
     def _initial_registration(self, variable: AgentVariable):
         """Handles initial registration of an agent with ALADIN-specific entry type."""
@@ -356,12 +356,12 @@ class ALADINCoordinator(Coordinator):
     ):
         """Solve the coordination QP problem."""
 
-        def debug_show_matrices():
-            A = AQP.toarray()
-            b = HQP.toarray()
-            return A, b
-
-        Anp, Hnp = debug_show_matrices()
+        # def debug_show_matrices():
+        #     A = AQP.toarray()
+        #     b = HQP.toarray()
+        #     return A, b
+        #
+        # Anp, Hnp = debug_show_matrices()
 
         # casadi
         cqp = {"a": ca.DM(AQP).sparsity(), "h": ca.DM(HQP).sparsity()}
@@ -518,7 +518,7 @@ class ALADINCoordinator(Coordinator):
                 + (entry.local_solution - entry.local_target)
                 + alpha * entry.local_update
             )
-            full_multiplier = (self.lambda_.T @ entry.coupling_matrix).ravel()
+            full_multiplier = -(self.lambda_.T @ entry.coupling_matrix).ravel()
             for alias, indices in entry.coup_vars.items():
                 entry.multipliers[alias] = full_multiplier[indices]
 
@@ -628,6 +628,8 @@ class ALADINCoordinator(Coordinator):
         import numpy as np
         import matplotlib.pyplot as plt
         import pandas as pd
+        from pathlib import Path
+        import json
 
         # Create iteration directory
         iter_dir = self.debug_log_dir / f"iteration_{iteration}"
@@ -637,10 +639,36 @@ class ALADINCoordinator(Coordinator):
         agent_data = {}
         for source, agent in self._active_agents().items():
             agent_id = f"{source.agent_id}"
+
+            # Convert to numpy arrays if they're lists
+            local_solution = (
+                np.array(agent.local_solution)
+                if isinstance(agent.local_solution, list)
+                else agent.local_solution
+            )
+            local_update = (
+                np.array(agent.local_update)
+                if isinstance(agent.local_update, list)
+                else agent.local_update
+            )
+            local_target = (
+                np.array(agent.local_target)
+                if isinstance(agent.local_target, list)
+                else agent.local_target
+            )
+
+            # Flatten if necessary (for 2D arrays)
+            if local_solution.ndim > 1:
+                local_solution = local_solution.flatten()
+            if local_update.ndim > 1:
+                local_update = local_update.flatten()
+            if local_target.ndim > 1:
+                local_target = local_target.flatten()
+
             agent_data[agent_id] = {
-                "local_solution_norm": float(np.linalg.norm(agent.local_solution)),
-                "local_update_norm": float(np.linalg.norm(agent.local_update)),
-                "local_target_norm": float(np.linalg.norm(agent.local_target)),
+                "local_solution_norm": float(np.linalg.norm(local_solution)),
+                "local_update_norm": float(np.linalg.norm(local_update)),
+                "local_target_norm": float(np.linalg.norm(local_target)),
                 "hessian_condition": float(
                     np.linalg.cond(
                         agent.hessian.toarray()
@@ -657,23 +685,23 @@ class ALADINCoordinator(Coordinator):
             # Save agent data as arrays
             agent_dir = iter_dir / agent_id
             agent_dir.mkdir(exist_ok=True)
-            np.save(agent_dir / "local_solution.npy", agent.local_solution)
-            np.save(agent_dir / "local_update.npy", agent.local_update)
-            np.save(agent_dir / "local_target.npy", agent.local_target)
+            np.save(agent_dir / "local_solution.npy", local_solution)
+            np.save(agent_dir / "local_update.npy", local_update)
+            np.save(agent_dir / "local_target.npy", local_target)
 
             # Create visualization of agent trajectories
             fig, ax = plt.subplots(3, 1, figsize=(12, 15))
-            ax[0].plot(agent.local_solution)
+            ax[0].plot(local_solution)
             ax[0].set_title(f"Agent {agent_id} local solution (iteration {iteration})")
             ax[0].set_xlabel("Variable index")
             ax[0].set_ylabel("Value")
 
-            ax[1].plot(agent.local_update)
+            ax[1].plot(local_update)
             ax[1].set_title(f"Agent {agent_id} local update (iteration {iteration})")
             ax[1].set_xlabel("Variable index")
             ax[1].set_ylabel("Value")
 
-            ax[2].plot(agent.local_target)
+            ax[2].plot(local_target)
             ax[2].set_title(f"Agent {agent_id} local target (iteration {iteration})")
             ax[2].set_xlabel("Variable index")
             ax[2].set_ylabel("Value")
@@ -684,18 +712,37 @@ class ALADINCoordinator(Coordinator):
 
             # Log coupling variables specifically
             coupling_data = {}
-            for alias, indices in agent.coup_vars.items():
-                values = agent.local_solution[indices]
+            for alias, idx_array in agent.coup_vars.items():
+                # Convert indices to a list for more reliable indexing
+                indices = (
+                    idx_array.tolist()
+                    if isinstance(idx_array, np.ndarray)
+                    else idx_array
+                )
+
+                # Handle extraction of values based on indices - safely
+                if isinstance(local_solution, np.ndarray):
+                    values = local_solution[indices]
+                else:
+                    # Manual extraction if local_solution is a list
+                    values = np.array([local_solution[i] for i in indices])
+
                 multipliers = agent.multipliers.get(alias)
+                multipliers_array = (
+                    np.array(multipliers) if multipliers is not None else None
+                )
+
                 coupling_data[alias] = {
-                    "indices": indices.tolist(),
-                    "values": values.tolist(),
-                    "multipliers": multipliers.tolist()
-                    if multipliers is not None
+                    "indices": indices,
+                    "values": values.tolist()
+                    if isinstance(values, np.ndarray)
+                    else values,
+                    "multipliers": multipliers_array.tolist()
+                    if multipliers_array is not None
                     else None,
                     "values_norm": float(np.linalg.norm(values)),
-                    "multipliers_norm": float(np.linalg.norm(multipliers))
-                    if multipliers is not None
+                    "multipliers_norm": float(np.linalg.norm(multipliers_array))
+                    if multipliers_array is not None
                     else None,
                 }
 
@@ -708,8 +755,8 @@ class ALADINCoordinator(Coordinator):
                 ax[0].set_xlabel("Time step")
                 ax[0].set_ylabel("Value")
 
-                if multipliers is not None:
-                    ax[1].plot(multipliers)
+                if multipliers_array is not None:
+                    ax[1].plot(multipliers_array)
                     ax[1].set_title(
                         f"Coupling {alias} multipliers (agent {agent_id}, iteration {iteration})"
                     )
@@ -721,13 +768,9 @@ class ALADINCoordinator(Coordinator):
                 plt.close()
 
             with open(agent_dir / "coupling_data.json", "w") as f:
-                import json
-
                 json.dump(coupling_data, f, indent=2, cls=NumpyEncoder)
 
         with open(iter_dir / "agent_data.json", "w") as f:
-            import json
-
             json.dump(agent_data, f, indent=2)
 
         self.debug_logger.info(f"Agent updates logged for iteration {iteration}")

@@ -422,43 +422,52 @@ class ALADINDiscretization(Discretization):
 
 
 class ALADINCollocation(ALADINDiscretization, DirectCollocation):
-    def _discretize(self, sys: CasadiALADINSystem):
-        """
-        Perform a direct collocation discretization.
-        # pylint: disable=invalid-name
-        """
+    """Direct collocation discretization for ALADIN-based optimization.
 
-        # setup the polynomial base
+    This class implements the direct collocation discretization scheme for ALADIN algorithm
+    optimization problems. It handles discretization of continuous dynamics using
+    collocation polynomials.
+    """
+
+    def _discretize(self, sys: CasadiALADINSystem):
+        """Perform a direct collocation discretization for ALADIN-based optimization.
+
+        Args:
+            sys: The system to be discretized
+        """
+        # Setup the polynomial base
         collocation_matrices = self._collocation_polynomial()
 
-        # shorthands
-        n = self.options.prediction_horizon
-        ts = self.options.time_step
+        # Shorthands
+        prediction_horizon = self.options.prediction_horizon
+        timestep = self.options.time_step
 
         # Initial State
-        x0 = self.add_opt_par(sys.initial_state)
-        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)
-        uk = self.add_opt_par(sys.last_control)
+        initial_state = self.add_opt_par(sys.initial_state)
+        current_state = self.add_opt_var(
+            sys.states, lb=initial_state, ub=initial_state, guess=initial_state
+        )
+        previous_control = self.add_opt_par(sys.last_control)
 
         # Parameters that are constant over the horizon
-        const_par = self.add_opt_par(sys.model_parameters)
-        du_weights = self.add_opt_par(sys.r_del_u)
-        rho = self.add_opt_par(sys.penalty_factor)
+        model_parameters = self.add_opt_par(sys.model_parameters)
+        control_rate_weights = self.add_opt_par(sys.r_del_u)
+        aladin_penalty = self.add_opt_par(sys.penalty_factor)
 
-        # Formulate the NLP
-        # loop over prediction horizon
-        while self.k < n:
+        # Formulate the NLP - loop over prediction horizon
+        while self.k < prediction_horizon:
             # New NLP variable for the control
-            u_prev = uk
-            uk = self.add_opt_var(sys.controls)
-            # penalty for control change between time steps
-            self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
+            current_control = self.add_opt_var(sys.controls)
+            # Penalty for control change between time steps
+            self.objective_function += timestep * ca.dot(
+                control_rate_weights, (previous_control - current_control) ** 2
+            )
+            previous_control = current_control
 
             # New parameter for inputs
-            dk = self.add_opt_par(sys.non_controlled_inputs)
+            disturbance = self.add_opt_par(sys.non_controlled_inputs)
 
-            # perform inner collocation loop
-            # perform inner collocation loop
+            # Perform inner collocation loop
             opt_vars_inside_inner = [
                 sys.algebraics,
                 sys.outputs,
@@ -468,33 +477,36 @@ class ALADINCollocation(ALADINDiscretization, DirectCollocation):
                 sys.multipliers,
             ]
             constant_over_inner = {
-                sys.controls: uk,
-                sys.non_controlled_inputs: dk,
-                sys.model_parameters: const_par,
-                sys.penalty_factor: rho,
+                sys.controls: current_control,
+                sys.non_controlled_inputs: disturbance,
+                sys.model_parameters: model_parameters,
+                sys.penalty_factor: aladin_penalty,
             }
-            xk_end, constraints = self._collocation_inner_loop(
+            state_end, constraints = self._collocation_inner_loop(
                 collocation=collocation_matrices,
-                state_at_beginning=xk,
+                state_at_beginning=current_state,
                 states=sys.states,
                 opt_vars=opt_vars_inside_inner,
                 opt_pars=opt_pars_inside_inner,
                 const=constant_over_inner,
             )
 
-            # increment loop counter and time
+            # Increment loop counter and time
             self.k += 1
-            self.pred_time = ts * self.k
+            self.pred_time = timestep * self.k
 
             # New NLP variables at end of interval
-            xk = self.add_opt_var(sys.states)
+            next_state = self.add_opt_var(sys.states)
 
             # Add continuity constraint
-            self.add_constraint(xk - xk_end, gap_closing=True)
+            self.add_constraint(next_state - state_end, gap_closing=True)
 
-            # add collocation constraints later for fatrop
+            # Add collocation constraints
             for constraint in constraints:
                 self.add_constraint(*constraint)
+
+            # Update current state for next interval
+            current_state = next_state
 
     def initialize(self, system: CasadiALADINSystem, solver_factory: SolverFactory):
         """Initializes the trajectory optimization problem, creating all symbolic
@@ -504,86 +516,146 @@ class ALADINCollocation(ALADINDiscretization, DirectCollocation):
 
 
 class ALADINMultipleShooting(ALADINDiscretization, ADMMMultipleShooting):
-    def _discretize(self, sys: CasadiALADINSystem):
+    """Multiple shooting discretization for ALADIN-based optimization.
 
-        # shorthands
-        n = self.options.prediction_horizon
-        ts = self.options.time_step
-        opt_integrator = self._create_ode(
-            sys, {"t0": 0, "tf": ts}, self.options.integrator
+    This class implements the multiple shooting discretization scheme for ALADIN algorithm
+    optimization problems. It handles discretization of continuous dynamics, addition of
+    continuity constraints, and ALADIN-specific objective augmentation.
+    """
+
+    def _discretize(self, sys: CasadiALADINSystem):
+        """Performs a multiple shooting discretization for ALADIN-based optimization.
+
+        This method implements the multiple shooting discretization scheme for ALADIN.
+        It handles:
+        1. State continuity across shooting intervals
+        2. Local coupling variables with their multipliers
+        3. Integration of system dynamics
+        4. Objective function construction including ALADIN terms
+
+        Args:
+            sys (CasadiALADINSystem): The system to be discretized, containing states,
+                controls, and ALADIN-specific variables
+        """
+        # Extract key parameters
+        prediction_horizon = self.options.prediction_horizon
+        timestep = self.options.time_step
+        integration_options = {"t0": 0, "tf": timestep}
+
+        # Initialize state trajectory
+        initial_state = self.add_opt_par(sys.initial_state)
+        current_state = self.add_opt_var(
+            sys.states, lb=initial_state, ub=initial_state, guess=initial_state
         )
 
-        # Initial State
-        x0 = self.add_opt_par(sys.initial_state)
-        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)
-        uk = self.add_opt_par(sys.last_control)
+        # Initialize control input
+        previous_control = self.add_opt_par(sys.last_control)
 
-        # Parameters that are constant over the horizon
-        const_par = self.add_opt_par(sys.model_parameters)
-        du_weights = self.add_opt_par(sys.r_del_u)
-        rho = self.add_opt_par(sys.penalty_factor)
+        # Add time-invariant parameters
+        control_rate_weights = self.add_opt_par(sys.r_del_u)
+        model_parameters = self.add_opt_par(sys.model_parameters)
+        aladin_penalty = self.add_opt_par(sys.penalty_factor)
 
-        while self.k < n:
-            u_prev = uk
-            uk = self.add_opt_var(sys.controls)
-            # penalty for control change between time steps
-            self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
-            dk = self.add_opt_par(sys.non_controlled_inputs)
-            zk = self.add_opt_var(sys.algebraics)
-            yk = self.add_opt_var(sys.outputs)
-            v_localk = self.add_opt_var(sys.local_couplings)
-            lamk = self.add_opt_par(sys.multipliers)
+        # Create system integrator
+        dynamics_integrator = self._create_ode(
+            sys, integration_options, self.options.integrator
+        )
 
-            # get stage_function
+        # Perform multiple shooting discretization
+        for k in range(prediction_horizon):
+            # 1. Handle control inputs and their rate penalties
+            current_control = self.add_opt_var(sys.controls)
+            control_rate_penalty = timestep * ca.dot(
+                control_rate_weights, (previous_control - current_control) ** 2
+            )
+            self.objective_function += control_rate_penalty
+            previous_control = current_control
+
+            # 2. Add optimization variables for current shooting interval
+            disturbance = self.add_opt_par(sys.non_controlled_inputs)
+            algebraic_vars = self.add_opt_var(sys.algebraics)
+            output_vars = self.add_opt_var(sys.outputs)
+
+            # 3. Add ALADIN coupling variables and multipliers
+            local_coupling = self.add_opt_var(sys.local_couplings)
+            multipliers = self.add_opt_par(sys.multipliers)
+
+            # 4. Construct stage-wise optimization problem
             stage_arguments = {
                 # variables
-                sys.states.name: xk,
-                sys.algebraics.name: zk,
-                sys.local_couplings.name: v_localk,
-                sys.outputs.name: yk,
+                sys.states.name: current_state,
+                sys.algebraics.name: algebraic_vars,
+                sys.local_couplings.name: local_coupling,
+                sys.outputs.name: output_vars,
                 # parameters
-                sys.multipliers.name: lamk,
-                sys.controls.name: uk,
-                sys.non_controlled_inputs.name: dk,
-                sys.model_parameters.name: const_par,
-                sys.penalty_factor.name: rho,
+                sys.multipliers.name: multipliers,
+                sys.controls.name: current_control,
+                sys.non_controlled_inputs.name: disturbance,
+                sys.model_parameters.name: model_parameters,
+                sys.penalty_factor.name: aladin_penalty,
             }
             stage = self._stage_function(**stage_arguments)
 
+            # 5. Integrate system dynamics
+            integration_result = dynamics_integrator(
+                x0=current_state,
+                p=ca.vertcat(
+                    current_control,
+                    local_coupling,
+                    disturbance,
+                    model_parameters,
+                    algebraic_vars,
+                    output_vars,
+                ),
+            )
+
+            # 6. Add continuity constraints
+            self.k = k + 1
+            self.pred_time = timestep * self.k
+            next_state = self.add_opt_var(sys.states)
+            self.add_constraint(next_state - integration_result["xf"], gap_closing=True)
+
+            # 7. Add objective contribution from stage
+            self.objective_function += stage["cost_function"] * timestep
+
+            # 8. Add model constraints
             self.add_constraint(
                 stage["model_constraints"],
                 lb=stage["lb_model_constraints"],
                 ub=stage["ub_model_constraints"],
             )
-            # TODO: add casadi 3.6 support
-            fk = opt_integrator(
-                x0=xk,
-                p=ca.vertcat(uk, v_localk, dk, const_par),
-            )
-            xk_end = fk["xf"]
-            # calculate model constraint
-            self.k += 1
-            self.pred_time = ts * self.k
-            xk = self.add_opt_var(sys.states)
-            self.add_constraint(xk_end - xk)
-            # TODO use stage cost from the integrator, i.e. fk["qf"] and integrate
-            #  everything into the stage function
-            self.objective_function += stage["cost_function"] * ts
+
+            # Update current state for next interval
+            current_state = next_state
 
     def initialize(self, system: CasadiALADINSystem, solver_factory: SolverFactory):
         """Initializes the trajectory optimization problem, creating all symbolic
-        variables of the OCP, the mapping function and the numerical solver."""
+        variables of the OCP, the mapping function and the numerical solver.
+
+        Args:
+            system: The system to be discretized
+            solver_factory: Factory to create the numerical solver
+        """
         self._construct_stage_function(system)
         super().initialize(system=system, solver_factory=solver_factory)
 
 
 def regularize_h(hessian, reg_param: float):
+    """Regularize a Hessian matrix to ensure it is positive definite.
+
+    This function computes an eigenvalue decomposition of the Hessian,
+    takes the absolute value of eigenvalues, and ensures all eigenvalues
+    are above a minimum threshold (reg_param).
+
+    Args:
+        hessian: The Hessian matrix to regularize
+        reg_param: Regularization parameter (minimum eigenvalue)
+
+    Returns:
+        H_reg: Regularized Hessian matrix
+    """
     # Eigenvalue decomposition of the Hessian
     e, V = np.linalg.eig(hessian)
-
-    # did_reg = False
-    # if np.min(e) < 0:
-    #     did_reg = True
 
     # Take absolute value of eigenvalues
     e = np.abs(e)

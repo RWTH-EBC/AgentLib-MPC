@@ -40,7 +40,9 @@ class CoordinatedMPCConfig(DistributedMPCConfig):
         ge=0,
         description="Interval in seconds after which a registration attempt is made.",
     )
-    shared_variable_fields: list[str] = ["messages_out"]
+    shared_variable_fields: list[str] = DistributedMPCConfig.default(
+        "shared_variable_fields"
+    ) + ["messages_out"]
 
 
 class CoordinatedMPC(DistributedMPC):

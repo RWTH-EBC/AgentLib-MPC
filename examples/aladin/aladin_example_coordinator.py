@@ -333,8 +333,8 @@ def make_configs() -> List[dict]:
             {
                 "module_id": "coordinator",
                 "type": "agentlib_mpc.aladin_coordinator",
-                "prediction_horizon": 2,
-                "time_step": 120,
+                "prediction_horizon": 15,
+                "time_step": 300,
                 "sampling_time": 60,
                 "penalty_factor": 10,
                 "wait_time_on_start_iters": 0.2,
@@ -367,7 +367,11 @@ def make_configs() -> List[dict]:
                         "collocation_order": 2,
                         "collocation_method": "legendre",
                     },
-                    "solver": {"name": "ipopt", "options": {"ipopt.print_level": 1}},
+                    # "discretization_options": {
+                    #     "method": "multiple_shooting",
+                    #     "integrator": "euler",
+                    # },
+                    "solver": {"name": "ipopt", "options": {"ipopt.print_level": 0}},
                     "results_file": "results//cooler_res.csv",
                     "overwrite_result_file": True,
                 },
@@ -407,7 +411,11 @@ def make_configs() -> List[dict]:
                         "collocation_order": 2,
                         "collocation_method": "legendre",
                     },
-                    "solver": {"name": "ipopt", "options": {"ipopt.print_level": 1}},
+                    # "discretization_options": {
+                    #     "method": "multiple_shooting",
+                    #     "integrator": "euler",
+                    # },
+                    "solver": {"name": "ipopt", "options": {"ipopt.print_level": 0}},
                     "results_file": "results//room.csv",
                     "overwrite_result_file": True,
                 },
@@ -490,7 +498,7 @@ def run_example(
 if __name__ == "__main__":
     run_example(
         with_plots=True,
-        until=900,
+        until=1800,
         start_pred=0,
         cleanup=False,
         log_level=logging.INFO,
