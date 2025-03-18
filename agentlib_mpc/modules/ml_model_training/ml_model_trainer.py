@@ -46,11 +46,6 @@ class MLModelTrainerConfig(BaseModuleConfig, abc.ABC):
     """
 
     step_size: float
-    # initial_training: List[Union[bool, float]] = pydantic.Field(
-    #     default=[False, 86400],
-    #     description="When a initial training is required configuration: "
-    #                 "[initial_training_required, training_time: Time in seconds, after which training is triggered once]"
-    # )
     inputs: AgentVariables = pydantic.Field(
         default=[],
         description="Variables which are inputs of the ML Model that should be trained.",
@@ -234,31 +229,6 @@ class MLModelTrainerConfig(BaseModuleConfig, abc.ABC):
             )
         return save_on
 
-    # @pydantic.field_validator('initial_training')
-    # @classmethod
-    # def validate_initial_config(cls, v):
-    #
-    #     initial_training_required, training_time = v
-    #
-    #     if not isinstance(initial_training_required, bool):
-    #         raise ValueError("First element must be a boolean")
-    #
-    #     if initial_training_required:
-    #         if not isinstance(training_time, (int, float)):
-    #             raise ValueError("training_time (second element) must be a number")
-    #
-    #         if training_time <= 0:
-    #             raise ValueError("training_time must be positive")
-    #
-    #     return v
-    #
-    # @property
-    # def initial_training_required(self) -> bool:
-    #     return self.initial_training[0]
-    #
-    # @property
-    # def training_time(self) -> float:
-    #     return self.initial_training[1]
 
     @pydantic.field_validator('online_learning')
     @classmethod
@@ -305,12 +275,13 @@ class MLModelTrainer(BaseModule, abc.ABC):
         """
         super().__init__(config=config, agent=agent)
         self.time_series_data = self._initialize_time_series_data()
+        #self.ml_models = self.build_ml_model_sequence()
         history_type = dict[str, [tuple[list[float], list[float]]]]
         self.history_dict: history_type = {
             col: ([], []) for col in self.time_series_data.columns
         }
         self._data_sources: dict[str, Source] = {var: None for var in self.time_series_data.columns}
-        self.initial_training_done = False
+        #self.initial_training_done = False
         self.ml_model_path = None
         self.input_features, self.output_features = self._define_features()
 
@@ -344,7 +315,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
             serialized_ml_model, best_model_path = self.retrain_model()
             self.set(self.config.MLModel.name, serialized_ml_model)
             self._update_ml_mpc_config(serialized_ml_model)
-            self.initial_training_done = True
+            #self.initial_training_done = True
 
     def _initialize_time_series_data(self) -> pd.DataFrame:
         """Loads simulation data to initialize the time_series data"""
@@ -507,17 +478,13 @@ class MLModelTrainer(BaseModule, abc.ABC):
 
                     if not data_ts[column].isnull().any():
                         data[column] = data[column].ffill().bfill()
+            data = data.bfill()
 
-            combined_data = pd.concat([data, trainings_data], axis=1)
-            nan_rows = combined_data.isnull().any(axis=1)
-            combined_data.loc[nan_rows, data.columns] = trainings_data.loc[nan_rows, data.columns]
-            combined_data = combined_data.loc[:, ~combined_data.columns.duplicated()]
+            combined_data = data.combine_first(trainings_data)
 
             if len(combined_data) > sample_size:
                 combined_data = self.sample_data_max_variation(combined_data, sample_size=sample_size)
             self.time_series_data = combined_data
-
-
 
 
     def sample_data_max_variation(self, data: pd.DataFrame, sample_size) -> pd.DataFrame:
