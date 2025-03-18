@@ -8,7 +8,7 @@ def get_trainer(retrain_delay, ml_model_source=None):
                 "module_id": "trainer",
                 "type": "agentlib_mpc.ann_trainer",
                 "epochs": 1000,
-                "batch_size": 64,
+                "batch_size": 128,
                 "online_learning": [True, retrain_delay, ml_model_source],
                 "inputs": [
                     {"name": "mDot", "value": 0.0225, "source": "myMPCAgent"},

@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 # script variables
 ub = 295.15
 
-ENV_CONFIG = {"rt": False, "factor": 0.01, "t_sample": 60}
+ENV_CONFIG = {"rt": False, "factor": 0.01, "t_sample": 3600, "offset": 259200}
 class InputGeneratorConfig(al.ModelConfig):
     outputs: al.ModelOutputs = [
         al.ModelOutput(
@@ -143,16 +143,16 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000, initial_tra
     logging.basicConfig(level=log_level)
 
     #Initial Training
-    import training_nn
-    training_nn.main(initial_training_time, plot_results=False, step_size=300)
-    ann_path = list(Path.cwd().glob("anns/best_model/*/ml_model.json"))[-1]
+    # import training_nn
+    # training_nn.main(initial_training_time, plot_results=False, step_size=300)
+    # ann_path = list(Path.cwd().glob("anns/best_model/*/ml_model.json"))[-1]
+    ann_path = r"D:\01_Repos\Repos_AGENT2\agentlib_mpc\AgentLib-MPC_onlinelearning\examples\one_room_mpc\ann\anns\best_model\Trainer_trainer_90000.0\ml_model.json"
 
     #Run with Online Learning
     agent_config = agent_configs(ml_model_path=str(ann_path))
-    if retrain_delay > 0:
-        import training_nn_onlinelearning
-        trainer = training_nn_onlinelearning.get_trainer(retrain_delay, ann_path)
-        agent_config.append(trainer)
+    import training_nn_onlinelearning
+    trainer = training_nn_onlinelearning.get_trainer(retrain_delay, ann_path)
+    agent_config.append(trainer)
 
     mas = LocalMASAgency(
         agent_configs=agent_config,
@@ -208,4 +208,4 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000, initial_tra
 
 
 if __name__ == "__main__":
-    run_example(until=86400, retrain_delay=43200)
+    run_example(until=86400*7, retrain_delay=86400*2)

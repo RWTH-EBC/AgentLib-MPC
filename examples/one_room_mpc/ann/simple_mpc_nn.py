@@ -88,13 +88,13 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000):
     # gets the subdirectory of anns with the highest number, i.e. the longest training
     # time
     try:
-        ann_path = list(Path.cwd().glob("anns/*/ml_model.json"))[-1]
+        ann_path = list(Path.cwd().glob("anns/best_model/*/ml_model.json"))[-1]
     except IndexError:
         # if there is none, we have to perform the training first
         import training_nn
 
-        training_nn.main(training_time=3600 * 24 * 1, plot_results=False, step_size=300)
-        ann_path = list(Path.cwd().glob("anns/*/ml_model.json"))[-1]
+        training_nn.main(initial_training_time=3600 * 24 * 1, plot_results=False, step_size=300)
+        ann_path = list(Path.cwd().glob("anns/best_model*/ml_model.json"))[1]
 
 
     mas = LocalMASAgency(
@@ -151,4 +151,4 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000):
 
 
 if __name__ == "__main__":
-    run_example(with_plots=True, until=3600)
+    run_example(with_plots=True, until=43200)
