@@ -1,7 +1,7 @@
 """Holds the base class for MPCs."""
 
 import os
-from typing import Tuple, Dict, Optional, Union
+from typing import Tuple, Dict, Optional
 
 import pandas as pd
 from pydantic import Field, field_validator

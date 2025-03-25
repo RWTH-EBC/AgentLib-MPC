@@ -110,7 +110,7 @@ class MPC(BaseMPC):
         if not self.config.enable_deactivate_mpc:
             return False
         active = self.get("active")
-        if active:
+        if active.value:
             return False
         source = str(active.source)
         if source == "None_None":
