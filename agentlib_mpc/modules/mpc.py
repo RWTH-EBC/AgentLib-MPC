@@ -309,36 +309,6 @@ class BaseMPC(BaseModule):
         if not self.init_status == InitStatus.ready:
             self.logger.warning("Skipping step, optimization_backend is not ready.")
             return
-        if self.config.enable_deactivate_mpc:
-            active = self.get("active")
-            if not active.value:
-                source = str(active.source)
-                if source == "None_None":
-                    source = "unknown (not specified in config)"
-                if not self.config.control_values_when_deactivated:
-                    self.logger.info("MPC was deactivated by source %s", source)
-                    return
-                self.logger.info(
-                    "MPC was deactivated by source %s, sending control_values_when_deactivated %s",
-                    source,
-                    self.config.control_values_when_deactivated,
-                )
-                for (
-                    control_name,
-                    value,
-                ) in self.config.control_values_when_deactivated.items():
-                    if control_name in self.config.controls:
-                        self.set(control_name, value)
-                    else:
-                        self.agent.data_broker.send_variable(
-                            AgentVariable(
-                                name=control_name,
-                                value=value,
-                                source=self.source,
-                                shared=True,
-                            )
-                        )
-                return
 
         self.pre_computation_hook()
 

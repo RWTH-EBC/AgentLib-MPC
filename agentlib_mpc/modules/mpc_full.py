@@ -129,13 +129,17 @@ class MPC(BaseMPC):
             else:
                 self.agent.data_broker.send_variable(
                     AgentVariable(
-                        name=control_name, value=value, source=self.source, shared=True
+                        name=control_name,
+                        value=value,
+                        source=self.source,
+                        shared=True
                     )
                 )
         return True
 
     def do_step(self):
-
+        if self.check_if_mpc_step_should_be_skipped():
+            return
         super().do_step()
         self._remove_old_values_from_history()
 
