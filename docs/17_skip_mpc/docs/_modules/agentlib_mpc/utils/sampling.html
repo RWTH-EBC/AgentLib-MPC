@@ -77,6 +77,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">List</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
@@ -125,10 +126,13 @@
 <span class="sd">    Obtain the specified portion of the trajectory.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        trajectory:  The trajectory to be sampled. Scalars will be</span>
-<span class="sd">            expanded onto the grid. Lists need to exactly match the provided</span>
-<span class="sd">            grid. Otherwise, a pandas Series is accepted with the timestamp as index. A</span>
-<span class="sd">             dict with the keys as time stamps is also accepted.</span>
+<span class="sd">        trajectory:  The trajectory to be sampled. Accepted formats:</span>
+<span class="sd">            - Scalars will be expanded onto the grid.</span>
+<span class="sd">            - Lists need to exactly match the provided grid.</span>
+<span class="sd">            - A pandas Series is accepted with the timestamp as index.</span>
+<span class="sd">            - A dict with the keys as time stamps is also accepted.</span>
+<span class="sd">            - A pandas Series serialized as a json-str is accepted.</span>
+<span class="sd">                Any given string will be cast as Series.</span>
 <span class="sd">        current: start time of requested trajectory</span>
 <span class="sd">        grid: target interpolation grid in seconds in relative terms (i.e.</span>
 <span class="sd">            starting from 0 usually)</span>
@@ -159,6 +163,9 @@
             <span class="sa">f</span><span class="s2">&quot;Passed list with length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;does not match target (</span><span class="si">{</span><span class="n">target_grid_length</span><span class="si">}</span><span class="s2">).&quot;</span>
         <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">trajectory</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_json</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(</span><span class="n">trajectory</span><span class="p">),</span> <span class="n">typ</span><span class="o">=</span><span class="s2">&quot;series&quot;</span><span class="p">,</span> <span class="n">convert_axes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">trajectory</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
         <span class="n">trajectory</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
         <span class="n">source_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">trajectory</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>

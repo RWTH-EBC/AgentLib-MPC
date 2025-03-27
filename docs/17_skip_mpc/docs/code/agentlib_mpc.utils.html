@@ -399,11 +399,14 @@ result = list(tck(target_grid))</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>trajectory</strong> – <p>The trajectory to be sampled. Scalars will be
-expanded onto the grid. Lists need to exactly match the provided
-grid. Otherwise, a pandas Series is accepted with the timestamp as index. A</p>
+<li><p><strong>trajectory</strong> – <p>The trajectory to be sampled. Accepted formats:
+- Scalars will be expanded onto the grid.
+- Lists need to exactly match the provided grid.
+- A pandas Series is accepted with the timestamp as index.
+- A dict with the keys as time stamps is also accepted.
+- A pandas Series serialized as a json-str is accepted.</p>
 <blockquote>
-<div><p>dict with the keys as time stamps is also accepted.</p>
+<div><p>Any given string will be cast as Series.</p>
 </div></blockquote>
 </p></li>
 <li><p><strong>current</strong> – start time of requested trajectory</p></li>
