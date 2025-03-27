@@ -2005,11 +2005,11 @@
                 "test_admm"
             ],
             "numpy": [
-                "test_mpc",
-                "test_serialized_gpr",
                 "test_admm",
                 "test_serialized_linreg",
-                "test_serialized_ann"
+                "test_mpc",
+                "test_serialized_ann",
+                "test_serialized_gpr"
             ],
             "agentlib.core": [
                 "test_admm"
@@ -2296,11 +2296,11 @@
                 "test_admm"
             ],
             "numpy": [
+                "test_admm",
                 "test_serialized_linreg",
                 "test_mpc",
-                "test_serialized_gpr",
-                "test_admm",
-                "test_serialized_ann"
+                "test_serialized_ann",
+                "test_serialized_gpr"
             ],
             "agentlib.core": [
                 "test_admm"
