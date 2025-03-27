@@ -129,7 +129,8 @@ AGENT_MPC = {
         {"module_id": "Ag1Com", "type": "local_broadcast"},
         {"type": "agentlib_mpc.skip_mpc_intervals",
          "intervals": [[30, 35], [50, 55]],
-         "time_unit": "minutes"
+         "time_unit": "minutes",
+         "log_level": "debug"
          },
         {
             "module_id": "myMPC",
