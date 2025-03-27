@@ -58,7 +58,7 @@ class BaseMPCConfig(BaseModuleConfig):
         "constant over the horizon. Parameters not listed "
         "here will have their default from the model file.",
     )
-    inputs: mpc_datamodels.MPCSeriesVariables = Field(
+    inputs: mpc_datamodels.MPCVariables = Field(
         default=[],
         description="List of all input variables of the MPC. Includes "
         "predictions for disturbances, set_points, dynamic "

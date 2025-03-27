@@ -135,21 +135,7 @@ class MPCVariable(AgentVariable):
     )
 
 
-@attrs.define(slots=True, weakref_slot=False, kw_only=True)
-class MPCSeriesVariable(MPCVariable):
-    """MPCVariable with pd.Series as the default type."""
-
-    type: Optional[str] = attrs.field(
-        default=None,
-        metadata={
-            "title": "Type",
-            "description": "Name the type of the variable using a string",
-        },
-    )
-
-
 MPCVariables = List[MPCVariable]
-MPCSeriesVariables = List[MPCSeriesVariable]
 
 
 def stats_path(path: Union[Path, str]) -> Path:
