@@ -42,6 +42,11 @@ class DataSourceConfig(BaseModuleConfig):
         description="Interpolation method used for resampling of data."
         "Only 'linear' and 'previous' are allowed.",
     )
+    shared: Optional[bool] = Field(
+        title="shared",
+        default=True,
+        description="Indicates if the variable is going to be shared with other agents.",
+    )
 
     @field_validator("data")
     @classmethod
@@ -172,7 +177,7 @@ class DataSource(BaseModule):
                 self.logger.debug(
                     f"At {self.env.now}: Sending variable {index} with value {value} to data broker."
                 )
-                variable = AgentVariable(name=index, value=value, shared=True)
+                variable = AgentVariable(name=index, value=value, shared=self.config.shared)
                 self.agent.data_broker.send_variable(variable, copy=False)
             yield self.env.timeout(self.config.t_sample)
 
