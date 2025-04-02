@@ -45,6 +45,14 @@ class MPCConfig(BaseMPCConfig):
         "a plain AgentVariable is send. This may be used to deactivate "
         "supervisory control in a simulation / real PLC.",
     )
+    outputs_to_send_when_activated: Dict[str, Union[float, bool, int]] = Field(
+        default={},
+        description="When the MPC is activated, send the controls with these values"
+        "specified as `{control_name: control_value}`."
+        "In case of variables to send which are not listed as model variables,"
+        "a plain AgentVariable is send. This may be used to deactivate "
+        "supervisory control in a simulation / real PLC.",
+    )
 
     @field_validator("r_del_u")
     def check_r_del_u_in_controls(
@@ -111,6 +119,18 @@ class MPC(BaseMPC):
             return False
         active = self.get("active")
         if active.value:
+            for output, value in self.config.outputs_to_send_when_activated.items():
+                if output in self.config.outputs:
+                    self.set(output, value)
+                else:
+                    self.agent.data_broker.send_variable(
+                        AgentVariable(
+                            name=output,
+                            value=value,
+                            source=self.source,
+                            shared=True
+                        )
+                    )
             return False
         source = str(active.source)
         if source == "None_None":
