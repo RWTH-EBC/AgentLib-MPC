@@ -119,9 +119,9 @@ class DataSource(BaseModule):
             # Try to convert to numeric if it's a string
             try:
                 data.index = pd.to_numeric(data.index)
-                data.index = data.index - data.index[0]
+                #data.index = data.index - data.index[0]  # Don't reset index starting at 0 because it breaks when environment itself has an offset
             except ValueError:
-                # If conversion to numeric fails, try to convert to datetune
+                # If conversion to numeric fails, try to convert to datetime
                 try:
                     data.index = pd.to_datetime(data.index)
                     data.index = (data.index - data.index[0]).total_seconds()
