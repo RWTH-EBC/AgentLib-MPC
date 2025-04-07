@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>agentlib_mpc.modules.dmpc.aladin.aladin_coordinated &mdash; agentlib_mpc 0.6.6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../../../../_static/jquery.js"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
+      <script src="../../../../../_static/doctools.js"></script>
+      <script src="../../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            agentlib_mpc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../PackageReference.html">Package Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">agentlib_mpc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../../modules.html">agentlib_mpc.modules</a></li>
+          <li class="breadcrumb-item"><a href="../../dmpc.html">agentlib_mpc.modules.dmpc</a></li>
+      <li class="breadcrumb-item active">agentlib_mpc.modules.dmpc.aladin.aladin_coordinated</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for agentlib_mpc.modules.dmpc.aladin.aladin_coordinated</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module implementing the coordinated ALADIN module.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">NamedTuple</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">AgentVariable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPCVariable</span><span class="p">,</span> <span class="n">MPCVariables</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.modules.dmpc.coordinated_mpc</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CoordinatedMPC</span><span class="p">,</span>
+    <span class="n">CoordinatedMPCConfig</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures</span><span class="w"> </span><span class="kn">import</span> <span class="n">coordinator_datatypes</span> <span class="k">as</span> <span class="n">cdt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">agentlib_mpc.modules.dmpc.aladin.aladin_datatypes</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ald</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.aladin</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasADiALADINBackend</span>
+
+
+<div class="viewcode-block" id="CouplingInput"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.aladin.html#agentlib_mpc.modules.dmpc.aladin.aladin_coordinated.CouplingInput">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CouplingInput</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">multiplier</span><span class="p">:</span> <span class="nb">str</span></div>
+
+
+<div class="viewcode-block" id="CoordinatedALADINConfig"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.aladin.html#agentlib_mpc.modules.dmpc.aladin.aladin_coordinated.CoordinatedALADINConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CoordinatedALADINConfig</span><span class="p">(</span><span class="n">CoordinatedMPCConfig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for the coordinated ALADIN agent.&quot;&quot;&quot;</span>
+
+    <span class="c1"># ALADIN-specific configuration parameters</span>
+    <span class="n">couplings</span><span class="p">:</span> <span class="n">MPCVariables</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;List of coupling variables between subsystems&quot;</span>
+    <span class="p">)</span>
+    <span class="n">max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum number of ALADIN iterations before termination of control step.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">penalty_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Penalty factor of the ALADIN algorithm.&quot;</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CoordinatedALADIN"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.aladin.html#agentlib_mpc.modules.dmpc.aladin.aladin_coordinated.CoordinatedALADIN">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CoordinatedALADIN</span><span class="p">(</span><span class="n">CoordinatedMPC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Module to implement an ALADIN agent, which is guided by a coordinator.</span>
+<span class="sd">    Only optimizes based on callbacks.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">config</span><span class="p">:</span> <span class="n">CoordinatedALADINConfig</span>
+    <span class="n">optimization_backend</span><span class="p">:</span> <span class="n">CasADiALADINBackend</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_alias_to_input_names</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CouplingInput</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_coupling_alias_to_name_mapping</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_var_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set up appropriate variable reference for ALADIN.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ald</span><span class="o">.</span><span class="n">VariableReference</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CoordinatedALADIN.process"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.aladin.html#agentlib_mpc.modules.dmpc.aladin.aladin_coordinated.CoordinatedALADIN.process">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># send registration request to coordinator</span>
+        <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">registration_interval</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registered_coordinator</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cdt</span><span class="o">.</span><span class="n">REGISTRATION_A2C</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_coupling_alias_to_name_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        creates a mapping of alias to the variable names for multiplier and</span>
+<span class="sd">        global mean that the optimization backend recognizes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">alias_to_input_names</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">coupling</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_ref</span><span class="o">.</span><span class="n">couplings</span><span class="p">:</span>
+            <span class="n">coup_variable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">coupling</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">coup_in</span> <span class="o">=</span> <span class="n">CouplingInput</span><span class="p">(</span><span class="n">multiplier</span><span class="o">=</span><span class="n">coupling</span><span class="o">.</span><span class="n">multiplier</span><span class="p">)</span>
+            <span class="n">alias_to_input_names</span><span class="p">[</span><span class="n">coup_variable</span><span class="o">.</span><span class="n">alias</span><span class="p">]</span> <span class="o">=</span> <span class="n">coup_in</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_alias_to_input_names</span> <span class="o">=</span> <span class="n">alias_to_input_names</span>
+
+<div class="viewcode-block" id="CoordinatedALADIN.registration_callback"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.aladin.html#agentlib_mpc.modules.dmpc.aladin.aladin_coordinated.CoordinatedALADIN.registration_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">registration_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;callback for registration&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registered_coordinator</span><span class="p">:</span>
+            <span class="c1"># ignore if registration has already been done</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;receiving </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="c1"># global parameters to define optimisation problem</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">cdt</span><span class="o">.</span><span class="n">RegistrationMessage</span><span class="p">(</span><span class="o">**</span><span class="n">variable</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="n">ald</span><span class="o">.</span><span class="n">ALADINParameters</span><span class="p">(</span><span class="o">**</span><span class="n">msg</span><span class="o">.</span><span class="n">opts</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">options</span><span class="o">.</span><span class="n">receiver_agent_id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">agent_id</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_mpc_parameters</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+        <span class="n">current_vars</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">MPCVariable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">current_vars</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collect_variables_for_optimization</span><span class="p">())</span>
+        <span class="n">initial_guess</span><span class="p">,</span> <span class="n">coup_vars_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimization_backend</span><span class="o">.</span><span class="n">get_aladin_registration</span><span class="p">(</span>
+            <span class="n">current_vars</span><span class="o">=</span><span class="n">current_vars</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">time</span>
+        <span class="p">)</span>
+        <span class="n">coup_vars_alias</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">alias</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">coup_vars_n</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="n">ald</span><span class="o">.</span><span class="n">RegistrationA2C</span><span class="p">(</span>
+            <span class="n">local_solution</span><span class="o">=</span><span class="n">initial_guess</span><span class="p">,</span>
+            <span class="n">coup_vars</span><span class="o">=</span><span class="n">coup_vars_alias</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_registered_coordinator</span> <span class="o">=</span> <span class="n">variable</span><span class="o">.</span><span class="n">source</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cdt</span><span class="o">.</span><span class="n">REGISTRATION_A2C</span><span class="p">,</span> <span class="n">answer</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="CoordinatedALADIN.init_iteration_callback"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.aladin.html#agentlib_mpc.modules.dmpc.aladin.aladin_coordinated.CoordinatedALADIN.init_iteration_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_iteration_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Callback that processes the coordinators &#39;startIteration&#39; flag.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># value is True on start</span>
+        <span class="k">if</span> <span class="n">variable</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="c1"># custom function which can be overloaded to do stuff before a step</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pre_computation_hook</span><span class="p">()</span>
+
+            <span class="c1"># prepare optimization</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_optimization_at</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">time</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_new_measurement</span><span class="p">()</span>
+            <span class="n">new_trajectory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shift_opt_variable</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cdt</span><span class="o">.</span><span class="n">START_ITERATION_A2C</span><span class="p">,</span> <span class="n">new_trajectory</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sent &#39;StartIteration&#39; True.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># value is False on convergence/iteration limit</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_finish_optimization</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CoordinatedALADIN.shift_trajectories"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.aladin.html#agentlib_mpc.modules.dmpc.aladin.aladin_coordinated.CoordinatedALADIN.shift_trajectories">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">shift_trajectories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Shifts algorithm specific trajectories.&quot;&quot;&quot;</span>
+        <span class="c1"># This is handled in shift_opt_variable for ALADIN</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shift_opt_variable</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CoordinatedALADIN.shift_opt_variable"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.aladin.html#agentlib_mpc.modules.dmpc.aladin.aladin_coordinated.CoordinatedALADIN.shift_opt_variable">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">shift_opt_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;ALADIN-specific method to shift optimization variables.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimization_backend</span><span class="o">.</span><span class="n">shift_opt_var</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">penalty_factor_var</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MPCVariable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the penalty factor variable.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">MPCVariable</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">ald</span><span class="o">.</span><span class="n">LOCAL_PENALTY_FACTOR</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">penalty_factor</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="CoordinatedALADIN.get_new_measurement"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.aladin.html#agentlib_mpc.modules.dmpc.aladin.aladin_coordinated.CoordinatedALADIN.get_new_measurement">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_new_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve new measurement from relevant sensors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">opt_inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_variables_for_optimization</span><span class="p">()</span>
+        <span class="n">opt_inputs</span><span class="p">[</span><span class="n">ald</span><span class="o">.</span><span class="n">LOCAL_PENALTY_FACTOR</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">penalty_factor_var</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optimization_inputs</span> <span class="o">=</span> <span class="n">opt_inputs</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_mpc_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets MPC parameters and reinitializes the optimization problem.&quot;&quot;&quot;</span>
+        <span class="c1"># Update config with parameters from coordinator</span>
+        <span class="n">new_config_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
+        <span class="n">new_config_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;penalty_factor&quot;</span><span class="p">:</span> <span class="n">options</span><span class="o">.</span><span class="n">penalty_factor</span><span class="p">,</span>
+                <span class="n">cdt</span><span class="o">.</span><span class="n">TIME_STEP</span><span class="p">:</span> <span class="n">options</span><span class="o">.</span><span class="n">time_step</span><span class="p">,</span>
+                <span class="n">cdt</span><span class="o">.</span><span class="n">PREDICTION_HORIZON</span><span class="p">:</span> <span class="n">options</span><span class="o">.</span><span class="n">prediction_horizon</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">new_config_dict</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: Reinitialized optimization problem.&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_initial_coupling_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the initial coupling values with correct trajectory length.&quot;&quot;&quot;</span>
+        <span class="c1"># For ALADIN, this is mostly handled differently during registration,</span>
+        <span class="c1"># but we provide a compatible interface</span>
+        <span class="k">return</span> <span class="p">{},</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="CoordinatedALADIN.optimize"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.aladin.html#agentlib_mpc.modules.dmpc.aladin.aladin_coordinated.CoordinatedALADIN.optimize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs the optimization given information from the coordinator.</span>
+<span class="sd">        Replies with the necessary sensitivity information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># unpack message</span>
+        <span class="n">updates</span> <span class="o">=</span> <span class="n">ald</span><span class="o">.</span><span class="n">CoordinatorToAgent</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">variable</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">updates</span><span class="o">.</span><span class="n">target</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">agent_id</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Received update from Coordinator.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># load mpc inputs and current coupling inputs of this iteration</span>
+        <span class="n">opt_inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optimization_inputs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># add the coupling inputs of this iteration to the other mpc inputs</span>
+        <span class="k">for</span> <span class="n">alias</span><span class="p">,</span> <span class="n">multiplier</span> <span class="ow">in</span> <span class="n">updates</span><span class="o">.</span><span class="n">lam</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">coup_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alias_to_input_names</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span>
+            <span class="n">opt_inputs</span><span class="p">[</span><span class="n">coup_in</span><span class="o">.</span><span class="n">multiplier</span><span class="p">]</span> <span class="o">=</span> <span class="n">MPCVariable</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">coup_in</span><span class="o">.</span><span class="n">multiplier</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">multiplier</span>
+            <span class="p">)</span>
+
+        <span class="n">opt_inputs</span><span class="p">[</span><span class="n">ald</span><span class="o">.</span><span class="n">LOCAL_PENALTY_FACTOR</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">updates</span><span class="o">.</span><span class="n">rho</span>
+        <span class="c1"># perform optimization</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimization_backend</span><span class="o">.</span><span class="n">set_global_variable</span><span class="p">(</span><span class="n">updates</span><span class="o">.</span><span class="n">z</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimization_backend</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
+            <span class="n">now</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_optimization_at</span><span class="p">,</span> <span class="n">current_vars</span><span class="o">=</span><span class="n">opt_inputs</span>
+        <span class="p">)</span>
+        <span class="n">opt_return</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimization_backend</span><span class="o">.</span><span class="n">get_sensitivities</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sent optimal solution.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">cdt</span><span class="o">.</span><span class="n">OPTIMIZATION_A2C</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">opt_return</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="CoordinatedALADIN.assert_mpc_variables_are_in_model"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.aladin.html#agentlib_mpc.modules.dmpc.aladin.aladin_coordinated.CoordinatedALADIN.assert_mpc_variables_are_in_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">assert_mpc_variables_are_in_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks whether all variables of var_ref are contained in the model.</span>
+<span class="sd">        Extends the base method to account for coupling variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">unassigned_model</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">assert_mpc_variables_are_in_model</span><span class="p">()</span>
+
+        <span class="c1"># Handle coupling variables in ALADIN if applicable</span>
+        <span class="c1"># This is similar to ADMM, but we need to check if ALADIN uses different naming</span>
+        <span class="k">for</span> <span class="n">coup</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">couplings</span> <span class="o">+</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="s2">&quot;exchange&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="k">if</span> <span class="n">coup</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">unassigned_model</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">]:</span>
+                <span class="n">unassigned_model</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_subset</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">coup</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">unassigned_model</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">],</span> <span class="s2">&quot;Couplings&quot;</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">coup</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">unassigned_model</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]:</span>
+                <span class="n">unassigned_model</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_subset</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">coup</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">unassigned_model</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">],</span> <span class="s2">&quot;Couplings&quot;</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">coup</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">unassigned_model</span><span class="p">[</span><span class="s2">&quot;states&quot;</span><span class="p">]:</span>
+                <span class="n">unassigned_model</span><span class="p">[</span><span class="s2">&quot;states&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assert_subset</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">coup</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">unassigned_model</span><span class="p">[</span><span class="s2">&quot;states&quot;</span><span class="p">],</span> <span class="s2">&quot;Couplings&quot;</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">unassigned_model</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_finish_optimization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finalize an iteration by setting actuation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_actuation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="o">=</span> <span class="kc">None</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, AGENT-Project Associates.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

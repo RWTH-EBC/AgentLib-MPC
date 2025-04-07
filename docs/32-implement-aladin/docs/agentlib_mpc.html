@@ -1,0 +1,555 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>agentlib_mpc package &mdash; agentlib_mpc 0.6.6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+
+  
+      <script src="_static/jquery.js"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+      <script src="_static/doctools.js"></script>
+      <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            agentlib_mpc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PackageReference.html">Package Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">agentlib_mpc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">agentlib_mpc package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/agentlib_mpc.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="agentlib-mpc-package">
+<h1>agentlib_mpc package<a class="headerlink" href="#agentlib-mpc-package" title="Permalink to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="agentlib_mpc.data_structures.html">agentlib_mpc.data_structures package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.data_structures.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.data_structures.html#module-agentlib_mpc.data_structures.admm_datatypes">agentlib_mpc.data_structures.admm_datatypes module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ADMMParameters"><code class="docutils literal notranslate"><span class="pre">ADMMParameters</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ADMMParameters.penalty_factor"><code class="docutils literal notranslate"><span class="pre">ADMMParameters.penalty_factor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ADMMParameters.prediction_horizon"><code class="docutils literal notranslate"><span class="pre">ADMMParameters.prediction_horizon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ADMMParameters.time_step"><code class="docutils literal notranslate"><span class="pre">ADMMParameters.time_step</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ADMMParticipation"><code class="docutils literal notranslate"><span class="pre">ADMMParticipation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ADMMParticipation.participating"><code class="docutils literal notranslate"><span class="pre">ADMMParticipation.participating</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ADMMParticipation.ready"><code class="docutils literal notranslate"><span class="pre">ADMMParticipation.ready</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ADMMParticipation.source"><code class="docutils literal notranslate"><span class="pre">ADMMParticipation.source</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.AgentDictEntry"><code class="docutils literal notranslate"><span class="pre">AgentDictEntry</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.AgentDictEntry.coup_vars"><code class="docutils literal notranslate"><span class="pre">AgentDictEntry.coup_vars</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.AgentDictEntry.exchange_vars"><code class="docutils literal notranslate"><span class="pre">AgentDictEntry.exchange_vars</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.AgentToCoordinator"><code class="docutils literal notranslate"><span class="pre">AgentToCoordinator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.AgentToCoordinator.local_exchange_trajectory"><code class="docutils literal notranslate"><span class="pre">AgentToCoordinator.local_exchange_trajectory</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.AgentToCoordinator.local_trajectory"><code class="docutils literal notranslate"><span class="pre">AgentToCoordinator.local_trajectory</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ConsensusVariable"><code class="docutils literal notranslate"><span class="pre">ConsensusVariable</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ConsensusVariable.flat_multipliers"><code class="docutils literal notranslate"><span class="pre">ConsensusVariable.flat_multipliers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ConsensusVariable.multipliers"><code class="docutils literal notranslate"><span class="pre">ConsensusVariable.multipliers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ConsensusVariable.shift_values_by_one"><code class="docutils literal notranslate"><span class="pre">ConsensusVariable.shift_values_by_one()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ConsensusVariable.update_mean_trajectory"><code class="docutils literal notranslate"><span class="pre">ConsensusVariable.update_mean_trajectory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ConsensusVariable.update_multipliers"><code class="docutils literal notranslate"><span class="pre">ConsensusVariable.update_multipliers()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CoordinatorToAgent"><code class="docutils literal notranslate"><span class="pre">CoordinatorToAgent</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CoordinatorToAgent.exchange_multiplier"><code class="docutils literal notranslate"><span class="pre">CoordinatorToAgent.exchange_multiplier</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CoordinatorToAgent.mean_diff_trajectory"><code class="docutils literal notranslate"><span class="pre">CoordinatorToAgent.mean_diff_trajectory</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CoordinatorToAgent.mean_trajectory"><code class="docutils literal notranslate"><span class="pre">CoordinatorToAgent.mean_trajectory</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CoordinatorToAgent.multiplier"><code class="docutils literal notranslate"><span class="pre">CoordinatorToAgent.multiplier</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CoordinatorToAgent.penalty_parameter"><code class="docutils literal notranslate"><span class="pre">CoordinatorToAgent.penalty_parameter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CoordinatorToAgent.target"><code class="docutils literal notranslate"><span class="pre">CoordinatorToAgent.target</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingEntry"><code class="docutils literal notranslate"><span class="pre">CouplingEntry</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingEntry.admm_variables"><code class="docutils literal notranslate"><span class="pre">CouplingEntry.admm_variables()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingEntry.lagged"><code class="docutils literal notranslate"><span class="pre">CouplingEntry.lagged</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingEntry.local"><code class="docutils literal notranslate"><span class="pre">CouplingEntry.local</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingEntry.mean"><code class="docutils literal notranslate"><span class="pre">CouplingEntry.mean</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingEntry.multiplier"><code class="docutils literal notranslate"><span class="pre">CouplingEntry.multiplier</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingEntry.name"><code class="docutils literal notranslate"><span class="pre">CouplingEntry.name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingVariable"><code class="docutils literal notranslate"><span class="pre">CouplingVariable</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingVariable.delta_mean"><code class="docutils literal notranslate"><span class="pre">CouplingVariable.delta_mean</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingVariable.flat_locals"><code class="docutils literal notranslate"><span class="pre">CouplingVariable.flat_locals()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingVariable.get_residual"><code class="docutils literal notranslate"><span class="pre">CouplingVariable.get_residual()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingVariable.local_trajectories"><code class="docutils literal notranslate"><span class="pre">CouplingVariable.local_trajectories</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingVariable.mean_trajectory"><code class="docutils literal notranslate"><span class="pre">CouplingVariable.mean_trajectory</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingVariable.participants"><code class="docutils literal notranslate"><span class="pre">CouplingVariable.participants</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingVariable.primal_residual"><code class="docutils literal notranslate"><span class="pre">CouplingVariable.primal_residual</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ExchangeEntry"><code class="docutils literal notranslate"><span class="pre">ExchangeEntry</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ExchangeEntry.admm_variables"><code class="docutils literal notranslate"><span class="pre">ExchangeEntry.admm_variables()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ExchangeEntry.lagged"><code class="docutils literal notranslate"><span class="pre">ExchangeEntry.lagged</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ExchangeEntry.local"><code class="docutils literal notranslate"><span class="pre">ExchangeEntry.local</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ExchangeEntry.mean_diff"><code class="docutils literal notranslate"><span class="pre">ExchangeEntry.mean_diff</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ExchangeEntry.multiplier"><code class="docutils literal notranslate"><span class="pre">ExchangeEntry.multiplier</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ExchangeEntry.name"><code class="docutils literal notranslate"><span class="pre">ExchangeEntry.name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ExchangeVariable"><code class="docutils literal notranslate"><span class="pre">ExchangeVariable</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ExchangeVariable.diff_trajectories"><code class="docutils literal notranslate"><span class="pre">ExchangeVariable.diff_trajectories</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ExchangeVariable.multiplier"><code class="docutils literal notranslate"><span class="pre">ExchangeVariable.multiplier</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ExchangeVariable.shift_values_by_one"><code class="docutils literal notranslate"><span class="pre">ExchangeVariable.shift_values_by_one()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ExchangeVariable.update_diff_trajectories"><code class="docutils literal notranslate"><span class="pre">ExchangeVariable.update_diff_trajectories()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ExchangeVariable.update_multiplier"><code class="docutils literal notranslate"><span class="pre">ExchangeVariable.update_multiplier()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.StructuredValue"><code class="docutils literal notranslate"><span class="pre">StructuredValue</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.StructuredValue.from_json"><code class="docutils literal notranslate"><span class="pre">StructuredValue.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.StructuredValue.to_json"><code class="docutils literal notranslate"><span class="pre">StructuredValue.to_json()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.VariableReference"><code class="docutils literal notranslate"><span class="pre">VariableReference</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.VariableReference.all_variables"><code class="docutils literal notranslate"><span class="pre">VariableReference.all_variables()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.VariableReference.couplings"><code class="docutils literal notranslate"><span class="pre">VariableReference.couplings</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.VariableReference.exchange"><code class="docutils literal notranslate"><span class="pre">VariableReference.exchange</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.VariableReference.from_config"><code class="docutils literal notranslate"><span class="pre">VariableReference.from_config()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.coupling_alias"><code class="docutils literal notranslate"><span class="pre">coupling_alias()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.exchange_alias"><code class="docutils literal notranslate"><span class="pre">exchange_alias()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.data_structures.html#module-agentlib_mpc.data_structures.casadi_utils">agentlib_mpc.data_structures.casadi_utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.CasadiDiscretizationOptions"><code class="docutils literal notranslate"><span class="pre">CasadiDiscretizationOptions</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.CasadiDiscretizationOptions.collocation_method"><code class="docutils literal notranslate"><span class="pre">CasadiDiscretizationOptions.collocation_method</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.CasadiDiscretizationOptions.collocation_order"><code class="docutils literal notranslate"><span class="pre">CasadiDiscretizationOptions.collocation_order</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.CasadiDiscretizationOptions.integrator"><code class="docutils literal notranslate"><span class="pre">CasadiDiscretizationOptions.integrator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.CasadiDiscretizationOptions.method"><code class="docutils literal notranslate"><span class="pre">CasadiDiscretizationOptions.method</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.CollocationMethod"><code class="docutils literal notranslate"><span class="pre">CollocationMethod</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.CollocationMethod.legendre"><code class="docutils literal notranslate"><span class="pre">CollocationMethod.legendre</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.CollocationMethod.radau"><code class="docutils literal notranslate"><span class="pre">CollocationMethod.radau</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Constraint"><code class="docutils literal notranslate"><span class="pre">Constraint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Constraint.function"><code class="docutils literal notranslate"><span class="pre">Constraint.function</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Constraint.lb"><code class="docutils literal notranslate"><span class="pre">Constraint.lb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Constraint.ub"><code class="docutils literal notranslate"><span class="pre">Constraint.ub</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.DiscretizationMethod"><code class="docutils literal notranslate"><span class="pre">DiscretizationMethod</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.DiscretizationMethod.collocation"><code class="docutils literal notranslate"><span class="pre">DiscretizationMethod.collocation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.DiscretizationMethod.multiple_shooting"><code class="docutils literal notranslate"><span class="pre">DiscretizationMethod.multiple_shooting</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Integrators"><code class="docutils literal notranslate"><span class="pre">Integrators</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Integrators.cvodes"><code class="docutils literal notranslate"><span class="pre">Integrators.cvodes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Integrators.euler"><code class="docutils literal notranslate"><span class="pre">Integrators.euler</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Integrators.rk"><code class="docutils literal notranslate"><span class="pre">Integrators.rk</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.ModelConstraint"><code class="docutils literal notranslate"><span class="pre">ModelConstraint</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.ModelConstraint.function"><code class="docutils literal notranslate"><span class="pre">ModelConstraint.function</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.ModelConstraint.lb"><code class="docutils literal notranslate"><span class="pre">ModelConstraint.lb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.ModelConstraint.ub"><code class="docutils literal notranslate"><span class="pre">ModelConstraint.ub</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.OptParMXContainer"><code class="docutils literal notranslate"><span class="pre">OptParMXContainer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.OptParMXContainer.grid"><code class="docutils literal notranslate"><span class="pre">OptParMXContainer.grid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.OptParMXContainer.var"><code class="docutils literal notranslate"><span class="pre">OptParMXContainer.var</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.OptVarMXContainer"><code class="docutils literal notranslate"><span class="pre">OptVarMXContainer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.OptVarMXContainer.guess"><code class="docutils literal notranslate"><span class="pre">OptVarMXContainer.guess</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.OptVarMXContainer.lb"><code class="docutils literal notranslate"><span class="pre">OptVarMXContainer.lb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.OptVarMXContainer.opt"><code class="docutils literal notranslate"><span class="pre">OptVarMXContainer.opt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.OptVarMXContainer.ub"><code class="docutils literal notranslate"><span class="pre">OptVarMXContainer.ub</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory"><code class="docutils literal notranslate"><span class="pre">SolverFactory</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.bat_file"><code class="docutils literal notranslate"><span class="pre">SolverFactory.bat_file</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.create_solver"><code class="docutils literal notranslate"><span class="pre">SolverFactory.create_solver()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.do_jit"><code class="docutils literal notranslate"><span class="pre">SolverFactory.do_jit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.logger"><code class="docutils literal notranslate"><span class="pre">SolverFactory.logger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.make_casadi_nlp"><code class="docutils literal notranslate"><span class="pre">SolverFactory.make_casadi_nlp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.name"><code class="docutils literal notranslate"><span class="pre">SolverFactory.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.options"><code class="docutils literal notranslate"><span class="pre">SolverFactory.options</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverOptions"><code class="docutils literal notranslate"><span class="pre">SolverOptions</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverOptions.name"><code class="docutils literal notranslate"><span class="pre">SolverOptions.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverOptions.options"><code class="docutils literal notranslate"><span class="pre">SolverOptions.options</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers"><code class="docutils literal notranslate"><span class="pre">Solvers</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers.bonmin"><code class="docutils literal notranslate"><span class="pre">Solvers.bonmin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers.fatrop"><code class="docutils literal notranslate"><span class="pre">Solvers.fatrop</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers.gurobi"><code class="docutils literal notranslate"><span class="pre">Solvers.gurobi</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers.ipopt"><code class="docutils literal notranslate"><span class="pre">Solvers.ipopt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers.osqp"><code class="docutils literal notranslate"><span class="pre">Solvers.osqp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers.proxqp"><code class="docutils literal notranslate"><span class="pre">Solvers.proxqp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers.qpoases"><code class="docutils literal notranslate"><span class="pre">Solvers.qpoases</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers.sqpmethod"><code class="docutils literal notranslate"><span class="pre">Solvers.sqpmethod</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.compile_solver"><code class="docutils literal notranslate"><span class="pre">compile_solver()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.temporary_directory"><code class="docutils literal notranslate"><span class="pre">temporary_directory()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.data_structures.html#module-agentlib_mpc.data_structures.coordinator_datatypes">agentlib_mpc.data_structures.coordinator_datatypes module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.AgentDictEntry"><code class="docutils literal notranslate"><span class="pre">AgentDictEntry</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.AgentDictEntry.name"><code class="docutils literal notranslate"><span class="pre">AgentDictEntry.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.AgentDictEntry.optimization_data"><code class="docutils literal notranslate"><span class="pre">AgentDictEntry.optimization_data</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.AgentDictEntry.status"><code class="docutils literal notranslate"><span class="pre">AgentDictEntry.status</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.AgentStatus"><code class="docutils literal notranslate"><span class="pre">AgentStatus</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.AgentStatus.busy"><code class="docutils literal notranslate"><span class="pre">AgentStatus.busy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.AgentStatus.pending"><code class="docutils literal notranslate"><span class="pre">AgentStatus.pending</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.AgentStatus.ready"><code class="docutils literal notranslate"><span class="pre">AgentStatus.ready</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.AgentStatus.standby"><code class="docutils literal notranslate"><span class="pre">AgentStatus.standby</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.CoordinatorStatus"><code class="docutils literal notranslate"><span class="pre">CoordinatorStatus</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.CoordinatorStatus.init_iterations"><code class="docutils literal notranslate"><span class="pre">CoordinatorStatus.init_iterations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.CoordinatorStatus.optimization"><code class="docutils literal notranslate"><span class="pre">CoordinatorStatus.optimization</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.CoordinatorStatus.sleeping"><code class="docutils literal notranslate"><span class="pre">CoordinatorStatus.sleeping</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.CoordinatorStatus.updating"><code class="docutils literal notranslate"><span class="pre">CoordinatorStatus.updating</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.OptimizationData"><code class="docutils literal notranslate"><span class="pre">OptimizationData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.OptimizationData.from_dict"><code class="docutils literal notranslate"><span class="pre">OptimizationData.from_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.OptimizationData.to_dict"><code class="docutils literal notranslate"><span class="pre">OptimizationData.to_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.OptimizationData.u"><code class="docutils literal notranslate"><span class="pre">OptimizationData.u</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.OptimizationData.x"><code class="docutils literal notranslate"><span class="pre">OptimizationData.x</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.ParametersC2A"><code class="docutils literal notranslate"><span class="pre">ParametersC2A</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.ParametersC2A.penalty_factor"><code class="docutils literal notranslate"><span class="pre">ParametersC2A.penalty_factor</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.ParametersC2A.prediction_horizon"><code class="docutils literal notranslate"><span class="pre">ParametersC2A.prediction_horizon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.ParametersC2A.receiver_agent_id"><code class="docutils literal notranslate"><span class="pre">ParametersC2A.receiver_agent_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.ParametersC2A.time_step"><code class="docutils literal notranslate"><span class="pre">ParametersC2A.time_step</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.RegistrationMessage"><code class="docutils literal notranslate"><span class="pre">RegistrationMessage</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.RegistrationMessage.agent_id"><code class="docutils literal notranslate"><span class="pre">RegistrationMessage.agent_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.RegistrationMessage.coupling"><code class="docutils literal notranslate"><span class="pre">RegistrationMessage.coupling</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.RegistrationMessage.opts"><code class="docutils literal notranslate"><span class="pre">RegistrationMessage.opts</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.RegistrationMessage.status"><code class="docutils literal notranslate"><span class="pre">RegistrationMessage.status</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.StructuredValue"><code class="docutils literal notranslate"><span class="pre">StructuredValue</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.StructuredValue.from_json"><code class="docutils literal notranslate"><span class="pre">StructuredValue.from_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.StructuredValue.to_json"><code class="docutils literal notranslate"><span class="pre">StructuredValue.to_json()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.data_structures.html#module-agentlib_mpc.data_structures.mpc_datamodels">agentlib_mpc.data_structures.mpc_datamodels module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.BaseVariableReference"><code class="docutils literal notranslate"><span class="pre">BaseVariableReference</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.BaseVariableReference.all_variables"><code class="docutils literal notranslate"><span class="pre">BaseVariableReference.all_variables()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.BaseVariableReference.from_config"><code class="docutils literal notranslate"><span class="pre">BaseVariableReference.from_config()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.DiscretizationOptions"><code class="docutils literal notranslate"><span class="pre">DiscretizationOptions</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.DiscretizationOptions.prediction_horizon"><code class="docutils literal notranslate"><span class="pre">DiscretizationOptions.prediction_horizon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.DiscretizationOptions.time_step"><code class="docutils literal notranslate"><span class="pre">DiscretizationOptions.time_step</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.FullVariableReference"><code class="docutils literal notranslate"><span class="pre">FullVariableReference</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.FullVariableReference.r_del_u"><code class="docutils literal notranslate"><span class="pre">FullVariableReference.r_del_u</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.InitStatus"><code class="docutils literal notranslate"><span class="pre">InitStatus</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.InitStatus.during_update"><code class="docutils literal notranslate"><span class="pre">InitStatus.during_update</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.InitStatus.pre_module_init"><code class="docutils literal notranslate"><span class="pre">InitStatus.pre_module_init</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.InitStatus.ready"><code class="docutils literal notranslate"><span class="pre">InitStatus.ready</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference"><code class="docutils literal notranslate"><span class="pre">MHEVariableReference</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.all_variables"><code class="docutils literal notranslate"><span class="pre">MHEVariableReference.all_variables()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.estimated_inputs"><code class="docutils literal notranslate"><span class="pre">MHEVariableReference.estimated_inputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.estimated_parameters"><code class="docutils literal notranslate"><span class="pre">MHEVariableReference.estimated_parameters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.known_inputs"><code class="docutils literal notranslate"><span class="pre">MHEVariableReference.known_inputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.known_parameters"><code class="docutils literal notranslate"><span class="pre">MHEVariableReference.known_parameters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.measured_states"><code class="docutils literal notranslate"><span class="pre">MHEVariableReference.measured_states</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.outputs"><code class="docutils literal notranslate"><span class="pre">MHEVariableReference.outputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.states"><code class="docutils literal notranslate"><span class="pre">MHEVariableReference.states</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.weights_states"><code class="docutils literal notranslate"><span class="pre">MHEVariableReference.weights_states</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MINLPVariableReference"><code class="docutils literal notranslate"><span class="pre">MINLPVariableReference</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MINLPVariableReference.binary_controls"><code class="docutils literal notranslate"><span class="pre">MINLPVariableReference.binary_controls</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MPCVariable"><code class="docutils literal notranslate"><span class="pre">MPCVariable</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MPCVariable.interpolation_method"><code class="docutils literal notranslate"><span class="pre">MPCVariable.interpolation_method</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.Results"><code class="docutils literal notranslate"><span class="pre">Results</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.Results.df"><code class="docutils literal notranslate"><span class="pre">Results.df</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.VariableReference"><code class="docutils literal notranslate"><span class="pre">VariableReference</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.VariableReference.controls"><code class="docutils literal notranslate"><span class="pre">VariableReference.controls</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.VariableReference.inputs"><code class="docutils literal notranslate"><span class="pre">VariableReference.inputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.VariableReference.outputs"><code class="docutils literal notranslate"><span class="pre">VariableReference.outputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.VariableReference.parameters"><code class="docutils literal notranslate"><span class="pre">VariableReference.parameters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.VariableReference.states"><code class="docutils literal notranslate"><span class="pre">VariableReference.states</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.cia_relaxed_results_path"><code class="docutils literal notranslate"><span class="pre">cia_relaxed_results_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.r_del_u_convention"><code class="docutils literal notranslate"><span class="pre">r_del_u_convention()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.stats_path"><code class="docutils literal notranslate"><span class="pre">stats_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.data_structures.html#module-agentlib_mpc.data_structures">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="agentlib_mpc.models.html">agentlib_mpc.models package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.models.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.models.html#agentlib-mpc-models-ann-model-module">agentlib_mpc.models.ann_model module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.models.html#module-agentlib_mpc.models.casadi_model">agentlib_mpc.models.casadi_model module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiInput"><code class="docutils literal notranslate"><span class="pre">CasadiInput</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiInput.alg"><code class="docutils literal notranslate"><span class="pre">CasadiInput.alg</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel"><code class="docutils literal notranslate"><span class="pre">CasadiModel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.auxiliaries"><code class="docutils literal notranslate"><span class="pre">CasadiModel.auxiliaries</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.differentials"><code class="docutils literal notranslate"><span class="pre">CasadiModel.differentials</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.do_step"><code class="docutils literal notranslate"><span class="pre">CasadiModel.do_step()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.get"><code class="docutils literal notranslate"><span class="pre">CasadiModel.get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.get_constraints"><code class="docutils literal notranslate"><span class="pre">CasadiModel.get_constraints()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.get_differential_values"><code class="docutils literal notranslate"><span class="pre">CasadiModel.get_differential_values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.get_input_values"><code class="docutils literal notranslate"><span class="pre">CasadiModel.get_input_values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.initialize"><code class="docutils literal notranslate"><span class="pre">CasadiModel.initialize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.inputs"><code class="docutils literal notranslate"><span class="pre">CasadiModel.inputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.output_equations"><code class="docutils literal notranslate"><span class="pre">CasadiModel.output_equations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.outputs"><code class="docutils literal notranslate"><span class="pre">CasadiModel.outputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.parameters"><code class="docutils literal notranslate"><span class="pre">CasadiModel.parameters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.set_differential_values"><code class="docutils literal notranslate"><span class="pre">CasadiModel.set_differential_values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.set_output_values"><code class="docutils literal notranslate"><span class="pre">CasadiModel.set_output_values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.setup_system"><code class="docutils literal notranslate"><span class="pre">CasadiModel.setup_system()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.states"><code class="docutils literal notranslate"><span class="pre">CasadiModel.states</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig"><code class="docutils literal notranslate"><span class="pre">CasadiModelConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.cost_function"><code class="docutils literal notranslate"><span class="pre">CasadiModelConfig.cost_function</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.inputs"><code class="docutils literal notranslate"><span class="pre">CasadiModelConfig.inputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.outputs"><code class="docutils literal notranslate"><span class="pre">CasadiModelConfig.outputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.parameters"><code class="docutils literal notranslate"><span class="pre">CasadiModelConfig.parameters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.states"><code class="docutils literal notranslate"><span class="pre">CasadiModelConfig.states</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.system"><code class="docutils literal notranslate"><span class="pre">CasadiModelConfig.system</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.model_post_init"><code class="docutils literal notranslate"><span class="pre">CasadiModelConfig.model_post_init()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiOutput"><code class="docutils literal notranslate"><span class="pre">CasadiOutput</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiOutput.alg"><code class="docutils literal notranslate"><span class="pre">CasadiOutput.alg</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiOutput.json"><code class="docutils literal notranslate"><span class="pre">CasadiOutput.json()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiParameter"><code class="docutils literal notranslate"><span class="pre">CasadiParameter</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiState"><code class="docutils literal notranslate"><span class="pre">CasadiState</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiState.alg"><code class="docutils literal notranslate"><span class="pre">CasadiState.alg</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiState.json"><code class="docutils literal notranslate"><span class="pre">CasadiState.json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiState.ode"><code class="docutils literal notranslate"><span class="pre">CasadiState.ode</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiVariable"><code class="docutils literal notranslate"><span class="pre">CasadiVariable</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiVariable.create_sym"><code class="docutils literal notranslate"><span class="pre">CasadiVariable.create_sym()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiVariable.sym"><code class="docutils literal notranslate"><span class="pre">CasadiVariable.sym</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.get_symbolic"><code class="docutils literal notranslate"><span class="pre">get_symbolic()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.models.html#agentlib-mpc-models-casadi-model-ann-module">agentlib_mpc.models.casadi_model_ann module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.models.html#agentlib-mpc-models-casadi-neural-network-module">agentlib_mpc.models.casadi_neural_network module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.models.html#agentlib-mpc-models-serialized-ann-module">agentlib_mpc.models.serialized_ann module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.models.html#module-agentlib_mpc.models">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="agentlib_mpc.optimization_backends.html">agentlib_mpc.optimization_backends package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.html">agentlib_mpc.optimization_backends.casadi_ package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.html#module-agentlib_mpc.optimization_backends.casadi_.admm">agentlib_mpc.optimization_backends.casadi_.admm module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.html#module-agentlib_mpc.optimization_backends.casadi_.basic">agentlib_mpc.optimization_backends.casadi_.basic module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.html#agentlib-mpc-optimization-backends-casadi-casadi-admm-nn-module">agentlib_mpc.optimization_backends.casadi_.casadi_admm_nn module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.html#agentlib-mpc-optimization-backends-casadi-casadi-nn-module">agentlib_mpc.optimization_backends.casadi_.casadi_nn module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.html#module-agentlib_mpc.optimization_backends.casadi_.full">agentlib_mpc.optimization_backends.casadi_.full module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.html#agentlib-mpc-optimization-backends-casadi-minlp-module">agentlib_mpc.optimization_backends.casadi_.minlp module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.html#module-agentlib_mpc.optimization_backends.casadi_">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#module-agentlib_mpc.optimization_backends.backend">agentlib_mpc.optimization_backends.backend module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.ADMMBackend"><code class="docutils literal notranslate"><span class="pre">ADMMBackend</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.ADMMBackend.coupling_grid"><code class="docutils literal notranslate"><span class="pre">ADMMBackend.coupling_grid</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.BackendConfig"><code class="docutils literal notranslate"><span class="pre">BackendConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.BackendConfig.discretization_options"><code class="docutils literal notranslate"><span class="pre">BackendConfig.discretization_options</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.BackendConfig.model"><code class="docutils literal notranslate"><span class="pre">BackendConfig.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.BackendConfig.name"><code class="docutils literal notranslate"><span class="pre">BackendConfig.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.BackendConfig.overwrite_result_file"><code class="docutils literal notranslate"><span class="pre">BackendConfig.overwrite_result_file</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.BackendConfig.results_file"><code class="docutils literal notranslate"><span class="pre">BackendConfig.results_file</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.BackendConfig.save_results"><code class="docutils literal notranslate"><span class="pre">BackendConfig.save_results</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.BackendConfig.check_csv"><code class="docutils literal notranslate"><span class="pre">BackendConfig.check_csv</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.BackendConfig.check_overwrite"><code class="docutils literal notranslate"><span class="pre">BackendConfig.check_overwrite</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.BackendConfig.disable_results_if_no_file"><code class="docutils literal notranslate"><span class="pre">BackendConfig.disable_results_if_no_file</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend"><code class="docutils literal notranslate"><span class="pre">OptimizationBackend</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.config_type"><code class="docutils literal notranslate"><span class="pre">OptimizationBackend.config_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.get_lags_per_variable"><code class="docutils literal notranslate"><span class="pre">OptimizationBackend.get_lags_per_variable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.model_from_config"><code class="docutils literal notranslate"><span class="pre">OptimizationBackend.model_from_config()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.mpc_backend_parameters"><code class="docutils literal notranslate"><span class="pre">OptimizationBackend.mpc_backend_parameters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.register_logger"><code class="docutils literal notranslate"><span class="pre">OptimizationBackend.register_logger()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.results_file_exists"><code class="docutils literal notranslate"><span class="pre">OptimizationBackend.results_file_exists()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.setup_optimization"><code class="docutils literal notranslate"><span class="pre">OptimizationBackend.setup_optimization()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.solve"><code class="docutils literal notranslate"><span class="pre">OptimizationBackend.solve()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.update_discretization_options"><code class="docutils literal notranslate"><span class="pre">OptimizationBackend.update_discretization_options()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.update_model_variables"><code class="docutils literal notranslate"><span class="pre">OptimizationBackend.update_model_variables()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#module-agentlib_mpc.optimization_backends">Module contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.BackendImport"><code class="docutils literal notranslate"><span class="pre">BackendImport</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.BackendImport.class_name"><code class="docutils literal notranslate"><span class="pre">BackendImport.class_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.BackendImport.import_path"><code class="docutils literal notranslate"><span class="pre">BackendImport.import_path</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="agentlib_mpc.utils.html">agentlib_mpc.utils package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.utils.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html">agentlib_mpc.utils.plotting package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#module-agentlib_mpc.utils.plotting.admm_animation">agentlib_mpc.utils.plotting.admm_animation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#module-agentlib_mpc.utils.plotting.admm_residuals">agentlib_mpc.utils.plotting.admm_residuals module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#module-agentlib_mpc.utils.plotting.basic">agentlib_mpc.utils.plotting.basic module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#module-agentlib_mpc.utils.plotting">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.utils.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.utils.html#module-agentlib_mpc.utils.analysis">agentlib_mpc.utils.analysis module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.admm_at_time_step"><code class="docutils literal notranslate"><span class="pre">admm_at_time_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.convert_index"><code class="docutils literal notranslate"><span class="pre">convert_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.convert_multi_index"><code class="docutils literal notranslate"><span class="pre">convert_multi_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.first_vals_at_trajectory_index"><code class="docutils literal notranslate"><span class="pre">first_vals_at_trajectory_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.get_number_of_iterations"><code class="docutils literal notranslate"><span class="pre">get_number_of_iterations()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.get_time_steps"><code class="docutils literal notranslate"><span class="pre">get_time_steps()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.last_vals_at_trajectory_index"><code class="docutils literal notranslate"><span class="pre">last_vals_at_trajectory_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.load_admm"><code class="docutils literal notranslate"><span class="pre">load_admm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.load_mpc"><code class="docutils literal notranslate"><span class="pre">load_mpc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.load_mpc_stats"><code class="docutils literal notranslate"><span class="pre">load_mpc_stats()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.load_sim"><code class="docutils literal notranslate"><span class="pre">load_sim()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.mpc_at_time_step"><code class="docutils literal notranslate"><span class="pre">mpc_at_time_step()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.perform_index_update"><code class="docutils literal notranslate"><span class="pre">perform_index_update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib-mpc-utils-debug-module">agentlib_mpc.utils.debug module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.utils.html#module-agentlib_mpc.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="module-agentlib_mpc">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-agentlib_mpc" title="Permalink to this heading"></a></h2>
+<p>Plugin for the AgentLib which contains modules for MPC, distributed MPC with ADMM
+and data-driven modeling.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, AGENT-Project Associates.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
