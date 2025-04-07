@@ -104,8 +104,16 @@ game theory based or some other).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.DistributedMPCConfig.model_post_init">
 <span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#agentlib_mpc.modules.dmpc.DistributedMPCConfig.model_post_init" title="Permalink to this definition"></a></dt>
-<dd><p>We need to both initialize private attributes and call the user-defined model_post_init
-method.</p>
+<dd><p>This function is meant to behave like a BaseModel method to initialise private attributes.</p>
+<p>It takes context as an argument since that’s what pydantic-core passes when calling it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – The BaseModel instance.</p></li>
+<li><p><strong>context</strong> – The context.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -153,6 +161,7 @@ method.</p>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMMConfig.module_id"><code class="docutils literal notranslate"><span class="pre">ADMMConfig.module_id</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMMConfig.optimization_backend"><code class="docutils literal notranslate"><span class="pre">ADMMConfig.optimization_backend</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMMConfig.outputs"><code class="docutils literal notranslate"><span class="pre">ADMMConfig.outputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMMConfig.outputs_to_send_when_activated"><code class="docutils literal notranslate"><span class="pre">ADMMConfig.outputs_to_send_when_activated</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMMConfig.parameters"><code class="docutils literal notranslate"><span class="pre">ADMMConfig.parameters</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMMConfig.penalty_factor"><code class="docutils literal notranslate"><span class="pre">ADMMConfig.penalty_factor</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMMConfig.prediction_horizon"><code class="docutils literal notranslate"><span class="pre">ADMMConfig.prediction_horizon</span></code></a></li>
@@ -194,6 +203,7 @@ method.</p>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.LocalADMMConfig.module_id"><code class="docutils literal notranslate"><span class="pre">LocalADMMConfig.module_id</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.LocalADMMConfig.optimization_backend"><code class="docutils literal notranslate"><span class="pre">LocalADMMConfig.optimization_backend</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.LocalADMMConfig.outputs"><code class="docutils literal notranslate"><span class="pre">LocalADMMConfig.outputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.LocalADMMConfig.outputs_to_send_when_activated"><code class="docutils literal notranslate"><span class="pre">LocalADMMConfig.outputs_to_send_when_activated</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.LocalADMMConfig.parameters"><code class="docutils literal notranslate"><span class="pre">LocalADMMConfig.parameters</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.LocalADMMConfig.penalty_factor"><code class="docutils literal notranslate"><span class="pre">LocalADMMConfig.penalty_factor</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.LocalADMMConfig.prediction_horizon"><code class="docutils literal notranslate"><span class="pre">LocalADMMConfig.prediction_horizon</span></code></a></li>
@@ -256,6 +266,7 @@ method.</p>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMMConfig.module_id"><code class="docutils literal notranslate"><span class="pre">CoordinatedADMMConfig.module_id</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMMConfig.optimization_backend"><code class="docutils literal notranslate"><span class="pre">CoordinatedADMMConfig.optimization_backend</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMMConfig.outputs"><code class="docutils literal notranslate"><span class="pre">CoordinatedADMMConfig.outputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMMConfig.outputs_to_send_when_activated"><code class="docutils literal notranslate"><span class="pre">CoordinatedADMMConfig.outputs_to_send_when_activated</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMMConfig.parameters"><code class="docutils literal notranslate"><span class="pre">CoordinatedADMMConfig.parameters</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMMConfig.penalty_factor"><code class="docutils literal notranslate"><span class="pre">CoordinatedADMMConfig.penalty_factor</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMMConfig.prediction_horizon"><code class="docutils literal notranslate"><span class="pre">CoordinatedADMMConfig.prediction_horizon</span></code></a></li>
@@ -486,8 +497,16 @@ Returns:</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.coordinator.CoordinatorConfig.model_post_init">
 <span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#agentlib_mpc.modules.dmpc.coordinator.CoordinatorConfig.model_post_init" title="Permalink to this definition"></a></dt>
-<dd><p>We need to both initialize private attributes and call the user-defined model_post_init
-method.</p>
+<dd><p>This function is meant to behave like a BaseModel method to initialise private attributes.</p>
+<p>It takes context as an argument since that’s what pydantic-core passes when calling it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – The BaseModel instance.</p></li>
+<li><p><strong>context</strong> – The context.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -670,8 +689,16 @@ Returns:</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.employee.MiniEmployeeConfig.model_post_init">
 <span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#agentlib_mpc.modules.dmpc.employee.MiniEmployeeConfig.model_post_init" title="Permalink to this definition"></a></dt>
-<dd><p>We need to both initialize private attributes and call the user-defined model_post_init
-method.</p>
+<dd><p>This function is meant to behave like a BaseModel method to initialise private attributes.</p>
+<p>It takes context as an argument since that’s what pydantic-core passes when calling it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – The BaseModel instance.</p></li>
+<li><p><strong>context</strong> – The context.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

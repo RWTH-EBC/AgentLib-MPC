@@ -119,6 +119,14 @@
         <span class="s2">&quot;a plain AgentVariable is send. This may be used to deactivate &quot;</span>
         <span class="s2">&quot;supervisory control in a simulation / real PLC.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">outputs_to_send_when_activated</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;When the MPC is activated, send the controls with these values&quot;</span>
+        <span class="s2">&quot;specified as `{control_name: control_value}`.&quot;</span>
+        <span class="s2">&quot;In case of variables to send which are not listed as model variables,&quot;</span>
+        <span class="s2">&quot;a plain AgentVariable is send. This may be used to deactivate &quot;</span>
+        <span class="s2">&quot;supervisory control in a simulation / real PLC.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
 
 <div class="viewcode-block" id="MPCConfig.check_r_del_u_in_controls"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.mpc_full.MPCConfig.check_r_del_u_in_controls">[docs]</a>    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;r_del_u&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_r_del_u_in_controls</span><span class="p">(</span>
@@ -185,6 +193,18 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="n">active</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;active&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">active</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">output</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">outputs_to_send_when_activated</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">output</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">data_broker</span><span class="o">.</span><span class="n">send_variable</span><span class="p">(</span>
+                        <span class="n">AgentVariable</span><span class="p">(</span>
+                            <span class="n">name</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
+                            <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+                            <span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
+                            <span class="n">shared</span><span class="o">=</span><span class="kc">True</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="n">source</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">active</span><span class="o">.</span><span class="n">source</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;None_None&quot;</span><span class="p">:</span>
@@ -198,7 +218,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">control_values_when_deactivated</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">control_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">control_values_when_deactivated</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">control_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">control_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variables_dict</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">control_name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">data_broker</span><span class="o">.</span><span class="n">send_variable</span><span class="p">(</span>

@@ -470,8 +470,16 @@ distributed model predictive control using multi agent systems.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.data_source.DataSourceConfig.model_post_init">
 <span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#agentlib_mpc.modules.data_source.DataSourceConfig.model_post_init" title="Permalink to this definition"></a></dt>
-<dd><p>We need to both initialize private attributes and call the user-defined model_post_init
-method.</p>
+<dd><p>This function is meant to behave like a BaseModel method to initialise private attributes.</p>
+<p>It takes context as an argument since that’s what pydantic-core passes when calling it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – The BaseModel instance.</p></li>
+<li><p><strong>context</strong> – The context.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -552,8 +560,16 @@ method.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.deactivate_mpc.SkipMPCInIntervalsConfig.model_post_init">
 <span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#agentlib_mpc.modules.deactivate_mpc.SkipMPCInIntervalsConfig.model_post_init" title="Permalink to this definition"></a></dt>
-<dd><p>We need to both initialize private attributes and call the user-defined model_post_init
-method.</p>
+<dd><p>This function is meant to behave like a BaseModel method to initialise private attributes.</p>
+<p>It takes context as an argument since that’s what pydantic-core passes when calling it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – The BaseModel instance.</p></li>
+<li><p><strong>context</strong> – The context.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -623,8 +639,16 @@ step to AgentVariables.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.minlp_mpc.MINLPMPCConfig.model_post_init">
 <span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#agentlib_mpc.modules.minlp_mpc.MINLPMPCConfig.model_post_init" title="Permalink to this definition"></a></dt>
-<dd><p>We need to both initialize private attributes and call the user-defined model_post_init
-method.</p>
+<dd><p>This function is meant to behave like a BaseModel method to initialise private attributes.</p>
+<p>It takes context as an argument since that’s what pydantic-core passes when calling it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – The BaseModel instance.</p></li>
+<li><p><strong>context</strong> – The context.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method pydantic_validator">
@@ -949,8 +973,16 @@ step to AgentVariables.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.mpc.BaseMPCConfig.model_post_init">
 <span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.model_post_init" title="Permalink to this definition"></a></dt>
-<dd><p>We need to both initialize private attributes and call the user-defined model_post_init
-method.</p>
+<dd><p>This function is meant to behave like a BaseModel method to initialise private attributes.</p>
+<p>It takes context as an argument since that’s what pydantic-core passes when calling it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – The BaseModel instance.</p></li>
+<li><p><strong>context</strong> – The context.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1019,6 +1051,7 @@ optimization.</p>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc_full.MPCConfig.active" title="agentlib_mpc.modules.mpc_full.MPCConfig.active"><code class="xref py py-obj docutils literal notranslate"><span class="pre">active</span> <span class="pre">(agentlib.core.datamodels.AgentVariable)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc_full.MPCConfig.control_values_when_deactivated" title="agentlib_mpc.modules.mpc_full.MPCConfig.control_values_when_deactivated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">control_values_when_deactivated</span> <span class="pre">(Dict[str,</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">int])</span></code></a></p></li>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc_full.MPCConfig.enable_deactivate_mpc" title="agentlib_mpc.modules.mpc_full.MPCConfig.enable_deactivate_mpc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enable_deactivate_mpc</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc_full.MPCConfig.outputs_to_send_when_activated" title="agentlib_mpc.modules.mpc_full.MPCConfig.outputs_to_send_when_activated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outputs_to_send_when_activated</span> <span class="pre">(Dict[str,</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">bool</span> <span class="pre">|</span> <span class="pre">int])</span></code></a></p></li>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc_full.MPCConfig.r_del_u" title="agentlib_mpc.modules.mpc_full.MPCConfig.r_del_u"><code class="xref py py-obj docutils literal notranslate"><span class="pre">r_del_u</span> <span class="pre">(dict[str,</span> <span class="pre">float])</span></code></a></p></li>
 </ul>
 </dd>
@@ -1047,6 +1080,12 @@ optimization.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.mpc_full.MPCConfig.outputs_to_send_when_activated">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">outputs_to_send_when_activated</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#agentlib_mpc.modules.mpc_full.MPCConfig.outputs_to_send_when_activated" title="Permalink to this definition"></a></dt>
+<dd><p>When the MPC is activated, send the controls with these valuesspecified as <cite>{control_name: control_value}</cite>.In case of variables to send which are not listed as model variables,a plain AgentVariable is send. This may be used to deactivate supervisory control in a simulation / real PLC.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.mpc_full.MPCConfig.r_del_u">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">r_del_u</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#agentlib_mpc.modules.mpc_full.MPCConfig.r_del_u" title="Permalink to this definition"></a></dt>
 <dd><p>Weights that are applied to the change in control variables.</p>
@@ -1068,8 +1107,16 @@ optimization.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.mpc_full.MPCConfig.model_post_init">
 <span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#agentlib_mpc.modules.mpc_full.MPCConfig.model_post_init" title="Permalink to this definition"></a></dt>
-<dd><p>We need to both initialize private attributes and call the user-defined model_post_init
-method.</p>
+<dd><p>This function is meant to behave like a BaseModel method to initialise private attributes.</p>
+<p>It takes context as an argument since that’s what pydantic-core passes when calling it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – The BaseModel instance.</p></li>
+<li><p><strong>context</strong> – The context.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
