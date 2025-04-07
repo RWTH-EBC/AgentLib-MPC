@@ -1,7 +1,7 @@
 import os
 import webbrowser
 from pathlib import Path
-from typing import List, Dict, Optional, Literal
+from typing import List, Dict, Optional, Literal, Any
 
 from agentlib.core.errors import OptionalDependencyError
 import pandas as pd
@@ -567,6 +567,109 @@ def main():
 
     webbrowser.open_new_tab(f"http://localhost:{port}")
     app.run_server(debug=False, port=port)
+
+
+def launch_dashboard_from_mas_results(
+    results: Dict[str, Dict[str, Any]],
+    results_directory: str = "results",
+    residuals_file: Optional[str] = None,
+    scale: Literal["seconds", "minutes", "hours", "days"] = "seconds",
+):
+    """
+    Launch the ADMM dashboard using results from a multi-agent system run.
+
+    This function first tries to extract ADMM data directly from the results dictionary.
+    If that fails, it attempts to load data from CSV files in the specified directory.
+
+    Args:
+        results: The results dictionary from mas.get_results()
+        results_directory: Directory containing result CSV files (used as fallback)
+        residuals_file: Path to residuals CSV file (if None, looks in results_directory)
+        scale: Time scale for display
+
+    Returns:
+        bool: True if dashboard was launched, False otherwise
+    """
+    # Dictionary to store agent data for the dashboard
+    agent_data = {}
+
+    # Variable to store residuals data
+    residuals_df = None
+
+    # First try: Extract MPC modules with ADMM data directly from results
+    for agent_id, modules in results.items():
+        for module_id, module_data in modules.items():
+            # Check if this module has potential ADMM data
+            if isinstance(module_data, pd.DataFrame):
+                try:
+                    # Check if data has coupling variables structure needed for dashboard
+                    if isinstance(module_data.columns, pd.MultiIndex) and any(
+                        col[0] == "parameter"
+                        and isinstance(col[1], str)
+                        and col[1].startswith("admm_coupling_mean_")
+                        for col in module_data.columns
+                        if len(col) >= 2
+                    ):
+                        agent_data[agent_id] = module_data
+                        print(f"Found ADMM data in {agent_id}.{module_id}")
+                except Exception as e:
+                    print(f"Error checking {agent_id}.{module_id} for ADMM data: {e}")
+                    continue
+
+    # Second try: If no data found directly in results, try loading from CSV files
+    if not agent_data and os.path.exists(results_directory):
+        print(
+            f"No ADMM data found directly in results. Checking files in {results_directory}..."
+        )
+        for filename in os.listdir(results_directory):
+            if (
+                filename.endswith(".csv")
+                and not "stats" in filename.lower()
+                and not "residuals" in filename.lower()
+            ):
+                file_path = os.path.join(results_directory, filename)
+                # Extract agent name from filename
+                agent_name = os.path.splitext(filename)[0].split("_")[0]
+                try:
+                    df = load_mpc(file_path)
+                    # Check if this file has coupling variables
+                    if any(
+                        col[0] == "parameter"
+                        and col[1].startswith("admm_coupling_mean_")
+                        for col in df.columns
+                        if isinstance(col, tuple) and len(col) >= 2
+                    ):
+                        agent_data[agent_name] = df
+                        print(f"Loaded ADMM data for {agent_name} from {filename}")
+                except Exception as e:
+                    print(f"Error loading file {filename}: {e}")
+
+    # Try to load residuals
+    if residuals_file and os.path.exists(residuals_file):
+        try:
+            residuals_df = load_residuals(residuals_file)
+            print(f"Loaded residuals from {residuals_file}")
+        except Exception as e:
+            print(f"Error loading residuals file: {e}")
+    else:
+        default_residuals_file = os.path.join(results_directory, "residuals.csv")
+        if os.path.exists(default_residuals_file):
+            try:
+                residuals_df = load_residuals(default_residuals_file)
+                print(f"Loaded residuals from {default_residuals_file}")
+            except Exception as e:
+                print(f"Error loading default residuals file: {e}")
+
+    # If we found applicable data, launch the dashboard
+    if agent_data:
+        print(f"Launching dashboard with {len(agent_data)} agents")
+        show_admm_dashboard(agent_data, residuals_df, scale)
+        return True
+    else:
+        print(
+            "No ADMM data found in the results or from CSV files. Cannot launch dashboard."
+        )
+        return False
 
 
 def show_admm_dashboard(

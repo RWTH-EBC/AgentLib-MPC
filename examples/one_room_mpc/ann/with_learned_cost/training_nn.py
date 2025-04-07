@@ -181,7 +181,12 @@ def configs(
                 "interval": 60 * 10,
                 "target_variable": {"name": "T_set", "alias": "T_set"},
             },
-            {"type": "AgentLogger", "values_only": True, "t_sample": 10},
+            {
+                "type": "AgentLogger",
+                "values_only": True,
+                "t_sample": 10,
+                "filename": "log.log",
+            },
             {"type": "local", "subscriptions": ["Simulator"]},
         ],
     }
