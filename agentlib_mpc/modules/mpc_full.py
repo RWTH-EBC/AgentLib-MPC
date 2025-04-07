@@ -124,7 +124,7 @@ class MPC(BaseMPC):
             self.config.control_values_when_deactivated,
         )
         for control_name, value in self.config.control_values_when_deactivated.items():
-            if control_name in self.config.controls:
+            if control_name in self._variables_dict:
                 self.set(control_name, value)
             else:
                 self.agent.data_broker.send_variable(
