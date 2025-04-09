@@ -13,6 +13,7 @@ Subpackages
    :maxdepth: 4
 
    agentlib_mpc.modules.InputPrediction
+   agentlib_mpc.modules.deactivate_mpc
    agentlib_mpc.modules.dmpc
    agentlib_mpc.modules.estimation
    agentlib_mpc.modules.ml_model_training
@@ -24,14 +25,6 @@ agentlib\_mpc.modules.data\_source module
 -----------------------------------------
 
 .. automodule:: agentlib_mpc.modules.data_source
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-agentlib\_mpc.modules.deactivate\_mpc module
---------------------------------------------
-
-.. automodule:: agentlib_mpc.modules.deactivate_mpc
    :members:
    :undoc-members:
    :show-inheritance:

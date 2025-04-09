@@ -73,8 +73,10 @@
              
   <h1>Source code for agentlib_mpc.modules.mpc_full</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Holds the class for full featured MPCs.&quot;&quot;&quot;</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">agentlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentVariable</span>
@@ -101,32 +103,27 @@
         <span class="s2">&quot;other modules may change to disable the MPC operation &quot;</span>
         <span class="s2">&quot;temporarily&quot;</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">deactivation_source</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">agentlib</span><span class="o">.</span><span class="n">Source</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Source for the deactivation signal.&quot;</span>
+    <span class="p">)</span>
     <span class="n">active</span><span class="p">:</span> <span class="n">AgentVariable</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="n">AgentVariable</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;active&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MPC_FLAG_ACTIVE</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="s2">&quot;MPC is active&quot;</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">shared</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">),</span>
+        <span class="n">validate_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Variable used to activate or deactivate the MPC operation&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">control_values_when_deactivated</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;When the MPC is deactivated, send the controls with these values&quot;</span>
-        <span class="s2">&quot;specified as `{control_name: control_value}`.&quot;</span>
-        <span class="s2">&quot;In case of variables to send which are not listed as model variables,&quot;</span>
-        <span class="s2">&quot;a plain AgentVariable is send. This may be used to deactivate &quot;</span>
-        <span class="s2">&quot;supervisory control in a simulation / real PLC.&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">outputs_to_send_when_activated</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;When the MPC is activated, send the controls with these values&quot;</span>
-        <span class="s2">&quot;specified as `{control_name: control_value}`.&quot;</span>
-        <span class="s2">&quot;In case of variables to send which are not listed as model variables,&quot;</span>
-        <span class="s2">&quot;a plain AgentVariable is send. This may be used to deactivate &quot;</span>
-        <span class="s2">&quot;supervisory control in a simulation / real PLC.&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
+
+<div class="viewcode-block" id="MPCConfig.add_deactivation_source"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.mpc_full.MPCConfig.add_deactivation_source">[docs]</a>    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;active&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_deactivation_source</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">active</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;deactivation_source&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">active</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
+        <span class="k">return</span> <span class="n">active</span></div>
 
 <div class="viewcode-block" id="MPCConfig.check_r_del_u_in_controls"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.mpc_full.MPCConfig.check_r_del_u_in_controls">[docs]</a>    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;r_del_u&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_r_del_u_in_controls</span><span class="p">(</span>
@@ -191,44 +188,14 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if mpc steps should be skipped based on external activation flag.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_deactivate_mpc</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="n">active</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;active&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">active</span><span class="o">.</span><span class="n">value</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">output</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">outputs_to_send_when_activated</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">output</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">data_broker</span><span class="o">.</span><span class="n">send_variable</span><span class="p">(</span>
-                        <span class="n">AgentVariable</span><span class="p">(</span>
-                            <span class="n">name</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
-                            <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                            <span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
-                            <span class="n">shared</span><span class="o">=</span><span class="kc">True</span>
-                        <span class="p">)</span>
-                    <span class="p">)</span>
+        <span class="n">active</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MPC_FLAG_ACTIVE</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">active</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="n">source</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">active</span><span class="o">.</span><span class="n">source</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;None_None&quot;</span><span class="p">:</span>
             <span class="n">source</span> <span class="o">=</span> <span class="s2">&quot;unknown (not specified in config)&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">control_values_when_deactivated</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;MPC was deactivated by source </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="s2">&quot;MPC was deactivated by source </span><span class="si">%s</span><span class="s2">, sending control_values_when_deactivated </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="n">source</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">control_values_when_deactivated</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">for</span> <span class="n">control_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">control_values_when_deactivated</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">control_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variables_dict</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">control_name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">data_broker</span><span class="o">.</span><span class="n">send_variable</span><span class="p">(</span>
-                    <span class="n">AgentVariable</span><span class="p">(</span>
-                        <span class="n">name</span><span class="o">=</span><span class="n">control_name</span><span class="p">,</span>
-                        <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
-                        <span class="n">source</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
-                        <span class="n">shared</span><span class="o">=</span><span class="kc">True</span>
-                    <span class="p">)</span>
-                <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;MPC was deactivated by source </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="MPC.do_step"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.mpc_full.MPC.do_step">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">do_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
