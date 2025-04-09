@@ -10,7 +10,7 @@ from agentlib_mpc.data_structures.mpc_datamodels import (
 from agentlib_mpc.models.casadi_model import CasadiModel, CasadiParameter
 from agentlib_mpc.optimization_backends.casadi_.core.casadi_backend import CasADiBackend
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
-    OptimizationParameter,
+    OptimizationParameter
 )
 
 
@@ -35,6 +35,8 @@ class FullSystem(basic.BaseSystem):
             use_in_stage_function=False,
             assert_complete=True,
         )
+
+        self.time = model.time
 
 
 class DirectCollocation(basic.DirectCollocation):
@@ -79,7 +81,7 @@ class DirectCollocation(basic.DirectCollocation):
             constant_over_inner = {
                 sys.controls: uk,
                 sys.non_controlled_inputs: dk,
-                sys.model_parameters: const_par,
+                sys.model_parameters: const_par
             }
             xk_end, constraints = self._collocation_inner_loop(
                 collocation=collocation_matrices,
@@ -87,7 +89,7 @@ class DirectCollocation(basic.DirectCollocation):
                 states=sys.states,
                 opt_vars=opt_vars_inside_inner,
                 opt_pars=opt_pars_inside_inner,
-                const=constant_over_inner,
+                const=constant_over_inner
             )
 
             # increment loop counter and time
@@ -146,6 +148,7 @@ class MultipleShooting(basic.MultipleShooting):
                 sys.controls.name: uk,
                 sys.non_controlled_inputs.name: dk,
                 sys.model_parameters.name: const_par,
+                "__time": self.pred_time,
             }
             stage = self._stage_function(**stage_arguments)
 
