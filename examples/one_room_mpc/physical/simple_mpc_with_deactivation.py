@@ -81,6 +81,18 @@ class MyCasadiModelConfig(CasadiModelConfig):
             description="Weight for T in constraint function",
         ),
         CasadiParameter(
+            name="mpc_active",
+            value=1,
+            unit="1",
+            description="Flag, whether mpc or default control is used.",
+        ),
+        CasadiParameter(
+            name="mDot_default",
+            value=0.025,
+            unit="kg/s",
+            description="Default mass flow.",
+        ),
+        CasadiParameter(
             name="r_mDot",
             value=1,
             unit="-",
@@ -96,13 +108,13 @@ class MyCasadiModel(CasadiModel):
     config: MyCasadiModelConfig
 
     def setup_system(self):
+        mDot = self.mDot * self.mpc_active + self.mDot_default * (1 - self.mpc_active)
+
         # Define ode
-        self.T.ode = (
-                self.cp * self.mDot / self.C * (self.T_in - self.T) + self.load / self.C
-        )
+        self.T.ode = self.cp * mDot / self.C * (self.T_in - self.T) + self.load / self.C
 
         # Define ae
-        self.T_out.alg = self.T  # math operation to get the symbolic variable
+        self.T_out.alg = self.T
 
         # Constraints: List[(lower bound, function, upper bound)]
         self.constraints = [
@@ -113,8 +125,8 @@ class MyCasadiModel(CasadiModel):
         # Objective function
         objective = sum(
             [
-                self.r_mDot * self.mDot,
-                self.s_T * self.T_slack ** 2,
+                self.r_mDot * mDot,
+                self.s_T * self.T_slack**2,
             ]
         )
 
@@ -127,11 +139,23 @@ AGENT_MPC = {
     "id": "myMPCAgent",
     "modules": [
         {"module_id": "Ag1Com", "type": "local_broadcast"},
-        {"type": "agentlib_mpc.skip_mpc_intervals",
-         "intervals": [[30, 35], [50, 55]],
-         "time_unit": "minutes",
-         "log_level": "debug"
-         },
+        {
+            "module_id": "skip_mpc",
+            "type": "agentlib_mpc.skip_mpc_intervals",
+            "intervals": [[30, 35], [50, 55]],
+            "time_unit": "minutes",
+            "log_level": "debug",
+            "public_active_message": {
+                "name": "public_active_message",
+                "alias": "mpc_active",
+                "value": True,
+            },
+            "public_inactive_message": {
+                "name": "public_inactive_message",
+                "alias": "mpc_active",
+                "value": False,
+            },
+        },
         {
             "module_id": "myMPC",
             "type": "agentlib_mpc.mpc",
@@ -173,7 +197,7 @@ AGENT_MPC = {
                 }
             ],
             "enable_deactivate_mpc": True,
-            "control_values_when_deactivated": {"mDot": 0.05}
+            "deactivation_source": {"module_id": "skip_mpc"},
         },
     ],
 }
@@ -197,13 +221,14 @@ AGENT_SIM = {
             "inputs": [
                 {"name": "mDot", "value": 0.02, "alias": "mDot"},
             ],
+            "parameters": [{"name": "mpc_active", "value": True}],
         },
     ],
 }
 
 
 def run_example(
-        with_plots=True, log_level=logging.INFO, until=10000, with_dashboard=False
+    with_plots=True, log_level=logging.INFO, until=10000, with_dashboard=False
 ):
     # Change the working directly so that relative paths work
     os.chdir(Path(__file__).parent)
@@ -211,7 +236,7 @@ def run_example(
     # Set the log-level
     logging.basicConfig(level=log_level)
     mas = LocalMASAgency(
-        agent_configs=[AGENT_MPC, AGENT_SIM], env=ENV_CONFIG, variable_logging=False
+        agent_configs=[AGENT_MPC, AGENT_SIM], env=ENV_CONFIG, variable_logging=True
     )
     mas.run(until=until)
     try:
@@ -240,10 +265,10 @@ def plot(mpc_results: pd.DataFrame, sim_res: pd.DataFrame, until: float):
     t_sample = t_sim.index[1] - t_sim.index[0]
     aie_kh = (t_sim - ub).abs().sum() * t_sample / 3600
     energy_cost_kWh = (
-            (sim_res["mDot"] * (sim_res["T_out"] - sim_res["T_in"])).sum()
-            * t_sample
-            * 1
-            / 3600
+        (sim_res["mDot"] * (sim_res["T_out"] - sim_res["T_in"])).sum()
+        * t_sample
+        * 1
+        / 3600
     )  # cp is 1
     print(f"Absoulute integral error: {aie_kh} Kh.")
     print(f"Cooling energy used: {energy_cost_kWh} kWh.")

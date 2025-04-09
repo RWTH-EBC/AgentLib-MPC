@@ -1,6 +1,8 @@
 """Holds the class for full featured MPCs."""
-from typing import Dict, Union
 
+from typing import Dict, Union, Optional
+
+import agentlib
 import numpy as np
 import pandas as pd
 from agentlib.core import AgentVariable
@@ -27,32 +29,27 @@ class MPCConfig(BaseMPCConfig):
         "other modules may change to disable the MPC operation "
         "temporarily",
     )
+    deactivation_source: Optional[agentlib.Source] = Field(
+        default=None, description="Source for the deactivation signal."
+    )
     active: AgentVariable = Field(
         default=AgentVariable(
-            name="active",
+            name=mpc_datamodels.MPC_FLAG_ACTIVE,
             description="MPC is active",
             type="bool",
             value=True,
             shared=False,
         ),
+        validate_default=True,
         description="Variable used to activate or deactivate the MPC operation",
     )
-    control_values_when_deactivated: Dict[str, Union[float, bool, int]] = Field(
-        default={},
-        description="When the MPC is deactivated, send the controls with these values"
-        "specified as `{control_name: control_value}`."
-        "In case of variables to send which are not listed as model variables,"
-        "a plain AgentVariable is send. This may be used to deactivate "
-        "supervisory control in a simulation / real PLC.",
-    )
-    outputs_to_send_when_activated: Dict[str, Union[float, bool, int]] = Field(
-        default={},
-        description="When the MPC is activated, send the controls with these values"
-        "specified as `{control_name: control_value}`."
-        "In case of variables to send which are not listed as model variables,"
-        "a plain AgentVariable is send. This may be used to deactivate "
-        "supervisory control in a simulation / real PLC.",
-    )
+
+    @field_validator("active")
+    def add_deactivation_source(cls, active: AgentVariable, info: FieldValidationInfo):
+        source = info.data.get("deactivation_source")
+        if source is not None:
+            active.source = source
+        return active
 
     @field_validator("r_del_u")
     def check_r_del_u_in_controls(
@@ -117,44 +114,14 @@ class MPC(BaseMPC):
         """Checks if mpc steps should be skipped based on external activation flag."""
         if not self.config.enable_deactivate_mpc:
             return False
-        active = self.get("active")
-        if active.value:
-            for output, value in self.config.outputs_to_send_when_activated.items():
-                if output in self.config.outputs:
-                    self.set(output, value)
-                else:
-                    self.agent.data_broker.send_variable(
-                        AgentVariable(
-                            name=output,
-                            value=value,
-                            source=self.source,
-                            shared=True
-                        )
-                    )
+        active = self.get(mpc_datamodels.MPC_FLAG_ACTIVE)
+
+        if active.value == True:
             return False
         source = str(active.source)
         if source == "None_None":
             source = "unknown (not specified in config)"
-        if not self.config.control_values_when_deactivated:
-            self.logger.info("MPC was deactivated by source %s", source)
-            return True
-        self.logger.info(
-            "MPC was deactivated by source %s, sending control_values_when_deactivated %s",
-            source,
-            self.config.control_values_when_deactivated,
-        )
-        for control_name, value in self.config.control_values_when_deactivated.items():
-            if control_name in self._variables_dict:
-                self.set(control_name, value)
-            else:
-                self.agent.data_broker.send_variable(
-                    AgentVariable(
-                        name=control_name,
-                        value=value,
-                        source=self.source,
-                        shared=True
-                    )
-                )
+        self.logger.info("MPC was deactivated by source %s", source)
         return True
 
     def do_step(self):

@@ -15,6 +15,9 @@ from agentlib_mpc.data_structures.interpolation import InterpolationMethods
 from pydantic import ConfigDict
 
 
+MPC_FLAG_ACTIVE = "MPC_FLAG_ACTIVE"
+
+
 class InitStatus(str, Enum):
     """Keep track of the readyness status of the MPC."""
 
@@ -44,7 +47,8 @@ class DiscretizationOptions(pydantic.BaseModel):
 class Results(Protocol):
     df: pd.DataFrame
 
-    def __getitem__(self, item: str) -> Sequence[float]: ...
+    def __getitem__(self, item: str) -> Sequence[float]:
+        ...
 
 
 @dataclasses.dataclass
@@ -70,6 +74,7 @@ class BaseVariableReference:
     def __contains__(self, item):
         all_variables = set(chain.from_iterable(self.__dict__.values()))
         return item in all_variables
+
 
 VariableReferenceT = TypeVar("VariableReferenceT", bound=BaseVariableReference)
 

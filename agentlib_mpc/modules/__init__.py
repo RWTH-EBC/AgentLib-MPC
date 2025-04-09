@@ -67,6 +67,7 @@ MODULE_TYPES = {
         module_path="agentlib_mpc.modules.estimation.mhe", class_name="MHE"
     ),
     "skip_mpc_intervals": ModuleImport(
-        module_path="agentlib_mpc.modules.deactivate_mpc", class_name="SkipMPCInIntervals"
-    )
+        module_path="agentlib_mpc.modules.deactivate_mpc.deactivate_mpc",
+        class_name="SkipMPCInIntervals",
+    ),
 }
