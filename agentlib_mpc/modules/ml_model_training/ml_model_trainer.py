@@ -295,14 +295,14 @@ class MLModelTrainer(BaseModule, abc.ABC):
     def process(self):
         yield self.env.timeout(self.config.online_learning.training_at)
         self._update_time_series_data()
-        serialized_ml_model, best_model_path = self.retrain_model()
+        serialized_ml_model, best_model_path, training_data = self.retrain_model()
         self.set(self.config.MLModel.name, serialized_ml_model)
         self._update_ml_mpc_config(serialized_ml_model)
         if self.config.online_learning.active:
             while True:
                 yield self.env.timeout(self.config.online_learning.training_at)
                 self._update_time_series_data()
-                serialized_ml_model, best_model_path = self.retrain_model()
+                serialized_ml_model, best_model_path, training_data = self.retrain_model()
                 self.set(self.config.MLModel.name, serialized_ml_model)
                 self._update_ml_mpc_config(serialized_ml_model)
 
@@ -364,7 +364,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
         best_model_path = Path(self.config.save_directory, "best_model", self.agent_and_time)
         self.save_all(best_serialized_ml_model, training_data, best_model_path, name, best_metrics, best_cross_check)
         self.ml_model_path = best_model_path
-        return best_serialized_ml_model, best_model_path
+        return best_serialized_ml_model, best_model_path, training_data
 
     def save_all(
             self,
