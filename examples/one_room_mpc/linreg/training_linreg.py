@@ -97,7 +97,7 @@ def configs(
                 "retrain_delay": training_time,
                 "save_directory": "linregs",
                 "use_values_for_incomplete_data": True,
-                "data_sources": ["results//simulation_data_14days.csv"],
+                "data_sources": ["results//simulation_data.csv"],
                 "save_data": True,
                 "save_ml_model": True,
                 "save_plots": True,

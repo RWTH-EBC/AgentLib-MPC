@@ -189,5 +189,5 @@ def interpolate_to_previous(
         _grid_index = earliest_index(
             target_point, original_grid, stop, start=_grid_index
         )
-        result.append(values[_grid_index])
+        result.append(values.iloc[_grid_index])
     return result
