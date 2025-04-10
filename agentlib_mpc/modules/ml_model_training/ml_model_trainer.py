@@ -33,12 +33,32 @@ from agentlib_mpc.data_structures import ml_model_datatypes
 from agentlib_mpc.data_structures.interpolation import InterpolationMethods
 from agentlib_mpc.utils.ml_model_eval_plotting import evaluate_model, plot_model_evaluation
 from agentlib_mpc.utils.sampling import sample_values_to_target_grid
-
+from pydantic import BaseModel, Field, field_validator
 from keras import Sequential
 
 
 logger = logging.getLogger(__name__)
 
+
+class OnlineLearning(BaseModel):
+    """Configuration for online learning capabilities."""
+    active: bool = False
+    training_at: float = float("inf")
+    initial_ml_model_path: Optional[Path] = None
+
+    @field_validator('training_at')
+    @classmethod
+    def validate_training_at(cls, v, info):
+        if info.data.get('active', True) and v <= 0:
+            raise ValueError("When online learning is active, training_at must be positive")
+        return v
+
+    @field_validator('initial_ml_model_path')
+    @classmethod
+    def validate_initial_model_path(cls, v, info):
+        if v is not None and not v.exists():
+            raise ValueError(f"Initial ML model path does not exist: {v}")
+        return v
 
 class MLModelTrainerConfig(BaseModuleConfig, abc.ABC):
     """
@@ -116,12 +136,9 @@ class MLModelTrainerConfig(BaseModuleConfig, abc.ABC):
         "initialization of the agent.",
     )
     shared_variable_fields: list[str] = ["MLModel"]
-    online_learning: List[Union[bool, float, Optional[Path]]] = pydantic.Field(
-        default=[False, float('inf'), None],
-        description="Online learning configuration: "
-                    "[enable_online_learning, "
-                    "retrain_delay: Time in seconds, after which retraining is triggered in regular"
-                    "ml_model_path: Path of pretrained model, can be None if initial_training is in the same run]"
+    online_learning: OnlineLearning = Field(
+        default_factory=OnlineLearning,
+        description="Configuration for online learning capabilities."
     )
 
     @pydantic.field_validator("train_share", "validation_share", "test_share")
@@ -230,37 +247,6 @@ class MLModelTrainerConfig(BaseModuleConfig, abc.ABC):
         return save_on
 
 
-    @pydantic.field_validator('online_learning')
-    @classmethod
-    def validate_online_learning_config(cls, v):
-
-        enable_online_learning, retrain_delay, ml_model_path = v
-
-        if not isinstance(enable_online_learning, bool):
-            raise ValueError("Online Learning: First element must be a boolean")
-
-        if enable_online_learning:
-            if not isinstance(retrain_delay, (int, float)):
-                raise ValueError("retrain_delay (second element) must be a int or float")
-
-            if retrain_delay <= 0:
-                raise ValueError("retrain_delay must be positive")
-
-        return v
-
-    @property
-    def enable_online_learning(self) -> bool:
-        return self.online_learning[0]
-
-    @property
-    def retrain_delay(self) -> float:
-        return self.online_learning[1]
-
-    @property
-    def ml_model_path(self) -> Path:
-        return self.online_learning[2]
-
-
 class MLModelTrainer(BaseModule, abc.ABC):
     """
     Abstract Base Class for all Trainer classes.
@@ -275,13 +261,11 @@ class MLModelTrainer(BaseModule, abc.ABC):
         """
         super().__init__(config=config, agent=agent)
         self.time_series_data = self._initialize_time_series_data()
-        #self.ml_models = self.build_ml_model_sequence()
         history_type = dict[str, [tuple[list[float], list[float]]]]
         self.history_dict: history_type = {
             col: ([], []) for col in self.time_series_data.columns
         }
         self._data_sources: dict[str, Source] = {var: None for var in self.time_series_data.columns}
-        #self.initial_training_done = False
         self.ml_model_path = None
         self.input_features, self.output_features = self._define_features()
 
@@ -309,13 +293,18 @@ class MLModelTrainer(BaseModule, abc.ABC):
             )
 
     def process(self):
-        while True:
-            yield self.env.timeout(self.config.retrain_delay)
-            self._update_time_series_data()
-            serialized_ml_model, best_model_path = self.retrain_model()
-            self.set(self.config.MLModel.name, serialized_ml_model)
-            self._update_ml_mpc_config(serialized_ml_model)
-            #self.initial_training_done = True
+        yield self.env.timeout(self.config.online_learning.training_at)
+        self._update_time_series_data()
+        serialized_ml_model, best_model_path = self.retrain_model()
+        self.set(self.config.MLModel.name, serialized_ml_model)
+        self._update_ml_mpc_config(serialized_ml_model)
+        if self.config.online_learning.active:
+            while True:
+                yield self.env.timeout(self.config.online_learning.training_at)
+                self._update_time_series_data()
+                serialized_ml_model, best_model_path = self.retrain_model()
+                self.set(self.config.MLModel.name, serialized_ml_model)
+                self._update_ml_mpc_config(serialized_ml_model)
 
     def _initialize_time_series_data(self) -> pd.DataFrame:
         """Loads simulation data to initialize the time_series data"""
@@ -562,6 +551,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
         """
         pass
 
+    @abc.abstractmethod
     def build_ml_model_onlinelearning(self):
         """
          Returns a ml model from previous training
@@ -575,7 +565,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
         """
         mls = list()
         n = self.config.number_of_training_repetitions
-        if self.config.enable_online_learning and (self.config.ml_model_path is not None or self.ml_model_path is not None):
+        if self.config.online_learning.active and (self.config.online_learning.initial_ml_model_path is not None or self.ml_model_path is not None):
             ml_model = self.build_ml_model_onlinelearning()
             mls.append(ml_model)
         else:
@@ -834,7 +824,7 @@ class ANNTrainer(MLModelTrainer):
         if hasattr(self, 'ml_model_path') and self.ml_model_path is not None:
             path = f"{self.ml_model_path}\\ml_model.json"
         else:
-            path = self.config.ml_model_path
+            path = self.config.online_learning.initial_ml_model_path
 
         if path is None:
             raise ValueError("No pre-trained model path provided for online learning.")
@@ -921,6 +911,36 @@ class GPRTrainer(MLModelTrainer):
         gpr.data_handling.scale = self.config.scale
         return gpr
 
+    def build_ml_model_onlinelearning(self):
+        if hasattr(self, 'ml_model_path') and self.ml_model_path is not None:
+            path = f"{self.ml_model_path}\\ml_model.json"
+        else:
+            path = self.config.online_learning.initial_ml_model_path
+
+        if path is None:
+            raise ValueError("No pre-trained model path provided for online learning.")
+
+        serialized_model = SerializedMLModel.load_serialized_model_from_file(path)
+
+        # Handle the case where the loaded model might not be a GPR model
+        if not isinstance(serialized_model, SerializedGPR):
+            raise TypeError(f"Expected SerializedGPR model but got {type(serialized_model)}")
+
+        gpr = serialized_model.deserialize()
+
+        # Configure data handling properties from the serialized model
+        if hasattr(serialized_model, 'data_handling') and serialized_model.data_handling:
+            if hasattr(serialized_model.data_handling, 'normalize'):
+                gpr.data_handling.normalize = serialized_model.data_handling.normalize
+            if hasattr(serialized_model.data_handling, 'scale'):
+                gpr.data_handling.scale = serialized_model.data_handling.scale
+            if hasattr(serialized_model.data_handling, 'mean'):
+                gpr.data_handling.mean = serialized_model.data_handling.mean
+            if hasattr(serialized_model.data_handling, 'std'):
+                gpr.data_handling.std = serialized_model.data_handling.std
+
+        return gpr
+
     def fit_ml_model(self, training_data: ml_model_datatypes.TrainingData):
         """Fits GPR to training data"""
         if self.config.normalize:
@@ -977,6 +997,24 @@ class LinRegTrainer(MLModelTrainer):
         from sklearn.linear_model import LinearRegression
 
         linear_model = LinearRegression()
+        return linear_model
+
+    def build_ml_model_onlinelearning(self):
+        if hasattr(self, 'ml_model_path') and self.ml_model_path is not None:
+            path = f"{self.ml_model_path}\\ml_model.json"
+        else:
+            path = self.config.online_learning.initial_ml_model_path
+
+        if path is None:
+            raise ValueError("No pre-trained model path provided for online learning.")
+
+        serialized_model = SerializedMLModel.load_serialized_model_from_file(path)
+
+        # Handle the case where the loaded model might not be a linear regression model
+        if not isinstance(serialized_model, SerializedLinReg):
+            raise TypeError(f"Expected SerializedLinReg model but got {type(serialized_model)}")
+
+        linear_model = serialized_model.deserialize()
         return linear_model
 
     def fit_ml_model(self, training_data: ml_model_datatypes.TrainingData):
