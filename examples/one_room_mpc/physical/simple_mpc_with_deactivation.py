@@ -215,6 +215,7 @@ AGENT_SIM = {
             "t_sample": 10,
             "update_inputs_on_callback": False,
             "save_results": True,
+            "result_causalities": ["input", "parameter", "local", "output"],
             "outputs": [
                 {"name": "T_out", "value": 298, "alias": "T"},
             ],
@@ -247,20 +248,21 @@ def run_example(
     mpc_results = results["myMPCAgent"]["myMPC"]
     sim_res = results["SimAgent"]["room"]
 
+    if with_plots:
+        # Pass the full results to plot
+        plot(sim_res, until, results)
+
     if with_dashboard:
         show_dashboard(mpc_results, stats)
-
-    if with_plots:
-        plot(mpc_results, sim_res, until)
 
     return results
 
 
-def plot(mpc_results: pd.DataFrame, sim_res: pd.DataFrame, until: float):
+def plot(sim_res: pd.DataFrame, until: float, results=None):
     import matplotlib.pyplot as plt
-    from agentlib_mpc.utils.plotting.mpc import plot_mpc
+    import numpy as np
 
-    fig, ax = plt.subplots(2, 1, sharex=True)
+    # Calculate performance metrics
     t_sim = sim_res["T_out"]
     t_sample = t_sim.index[1] - t_sim.index[0]
     aie_kh = (t_sim - ub).abs().sum() * t_sample / 3600
@@ -270,30 +272,103 @@ def plot(mpc_results: pd.DataFrame, sim_res: pd.DataFrame, until: float):
         * 1
         / 3600
     )  # cp is 1
-    print(f"Absoulute integral error: {aie_kh} Kh.")
+    print(f"Absolute integral error: {aie_kh} Kh.")
     print(f"Cooling energy used: {energy_cost_kWh} kWh.")
 
-    plot_mpc(
-        series=mpc_results["variable"]["T"] - 273.15,
-        ax=ax[0],
-        plot_actual_values=True,
-        plot_predictions=True,
-    )
-    ax[0].axhline(ub - 273.15, color="grey", linestyle="--", label="upper boundary")
-    plot_mpc(
-        series=mpc_results["variable"]["mDot"],
-        ax=ax[1],
-        plot_actual_values=True,
-        plot_predictions=True,
-    )
+    # Create a figure with 3 subplots
+    fig, ax = plt.subplots(3, 1, sharex=True, figsize=(12, 10))
 
-    ax[1].legend()
-    ax[0].legend()
-    ax[0].set_ylabel("$T_{room}$ / °C")
-    ax[1].set_ylabel("$\dot{m}_{air}$ / kg/s")
-    ax[1].set_xlabel("simulation time / s")
+    # Plot room temperature (from simulator results)
+    ax[0].plot(
+        sim_res.index,
+        sim_res["T_out"] - 273.15,
+        "b-",
+        linewidth=2,
+        label="Room Temperature",
+    )
+    ax[0].axhline(
+        ub - 273.15, color="red", linestyle="--", linewidth=1.5, label="Upper Boundary"
+    )
+    ax[0].set_ylabel("Temperature (°C)", fontsize=12)
+    ax[0].legend(fontsize=10)
+    ax[0].grid(True, alpha=0.3)
+    ax[0].set_title("Room Temperature Control System Monitoring", fontsize=14)
+
+    # Plot mass flow (from simulator results)
+    ax[1].plot(sim_res.index, sim_res["mDot"], "g-", linewidth=2, label="Air Mass Flow")
+    ax[1].set_ylabel("Mass Flow (kg/s)", fontsize=12)
     ax[1].set_ylim([0, 0.06])
-    ax[1].set_xlim([0, until])
+    ax[1].legend(fontsize=10)
+    ax[1].grid(True, alpha=0.3)
+
+    # Get the AgentLogger data and plot MPC active flag
+    mpc_flag_found = False
+    if results and "myMPCAgent" in results and "AgentLogger" in results["myMPCAgent"]:
+        agent_logger = results["myMPCAgent"]["AgentLogger"]
+        # Try "mpc_active" first, then "MPC_FLAG_ACTIVE"
+        for var_name in ["MPC_FLAG_ACTIVE"]:
+            if var_name in agent_logger.columns:
+                mpc_flag = agent_logger[var_name]
+                ax[2].step(
+                    agent_logger.index,
+                    mpc_flag,
+                    "r-",
+                    linewidth=2,
+                    where="post",
+                    label="MPC Active",
+                )
+
+                # Shade regions where MPC is inactive
+                for i in range(len(mpc_flag) - 1):
+                    if not mpc_flag.iloc[i]:
+                        start_time = mpc_flag.index[i]
+                        # Find when it becomes active again
+                        next_active = np.where(mpc_flag.iloc[i + 1 :].values)[0]
+                        if len(next_active) > 0:
+                            end_time = mpc_flag.index[i + 1 + next_active[0]]
+                        else:
+                            end_time = mpc_flag.index[-1]
+
+                        # Shade the inactive regions in all plots
+                        for a in ax:
+                            a.axvspan(
+                                start_time,
+                                end_time,
+                                alpha=0.2,
+                                color="lightgray",
+                                label="_nolegend_",
+                            )
+
+                mpc_flag_found = True
+                print(f"Found MPC active flag as '{var_name}' in AgentLogger")
+                break
+
+    if not mpc_flag_found:
+        print("Warning: MPC active flag not found in AgentLogger.")
+        ax[2].text(
+            0.5,
+            0.5,
+            "MPC active flag not found",
+            horizontalalignment="center",
+            verticalalignment="center",
+            transform=ax[2].transAxes,
+            fontsize=12,
+        )
+
+    ax[2].set_ylim([-0.1, 1.1])
+    ax[2].set_yticks([0, 1])
+    ax[2].set_yticklabels(["Inactive", "Active"])
+    ax[2].set_ylabel("MPC Status", fontsize=12)
+    ax[2].set_xlabel("Simulation Time (s)", fontsize=12)
+    if mpc_flag_found:
+        ax[2].legend(fontsize=10)
+    ax[2].grid(True, alpha=0.3)
+
+    # Set x limits for all subplots
+    for a in ax:
+        a.set_xlim([0, until])
+
+    plt.tight_layout()
     plt.show()
 
 

@@ -113,11 +113,11 @@ class SkipMPCInIntervals(MPCOnOff):
 
     def check_mpc_deactivation(self) -> bool:
         if utils.is_time_in_intervals(
-            time=self.env.now / utils.TIME_CONVERSION[self.config.time_unit],
+            time=self.env.time / utils.TIME_CONVERSION[self.config.time_unit],
             intervals=self.config.intervals,
         ):
             self.logger.debug(
                 "Current time is in skip_mpc_in_intervals, sending active=False to MPC"
             )
-            return False
-        return True
+            return True
+        return False
