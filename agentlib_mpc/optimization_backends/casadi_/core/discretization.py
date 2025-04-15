@@ -228,7 +228,7 @@ class Discretization(abc.ABC):
                         )
                     )
                     guess = np.nan_to_num(
-                        guess, posinf=100_000_000, neginf=-100_000_000
+                        guess, posinf=0, neginf=0
                     )
             guesses.update({GUESS_PREFIX + denotation: guess})
 
