@@ -7,7 +7,7 @@ import casadi as ca
 import pydantic
 from agentlib.core.errors import ConfigurationError
 
-from agentlib_mpc.data_structures.mpc_datamodels import MPCVariable, stats_path
+from agentlib_mpc.data_structures.mpc_datamodels import MPCVariable, stats_path,objective_path
 from agentlib_mpc.optimization_backends.casadi_.core import system
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
     OptimizationVariable,
@@ -126,7 +126,8 @@ class CasADiBackend(OptimizationBackend):
     def solve(self, now: float, current_vars: dict[str, MPCVariable]) -> Results:
         # collect and format inputs
         mpc_inputs = self._get_current_mpc_inputs(agent_variables=current_vars, now=now)
-        full_results = self.discretization.solve(mpc_inputs)
+        self.discretization.system = self.system
+        full_results = self.discretization.solve(mpc_inputs, self.system)
         self.save_result_df(full_results, now=now)
 
         return full_results
@@ -284,6 +285,7 @@ class CasADiBackend(OptimizationBackend):
         if not self.results_file_exists():
             results.write_columns(res_file)
             results.write_stats_columns(stats_path(res_file))
+            results.write_objective_values(res_file)
 
         df = results.df
         df.index = list(map(lambda x: str((now, x)), df.index))
@@ -291,3 +293,7 @@ class CasADiBackend(OptimizationBackend):
 
         with open(stats_path(res_file), "a") as f:
             f.writelines(results.stats_line(str(now)))
+
+        obj_file = objective_path(res_file)
+        with open(obj_file, "a") as f:
+            f.writelines(results.objective_values_line(str(now)))

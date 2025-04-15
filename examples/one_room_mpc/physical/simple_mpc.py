@@ -17,6 +17,8 @@ from agentlib.utils.multi_agent_system import LocalMASAgency
 
 from agentlib_mpc.utils.analysis import load_mpc_stats
 from agentlib_mpc.utils.plotting.interactive import show_dashboard
+from agentlib_mpc.data_structures.objective import FullObjective, SubObjective, DeltaUObjective, SqObjective
+
 
 logger = logging.getLogger(__name__)
 
@@ -110,14 +112,27 @@ class MyCasadiModel(CasadiModel):
             (0, self.T + self.T_slack, self.T_upper),
         ]
 
-        # Objective function
-        objective = sum(
-            [
-                self.r_mDot * self.mDot,
-                self.s_T * self.T_slack**2,
-            ]
+        # obj1 = DeltaUObjective(
+        #     control=self.mDot,
+        #     weight=10,
+        #     name="delta_m",
+        # )
+
+        obj3 = SubObjective(
+            expressions=[self.mDot, self.r_mDot, self.T_slack],
+            weight=10,
+            name="power_cost"
         )
 
+        obj2 = SqObjective(
+            expression=self.T_slack,
+            weight=100,
+            name="temp_slack"
+        )
+
+
+
+        objective = FullObjective(obj2, obj3, normalization=43200)
         return objective
 
 
@@ -215,6 +230,7 @@ def run_example(
     mpc_results = results["myMPCAgent"]["myMPC"]
     sim_res = results["SimAgent"]["room"]
 
+
     if with_dashboard:
         show_dashboard(mpc_results, stats)
 
@@ -267,5 +283,5 @@ def plot(mpc_results: pd.DataFrame, sim_res: pd.DataFrame, until: float):
 
 if __name__ == "__main__":
     run_example(
-        with_plots=True, with_dashboard=True, until=7200, log_level=logging.INFO
+        with_plots=True, with_dashboard=False, until=7200, log_level=logging.INFO
     )

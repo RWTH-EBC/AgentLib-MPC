@@ -16,10 +16,15 @@ from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
 
 class FullSystem(basic.BaseSystem):
     last_control: OptimizationParameter
-    r_del_u: OptimizationParameter  # penalty on change of control between time steps
+
+    def __init__(self):
+        super().__init__()
+        self._model = None
 
     def initialize(self, model: CasadiModel, var_ref: FullVariableReference):
         super().initialize(model=model, var_ref=var_ref)
+
+        self._model = model
 
         self.last_control = OptimizationParameter.declare(
             denotation="u_prev",
@@ -28,15 +33,37 @@ class FullSystem(basic.BaseSystem):
             use_in_stage_function=False,
             assert_complete=True,
         )
-        self.r_del_u = OptimizationParameter.declare(
-            denotation="r_del_u",
-            variables=[CasadiParameter(name=r_del_u) for r_del_u in var_ref.r_del_u],
-            ref_list=var_ref.r_del_u,
-            use_in_stage_function=False,
-            assert_complete=True,
-        )
 
         self.time = model.time
+
+    def has_new_objective_structure(self) -> bool:
+        """Check if the model uses the new objective structure"""
+        if not hasattr(self, '_model'):
+            print("No _model attribute")
+            return False
+
+        if self._model is None:
+            print("_model is None")
+            return False
+
+        has_objective = hasattr(self._model, 'objective')
+        if not has_objective:
+            print("_model has no 'objective' attribute")
+            return False
+
+        has_method = hasattr(self._model.objective, 'get_delta_u_objectives')
+        if not has_method:
+            print("objective has no 'get_delta_u_objectives' method")
+            return False
+
+        print("Found new objective structure")
+        return True
+
+    @property
+    def model(self):
+        if not hasattr(self, '_model') or self._model is None:
+            raise AttributeError("Model reference not initialized yet")
+        return self._model
 
 
 class DirectCollocation(basic.DirectCollocation):
@@ -60,7 +87,19 @@ class DirectCollocation(basic.DirectCollocation):
 
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
-        du_weights = self.add_opt_par(sys.r_del_u)
+        #du_weights = self.add_opt_par(sys.r_del_u)
+        using_new_objectives = sys.has_new_objective_structure()
+        delta_u_objectives = []
+        if using_new_objectives:
+            try:
+                delta_u_objectives = sys.model.objective.get_delta_u_objectives()
+            except (AttributeError, Exception) as e:
+                self.logger.warning(f"Failed to get delta_u_objectives: {str(e)}")
+
+        control_map = {}
+        if delta_u_objectives:
+            for i, control_name in enumerate(sys.controls.ref_names):
+                control_map[control_name] = i
 
         # Formulate the NLP
         # loop over prediction horizon
@@ -69,7 +108,23 @@ class DirectCollocation(basic.DirectCollocation):
             u_prev = uk
             uk = self.add_opt_var(sys.controls)
             # penalty for control change between time steps
-            self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
+            if using_new_objectives and delta_u_objectives:
+                for delta_obj in delta_u_objectives:
+                    control_name = delta_obj.get_control_name()
+                    if control_name in control_map:
+                        idx = control_map[control_name]
+                        control_prev = u_prev[idx]
+                        control_curr = uk[idx]
+                        delta = control_curr - control_prev
+                        if delta_obj.scaling:
+                            scale = 0.5 * (ca.fabs(control_curr + control_prev)) + 1e-6
+                            normalized_delta = delta / scale
+                            penalty = normalized_delta ** 2
+                        else:
+                            penalty = delta ** 2
+
+                        # Add to objective with weight
+                        self.objective_function += ts * delta_obj.weight * penalty
 
             # New parameter for inputs
             dk = self.add_opt_par(sys.non_controlled_inputs)
@@ -105,6 +160,8 @@ class DirectCollocation(basic.DirectCollocation):
             # add collocation constraints later for fatrop
             for constraint in constraints:
                 self.add_constraint(*constraint)
+
+
 
 
 class MultipleShooting(basic.MultipleShooting):

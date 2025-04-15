@@ -305,8 +305,15 @@ class CasadiModel(Model):
         self.time = ca.MX.sym("time", 1, 1)
 
         # read constraints, assign ode's and return cost function
-        self.cost_func = self.setup_system()
+        objective_result = self.setup_system()
         self._assert_outputs_are_defined()
+
+        self.objective = objective_result
+
+        if hasattr(objective_result, "get_casadi_expression"):
+            self.cost_func = objective_result.get_casadi_expression()
+        else:
+            self.cost_func = objective_result
 
         # save system equations as a single casadi vector
         system = ca.vertcat(*[sta.ode for sta in self.differentials])

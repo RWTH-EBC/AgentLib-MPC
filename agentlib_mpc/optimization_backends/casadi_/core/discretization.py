@@ -2,8 +2,9 @@
 
 import abc
 import dataclasses
+import traceback
 from pathlib import Path
-from typing import TypeVar, Union, Callable, Optional
+from typing import TypeVar, Union, Callable, Optional, Dict
 
 import casadi as ca
 import numpy as np
@@ -24,7 +25,9 @@ from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
     OptimizationVariable,
 )
 from agentlib_mpc.optimization_backends.casadi_.core.system import System
-
+from agentlib_mpc.data_structures.objective import FullObjective, SubObjective, DeltaUObjective, SqObjective
+from agentlib_mpc.data_structures.mpc_datamodels import objective_path
+from agentlib_mpc.optimization_backends.casadi_.core.objective_calculation import align_to_grid, create_aligned_dataframe, determine_common_grid, determine_expression_type
 
 CasadiVariableList = Union[list[ca.MX], ca.MX]
 
@@ -36,6 +39,7 @@ class Results:
     columns: pd.MultiIndex
     stats: dict
     variable_grid_indices: dict[str, list[int]]
+    objective_values: dict = dataclasses.field(default_factory=dict)
     _variable_name_to_index: dict[str, int] = None
 
     def __post_init__(self):
@@ -64,6 +68,7 @@ class Results:
                 lookup[label[1]] = index
         return lookup
 
+
     @property
     def df(self) -> pd.DataFrame:
         return pd.DataFrame(self.matrix, index=self.grid, columns=self.columns)
@@ -76,6 +81,23 @@ class Results:
         line = f""",{",".join(self.stats)}\n"""
         with open(file, "w") as f:
             f.write(line)
+
+    def write_objective_values(self, file: Path):
+        """Writes the column headers for objective values file."""
+        # Extract objective names
+        headers = ["time"] + list(self.objective_values.keys())
+        line = f"""{",".join(headers)}\n"""
+
+        # Get the objective file path
+        obj_file = objective_path(file)
+        with open(obj_file, "w") as f:
+            f.write(line)
+
+    def objective_values_line(self, index: str) -> str:
+        """Creates a CSV line for objective values at a specific time step."""
+        values = [str(val) for val in self.objective_values.values()]
+        return f""""{index}",{",".join(values)}\n"""
+
 
     def stats_line(self, index: str) -> str:
         return f""""{index}",{",".join(map(str, self.stats.values()))}\n"""
@@ -155,7 +177,7 @@ class Discretization(abc.ABC):
             nlp=self.nlp, discrete=self.binary_vars, equalities=self.equalities
         )
 
-    def solve(self, mpc_inputs: MPCInputs) -> Results:
+    def solve(self, mpc_inputs: MPCInputs, system) -> Results:
         """
         Solves the discretized trajectory optimization problem.
 
@@ -194,8 +216,207 @@ class Discretization(abc.ABC):
             mpc_output["w"] = bin_array
 
         self._remember_solution(mpc_output)
-        result = self._process_solution(inputs=mpc_inputs, outputs=mpc_output)
+        objective_values = {}
+        if system is not None and hasattr(system, 'has_new_objective_structure') and system.has_new_objective_structure():
+            objective_values = self._evaluate_objective_values(system)
+            if hasattr(system.model.objective, 'calculate_values'):
+                system.model.objective.calculate_values()
+                objective_values = system.model.objective._values
+
+        if 'obj' in self._optimizer.stats():
+            objective_values['total'] = self._optimizer.stats()['obj']
+
+        result = self._process_solution(
+            inputs=mpc_inputs,
+            outputs=mpc_output,
+            objective_values=objective_values
+        )
         return result
+
+    def _collect_expression_values(self, expr_name):
+        """
+        Collect values for expressions from all possible sources.
+        Properly handles CasADi objects.
+        """
+        values_by_expr = {}
+        value_found = False
+
+        for var_type, container in self.mpc_opt_vars.items():
+            if not hasattr(container, 'ref_names') or not hasattr(container, 'opt'):
+                continue
+
+            for i, ref in enumerate(container.ref_names):
+                if ref == expr_name and i < container.opt.shape[0]:
+                    # Get values using .full() to convert from CasADi to numpy
+                    values = container.opt[i, :].full().flatten()
+                    values_by_expr[expr_name] = values
+                    value_found = True
+                    break
+
+            if value_found:
+                break
+
+        if not value_found:
+            for par_type, container in self.mpc_opt_pars.items():
+                if not hasattr(container, 'ref_names'):
+                    continue
+
+                for i, ref in enumerate(container.ref_names):
+                    if ref == expr_name:
+                        try:
+                            if hasattr(container, 'var') and container.var:
+                                param_vals = []
+                                for t in range(len(container.var)):
+                                    if i < container.var[t].shape[0]:
+                                        casadi_val = container.var[t][i]
+                                        if hasattr(casadi_val, 'is_constant'):
+                                            if casadi_val.is_constant():
+                                                val = float(ca.DM(casadi_val))
+                                                param_vals.append(val)
+                                        else:
+                                            param_vals.append(float(casadi_val))
+
+                                if param_vals:
+                                    values_by_expr[expr_name] = np.array(param_vals)
+                                    value_found = True
+                        except Exception as e:
+                            self.logger.debug(f"Error extracting parameter {expr_name}: {str(e)}")
+
+                if value_found:
+                    break
+
+        if not value_found and hasattr(self, 'system') and hasattr(self.system, 'non_controlled_inputs'):
+            input_names = self.system.non_controlled_inputs.ref_names
+            if expr_name in input_names:
+                for par_type, container in self.mpc_opt_pars.items():
+                    if par_type == 'd':
+                        if hasattr(container, 'var') and container.var:
+                            for i, ref in enumerate(self.system.non_controlled_inputs.ref_names):
+                                if ref == expr_name:
+                                    try:
+                                        input_vals = []
+                                        for t in range(len(container.var)):
+                                            if i < container.var[t].shape[0]:
+                                                casadi_val = container.var[t][i]
+                                                if hasattr(casadi_val, 'full'):
+                                                    val_array = casadi_val.full()
+                                                    if val_array.size == 1:
+                                                        input_vals.append(float(val_array))
+
+                                        if input_vals:
+                                            values_by_expr[expr_name] = np.array(input_vals)
+                                            value_found = True
+                                    except Exception as e:
+                                        self.logger.debug(f"Error extracting input {expr_name}: {str(e)}")
+                                    break
+                        break
+
+        if not value_found and hasattr(self, 'system') and hasattr(self.system, 'model'):
+            if hasattr(self.system.model, 'inputs'):
+                for i, inp in enumerate(self.system.model.inputs):
+                    if hasattr(inp, 'name') and inp.name == expr_name:
+                        values_by_expr[expr_name] = inp.value
+                        value_found = True
+                        break
+
+        if not value_found and "slack" in expr_name:
+            for var_type, container in self.mpc_opt_vars.items():
+                if "z" in var_type and hasattr(container, 'opt') and container.opt is not None:
+                    values = container.opt.full().flatten()
+                    values_by_expr[expr_name] = values
+                    value_found = True
+                    break
+
+        return values_by_expr, container.grid
+
+    def _evaluate_objective_values(self, system) -> dict:
+        """
+        Evaluate values for each objective component based on optimization results.
+
+        Args:
+            system: The system containing the objective structure
+
+        Returns:
+            dict: Dictionary of objective name to objective value
+        """
+        all_series = {}
+        ts = self.options.time_step
+        ph = self.options.prediction_horizon
+        # grid_control = np.arange(0, ph*(ts+1), ts)
+
+        objective = system.model.objective
+
+        for obj in objective.objectives:
+            if isinstance(obj, SqObjective):
+                expr_name = obj.get_expression_name()
+                values_dict, grid = self._collect_expression_values(expr_name)
+                values = values_dict[expr_name]
+                if grid[0] != 0:
+                    grid = np.concatenate(([0], grid))
+                delta_grid = np.diff(grid)
+                abs_values = np.abs(values)
+                result = abs_values * delta_grid
+                series = pd.Series(data=result, index=grid[:-1], name=f"{obj.name}_*sec")
+                all_series[obj.name] = series
+
+            elif isinstance(obj, DeltaUObjective):
+                #todo: check if working
+                expr_name = obj.get_control_name()
+                values_dict, grid = self._collect_expression_values(expr_name)
+                values = values_dict[expr_name]
+                delta_values = np.abs(values)
+                delta_values = np.concatenate(([0], delta_values))
+                series = pd.Series(data=delta_values, index=grid[:-1])
+                all_series[obj.name] = series
+
+            elif isinstance(obj, SubObjective):
+                expr_names = obj.get_expression_names()
+                expr_values = {}
+                expr_grids = []
+                expr_types = []
+
+                for expr_name in expr_names:
+                    #todo: not working for parameters so far
+                    values_dict, expr_grid = self._collect_expression_values(expr_name)
+                    if values_dict and expr_name in values_dict:
+                        expr_values[expr_name] = values_dict[expr_name]
+                        expr_grids.append(expr_grid)
+                        # todo: check if after changes as the SubObjective class regarding the expr_type it is correctly determined
+                        expr_type = determine_expression_type(expr_name, system)
+                        expr_types.append(expr_type)
+
+                common_grid = determine_common_grid(expr_grids, expr_types)
+                aligned_values = {}
+                for expr_name, values in expr_values.items():
+                    idx = expr_names.index(expr_name)
+                    expr_type = expr_types[idx] if idx < len(expr_types) else None
+                    aligned_series = align_to_grid(values, expr_grids[idx],common_grid, expr_type)
+                    aligned_values[expr_name] = aligned_series
+                result_values = np.ones(len(common_grid))
+                for values in aligned_values.values():
+                    result_values = result_values * values
+                if common_grid[0] != 0:
+                    common_grid = np.concatenate(([0], common_grid))
+                delta_grid = np.diff(common_grid)
+                result = result_values * delta_grid
+                series = pd.Series(data=result, index=common_grid[:-1], name=f"{obj.name}_*sec")
+                all_series[obj.name] = series
+
+            results_df = create_aligned_dataframe(all_series)
+
+        return results_df
+
+    def _get_variable_values(self, var_name):
+        """Helper to extract variable values across time steps from optimization results"""
+        if var_name not in self.mpc_opt_vars:
+            return []
+
+        var_container = self.mpc_opt_vars[var_name]
+        if not hasattr(var_container, 'opt') or var_container.opt is None:
+            return []
+
+        return var_container.opt.toarray().flatten()
+
 
     def _determine_initial_guess(self, mpc_inputs: MPCInputs) -> MPCInputs:
         """
@@ -240,14 +461,10 @@ class Discretization(abc.ABC):
         for den, var in self.mpc_opt_vars.items():
             var.opt = optimum[den]
 
-    def _process_solution(self, inputs: dict, outputs: dict) -> Results:
+    def _process_solution(self, inputs: dict, outputs: dict, objective_values=None) -> Results:
         """
-        If self.result_file is not empty,
-        collect all inputs and outputs of the optimization problem and format
-        them as DataFrames and pass them to OptimizationBackend.save_df().
-        Args:
-            inputs: mpc_inputs dict returned from _get_current_mpc_inputs
-            outputs: mpc_output from self._nlp_outputs_to_mpc_outputs
+        Collect all inputs and outputs of the optimization problem and format
+        them for return and optionally save them.
         """
         # update the guess values at the variable positions with the outputs
         for key, value in inputs.items():
@@ -258,7 +475,14 @@ class Discretization(abc.ABC):
 
         result_matrix = self._result_map(**inputs)["result"]
 
-        return self._create_results(result_matrix, self._optimizer.stats())
+        obj_vals = objective_values or {}
+
+        # Create Results instance with objective values
+        return self._create_results(
+            result_matrix,
+            self._optimizer.stats(),
+            objective_values=obj_vals
+        )
 
     def create_nlp_in_out_mapping(self, system: System):
         """
@@ -348,13 +572,18 @@ class Discretization(abc.ABC):
             "result_map", mpc_inputs, [matrix], mpc_input_denotations, ["result"]
         )
 
-        def make_results_view(result_matrix: ca.DM, stats: dict) -> Results:
+        def make_results_view(
+                result_matrix: ca.DM,
+                stats: dict,
+                objective_values: Optional[Dict[str, float]] = None
+        ) -> Results:
             return Results(
                 matrix=result_matrix,
                 columns=col_index,
                 grid=full_grid,
                 variable_grid_indices=var_grids,
                 stats=stats,
+                objective_values=objective_values or {}
             )
 
         self._create_results = make_results_view
@@ -518,6 +747,9 @@ class Discretization(abc.ABC):
         var_list.ub.append(upper)
         var_list.guess.append(opt_var)
         var_list.grid.append(self.pred_time)
+
+        if not hasattr(var_list, 'ref_names') and hasattr(quantity, 'ref_names'):
+            var_list.ref_names = quantity.ref_names
 
         return opt_var
 
