@@ -2,6 +2,7 @@ from typing import Dict, Tuple, Optional, List
 
 import casadi as ca
 import numpy as np
+import pydantic
 
 from agentlib_mpc.data_structures.admm_datatypes import VariableReference
 from agentlib_mpc.data_structures.casadi_utils import (
@@ -25,6 +26,9 @@ from agentlib_mpc.optimization_backends.casadi_.basic import DirectCollocation
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
     OptimizationVariable,
     OptimizationParameter,
+)
+from agentlib_mpc.optimization_backends.casadi_.core.casadi_backend import (
+    CasadiBackendConfig,
 )
 from agentlib_mpc.optimization_backends.casadi_.core.discretization import (
     Discretization,
@@ -80,8 +84,15 @@ class CasadiALADINSystem(FullSystem):
         self.cost_function += objective
 
 
+class ALADINCasadiDiscretizationOptions(CasadiDiscretizationOptions):
+    regularization_parameter: float = 0.001
+    activation_margin: float = 0.001
+
+
 class ALADINDiscretization(Discretization):
-    def __init__(self, options: CasadiDiscretizationOptions):
+    options: ALADINCasadiDiscretizationOptions
+
+    def __init__(self, options: ALADINCasadiDiscretizationOptions):
         self.sensitivities_result = None
         self.global_variable = None
         self._sensitivities_func: Optional[ca.Function] = None
@@ -103,7 +114,11 @@ class ALADINDiscretization(Discretization):
         mpc_output = self._nlp_outputs_to_mpc_outputs(
             vars_at_optimum=list(range(opt_var_length))
         )
-        result = self._process_solution(inputs=mpc_inputs, outputs=mpc_output)
+        result = self._process_solution(
+            inputs=mpc_inputs,
+            outputs=mpc_output,
+            objective_value=0,
+        )
         coup_vars = {c.name: result[c.name] for c in var_ref.couplings}
 
         return local_solution, coup_vars
@@ -127,7 +142,7 @@ class ALADINDiscretization(Discretization):
             # have to use the key guess_... here, as the _mpc_inputs_to_nlp_inputs
             # original implementation uses that, and we want to use that function
             current_optimum[den] = ca.horzcat(  # have to use guess here as
-                current_optimum[den][shift_by:], current_optimum[den][-shift_by:]
+                current_optimum[den][:, shift_by:], current_optimum[den][:, -shift_by:]
             )
         return (
             self._mpc_inputs_to_nlp_inputs(**current_optimum)["x0"].toarray().tolist()
@@ -153,8 +168,8 @@ class ALADINDiscretization(Discretization):
 
         """
         # todo get these from coordinator
-        regularization_parameter = 0.0015111114529828148
-        activation_margin = 0.0007901426386278718
+        regularization_parameter = self.options.regularization_parameter
+        activation_margin = self.options.activation_margin
 
         # collect and format inputs
         guesses = self._determine_initial_guess(mpc_inputs)
@@ -178,7 +193,7 @@ class ALADINDiscretization(Discretization):
             constraints=constraints,
             lb=nlp_inputs["lbg"],
             ub=nlp_inputs["ubg"],
-            act_margin=activation_margin,  # todo get from coordinator
+            act_margin=activation_margin,
         )
 
         # get sensitivities
@@ -192,7 +207,6 @@ class ALADINDiscretization(Discretization):
         self.sensitivities_result["J"] = self.sensitivities_result["J"].toarray()[
             active_constraints
         ]
-        # todo look at hessian and also with regard to lam_g, maybe this is funky. Alternatively, look at gradient, whether there should be more to that, including constraints
         original_hessian = self.sensitivities_result["H"]
         self.sensitivities_result["H"] = regularize_h(
             original_hessian, regularization_parameter
@@ -205,9 +219,11 @@ class ALADINDiscretization(Discretization):
         # format and return solution
         mpc_output = self._nlp_outputs_to_mpc_outputs(vars_at_optimum=nlp_output["x"])
         self._remember_solution(mpc_output)
-        result = self._process_solution(inputs=mpc_inputs, outputs=mpc_output)
-
-        # todo the hessian of cooler is too big and I am missing box constraints I think
+        result = self._process_solution(
+            inputs=mpc_inputs,
+            outputs=mpc_output,
+            objective_value=float(nlp_output["f"]),
+        )
         return result
 
     def _get_active_constraints(
@@ -670,6 +686,12 @@ def regularize_h(hessian, reg_param: float):
     return H_reg
 
 
+class ALADINCasadiBackendConfig(CasadiBackendConfig):
+    discretization_options: ALADINCasadiDiscretizationOptions = pydantic.Field(
+        default_factory=ALADINCasadiDiscretizationOptions
+    )
+
+
 class CasADiALADINBackend(CasADiADMMBackend):
     discretization: ALADINDiscretization
 
@@ -678,6 +700,7 @@ class CasADiALADINBackend(CasADiADMMBackend):
         DiscretizationMethod.collocation: ALADINCollocation,
         DiscretizationMethod.multiple_shooting: ALADINMultipleShooting,
     }
+    config_type = ALADINCasadiBackendConfig
 
     def get_aladin_registration(
         self, current_vars: Dict[str, MPCVariable], now: float

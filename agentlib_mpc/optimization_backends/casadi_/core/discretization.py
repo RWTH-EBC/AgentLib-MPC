@@ -185,9 +185,10 @@ class Discretization(abc.ABC):
         mpc_output = self._nlp_outputs_to_mpc_outputs(vars_at_optimum=nlp_output["x"])
 
         self._remember_solution(mpc_output)
-        objective_value = float(nlp_output["f"])
         result = self._process_solution(
-            inputs=mpc_inputs, outputs=mpc_output, objective_value=objective_value
+            inputs=mpc_inputs,
+            outputs=mpc_output,
+            objective_value=float(nlp_output["f"]),
         )
         return result
 
@@ -235,7 +236,7 @@ class Discretization(abc.ABC):
             var.opt = optimum[den]
 
     def _process_solution(
-        self, inputs: dict, outputs: dict, objective_value: float
+        self, inputs: dict, outputs: dict, objective_value: Optional[float]
     ) -> Results:
         """
         If self.result_file is not empty,
@@ -253,10 +254,13 @@ class Discretization(abc.ABC):
                 inputs[key] = outputs[out_key]
 
         result_matrix = self._result_map(**inputs)["result"]
+        if objective_value is not None:
+            stats = self._optimizer.stats()
+            stats["objective"] = objective_value
+        else:
+            stats = {}
 
-        return self._create_results(
-            result_matrix, self._optimizer.stats(), objective_value
-        )
+        return self._create_results(result_matrix, stats)
 
     def create_nlp_in_out_mapping(self, system: System):
         """
@@ -346,10 +350,7 @@ class Discretization(abc.ABC):
             "result_map", mpc_inputs, [matrix], mpc_input_denotations, ["result"]
         )
 
-        def make_results_view(
-            result_matrix: ca.DM, stats: dict, objective_value: float
-        ) -> Results:
-            stats["objective"] = objective_value
+        def make_results_view(result_matrix: ca.DM, stats: dict) -> Results:
             return Results(
                 matrix=result_matrix,
                 columns=col_index,
