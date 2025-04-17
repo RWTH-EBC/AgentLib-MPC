@@ -794,7 +794,7 @@
         },
         {
             "type": "error",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "",
             "line": 9,
             "column": 0,
@@ -805,7 +805,7 @@
         },
         {
             "type": "warning",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "TestExamples.test_mpc",
             "line": 65,
             "column": 8,
@@ -816,7 +816,7 @@
         },
         {
             "type": "convention",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "TestExamples.test_admm_local",
             "line": 73,
             "column": 4,
@@ -827,7 +827,7 @@
         },
         {
             "type": "convention",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "TestExamples.test_admm_coordinated",
             "line": 83,
             "column": 4,
@@ -838,7 +838,7 @@
         },
         {
             "type": "convention",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "TestExamples.test_exchange_admm",
             "line": 93,
             "column": 4,
@@ -849,7 +849,7 @@
         },
         {
             "type": "convention",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "TestExamples.test_admm_mp_broadcast",
             "line": 109,
             "column": 4,
@@ -860,7 +860,7 @@
         },
         {
             "type": "warning",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "",
             "line": 5,
             "column": 0,
@@ -1864,7 +1864,7 @@
                 "statement": 3,
                 "warning": 0
             },
-            "test_examples": {
+            "ci.test_examples": {
                 "convention": 4,
                 "error": 1,
                 "fatal": 0,
@@ -1994,22 +1994,22 @@
             ],
             "pandas": [
                 "test_mpc",
-                "test_examples"
+                "ci.test_examples"
             ],
             "agentlib.utils": [
-                "conftest",
-                "test_examples"
+                "ci.test_examples",
+                "conftest"
             ],
             "agentlib.utils.local_broadcast_broker": [
-                "test_examples",
-                "test_admm"
+                "test_admm",
+                "ci.test_examples"
             ],
             "numpy": [
-                "test_mpc",
-                "test_serialized_gpr",
+                "test_serialized_linreg",
                 "test_serialized_ann",
+                "test_mpc",
                 "test_admm",
-                "test_serialized_linreg"
+                "test_serialized_gpr"
             ],
             "agentlib.core": [
                 "test_admm"
@@ -2030,8 +2030,8 @@
                 "test_casadi_backend"
             ],
             "agentlib_mpc.models.casadi_model": [
-                "test_casadi_backend",
-                "test_casadi_ml_model"
+                "test_casadi_ml_model",
+                "test_casadi_backend"
             ],
             "agentlib_mpc.optimization_backends.casadi_.basic": [
                 "test_casadi_backend"
@@ -2155,7 +2155,7 @@
                 "statement": 3,
                 "warning": 0
             },
-            "test_examples": {
+            "ci.test_examples": {
                 "convention": 4,
                 "error": 1,
                 "fatal": 0,
@@ -2285,22 +2285,22 @@
             ],
             "pandas": [
                 "test_mpc",
-                "test_examples"
+                "ci.test_examples"
             ],
             "agentlib.utils": [
-                "conftest",
-                "test_examples"
+                "ci.test_examples",
+                "conftest"
             ],
             "agentlib.utils.local_broadcast_broker": [
-                "test_examples",
-                "test_admm"
+                "test_admm",
+                "ci.test_examples"
             ],
             "numpy": [
-                "test_mpc",
-                "test_serialized_gpr",
+                "test_serialized_linreg",
                 "test_serialized_ann",
+                "test_mpc",
                 "test_admm",
-                "test_serialized_linreg"
+                "test_serialized_gpr"
             ],
             "agentlib.core": [
                 "test_admm"
