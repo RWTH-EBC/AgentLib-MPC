@@ -113,22 +113,26 @@ class MyCasadiModel(CasadiModel):
         ]
 
         obj1 = DeltaUObjective(
-            control=self.mDot,
-            weight=1,
+            expressions=self.mDot,
+            weight=50,
             name="delta_m",
         )
 
         obj3 = SubObjective(
-            expressions=[self.mDot, self.r_mDot],
-            weight=10,
+            expressions=[self.mDot],
+            weight=20,
             name="power_cost"
         )
 
         obj2 = SqObjective(
-            expression=self.T_slack,
+            expressions=self.T_slack,
             weight=100,
             name="temp_slack"
         )
+
+        #todo:
+        #multiple shooting
+        #ml modelle
 
 
         objective = FullObjective(obj1, obj2, obj3, normalization=43200)
@@ -161,7 +165,7 @@ AGENT_MPC = {
             "time_step": 300,
             "prediction_horizon": 15,
             "parameters": [
-                {"name": "s_T", "value": 3},
+                {"name": "s_T", "value": 100},
                 {"name": "r_mDot", "value": 1},
             ],
             "inputs": [
@@ -282,5 +286,5 @@ def plot(mpc_results: pd.DataFrame, sim_res: pd.DataFrame, until: float):
 
 if __name__ == "__main__":
     run_example(
-        with_plots=True, with_dashboard=False, until=86400, log_level=logging.INFO
+        with_plots=True, with_dashboard=False, until=7200, log_level=logging.INFO
     )

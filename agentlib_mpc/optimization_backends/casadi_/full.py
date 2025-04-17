@@ -87,11 +87,9 @@ class DirectCollocation(basic.DirectCollocation):
                     control_prev = u_prev[idx]
                     control_curr = uk[idx]
                     delta = control_curr - control_prev
-                    scale = 0.5 * (control_curr + control_prev) + 1e-6
                     normalized_delta = delta ** 2
                     penalty = normalized_delta
-
-                    self.objective_function += delta_obj.weight * penalty
+                    self.objective_function += delta_obj.weight ** 2 * penalty
 
             # New parameter for inputs
             dk = self.add_opt_par(sys.non_controlled_inputs)

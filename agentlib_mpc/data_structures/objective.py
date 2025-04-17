@@ -1,10 +1,14 @@
 import pandas as pd
 import numpy as np
+import casadi as ca
 
 class SubObjective:
     def __init__(self, expressions, weight: float = 1.0, name: str = None):
         self.expressions = expressions if isinstance(expressions, list) else [expressions]
-        self.weight = weight
+        if isinstance(weight, int):
+            self.weight = weight
+        else:
+            self.weight = weight.value
         self.name = name or f"obj_{id(self)}"
 
     def get_weighted_expression(self):
@@ -44,7 +48,7 @@ class SubObjective:
 class SqObjective(SubObjective):
     """Objective term that squares an expression"""
 
-    def __init__(self, expression, weight=1.0, name=None):
+    def __init__(self, expressions, weight=1.0, name=None):
         """
         Create an objective term that squares an expression
 
@@ -53,18 +57,18 @@ class SqObjective(SubObjective):
             weight: Weight factor for this objective
             name: Optional name for identification
         """
-        self.expression = expression
-        super().__init__(expressions=[expression], weight=weight, name=name)
+        self.expression = expressions
+        super().__init__(expressions=[expressions], weight=weight, name=name)
 
     def get_weighted_expression(self):
         """Returns the squared expression with weight"""
-        return self.weight * (self.expression ** 2)
+        return (self.weight ** 2) * (self.expression ** 2)
 
     def calculate_value(self, series):
         """Returns the final weighted result by multiplying all expressions"""
         ts = np.diff(series.index)
         series = series.values[:-1]
-        return sum(self.weight * series ** 2 * ts)
+        return sum(self.weight ** 2 * series ** 2 * ts)
 
     def get_expression_name(self):
         """Returns the name of the main expression"""
@@ -80,19 +84,15 @@ class SqObjective(SubObjective):
 
 
 class DeltaUObjective(SubObjective):
-    """Objective term for penalizing control changes with optional scaling"""
-
-    def __init__(self, control, weight: float = 1.0, name: str = None):
+    def __init__(self, expressions, weight: float = 1.0, name: str = None):
         """
         Args:
             control: Control variable to track changes
             weight: Weight factor for this objective
             name: Optional name for identification/reporting
-            # scaling: Whether to apply scaling by average magnitude
         """
-        self.control = control
-        # self.scaling = scaling
-        super().__init__(expressions=[], weight=weight, name=name or f"delta_{control.name}")
+        self.control = expressions
+        super().__init__(expressions=[], weight=weight, name=name or f"delta_{expressions.name}")
 
     def get_control_name(self):
         """Return the name of the associated control variable"""
@@ -110,7 +110,6 @@ class DeltaUObjective(SubObjective):
     def calculate_value(self, series):
         """Returns the final weighted result by multiplying all expressions"""
         diff_values = series.diff()
-        scale = 0.5 * (diff_values) + 1e-6
         values = diff_values ** 2
         return sum(self.weight * values.dropna())
 
