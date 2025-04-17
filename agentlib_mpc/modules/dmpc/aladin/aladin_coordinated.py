@@ -162,6 +162,16 @@ class CoordinatedALADIN(CoordinatedMPC):
                 cdt.PREDICTION_HORIZON: options.prediction_horizon,
             }
         )
+        discretization_options = new_config_dict["optimization_backend"].setdefault(
+            "discretization_options"
+        )
+        discretization_options.update(
+            {
+                ald.REGULARIZATION_PARAMETER: options.regularization_parameter,
+                ald.ACTIVATION_MARGIN: options.activation_margin,
+            }
+        )
+        # Setting self.config triggers the update mechanism which reinitializes the backend
         self.config = new_config_dict
         self.logger.info("%s: Reinitialized optimization problem.", self.agent.id)
 
@@ -198,9 +208,13 @@ class CoordinatedALADIN(CoordinatedMPC):
         self._result = self.optimization_backend.solve(
             now=self._start_optimization_at, current_vars=opt_inputs
         )
-        opt_return = self.optimization_backend.get_sensitivities()
+        # Get sensitivities
+        sensitivities = self.optimization_backend.get_sensitivities()
+        sensitivities.objective = self._result.stats["objective"]
+        # Create the return message including the objective
+
         self.logger.debug("Sent optimal solution.")
-        self.set(name=cdt.OPTIMIZATION_A2C, value=opt_return.to_json())
+        self.set(name=cdt.OPTIMIZATION_A2C, value=sensitivities.to_json())
 
     def assert_mpc_variables_are_in_model(self):
         """

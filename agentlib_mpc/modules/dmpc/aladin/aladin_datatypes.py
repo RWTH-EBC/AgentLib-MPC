@@ -20,6 +20,8 @@ import agentlib_mpc.data_structures.coordinator_datatypes as cdt
 
 LOCAL_PENALTY_FACTOR = "local_penalty_factor"
 PRESCRIBED = "prescribed"
+REGULARIZATION_PARAMETER = "regularization_parameter"
+ACTIVATION_MARGIN = "activation_margin"
 
 
 @dataclasses.dataclass
@@ -124,6 +126,8 @@ class ALADINParameters:
     prediction_horizon: int
     time_step: float
     penalty_factor: float
+    regularization_parameter: float  # Added
+    activation_margin: float  # Added
     receiver_agent_id: str = None
 
     def to_dict(self):
@@ -249,6 +253,7 @@ class AgentToCoordinator(StructuredValue):
     g: Union[List[float], np.ndarray]  # objective gradient
     J: Union[List[List[float]], np.ndarray]  # constraint jacobian
     H: Union[List[List[float]], np.ndarray]  # hessian
+    objective: float = 0  # local objective value
 
 
 @dataclasses.dataclass

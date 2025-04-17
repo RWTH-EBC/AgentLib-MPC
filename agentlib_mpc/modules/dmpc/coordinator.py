@@ -472,7 +472,9 @@ class Coordinator(BaseModule):
             with self._registration_lock:
                 self._initial_registration(variable)
 
-    def _save_stats(self, iterations: int, data_dict: dict) -> None:
+    def _save_stats(
+        self, iterations: int, data_dict: dict, section_length=None
+    ) -> None:
         """Save iteration statistics to a file.
 
         Args:
@@ -482,7 +484,8 @@ class Coordinator(BaseModule):
         if not self.config.save_solve_stats:
             return
 
-        section_length = len(self._primal_residuals_tracker)
+        if section_length is None:
+            section_length = len(self._primal_residuals_tracker)
         if section_length == 0:
             return
 

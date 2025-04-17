@@ -1,9 +1,9 @@
 import itertools
 import json
 import time
-from dataclasses import asdict
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Dict, Tuple, Set, Optional
+from typing import Dict, Tuple, Set, Optional, List
 
 import casadi as ca
 import numpy as np
@@ -14,6 +14,69 @@ from pydantic import Field
 from agentlib_mpc.modules.dmpc.coordinator import Coordinator, CoordinatorConfig
 from agentlib_mpc.data_structures import coordinator_datatypes as cdt
 import agentlib_mpc.modules.dmpc.aladin.aladin_datatypes as ald
+
+
+@dataclass
+class _AladinStatsTracker:
+    """Helper class to manage ALADIN iteration statistics."""
+
+    objective: List[float] = field(default_factory=list)
+    qp_solve_time: List[float] = field(default_factory=list)
+    qp_success: List[bool] = field(default_factory=list)
+    primal_residual: List[float] = field(default_factory=list)
+    dual_residual: List[float] = field(default_factory=list)
+    wall_time: List[float] = field(default_factory=list)
+    penalty_parameter_tracker: List[float] = field(default_factory=list)
+    qp_penalty_tracker: List[float] = field(default_factory=list)
+    section_length: float = 0
+
+    def append_iteration_stats(
+        self,
+        objective: float,
+        primal: float,
+        dual: float,
+        time: float,
+        penalty: float,
+        qp_penalty: float,
+    ):
+        """Append stats collected at the end of an iteration."""
+        self.objective.append(objective)
+        self.primal_residual.append(primal)
+        self.dual_residual.append(dual)
+        self.wall_time.append(time)
+        self.penalty_parameter_tracker.append(penalty)
+        self.qp_penalty_tracker.append(qp_penalty)
+        self.section_length += 1
+
+    def append_qp_stats(self, solve_time: float, success: bool):
+        """Append stats collected after solving the QP."""
+        self.qp_solve_time.append(solve_time)
+        self.qp_success.append(success)
+
+    def get_data_dict(self) -> Dict[str, List]:
+        """Return all tracked data as a dictionary."""
+        return {
+            "objective": self.objective,
+            "qp_solve_time": self.qp_solve_time,
+            "qp_success": self.qp_success,
+            "primal_residual": self.primal_residual,
+            "dual_residual": self.dual_residual,
+            "wall_time": self.wall_time,
+            "penalty_parameter": self.penalty_parameter_tracker,
+            "qp_penalty": self.qp_penalty_tracker,
+        }
+
+    def clear(self):
+        """Clear all tracked data."""
+        self.objective.clear()
+        self.qp_solve_time.clear()
+        self.qp_success.clear()
+        self.primal_residual.clear()
+        self.dual_residual.clear()
+        self.wall_time.clear()
+        self.penalty_parameter_tracker.clear()
+        self.qp_penalty_tracker.clear()
+        self.section_length = 0
 
 
 class ALADINCoordinatorConfig(CoordinatorConfig):
@@ -58,11 +121,27 @@ class ALADINCoordinatorConfig(CoordinatorConfig):
     activation_margin: float = Field(
         default=0.001, gt=0, description="Threshold for active set detection."
     )
-    regularization_parameter: float = Field(default=0, ge=0)
+    regularization_parameter: float = Field(default=0.001, ge=0)
     lambda_max: float = Field(default=1e4, ge=0)
     solve_stats_file: str = Field(
         default="aladin_stats.csv",
         description="File name for the solve stats.",
+    )
+    penalty_variation_factor: float = Field(
+        default=1.0,
+        ge=1,
+        description="Factor to multiply penalty_parameter (rho) with each iteration.",
+    )
+    max_penalty_factor: float = Field(
+        default=1e6, ge=0, description="Maximum value for penalty_parameter (rho)."
+    )
+    qp_penalty_variation_factor: float = Field(
+        default=1.0,
+        ge=1,
+        description="Factor to multiply qp_penalty (mu) with each iteration.",
+    )
+    max_qp_penalty: float = Field(
+        default=1e8, ge=0, description="Maximum value for qp_penalty (mu)."
     )
 
 
@@ -70,11 +149,15 @@ class ALADINCoordinator(Coordinator):
     """Coordinator implementation for the ALADIN algorithm"""
 
     config: ALADINCoordinatorConfig
+    _stats_tracker: _AladinStatsTracker
+    _total_objective: float
 
     def __init__(self, *, config: dict, agent: Agent):
         super().__init__(config=config, agent=agent)
         self.agent_dict: Dict[Source, ald.AgentDictEntry] = {}
         self.current_healthy_agents: Optional[Set[str]] = None
+        self._stats_tracker = _AladinStatsTracker()
+        self._total_objective = 0.0
 
         # ALADIN-specific parameters
         self.penalty_parameter: float = self.config.penalty_factor
@@ -118,6 +201,10 @@ class ALADINCoordinator(Coordinator):
         if not list(self._agents_with_status(status=cdt.AgentStatus.ready)):
             self.logger.info(f"No Agents available at time {self.env.now}.")
             return  # if no agents registered return early
+
+        # Reset penalty parameters for the new control step
+        self.penalty_parameter = self.config.penalty_factor
+        self.qp_penalty = self.config.qp_penalty
 
         # Create couplings on first iteration or if agents change
         self.create_couplings()
@@ -180,6 +267,10 @@ class ALADINCoordinator(Coordinator):
                 yield self.env.timeout(self.config.sampling_time - communication_time)
                 continue  # if no agents registered return early
 
+            # Reset penalty parameters for the new control step
+            self.penalty_parameter = self.config.penalty_factor
+            self.qp_penalty = self.config.qp_penalty
+
             self.create_couplings()
 
             # ------------------
@@ -237,6 +328,8 @@ class ALADINCoordinator(Coordinator):
             prediction_horizon=self.config.prediction_horizon,
             time_step=self.config.time_step,
             penalty_factor=self.config.penalty_factor,
+            regularization_parameter=self.config.regularization_parameter,  # Added
+            activation_margin=self.config.activation_margin,  # Added
         )
 
         message = cdt.RegistrationMessage(
@@ -271,6 +364,7 @@ class ALADINCoordinator(Coordinator):
         """Trigger optimizations for all agents with ready status."""
         # create an iterator for all agents which are ready for this round
         active_agents = self._active_agents()
+        self._total_objective = 0  # reset objective tracker
 
         # aggregate and send trajectories per agent
         for source, agent in active_agents.items():
@@ -292,6 +386,8 @@ class ALADINCoordinator(Coordinator):
     def optim_results_callback(self, variable: AgentVariable):
         """Process the results from a local optimization."""
         local_result = ald.AgentToCoordinator.from_json(variable.value)
+        # Accumulate objective
+        self._total_objective += local_result.objective
         agent = self.agent_dict[variable.source]
         agent.hessian = local_result.H
         agent.local_solution = local_result.x
@@ -421,9 +517,17 @@ class ALADINCoordinator(Coordinator):
             A_sparsity=ca.DM(AQP).sparsity(), H_sparsity=ca.DM(HQP).sparsity()
         )
 
-        # Solve the QP
+        # Solve the QP and track time/success
+        qp_start_time = time.perf_counter()
         solution = solver(
             h=ca.DM(HQP), g=ca.DM(gQP), a=ca.DM(AQP), lba=ca.DM(bQP), uba=ca.DM(bQP)
+        )
+        qp_solve_time = time.perf_counter() - qp_start_time
+        stats = solver.stats()
+        # Use 'success' field, default to False if not present or solver failed
+        qp_success = stats.get("success", None)
+        self._stats_tracker.append_qp_stats(
+            solve_time=qp_solve_time, success=qp_success
         )
 
         # Conditionally log stats only if debugging is enabled
@@ -475,11 +579,15 @@ class ALADINCoordinator(Coordinator):
         primal_residual = np.sqrt(primal_residual)
         dual_residual = np.sqrt(dual_residual) if dual_residual > 0 else 0
 
-        # Track residuals for stats
-        self._primal_residuals_tracker.append(primal_residual)
-        self._dual_residuals_tracker.append(dual_residual)
-        self._performance_tracker.append(
-            time.perf_counter() - self._performance_counter
+        # Track iteration stats
+        wall_time = time.perf_counter() - self._performance_counter
+        self._stats_tracker.append_iteration_stats(
+            objective=self._total_objective,
+            primal=primal_residual,
+            dual=dual_residual,
+            time=wall_time,
+            penalty=self.penalty_parameter,
+            qp_penalty=self.qp_penalty,
         )
 
         self.logger.debug(
@@ -495,7 +603,17 @@ class ALADINCoordinator(Coordinator):
             self.log_agent_updates(iteration)
 
         if iteration % self.config.save_iter_interval == 0:
-            self._save_stats(iterations=iteration)
+            self._save_stats_aladin(iterations=iteration)
+
+        # Update penalty parameters for the next iteration
+        self.penalty_parameter = min(
+            self.penalty_parameter * self.config.penalty_variation_factor,
+            self.config.max_penalty_factor,
+        )
+        self.qp_penalty = min(
+            self.qp_penalty * self.config.qp_penalty_variation_factor,
+            self.config.max_qp_penalty,
+        )
 
         # Check convergence against tolerance
         return (
@@ -599,7 +717,7 @@ class ALADINCoordinator(Coordinator):
             capped[extreme_indices] = (
                 np.sign(capped[extreme_indices]) * self.config.lambda_max
             )
-            self.debug_logger.warning(
+            self.logger.warning(
                 f"Capped {np.sum(extreme_indices)} extreme multiplier values"
             )
 
@@ -773,9 +891,11 @@ class ALADINCoordinator(Coordinator):
                         else agent.hessian
                     )
                 ),
-                "jacobian_shape": list(agent.jacobian.shape)
-                if hasattr(agent.jacobian, "shape")
-                else None,
+                "jacobian_shape": (
+                    list(agent.jacobian.shape)
+                    if hasattr(agent.jacobian, "shape")
+                    else None
+                ),
                 "gradient_norm": float(np.linalg.norm(agent.gradient)),
             }
 
@@ -831,16 +951,20 @@ class ALADINCoordinator(Coordinator):
 
                 coupling_data[alias] = {
                     "indices": indices,
-                    "values": values.tolist()
-                    if isinstance(values, np.ndarray)
-                    else values,
-                    "multipliers": multipliers_array.tolist()
-                    if multipliers_array is not None
-                    else None,
+                    "values": (
+                        values.tolist() if isinstance(values, np.ndarray) else values
+                    ),
+                    "multipliers": (
+                        multipliers_array.tolist()
+                        if multipliers_array is not None
+                        else None
+                    ),
                     "values_norm": float(np.linalg.norm(values)),
-                    "multipliers_norm": float(np.linalg.norm(multipliers_array))
-                    if multipliers_array is not None
-                    else None,
+                    "multipliers_norm": (
+                        float(np.linalg.norm(multipliers_array))
+                        if multipliers_array is not None
+                        else None
+                    ),
                 }
 
                 # Create coupling visualization
@@ -917,18 +1041,25 @@ class ALADINCoordinator(Coordinator):
 
         self.debug_logger.info(f"Convergence metrics logged for iteration {iteration}")
 
-    def _save_stats(self, iterations: int) -> None:
+    def _save_stats_aladin(self, iterations: int) -> None:
         """Save iteration statistics to a file."""
-        data_dict = {
-            "primal_residual": self._primal_residuals_tracker,
-            "dual_residual": self._dual_residuals_tracker,
-            "wall_time": self._performance_tracker,
-        }
-        super()._save_stats(iterations=iterations, data_dict=data_dict)
+        # Get data from the tracker
+        data_dict = self._stats_tracker.get_data_dict()
+        # Save using the parent method
+        self._save_stats(
+            iterations=iterations,
+            data_dict=data_dict,
+            section_length=self._stats_tracker.section_length,
+        )
+        # Clear the tracker for the next time step
+        self._stats_tracker.clear()
 
     def _wrap_up_algorithm(self, iterations):
         """Clean up at the end of an algorithm execution."""
-        self._save_stats(iterations=iterations)
+        self._save_stats_aladin(iterations=iterations)
+        # Reset penalty parameters for the next control step
+        self.penalty_parameter = self.config.penalty_factor
+        self.qp_penalty = self.config.qp_penalty
 
 
 # Helper class for JSON serialization of numpy arrays
