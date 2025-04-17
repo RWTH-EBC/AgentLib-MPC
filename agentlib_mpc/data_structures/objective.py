@@ -1,49 +1,11 @@
-import warnings
+import pandas as pd
+import numpy as np
 
 class SubObjective:
     def __init__(self, expressions, weight: float = 1.0, name: str = None):
         self.expressions = expressions if isinstance(expressions, list) else [expressions]
         self.weight = weight
         self.name = name or f"obj_{id(self)}"
-        self._value = None
-        self.expr_types = self.identify_types()
-        self._validate_expression_types()
-
-    def identify_types(self):
-        """
-        Identifies the types of all expressions in the objective.
-        Returns a list of expression types.
-        """
-        expr_types = []
-        for expression in self.expressions:
-            if hasattr(expression, '__class__') and hasattr(expression.__class__, '__name__'):
-                expr_types.append(expression.__class__.__name__)
-            else:
-                expr_types.append(type(expression).__name__)
-        return expr_types
-
-    def _validate_expression_types(self):
-        """
-        Validates that state variables and input variables are not
-        mixed in the same objective, as this can lead to optimization issues.
-        """
-        state_types = ['CasadiState', 'CasadiDifferential', 'State']
-        input_types = ['CasadiInput', 'Input']
-
-        has_state = any(expr_type in state_types for expr_type in self.expr_types)
-        has_input = any(expr_type in input_types for expr_type in self.expr_types)
-
-        if has_state and has_input:
-            state_exprs = [e for e in self.expressions if type(e).__name__ in state_types]
-            input_exprs = [e for e in self.expressions if type(e).__name__ in input_types]
-
-            state_names = [e.name if hasattr(e, 'name') else str(e) for e in state_exprs]
-            input_names = [e.name if hasattr(e, 'name') else str(e) for e in input_exprs]
-
-            warnings.warn(
-                f"SubObjective '{self.name}' mixes state variables {state_names} "
-                f"with input variables {input_names}. Resulting in inaccurate calculations of the objective function values"
-            )
 
     def get_weighted_expression(self):
         """Returns the final weighted expression by multiplying all expressions"""
@@ -51,6 +13,14 @@ class SubObjective:
         for expr in self.expressions:
             result = result * expr
         return self.weight * result
+
+    def calculate_value(self, df):
+        """Returns the final weighted result by multiplying all expressions"""
+        result = 1
+        ts = np.diff(df.index)
+        for col in df:
+            result = result * df[col].values[:-1]
+        return sum(self.weight * result * ts)
 
     def get_expression_names(self):
         """Returns list of names for all expressions"""
@@ -69,14 +39,6 @@ class SubObjective:
                 else:
                     names.append(expr_str)
         return names
-
-    def set_value(self, value):
-        """Store the calculated value of this objective"""
-        self._value = value
-
-    def get_value(self):
-        """Get the current value of this objective"""
-        return self._value
 
 
 class SqObjective(SubObjective):
@@ -98,6 +60,12 @@ class SqObjective(SubObjective):
         """Returns the squared expression with weight"""
         return self.weight * (self.expression ** 2)
 
+    def calculate_value(self, series):
+        """Returns the final weighted result by multiplying all expressions"""
+        ts = np.diff(series.index)
+        series = series.values[:-1]
+        return sum(self.weight * series ** 2 * ts)
+
     def get_expression_name(self):
         """Returns the name of the main expression"""
         if hasattr(self.expression, 'name'):
@@ -114,25 +82,37 @@ class SqObjective(SubObjective):
 class DeltaUObjective(SubObjective):
     """Objective term for penalizing control changes with optional scaling"""
 
-    def __init__(self, control, weight: float = 1.0, name: str = None, scaling: bool = True):
+    def __init__(self, control, weight: float = 1.0, name: str = None):
         """
         Args:
             control: Control variable to track changes
             weight: Weight factor for this objective
             name: Optional name for identification/reporting
-            scaling: Whether to apply scaling by average magnitude
+            # scaling: Whether to apply scaling by average magnitude
         """
         self.control = control
-        self.scaling = scaling
-        super().__init__(expression=None, weight=weight, name=name or f"delta_{control.name}")
+        # self.scaling = scaling
+        super().__init__(expressions=[], weight=weight, name=name or f"delta_{control.name}")
 
     def get_control_name(self):
         """Return the name of the associated control variable"""
         return self.control.name
 
-    def __str__(self):
-        scaling_str = "with scaling" if self.scaling else "without scaling"
-        return f"DeltaUObjective({self.name}, control={self.get_control_name()}, weight={self.weight}, {scaling_str})"
+    def get_weighted_expression(self):
+        """
+        Override parent method to provide a placeholder.
+        The actual penalty calculation happens in the discretization step.
+        """
+        # Return 0 as the symbolic expression since the actual calculation
+        # is handled in the DirectCollocation._discretize method
+        return 0
+
+    def calculate_value(self, series):
+        """Returns the final weighted result by multiplying all expressions"""
+        diff_values = series.diff()
+        scale = 0.5 * (diff_values) + 1e-6
+        values = diff_values ** 2
+        return sum(self.weight * values.dropna())
 
 
 class FullObjective:
@@ -147,11 +127,6 @@ class FullObjective:
         self.objectives = list(objectives)
         self.normalization = normalization
         self._values = {}
-
-    # def add_objective(self, objective):
-    #     """Add an objective to the list"""
-    #     self.objectives.append(objective)
-    #     return self
 
     def get_delta_u_objectives(self):
         """Returns a list of all DeltaUObjective instances"""
@@ -174,14 +149,112 @@ class FullObjective:
             return sum(terms) / self.normalization
         return 0
 
-    def calculate_values(self):
-        """Calculate values for each objective component"""
+    def calculate_values(self, result_df, grid):
+        """Calculate values for each objective component using the result dataframe"""
         self._values = {}
+        df = self._prepare_dataframe(result_df, grid)
+        total_value = 0
         for obj in self.objectives:
-            if hasattr(obj, '_value') and obj._value is not None:
-                self._values[obj.name] = obj._value
+            name = obj.name
+            try:
+                if isinstance(obj, DeltaUObjective):
+                    control_name = obj.get_control_name()
+                    control_series = df.loc[:, ('variable', control_name)]
+                    value = obj.calculate_value(control_series)
+                    self._values[name] = value / self.normalization
+                elif isinstance(obj, SqObjective):
+                    expr_name = obj.get_expression_name()
+                    var_series = df.loc[:, ('variable', expr_name)]
+                    value = obj.calculate_value(var_series)
+                    self._values[name] = value/self.normalization
+                else:
+                    expr_names = obj.get_expression_names()
+                    expr_cols = []
+                    for expr_name in expr_names:
+                        if ('variable', expr_name) in df.columns:
+                            expr_cols.append(('variable', expr_name))
+                        elif ('parameter', expr_name) in df.columns:
+                            expr_cols.append(('parameter', expr_name))
+                    expr_df = df.loc[:, expr_cols]
+                    value = obj.calculate_value(expr_df)
+                    self._values[name] = value / self.normalization
+                if self._values[name] is not None:
+                    total_value += self._values[name]
+            except Exception as e:
+                self._values[name] = None
+                print(f"Error calculating {name}: {e}")
+
+        self._values['total'] = total_value
         return self._values
 
-    def get_values(self):
-        """Get all stored objective values"""
-        return self._values
+    def _prepare_dataframe(self, df, grid=None):
+        """
+        Convert DataFrame index to numeric values and handle NaN values for calculation.
+
+        Args:
+            df: DataFrame with potentially string tuple indices
+            grid: Optional list of indices to consider in the result
+
+        Returns:
+            DataFrame with numeric index and processed values
+            The time value from the first element of tuple index
+        """
+        new_df = df.copy()
+        time_value = None
+
+        # Multiindex handling
+        if len(df.index) > 0 and isinstance(df.index[0], str) and '(' in df.index[0]:
+            new_indices = []
+            for idx in df.index:
+                try:
+                    parts = idx.strip('()').split(',', 1)
+                    new_indices.append(float(parts[1].strip()))
+                except (ValueError, IndexError):
+                    new_indices.append(idx)
+            new_df.index = new_indices
+
+        # Discretization and nan handling
+        for col in new_df.columns:
+            if col[0] in ['upper', 'lower']:
+                continue
+            if col[0] == 'parameter':
+                new_df[col] = new_df[col].ffill()
+            elif col[0] == 'variable':
+                self._handle_nan_values(new_df, col, grid)
+
+        if grid is not None and len(grid) > 0:
+            valid_grid = [g for g in grid if g in new_df.index]
+            if valid_grid:
+                new_df = new_df.loc[valid_grid]
+
+        return new_df
+
+    def _handle_nan_values(self, df, col, grid=None):
+        series = df[col]
+
+        if grid is not None and len(grid) > 0:
+            grid_values = [v for v in grid if v in df.index]
+            grid_series = series.loc[grid_values]
+
+            if grid_series.isna().all():
+                self._fill_collocation_nans(df, col)
+                return
+        pass
+
+    def _fill_collocation_nans(self, df, col):
+        series = df[col]
+        new_series = series.copy()
+        nan_indices = np.where(series.isna())[0]
+
+        for i in range(len(nan_indices)):
+            nan_idx = nan_indices[i]
+            next_values = []
+            j = nan_idx + 1
+            while j < len(series) and not pd.isna(series.iloc[j]):
+                next_values.append(series.iloc[j])
+                j += 1
+            if next_values:
+                mean_val = sum(next_values) / len(next_values)
+                new_series.iloc[nan_idx] = mean_val
+        df[col] = new_series
+

@@ -112,14 +112,14 @@ class MyCasadiModel(CasadiModel):
             (0, self.T + self.T_slack, self.T_upper),
         ]
 
-        # obj1 = DeltaUObjective(
-        #     control=self.mDot,
-        #     weight=10,
-        #     name="delta_m",
-        # )
+        obj1 = DeltaUObjective(
+            control=self.mDot,
+            weight=1,
+            name="delta_m",
+        )
 
         obj3 = SubObjective(
-            expressions=[self.mDot, self.r_mDot, self.T_slack],
+            expressions=[self.mDot, self.r_mDot],
             weight=10,
             name="power_cost"
         )
@@ -131,8 +131,7 @@ class MyCasadiModel(CasadiModel):
         )
 
 
-
-        objective = FullObjective(obj2, obj3, normalization=43200)
+        objective = FullObjective(obj1, obj2, obj3, normalization=43200)
         return objective
 
 
@@ -153,7 +152,7 @@ AGENT_MPC = {
                     "collocation_method": "legendre",
                 },
                 "solver": {
-                    "name": "fatrop",  # use fatrop with casadi 3.6.6 for speedup
+                    "name": "ipopt",  # use fatrop with casadi 3.6.6 for speedup
                 },
                 "results_file": "results//mpc.csv",
                 "save_results": True,
@@ -283,5 +282,5 @@ def plot(mpc_results: pd.DataFrame, sim_res: pd.DataFrame, until: float):
 
 if __name__ == "__main__":
     run_example(
-        with_plots=True, with_dashboard=False, until=7200, log_level=logging.INFO
+        with_plots=True, with_dashboard=False, until=86400, log_level=logging.INFO
     )

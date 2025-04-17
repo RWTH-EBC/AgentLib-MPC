@@ -36,29 +36,6 @@ class FullSystem(basic.BaseSystem):
 
         self.time = model.time
 
-    def has_new_objective_structure(self) -> bool:
-        """Check if the model uses the new objective structure"""
-        if not hasattr(self, '_model'):
-            print("No _model attribute")
-            return False
-
-        if self._model is None:
-            print("_model is None")
-            return False
-
-        has_objective = hasattr(self._model, 'objective')
-        if not has_objective:
-            print("_model has no 'objective' attribute")
-            return False
-
-        has_method = hasattr(self._model.objective, 'get_delta_u_objectives')
-        if not has_method:
-            print("objective has no 'get_delta_u_objectives' method")
-            return False
-
-        print("Found new objective structure")
-        return True
-
     @property
     def model(self):
         if not hasattr(self, '_model') or self._model is None:
@@ -87,19 +64,14 @@ class DirectCollocation(basic.DirectCollocation):
 
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
-        #du_weights = self.add_opt_par(sys.r_del_u)
-        using_new_objectives = sys.has_new_objective_structure()
-        delta_u_objectives = []
-        if using_new_objectives:
-            try:
-                delta_u_objectives = sys.model.objective.get_delta_u_objectives()
-            except (AttributeError, Exception) as e:
-                self.logger.warning(f"Failed to get delta_u_objectives: {str(e)}")
+        try:
+            delta_u_objectives = sys.model.objective.get_delta_u_objectives()
+        except (AttributeError, Exception) as e:
+            self.logger.warning(f"Failed to get delta_u_objectives: {str(e)}")
 
         control_map = {}
-        if delta_u_objectives:
-            for i, control_name in enumerate(sys.controls.ref_names):
-                control_map[control_name] = i
+        for i, control_name in enumerate(sys.controls.ref_names):
+            control_map[control_name] = i
 
         # Formulate the NLP
         # loop over prediction horizon
@@ -108,23 +80,18 @@ class DirectCollocation(basic.DirectCollocation):
             u_prev = uk
             uk = self.add_opt_var(sys.controls)
             # penalty for control change between time steps
-            if using_new_objectives and delta_u_objectives:
-                for delta_obj in delta_u_objectives:
-                    control_name = delta_obj.get_control_name()
-                    if control_name in control_map:
-                        idx = control_map[control_name]
-                        control_prev = u_prev[idx]
-                        control_curr = uk[idx]
-                        delta = control_curr - control_prev
-                        if delta_obj.scaling:
-                            scale = 0.5 * (ca.fabs(control_curr + control_prev)) + 1e-6
-                            normalized_delta = delta / scale
-                            penalty = normalized_delta ** 2
-                        else:
-                            penalty = delta ** 2
+            for delta_obj in delta_u_objectives:
+                control_name = delta_obj.get_control_name()
+                if control_name in control_map:
+                    idx = control_map[control_name]
+                    control_prev = u_prev[idx]
+                    control_curr = uk[idx]
+                    delta = control_curr - control_prev
+                    scale = 0.5 * (control_curr + control_prev) + 1e-6
+                    normalized_delta = delta ** 2
+                    penalty = normalized_delta
 
-                        # Add to objective with weight
-                        self.objective_function += ts * delta_obj.weight * penalty
+                    self.objective_function += delta_obj.weight * penalty
 
             # New parameter for inputs
             dk = self.add_opt_par(sys.non_controlled_inputs)

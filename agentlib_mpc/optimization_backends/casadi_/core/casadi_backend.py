@@ -2,7 +2,7 @@ import logging
 import platform
 from pathlib import Path
 from typing import Type, Optional
-
+import numpy as np
 import casadi as ca
 import pydantic
 from agentlib.core.errors import ConfigurationError
@@ -126,9 +126,8 @@ class CasADiBackend(OptimizationBackend):
     def solve(self, now: float, current_vars: dict[str, MPCVariable]) -> Results:
         # collect and format inputs
         mpc_inputs = self._get_current_mpc_inputs(agent_variables=current_vars, now=now)
-        self.discretization.system = self.system
-        full_results = self.discretization.solve(mpc_inputs, self.system)
-        self.save_result_df(full_results, now=now)
+        full_results = self.discretization.solve(mpc_inputs)
+        self.save_result_df(self.system, full_results, now=now)
 
         return full_results
 
@@ -255,28 +254,13 @@ class CasADiBackend(OptimizationBackend):
         self.discretization.logger = self.logger
 
     def save_result_df(
-        self,
-        results: Results,
-        now: float = 0,
+            self,
+            system,
+            results: Results,
+            now: float = 0,
     ):
         """
         Save the results of `solve` into a dataframe at each time step.
-
-        Example results dataframe:
-
-        value_type               variable              ...     lower
-        variable                      T_0   T_0_slack  ... T_0_slack mDot_0
-        time_step                                      ...
-        2         0.000000     298.160000         NaN  ...       NaN    NaN
-                  101.431499   297.540944 -149.465942  ...      -inf    0.0
-                  450.000000   295.779780 -147.704779  ...      -inf    0.0
-                  798.568501   294.720770 -146.645769  ...      -inf    0.0
-        Args:
-            results:
-            now:
-
-        Returns:
-
         """
         if not self.config.save_results:
             return
@@ -285,15 +269,36 @@ class CasADiBackend(OptimizationBackend):
         if not self.results_file_exists():
             results.write_columns(res_file)
             results.write_stats_columns(stats_path(res_file))
-            results.write_objective_values(res_file)
 
         df = results.df
         df.index = list(map(lambda x: str((now, x)), df.index))
         df.to_csv(res_file, mode="a", header=False)
 
-        with open(stats_path(res_file), "a") as f:
-            f.writelines(results.stats_line(str(now)))
+        def get_objective_values(system, df, grid):
+            objective_values = {}
+            if not hasattr(system, 'model') or not hasattr(system.model, 'objective'):
+                return objective_values
+
+            objective_values.update(system.model.objective.calculate_values(df, grid))
+            return objective_values
+
+        grid = np.arange(0, self.config.discretization_options.prediction_horizon * (
+                    self.config.discretization_options.time_step + 1), self.config.discretization_options.time_step)
+        objective_values = get_objective_values(system=system, df=df, grid=grid)
 
         obj_file = objective_path(res_file)
-        with open(obj_file, "a") as f:
-            f.writelines(results.objective_values_line(str(now)))
+        if hasattr(system, 'model') and hasattr(system.model, 'objective'):
+            objective_names = ['time'] + [obj.name for obj in system.model.objective.objectives] + ['total']
+        else:
+            objective_names = ['time'] + list(objective_values.keys())
+
+        if not obj_file.exists():
+            with open(obj_file, 'w') as f:
+                f.write(','.join(objective_names) + '\n')
+
+        with open(obj_file, 'a') as f:
+            values = [str(now)] + [str(objective_values.get(name, '')) for name in objective_names[1:]]
+            f.write(','.join(values) + '\n')
+
+        with open(stats_path(res_file), "a") as f:
+            f.writelines(results.stats_line(str(now)))
