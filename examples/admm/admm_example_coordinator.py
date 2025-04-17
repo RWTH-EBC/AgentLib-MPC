@@ -51,18 +51,24 @@ def plot(results, start_pred=0):
 
     res_sim = results["Simulation"]["simulator"]
     mpc_room_results = results["CooledRoom"]["admm_module"]
+    res_coord = results["Coordinator"]["admm_coordinator"]  # Load coordinator results
 
     room_res = admm_at_time_step(
         data=mpc_room_results, time_step=start_pred, iteration=-1
     )
 
-    fig, ax = plt.subplots(2, 1)
+    fig, ax = plt.subplots(3, 1, sharex=True)  # Create 3 subplots
     ax[0].axhline(294.55, label="reference value", ls="--")
     ax[0].plot(res_sim["T_0_out"], label="temperature")
     ax[0].plot(room_res["variable"]["T_0"], label="temperature prediction")
-    ax[1].plot(res_sim["mDot_0"], label="air mass flow")
-    ax[1].legend()
+    ax[0].set_ylabel("Temperature [K]")
     ax[0].legend()
+
+    ax[1].plot(res_sim["mDot_0"], label="air mass flow")
+    ax[1].set_ylabel("Mass Flow [kg/s]")
+    ax[1].legend()
+
+    plt.tight_layout()
     plt.show()
 
 

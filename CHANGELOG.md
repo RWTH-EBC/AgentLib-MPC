@@ -1,5 +1,9 @@
 # Changelog
 
+## aladin todo change version
+- add global objective tracking for admm
+- implement aladin
+
 ## 0.6.6
 - self.time available in mpc and ml mpc (not yet available for admm, minlp, etc)
 

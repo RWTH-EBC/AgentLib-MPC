@@ -361,3 +361,4 @@ class CoordinatorToAgent(StructuredValue):
 class AgentToCoordinator(StructuredValue):
     local_trajectory: Dict[str, np.ndarray]
     local_exchange_trajectory: Dict[str, np.ndarray]
+    objective: float = 0

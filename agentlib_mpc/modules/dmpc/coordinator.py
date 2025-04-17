@@ -55,6 +55,7 @@ class CoordinatorConfig(BaseModuleConfig):
     sampling_time: Optional[float] = Field(
         default=None,  # seconds
         description="Sampling interval for control steps. If None, will be the same as time step.",
+        validate_default=True,
     )
     prediction_horizon: int = Field(
         title="prediction_horizon",

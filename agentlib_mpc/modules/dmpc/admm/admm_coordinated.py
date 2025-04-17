@@ -323,8 +323,11 @@ class CoordinatedADMM(CoordinatedMPC):
         for exchange in self.config.exchange:
             exchange_traj[exchange.alias] = self._result[exchange.name]
 
+        objective_value = self._result.stats["objective"]
         opt_return = adt.AgentToCoordinator(
-            local_trajectory=cons_traj, local_exchange_trajectory=exchange_traj
+            local_trajectory=cons_traj,
+            local_exchange_trajectory=exchange_traj,
+            objective=objective_value,
         )
         self.logger.debug("Sent optimal solution.")
         self.set(name=cdt.OPTIMIZATION_A2C, value=opt_return.to_json())

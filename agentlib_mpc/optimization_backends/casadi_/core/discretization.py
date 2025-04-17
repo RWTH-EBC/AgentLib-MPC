@@ -41,8 +41,7 @@ class Results:
     def __post_init__(self):
         self._variable_name_to_index = self.variable_lookup()
         try:
-            iters = self.stats.pop("iterations")
-            self.stats["obj"] = iters["obj"][-1]
+            self.stats.pop("iterations")
         except KeyError:
             pass
         if "fatrop" in self.stats:
@@ -184,17 +183,12 @@ class Discretization(abc.ABC):
 
         # format and return solution
         mpc_output = self._nlp_outputs_to_mpc_outputs(vars_at_optimum=nlp_output["x"])
-        # clip binary values within tolerance
-        if "w" in mpc_output:
-            tolerance = 1e-5
-            bin_array = mpc_output["w"].full()
-            bin_array = np.where((-tolerance < bin_array) & (bin_array < 0), 0,
-                                 np.where((1 < bin_array) & (bin_array < 1 + tolerance),
-                                          1, bin_array))
-            mpc_output["w"] = bin_array
 
         self._remember_solution(mpc_output)
-        result = self._process_solution(inputs=mpc_inputs, outputs=mpc_output)
+        objective_value = float(nlp_output["f"])
+        result = self._process_solution(
+            inputs=mpc_inputs, outputs=mpc_output, objective_value=objective_value
+        )
         return result
 
     def _determine_initial_guess(self, mpc_inputs: MPCInputs) -> MPCInputs:
@@ -240,7 +234,9 @@ class Discretization(abc.ABC):
         for den, var in self.mpc_opt_vars.items():
             var.opt = optimum[den]
 
-    def _process_solution(self, inputs: dict, outputs: dict) -> Results:
+    def _process_solution(
+        self, inputs: dict, outputs: dict, objective_value: float
+    ) -> Results:
         """
         If self.result_file is not empty,
         collect all inputs and outputs of the optimization problem and format
@@ -253,12 +249,14 @@ class Discretization(abc.ABC):
         for key, value in inputs.items():
             key: str
             if key.startswith(GUESS_PREFIX):
-                out_key = key[len(GUESS_PREFIX):]
+                out_key = key[len(GUESS_PREFIX) :]
                 inputs[key] = outputs[out_key]
 
         result_matrix = self._result_map(**inputs)["result"]
 
-        return self._create_results(result_matrix, self._optimizer.stats())
+        return self._create_results(
+            result_matrix, self._optimizer.stats(), objective_value
+        )
 
     def create_nlp_in_out_mapping(self, system: System):
         """
@@ -348,7 +346,10 @@ class Discretization(abc.ABC):
             "result_map", mpc_inputs, [matrix], mpc_input_denotations, ["result"]
         )
 
-        def make_results_view(result_matrix: ca.DM, stats: dict) -> Results:
+        def make_results_view(
+            result_matrix: ca.DM, stats: dict, objective_value: float
+        ) -> Results:
+            stats["objective"] = objective_value
             return Results(
                 matrix=result_matrix,
                 columns=col_index,

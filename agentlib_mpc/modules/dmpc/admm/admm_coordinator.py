@@ -65,6 +65,8 @@ class ADMMCoordinator(Coordinator):
         self.agent_dict: Dict[str, adt.AgentDictEntry] = {}
         self.penalty_parameter = self.config.penalty_factor
         self._penalty_tracker: List[float] = []
+        self._objective_tracker: List[float] = []
+        self._total_objective = 0.0
 
     def _initial_registration(self, variable: AgentVariable):
         """Handles initial registration of an agent with ADMM-specific entry type."""
@@ -264,6 +266,7 @@ class ADMMCoordinator(Coordinator):
         self._penalty_tracker.append(self.penalty_parameter)
         self._primal_residuals_tracker.append(prim_norm)
         self._dual_residuals_tracker.append(dual_norm)
+        self._objective_tracker.append(self._total_objective)
         self._performance_tracker.append(
             time.perf_counter() - self._performance_counter
         )
@@ -305,10 +308,13 @@ class ADMMCoordinator(Coordinator):
             "primal_residual": self._primal_residuals_tracker,
             "dual_residual": self._dual_residuals_tracker,
             "penalty_parameter": self._penalty_tracker,
+            "objective": self._objective_tracker,
             "wall_time": self._performance_tracker,
         }
         super()._save_stats(iterations=iterations, data_dict=data_dict)
         self._penalty_tracker = []
+        self._objective_tracker = []
+        self._total_objective = 0.0
 
     def _vary_penalty_parameter(self, primal_residual: float, dual_residual: float):
         """Determines a new value for the penalty parameter based on residuals."""
@@ -427,6 +433,10 @@ class ADMMCoordinator(Coordinator):
         """
         local_result = adt.AgentToCoordinator.from_json(variable.value)
         source = variable.source
+
+        # Extract and accumulate the objective value
+        self._total_objective += local_result.objective
+
         for alias, trajectory in local_result.local_trajectory.items():
             coup_var = self._coupling_variables[alias]
             coup_var.local_trajectories[source] = trajectory
