@@ -145,8 +145,16 @@ class MultipleShooting(basic.MultipleShooting):
         uk = self.add_opt_par(sys.last_control)
 
         # Parameters that are constant over the horizon
-        du_weights = self.add_opt_par(sys.r_del_u)
         const_par = self.add_opt_par(sys.model_parameters)
+
+        try:
+            delta_u_objectives = sys.model.objective.get_delta_u_objectives()
+        except (AttributeError, Exception) as e:
+            self.logger.warning(f"Failed to get delta_u_objectives: {str(e)}")
+
+        control_map = {}
+        for i, control_name in enumerate(sys.controls.ref_names):
+            control_map[control_name] = i
 
         # ODE is used here because the algebraics can be calculated with the stage function
         opt_integrator = self._create_ode(sys, opts, self.options.integrator)
@@ -155,7 +163,17 @@ class MultipleShooting(basic.MultipleShooting):
             u_prev = uk
             uk = self.add_opt_var(sys.controls)
             # penalty for control change between time steps
-            self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
+            for delta_obj in delta_u_objectives:
+                control_name = delta_obj.get_control_name()
+                if control_name in control_map:
+                    idx = control_map[control_name]
+                    control_prev = u_prev[idx]
+                    control_curr = uk[idx]
+                    delta = control_curr - control_prev
+                    normalized_delta = delta ** 2
+                    penalty = normalized_delta
+                    self.objective_function += delta_obj.weight ** 2 * penalty
+
             dk = self.add_opt_par(sys.non_controlled_inputs)
             zk = self.add_opt_var(sys.algebraics)
             yk = self.add_opt_var(sys.outputs)
