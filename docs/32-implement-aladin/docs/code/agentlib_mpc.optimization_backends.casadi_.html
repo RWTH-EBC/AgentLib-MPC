@@ -425,9 +425,63 @@ time_step                                      …
 </section>
 <section id="module-agentlib_mpc.optimization_backends.casadi_.aladin">
 <span id="agentlib-mpc-optimization-backends-casadi-aladin-module"></span><h2>agentlib_mpc.optimization_backends.casadi_.aladin module<a class="headerlink" href="#module-agentlib_mpc.optimization_backends.casadi_.aladin" title="Permalink to this heading"></a></h2>
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiBackendConfig">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.optimization_backends.casadi_.aladin.</span></span><span class="sig-name descname"><span class="pre">ALADINCasadiBackendConfig</span></span><a class="reference internal" href="../_modules/agentlib_mpc/optimization_backends/casadi_/aladin.html#ALADINCasadiBackendConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiBackendConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasadiBackendConfig" title="agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasadiBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CasadiBackendConfig</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extra</strong>: <em>str = forbid</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiBackendConfig.discretization_options" title="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiBackendConfig.discretization_options"><code class="xref py py-obj docutils literal notranslate"><span class="pre">discretization_options</span> <span class="pre">(agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions)</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-odd">Validators<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiBackendConfig.discretization_options">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">discretization_options</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions" title="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions"><span class="pre">ALADINCasadiDiscretizationOptions</span></a></em><em class="property"> <span class="pre">[Optional]</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiBackendConfig.discretization_options" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.optimization_backends.casadi_.aladin.</span></span><span class="sig-name descname"><span class="pre">ALADINCasadiDiscretizationOptions</span></span><a class="reference internal" href="../_modules/agentlib_mpc/optimization_backends/casadi_/aladin.html#ALADINCasadiDiscretizationOptions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.CasadiDiscretizationOptions" title="agentlib_mpc.data_structures.casadi_utils.CasadiDiscretizationOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">CasadiDiscretizationOptions</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extra</strong>: <em>str = forbid</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions.activation_margin" title="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions.activation_margin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">activation_margin</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions.regularization_parameter" title="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions.regularization_parameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">regularization_parameter</span> <span class="pre">(float)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions.activation_margin">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">activation_margin</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.001</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions.activation_margin" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions.regularization_parameter">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">regularization_parameter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.001</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions.regularization_parameter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCollocation">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.optimization_backends.casadi_.aladin.</span></span><span class="sig-name descname"><span class="pre">ALADINCollocation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.CasadiDiscretizationOptions" title="agentlib_mpc.data_structures.casadi_utils.CasadiDiscretizationOptions"><span class="pre">CasadiDiscretizationOptions</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/optimization_backends/casadi_/aladin.html#ALADINCollocation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCollocation" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.optimization_backends.casadi_.aladin.</span></span><span class="sig-name descname"><span class="pre">ALADINCollocation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions" title="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions"><span class="pre">ALADINCasadiDiscretizationOptions</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/optimization_backends/casadi_/aladin.html#ALADINCollocation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCollocation" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINDiscretization" title="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINDiscretization"><code class="xref py py-class docutils literal notranslate"><span class="pre">ALADINDiscretization</span></code></a>, <a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.basic.DirectCollocation" title="agentlib_mpc.optimization_backends.casadi_.basic.DirectCollocation"><code class="xref py py-class docutils literal notranslate"><span class="pre">DirectCollocation</span></code></a></p>
 <p>Direct collocation discretization for ALADIN-based optimization.</p>
 <p>This class implements the direct collocation discretization scheme for ALADIN algorithm
@@ -444,7 +498,7 @@ variables of the OCP, the mapping function and the numerical solver.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINDiscretization">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.optimization_backends.casadi_.aladin.</span></span><span class="sig-name descname"><span class="pre">ALADINDiscretization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.CasadiDiscretizationOptions" title="agentlib_mpc.data_structures.casadi_utils.CasadiDiscretizationOptions"><span class="pre">CasadiDiscretizationOptions</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/optimization_backends/casadi_/aladin.html#ALADINDiscretization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINDiscretization" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.optimization_backends.casadi_.aladin.</span></span><span class="sig-name descname"><span class="pre">ALADINDiscretization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions" title="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions"><span class="pre">ALADINCasadiDiscretizationOptions</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/optimization_backends/casadi_/aladin.html#ALADINDiscretization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINDiscretization" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization" title="agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization"><code class="xref py py-class docutils literal notranslate"><span class="pre">Discretization</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINDiscretization.create_nlp_in_out_mapping">
@@ -465,6 +519,11 @@ vector of the CasADi NLP.</p>
 <dd><p>Initializes the trajectory optimization problem, creating all symbolic
 variables of the OCP, the mapping function and the numerical solver.</p>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINDiscretization.options">
+<span class="sig-name descname"><span class="pre">options</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions" title="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions"><span class="pre">ALADINCasadiDiscretizationOptions</span></a></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINDiscretization.options" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINDiscretization.shift_opt_var">
@@ -502,7 +561,7 @@ statistics.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINMultipleShooting">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.optimization_backends.casadi_.aladin.</span></span><span class="sig-name descname"><span class="pre">ALADINMultipleShooting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.CasadiDiscretizationOptions" title="agentlib_mpc.data_structures.casadi_utils.CasadiDiscretizationOptions"><span class="pre">CasadiDiscretizationOptions</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/optimization_backends/casadi_/aladin.html#ALADINMultipleShooting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINMultipleShooting" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.optimization_backends.casadi_.aladin.</span></span><span class="sig-name descname"><span class="pre">ALADINMultipleShooting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions" title="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiDiscretizationOptions"><span class="pre">ALADINCasadiDiscretizationOptions</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/optimization_backends/casadi_/aladin.html#ALADINMultipleShooting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINMultipleShooting" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINDiscretization" title="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINDiscretization"><code class="xref py py-class docutils literal notranslate"><span class="pre">ALADINDiscretization</span></code></a>, <a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.admm.ADMMMultipleShooting" title="agentlib_mpc.optimization_backends.casadi_.admm.ADMMMultipleShooting"><code class="xref py py-class docutils literal notranslate"><span class="pre">ADMMMultipleShooting</span></code></a></p>
 <p>Multiple shooting discretization for ALADIN-based optimization.</p>
 <p>This class implements the multiple shooting discretization scheme for ALADIN algorithm
@@ -529,6 +588,12 @@ variables of the OCP, the mapping function and the numerical solver.</p>
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.aladin.CasADiALADINBackend">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.optimization_backends.casadi_.aladin.</span></span><span class="sig-name descname"><span class="pre">CasADiALADINBackend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/optimization_backends/casadi_/aladin.html#CasADiALADINBackend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.aladin.CasADiALADINBackend" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.admm.CasADiADMMBackend" title="agentlib_mpc.optimization_backends.casadi_.admm.CasADiADMMBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">CasADiADMMBackend</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.aladin.CasADiALADINBackend.config_type">
+<span class="sig-name descname"><span class="pre">config_type</span></span><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.aladin.CasADiALADINBackend.config_type" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiBackendConfig" title="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINCasadiBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">ALADINCasadiBackendConfig</span></code></a></p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.aladin.CasADiALADINBackend.discretization">
 <span class="sig-name descname"><span class="pre">discretization</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.aladin.ALADINDiscretization" title="agentlib_mpc.optimization_backends.casadi_.aladin.ALADINDiscretization"><span class="pre">ALADINDiscretization</span></a></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.aladin.CasADiALADINBackend.discretization" title="Permalink to this definition"></a></dt>
