@@ -111,8 +111,7 @@ class DeltaUObjective(SubObjective):
         """Returns the final weighted result by multiplying all expressions"""
         diff_values = series.diff()
         values = diff_values ** 2
-        return sum(self.weight * values.dropna())
-
+        return sum(self.weight ** 2 * values.dropna())
 
 class FullObjective:
     """Container for multiple objective terms with normalization"""
