@@ -1,3 +1,4 @@
+import logging
 from typing import Dict, Tuple, Optional, List
 
 import casadi as ca
@@ -35,6 +36,10 @@ from agentlib_mpc.optimization_backends.casadi_.core.discretization import (
     Results,
 )
 from agentlib_mpc.optimization_backends.casadi_.full import FullSystem
+from agentlib_mpc.utils.plotting.mpc_debugging.aladin_debugging import (
+    launch_visualization_app,
+    _prepare_visualization_data,
+)
 
 
 class CasadiALADINSystem(FullSystem):
@@ -151,21 +156,7 @@ class ALADINDiscretization(Discretization):
     def solve(self, mpc_inputs: MPCInputs) -> Results:
         """
         Solves the discretized trajectory optimization problem.
-
-        Args:
-            mpc_inputs: Casadi Matrices specifying the input of all different types
-                of optimization parameters. Matrices consist of different variable rows
-                and have a column for each time step in the discretization.
-                There are separate matrices for each input type (as defined in the
-                System), and also for the upper and lower boundaries of variables
-                respectively.
-
-
-        Returns:
-            Results: The complete evolution of the states, inputs and boundaries of each
-                variable and parameter over the prediction horizon, as well as solve
-                statistics.
-
+        ... (rest of docstring) ...
         """
         # todo get these from coordinator
         regularization_parameter = self.options.regularization_parameter
@@ -173,58 +164,233 @@ class ALADINDiscretization(Discretization):
 
         # collect and format inputs
         guesses = self._determine_initial_guess(mpc_inputs)
-        mpc_inputs[aladin_datatypes.PRESCRIBED] = self.global_variable
+        if self.global_variable is None:
+            # Handle case where global_variable might not be set yet (e.g., first iteration)
+            # You might need to initialize it to zeros or based on guess
+            logging.warning(
+                "ALADINDiscretization.global_variable is None. Using zeros."
+            )
+            # Determine expected shape - requires knowing the flattened opt_vars size
+            # This is tricky before create_nlp_in_out_mapping fully defines self.opt_vars
+            # For now, let's assume it might fail gracefully later or needs initialization logic
+            # A placeholder:
+            if hasattr(self, "opt_vars") and self.opt_vars is not None:
+                expected_shape = self.opt_vars.shape
+                self.global_variable = ca.DM.zeros(expected_shape)
+            else:
+                # Cannot determine shape yet, visualization might fail if global_variable is needed later
+                logging.error(
+                    "Cannot determine shape for global_variable initialization."
+                )
+                # Or raise an error if it's essential here
+                # raise ValueError("global_variable must be set before calling solve")
+                pass  # Allow to proceed, hoping it's set elsewhere or not strictly needed yet
+
+        # Ensure global_variable is set if required by the mapping
+        if aladin_datatypes.PRESCRIBED in self._mpc_inputs_to_nlp_inputs.name_in():
+            if self.global_variable is None:
+                raise ValueError(
+                    f"{aladin_datatypes.PRESCRIBED} is required by NLP mapping but global_variable is None."
+                )
+            mpc_inputs[aladin_datatypes.PRESCRIBED] = self.global_variable
+
         mpc_inputs.update(guesses)
-        nlp_inputs: dict[str, ca.DM] = self._mpc_inputs_to_nlp_inputs(**mpc_inputs)
+
+        try:
+            nlp_inputs: dict[str, ca.DM] = self._mpc_inputs_to_nlp_inputs(**mpc_inputs)
+        except Exception as e:
+            logging.error(f"Error during _mpc_inputs_to_nlp_inputs mapping: {e}")
+            logging.error(f"Available mpc_inputs keys: {list(mpc_inputs.keys())}")
+            logging.error(
+                f"Expected nlp_inputs keys: {self._mpc_inputs_to_nlp_inputs.name_in()}"
+            )
+            # You might want to inspect the shapes of mpc_inputs here
+            raise
 
         # perform optimization
-        nlp_output = self._optimizer(**nlp_inputs)
-        debug_stats = self._optimizer.stats()
-        debug_prescribed_input = {
-            k: np.array(v)
-            for k, v in self._nlp_outputs_to_mpc_outputs(
-                vars_at_optimum=mpc_inputs["prescribed"]
-            ).items()
-        }
+        try:
+            nlp_output = self._optimizer(**nlp_inputs)
+            debug_stats = self._optimizer.stats()
+        except Exception as e:
+            logging.error(f"Error during NLP optimization: {e}")
+            # Optionally log nlp_inputs for debugging
+            # logging.error(f"NLP Inputs: {nlp_inputs}")
+            raise
 
-        # todo we are ignoring box constraints here. maybe that is the problem
-        constraints = self._get_constraints(nlp_output["x"], nlp_inputs["p"])
-        active_constraints = self._get_active_constraints(
-            constraints=constraints,
-            lb=nlp_inputs["lbg"],
-            ub=nlp_inputs["ubg"],
-            act_margin=activation_margin,
-        )
+        # --- Post-processing and Sensitivity ---
+        try:
+            # Use optimal solution x and parameters p to get constraint values
+            constraints = self._get_constraints(
+                opt_vars=nlp_output["x"], opt_pars=nlp_inputs["p"]
+            )["constraints"]
+            constraints = constraints.toarray().flatten()  # Ensure numpy vector
 
-        # get sensitivities
-        nlp_output["lam_g"][~active_constraints] = 0
-        self.sensitivities_result = self._sensitivities_func(
-            opt_vars=nlp_output["x"],
-            opt_pars=nlp_inputs["p"],
-            local_constraint_multipliers=nlp_output["lam_g"],
-        )
-        debug_jacobian = self.sensitivities_result["J"].toarray()
-        self.sensitivities_result["J"] = self.sensitivities_result["J"].toarray()[
-            active_constraints
-        ]
-        original_hessian = self.sensitivities_result["H"]
-        self.sensitivities_result["H"] = regularize_h(
-            original_hessian, regularization_parameter
-        )
-        debug_sensitivities = {
-            k: np.array(v) for k, v in self.sensitivities_result.items()
-        }
-        debug_sensitivities["jacobian_all"] = debug_jacobian
+            active_constraints = self._get_active_constraints(
+                constraints=constraints,
+                lb=nlp_inputs["lbg"].toarray().flatten(),
+                ub=nlp_inputs["ubg"].toarray().flatten(),
+                act_margin=activation_margin,
+            )  # Should return flat bool numpy array
 
-        # format and return solution
-        mpc_output = self._nlp_outputs_to_mpc_outputs(vars_at_optimum=nlp_output["x"])
-        self._remember_solution(mpc_output)
-        result = self._process_solution(
-            inputs=mpc_inputs,
-            outputs=mpc_output,
-            objective_value=float(nlp_output["f"]),
-        )
-        return result
+            # --- Get Sensitivities ---
+            sensitivities_result = None
+            debug_sensitivities = {}  # Store intermediate debug values here
+
+            if self._sensitivities_func:
+                # Ensure lam_g is correctly shaped and zeroed for inactive constraints
+                lam_g_full = nlp_output["lam_g"].toarray().flatten()
+                if len(lam_g_full) != len(active_constraints):
+                    logging.warning(
+                        f"Mismatch length lam_g ({len(lam_g_full)}) vs active_constraints ({len(active_constraints)}). Check NLP solver output."
+                    )
+                    # Attempt to resize/pad if possible, or handle error
+                    # For now, proceed cautiously
+                    min_len_sens = min(len(lam_g_full), len(active_constraints))
+                    lam_g_active = lam_g_full[:min_len_sens]
+                    active_mask_sens = active_constraints[:min_len_sens]
+                    lam_g_active[~active_mask_sens] = 0
+                else:
+                    lam_g_active = lam_g_full.copy()
+                    lam_g_active[~active_constraints] = 0
+
+                try:
+                    # Call sensitivity function
+                    sens_result_raw = self._sensitivities_func(
+                        opt_vars=nlp_output["x"],
+                        opt_pars=nlp_inputs["p"],
+                        local_constraint_multipliers=ca.DM(lam_g_active),
+                        # Pass potentially modified lam_g
+                    )
+
+                    # Store results, converting to numpy where appropriate
+                    sensitivities_result = {
+                        k: v.toarray() if isinstance(v, (ca.DM, ca.MX)) else v
+                        for k, v in sens_result_raw.items()
+                    }
+
+                    # --- Regularization and Debug Info ---
+                    if "H" in sensitivities_result and "J" in sensitivities_result:
+                        # Store original H for comparison
+                        debug_sensitivities["H_original"] = sensitivities_result[
+                            "H"
+                        ].copy()
+
+                        # Filter Jacobian J to only include active constraints IF NEEDED
+                        # The current implementation seems to calculate J based on *all* constraints
+                        # and relies on lam_g being zero for inactive ones.
+                        # If J *should* only contain active rows, filter here:
+                        # sensitivities_result["J"] = sensitivities_result["J"][active_constraints, :] # Filter rows
+
+                        # Regularize Hessian
+                        sensitivities_result["H"] = regularize_h(
+                            sensitivities_result["H"], regularization_parameter
+                        )
+
+                        # Store full Jacobian if calculated separately for debugging
+                        if hasattr(
+                            self, "_full_constraint_jacobian_func"
+                        ):  # Example if you had such a func
+                            full_jac = self._full_constraint_jacobian_func(
+                                opt_vars=nlp_output["x"], opt_pars=nlp_inputs["p"]
+                            )
+                            debug_sensitivities["jacobian_all"] = full_jac.toarray()
+                        elif (
+                            "jacobian_all" in debug_sensitivities
+                        ):  # If already stored earlier
+                            pass  # Already have it
+                        else:
+                            # Fallback: Use the J from sensitivities if it represents all constraints
+                            # This depends heavily on how _sensitivities_func is defined!
+                            # Assuming J from sens_func *is* the full Jacobian before filtering:
+                            debug_sensitivities["jacobian_all"] = sensitivities_result[
+                                "J"
+                            ].copy()  # Or load from debug_jacobian if stored earlier
+                            # **IMPORTANT**: Adjust this logic based on your actual implementation
+                            # If J in sensitivities_result is *already* filtered, you need another way
+                            # to get the full Jacobian for the 'jacobian_all' visualization.
+
+                        # Store other debug values if calculated
+                        # debug_sensitivities['gradient_lambda_zero'] = ...
+
+                    else:
+                        logging.warning(
+                            "Hessian (H) or Jacobian (J) missing from sensitivity results."
+                        )
+
+                except Exception as e:
+                    logging.error(f"Error during sensitivity calculation: {e}")
+                    # Optionally log inputs to sensitivity function
+                    # logging.error(f"Sensitivity Inputs: opt_vars={nlp_output['x']}, opt_pars={nlp_inputs['p']}, lam_g={lam_g_active}")
+                    sensitivities_result = (
+                        None  # Ensure it's None if calculation failed
+                    )
+
+            else:
+                logging.warning(
+                    "_sensitivities_func is not defined. Cannot calculate sensitivities."
+                )
+
+        except Exception as e:
+            logging.error(
+                f"Error during post-processing or sensitivity calculation: {e}"
+            )
+            # Ensure results are handled gracefully even if errors occurred
+            sensitivities_result = None
+            debug_sensitivities = {}
+            # Depending on severity, you might want to re-raise or return partial results
+            # For debugging, let's try to continue to visualization if possible
+
+        # --- Prepare Data for Visualization ---
+        # Ensure all required components exist before preparing data
+        vis_data = None
+        try:
+            # Pass necessary components to the preparation function
+            vis_data = _prepare_visualization_data(
+                discretization_obj=self,
+                nlp_inputs=nlp_inputs,
+                nlp_output=nlp_output,
+                constraints=constraints,  # Should be flat numpy array now
+                active_constraints=active_constraints,
+                # Should be flat bool numpy array
+                sensitivities_result=sensitivities_result,
+                # Dict with numpy arrays or None
+                debug_sensitivities=debug_sensitivities,  # Dict with numpy arrays
+            )
+        except Exception as e:
+            raise
+            logging.error(f"Error preparing visualization data: {e}")
+            # Log the state of inputs to _prepare_visualization_data if helpful
+            # logging.error(f"Inputs to prep func: nlp_inputs keys={list(nlp_inputs.keys())}, nlp_output keys={list(nlp_output.keys())}, constraints shape={constraints.shape if constraints is not None else 'None'}, ...")
+
+        # --- Launch Visualization App ---
+        if vis_data:  # Only launch if data preparation succeeded
+            try:
+                logging.info("Launching visualization app...")
+                launch_visualization_app(vis_data)  # Launch in a thread
+                # Optional: Add a small delay or wait mechanism if needed
+                # time.sleep(1)
+            except Exception as e:
+                raise
+                logging.error(f"Failed to launch visualization app: {e}")
+        else:
+            logging.warning("Skipping visualization launch due to missing data.")
+
+        # --- Format and Return Solution ---
+        try:
+            mpc_output = self._nlp_outputs_to_mpc_outputs(
+                vars_at_optimum=nlp_output["x"]
+            )
+            self._remember_solution(mpc_output)
+            result = self._process_solution(
+                inputs=mpc_inputs,  # Pass original mpc_inputs
+                outputs=mpc_output,
+                objective_value=float(nlp_output["f"]),
+            )
+            return result
+        except Exception as e:
+            logging.error(f"Error formatting final results: {e}")
+            # Depending on requirements, return None, raise error, or return partial result
+            raise  # Re-raise for now
 
     def _get_active_constraints(
         self, constraints: np.ndarray, lb: np.ndarray, ub: np.ndarray, act_margin: float
@@ -257,6 +423,7 @@ class ALADINDiscretization(Discretization):
     def initialize(self, system: CasadiALADINSystem, solver_factory: SolverFactory):
         """Initializes the trajectory optimization problem, creating all symbolic
         variables of the OCP, the mapping function and the numerical solver."""
+        self._system = system
         self._discretize(system)
         self._finished_discretization = True
         # self._aladin_modifications(system)
