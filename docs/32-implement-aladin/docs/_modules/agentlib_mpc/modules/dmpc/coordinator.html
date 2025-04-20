@@ -547,7 +547,9 @@
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registration_lock</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_initial_registration</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_save_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterations</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save_stats</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">iterations</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">data_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">section_length</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save iteration statistics to a file.</span>
 
 <span class="sd">        Args:</span>
@@ -557,7 +559,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_solve_stats</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="n">section_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_primal_residuals_tracker</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">section_length</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">section_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_primal_residuals_tracker</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">section_length</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>
 

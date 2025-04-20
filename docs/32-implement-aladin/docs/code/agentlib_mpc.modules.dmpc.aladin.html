@@ -329,8 +329,12 @@ with the other processes of the agent and the whole MAS.</p>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.activation_margin" title="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.activation_margin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">activation_margin</span> <span class="pre">(float)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.iter_max" title="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.iter_max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iter_max</span> <span class="pre">(int)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.lambda_max" title="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.lambda_max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lambda_max</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.max_penalty_factor" title="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.max_penalty_factor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_penalty_factor</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.max_qp_penalty" title="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.max_qp_penalty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max_qp_penalty</span> <span class="pre">(float)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.penalty_factor" title="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.penalty_factor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">penalty_factor</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.penalty_variation_factor" title="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.penalty_variation_factor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">penalty_variation_factor</span> <span class="pre">(float)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.qp_penalty" title="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.qp_penalty"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qp_penalty</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.qp_penalty_variation_factor" title="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.qp_penalty_variation_factor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qp_penalty_variation_factor</span> <span class="pre">(float)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.qp_solver" title="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.qp_solver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qp_solver</span> <span class="pre">(str)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.qp_solver_options" title="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.qp_solver_options"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qp_solver_options</span> <span class="pre">(dict)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.qp_solver_verbose" title="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.qp_solver_verbose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qp_solver_verbose</span> <span class="pre">(bool)</span></code></a></p></li>
@@ -377,15 +381,67 @@ with the other processes of the agent and the whole MAS.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.max_penalty_factor">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_penalty_factor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000000.0</span></em><a class="headerlink" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.max_penalty_factor" title="Permalink to this definition"></a></dt>
+<dd><p>Maximum value for penalty_parameter (rho).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Constraints<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ge</strong> = 0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.max_qp_penalty">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max_qp_penalty</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100000000.0</span></em><a class="headerlink" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.max_qp_penalty" title="Permalink to this definition"></a></dt>
+<dd><p>Maximum value for qp_penalty (mu).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Constraints<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ge</strong> = 0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.penalty_factor">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">penalty_factor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.penalty_factor" title="Permalink to this definition"></a></dt>
 <dd><p>Penalty factor of the ALADIN algorithm. Should be equal for all agents.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.penalty_variation_factor">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">penalty_variation_factor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></em><a class="headerlink" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.penalty_variation_factor" title="Permalink to this definition"></a></dt>
+<dd><p>Factor to multiply penalty_parameter (rho) with each iteration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Constraints<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ge</strong> = 1</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.qp_penalty">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">qp_penalty</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.qp_penalty" title="Permalink to this definition"></a></dt>
 <dd><p>Mu parameter of the ALADIN algorithm.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.qp_penalty_variation_factor">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">qp_penalty_variation_factor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></em><a class="headerlink" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.qp_penalty_variation_factor" title="Permalink to this definition"></a></dt>
+<dd><p>Factor to multiply qp_penalty (mu) with each iteration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Constraints<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ge</strong> = 1</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -422,7 +478,7 @@ with the other processes of the agent and the whole MAS.</p>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.regularization_parameter">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">regularization_parameter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.regularization_parameter" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">regularization_parameter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.001</span></em><a class="headerlink" href="#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig.regularization_parameter" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Constraints<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -511,9 +567,14 @@ implement default like this:</p>
 <span id="agentlib-mpc-modules-dmpc-aladin-aladin-datatypes-module"></span><h2>agentlib_mpc.modules.dmpc.aladin.aladin_datatypes module<a class="headerlink" href="#module-agentlib_mpc.modules.dmpc.aladin.aladin_datatypes" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.ALADINParameters">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.</span></span><span class="sig-name descname"><span class="pre">ALADINParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prediction_horizon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">penalty_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver_agent_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/dmpc/aladin/aladin_datatypes.html#ALADINParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.ALADINParameters" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.</span></span><span class="sig-name descname"><span class="pre">ALADINParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prediction_horizon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">penalty_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularization_parameter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation_margin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">receiver_agent_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/dmpc/aladin/aladin_datatypes.html#ALADINParameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.ALADINParameters" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Collection of parameters which have to be shared across all agents in ALADIN.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.ALADINParameters.activation_margin">
+<span class="sig-name descname"><span class="pre">activation_margin</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.ALADINParameters.activation_margin" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.ALADINParameters.penalty_factor">
 <span class="sig-name descname"><span class="pre">penalty_factor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.ALADINParameters.penalty_factor" title="Permalink to this definition"></a></dt>
@@ -527,6 +588,11 @@ implement default like this:</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.ALADINParameters.receiver_agent_id">
 <span class="sig-name descname"><span class="pre">receiver_agent_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.ALADINParameters.receiver_agent_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.ALADINParameters.regularization_parameter">
+<span class="sig-name descname"><span class="pre">regularization_parameter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.ALADINParameters.regularization_parameter" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -622,7 +688,7 @@ agent in ADMM. Used in the coordinator.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.AgentToCoordinator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.</span></span><span class="sig-name descname"><span class="pre">AgentToCoordinator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/dmpc/aladin/aladin_datatypes.html#AgentToCoordinator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.AgentToCoordinator" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.</span></span><span class="sig-name descname"><span class="pre">AgentToCoordinator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objective</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/dmpc/aladin/aladin_datatypes.html#AgentToCoordinator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.AgentToCoordinator" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.StructuredValue" title="agentlib_mpc.data_structures.coordinator_datatypes.StructuredValue"><code class="xref py py-class docutils literal notranslate"><span class="pre">StructuredValue</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.AgentToCoordinator.H">
@@ -637,6 +703,11 @@ agent in ADMM. Used in the coordinator.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.AgentToCoordinator.g">
 <span class="sig-name descname"><span class="pre">g</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.AgentToCoordinator.g" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.AgentToCoordinator.objective">
+<span class="sig-name descname"><span class="pre">objective</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.AgentToCoordinator.objective" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">

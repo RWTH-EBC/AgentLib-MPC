@@ -237,6 +237,16 @@
                 <span class="n">cdt</span><span class="o">.</span><span class="n">PREDICTION_HORIZON</span><span class="p">:</span> <span class="n">options</span><span class="o">.</span><span class="n">prediction_horizon</span><span class="p">,</span>
             <span class="p">}</span>
         <span class="p">)</span>
+        <span class="n">discretization_options</span> <span class="o">=</span> <span class="n">new_config_dict</span><span class="p">[</span><span class="s2">&quot;optimization_backend&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span>
+            <span class="s2">&quot;discretization_options&quot;</span>
+        <span class="p">)</span>
+        <span class="n">discretization_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="n">ald</span><span class="o">.</span><span class="n">REGULARIZATION_PARAMETER</span><span class="p">:</span> <span class="n">options</span><span class="o">.</span><span class="n">regularization_parameter</span><span class="p">,</span>
+                <span class="n">ald</span><span class="o">.</span><span class="n">ACTIVATION_MARGIN</span><span class="p">:</span> <span class="n">options</span><span class="o">.</span><span class="n">activation_margin</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="c1"># Setting self.config triggers the update mechanism which reinitializes the backend</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">new_config_dict</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: Reinitialized optimization problem.&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
@@ -273,9 +283,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimization_backend</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
             <span class="n">now</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_optimization_at</span><span class="p">,</span> <span class="n">current_vars</span><span class="o">=</span><span class="n">opt_inputs</span>
         <span class="p">)</span>
-        <span class="n">opt_return</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimization_backend</span><span class="o">.</span><span class="n">get_sensitivities</span><span class="p">()</span>
+        <span class="c1"># Get sensitivities</span>
+        <span class="n">sensitivities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimization_backend</span><span class="o">.</span><span class="n">get_sensitivities</span><span class="p">()</span>
+        <span class="n">sensitivities</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;objective&quot;</span><span class="p">]</span>
+        <span class="c1"># Create the return message including the objective</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sent optimal solution.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">cdt</span><span class="o">.</span><span class="n">OPTIMIZATION_A2C</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">opt_return</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">cdt</span><span class="o">.</span><span class="n">OPTIMIZATION_A2C</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">sensitivities</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="CoordinatedALADIN.assert_mpc_variables_are_in_model"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.aladin.html#agentlib_mpc.modules.dmpc.aladin.aladin_coordinated.CoordinatedALADIN.assert_mpc_variables_are_in_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">assert_mpc_variables_are_in_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

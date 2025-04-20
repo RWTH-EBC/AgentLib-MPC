@@ -95,6 +95,8 @@
 
 <span class="n">LOCAL_PENALTY_FACTOR</span> <span class="o">=</span> <span class="s2">&quot;local_penalty_factor&quot;</span>
 <span class="n">PRESCRIBED</span> <span class="o">=</span> <span class="s2">&quot;prescribed&quot;</span>
+<span class="n">REGULARIZATION_PARAMETER</span> <span class="o">=</span> <span class="s2">&quot;regularization_parameter&quot;</span>
+<span class="n">ACTIVATION_MARGIN</span> <span class="o">=</span> <span class="s2">&quot;activation_margin&quot;</span>
 
 
 <div class="viewcode-block" id="SparseBuilder"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.aladin.html#agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.SparseBuilder">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
@@ -199,6 +201,8 @@
     <span class="n">prediction_horizon</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">time_step</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">penalty_factor</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">regularization_parameter</span><span class="p">:</span> <span class="nb">float</span>  <span class="c1"># Added</span>
+    <span class="n">activation_margin</span><span class="p">:</span> <span class="nb">float</span>  <span class="c1"># Added</span>
     <span class="n">receiver_agent_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="ALADINParameters.to_dict"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.aladin.html#agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.ALADINParameters.to_dict">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -323,7 +327,8 @@
     <span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>  <span class="c1"># local solution</span>
     <span class="n">g</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>  <span class="c1"># objective gradient</span>
     <span class="n">J</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>  <span class="c1"># constraint jacobian</span>
-    <span class="n">H</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>  <span class="c1"># hessian</span></div>
+    <span class="n">H</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>  <span class="c1"># hessian</span>
+    <span class="n">objective</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># local objective value</span></div>
 
 
 <div class="viewcode-block" id="RegistrationA2C"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.aladin.html#agentlib_mpc.modules.dmpc.aladin.aladin_datatypes.RegistrationA2C">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>

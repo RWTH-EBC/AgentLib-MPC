@@ -76,9 +76,9 @@
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">asdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">asdict</span><span class="p">,</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">casadi</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ca</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -89,6 +89,69 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.modules.dmpc.coordinator</span><span class="w"> </span><span class="kn">import</span> <span class="n">Coordinator</span><span class="p">,</span> <span class="n">CoordinatorConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures</span><span class="w"> </span><span class="kn">import</span> <span class="n">coordinator_datatypes</span> <span class="k">as</span> <span class="n">cdt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">agentlib_mpc.modules.dmpc.aladin.aladin_datatypes</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ald</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_AladinStatsTracker</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper class to manage ALADIN iteration statistics.&quot;&quot;&quot;</span>
+
+    <span class="n">objective</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">qp_solve_time</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">qp_success</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">primal_residual</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">dual_residual</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">wall_time</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">penalty_parameter_tracker</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">qp_penalty_tracker</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">section_length</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_iteration_stats</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">objective</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">primal</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">dual</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">penalty</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">qp_penalty</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Append stats collected at the end of an iteration.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objective</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">objective</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">primal_residual</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">primal</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dual_residual</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dual</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wall_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">penalty_parameter_tracker</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">penalty</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qp_penalty_tracker</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">qp_penalty</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">section_length</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_qp_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solve_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">success</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Append stats collected after solving the QP.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qp_solve_time</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solve_time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qp_success</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">success</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_data_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all tracked data as a dictionary.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;objective&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objective</span><span class="p">,</span>
+            <span class="s2">&quot;qp_solve_time&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">qp_solve_time</span><span class="p">,</span>
+            <span class="s2">&quot;qp_success&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">qp_success</span><span class="p">,</span>
+            <span class="s2">&quot;primal_residual&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">primal_residual</span><span class="p">,</span>
+            <span class="s2">&quot;dual_residual&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dual_residual</span><span class="p">,</span>
+            <span class="s2">&quot;wall_time&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">wall_time</span><span class="p">,</span>
+            <span class="s2">&quot;penalty_parameter&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">penalty_parameter_tracker</span><span class="p">,</span>
+            <span class="s2">&quot;qp_penalty&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">qp_penalty_tracker</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear all tracked data.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objective</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qp_solve_time</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qp_success</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">primal_residual</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dual_residual</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wall_time</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">penalty_parameter_tracker</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qp_penalty_tracker</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">section_length</span> <span class="o">=</span> <span class="mi">0</span>
 
 
 <div class="viewcode-block" id="ALADINCoordinatorConfig"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.aladin.html#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinatorConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ALADINCoordinatorConfig</span><span class="p">(</span><span class="n">CoordinatorConfig</span><span class="p">):</span>
@@ -133,11 +196,27 @@
     <span class="n">activation_margin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">gt</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Threshold for active set detection.&quot;</span>
     <span class="p">)</span>
-    <span class="n">regularization_parameter</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">regularization_parameter</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">lambda_max</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mf">1e4</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">solve_stats_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;aladin_stats.csv&quot;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;File name for the solve stats.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">penalty_variation_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Factor to multiply penalty_parameter (rho) with each iteration.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">max_penalty_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">1e6</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum value for penalty_parameter (rho).&quot;</span>
+    <span class="p">)</span>
+    <span class="n">qp_penalty_variation_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Factor to multiply qp_penalty (mu) with each iteration.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">max_qp_penalty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">1e8</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum value for qp_penalty (mu).&quot;</span>
     <span class="p">)</span></div>
 
 
@@ -145,11 +224,15 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Coordinator implementation for the ALADIN algorithm&quot;&quot;&quot;</span>
 
     <span class="n">config</span><span class="p">:</span> <span class="n">ALADINCoordinatorConfig</span>
+    <span class="n">_stats_tracker</span><span class="p">:</span> <span class="n">_AladinStatsTracker</span>
+    <span class="n">_total_objective</span><span class="p">:</span> <span class="nb">float</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">agent_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Source</span><span class="p">,</span> <span class="n">ald</span><span class="o">.</span><span class="n">AgentDictEntry</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_healthy_agents</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stats_tracker</span> <span class="o">=</span> <span class="n">_AladinStatsTracker</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_total_objective</span> <span class="o">=</span> <span class="mf">0.0</span>
 
         <span class="c1"># ALADIN-specific parameters</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">penalty_parameter</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">penalty_factor</span>
@@ -193,6 +276,10 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_agents_with_status</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">cdt</span><span class="o">.</span><span class="n">AgentStatus</span><span class="o">.</span><span class="n">ready</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No Agents available at time </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             <span class="k">return</span>  <span class="c1"># if no agents registered return early</span>
+
+        <span class="c1"># Reset penalty parameters for the new control step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">penalty_parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">penalty_factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qp_penalty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">qp_penalty</span>
 
         <span class="c1"># Create couplings on first iteration or if agents change</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_couplings</span><span class="p">()</span>
@@ -255,6 +342,10 @@
                 <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">sampling_time</span> <span class="o">-</span> <span class="n">communication_time</span><span class="p">)</span>
                 <span class="k">continue</span>  <span class="c1"># if no agents registered return early</span>
 
+            <span class="c1"># Reset penalty parameters for the new control step</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">penalty_parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">penalty_factor</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qp_penalty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">qp_penalty</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">create_couplings</span><span class="p">()</span>
 
             <span class="c1"># ------------------</span>
@@ -312,6 +403,8 @@
             <span class="n">prediction_horizon</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">prediction_horizon</span><span class="p">,</span>
             <span class="n">time_step</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">time_step</span><span class="p">,</span>
             <span class="n">penalty_factor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">penalty_factor</span><span class="p">,</span>
+            <span class="n">regularization_parameter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">regularization_parameter</span><span class="p">,</span>  <span class="c1"># Added</span>
+            <span class="n">activation_margin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">activation_margin</span><span class="p">,</span>  <span class="c1"># Added</span>
         <span class="p">)</span>
 
         <span class="n">message</span> <span class="o">=</span> <span class="n">cdt</span><span class="o">.</span><span class="n">RegistrationMessage</span><span class="p">(</span>
@@ -346,6 +439,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Trigger optimizations for all agents with ready status.&quot;&quot;&quot;</span>
         <span class="c1"># create an iterator for all agents which are ready for this round</span>
         <span class="n">active_agents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active_agents</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_total_objective</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># reset objective tracker</span>
 
         <span class="c1"># aggregate and send trajectories per agent</span>
         <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">active_agents</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -367,6 +461,8 @@
 <div class="viewcode-block" id="ALADINCoordinator.optim_results_callback"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.aladin.html#agentlib_mpc.modules.dmpc.aladin.aladin_coordinator.ALADINCoordinator.optim_results_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">optim_results_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Process the results from a local optimization.&quot;&quot;&quot;</span>
         <span class="n">local_result</span> <span class="o">=</span> <span class="n">ald</span><span class="o">.</span><span class="n">AgentToCoordinator</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">variable</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="c1"># Accumulate objective</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_total_objective</span> <span class="o">+=</span> <span class="n">local_result</span><span class="o">.</span><span class="n">objective</span>
         <span class="n">agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_dict</span><span class="p">[</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="p">]</span>
         <span class="n">agent</span><span class="o">.</span><span class="n">hessian</span> <span class="o">=</span> <span class="n">local_result</span><span class="o">.</span><span class="n">H</span>
         <span class="n">agent</span><span class="o">.</span><span class="n">local_solution</span> <span class="o">=</span> <span class="n">local_result</span><span class="o">.</span><span class="n">x</span>
@@ -496,9 +592,17 @@
             <span class="n">A_sparsity</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">(</span><span class="n">AQP</span><span class="p">)</span><span class="o">.</span><span class="n">sparsity</span><span class="p">(),</span> <span class="n">H_sparsity</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">(</span><span class="n">HQP</span><span class="p">)</span><span class="o">.</span><span class="n">sparsity</span><span class="p">()</span>
         <span class="p">)</span>
 
-        <span class="c1"># Solve the QP</span>
+        <span class="c1"># Solve the QP and track time/success</span>
+        <span class="n">qp_start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
         <span class="n">solution</span> <span class="o">=</span> <span class="n">solver</span><span class="p">(</span>
             <span class="n">h</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">(</span><span class="n">HQP</span><span class="p">),</span> <span class="n">g</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">(</span><span class="n">gQP</span><span class="p">),</span> <span class="n">a</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">(</span><span class="n">AQP</span><span class="p">),</span> <span class="n">lba</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">(</span><span class="n">bQP</span><span class="p">),</span> <span class="n">uba</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">(</span><span class="n">bQP</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">qp_solve_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">qp_start_time</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">stats</span><span class="p">()</span>
+        <span class="c1"># Use &#39;success&#39; field, default to False if not present or solver failed</span>
+        <span class="n">qp_success</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;success&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stats_tracker</span><span class="o">.</span><span class="n">append_qp_stats</span><span class="p">(</span>
+            <span class="n">solve_time</span><span class="o">=</span><span class="n">qp_solve_time</span><span class="p">,</span> <span class="n">success</span><span class="o">=</span><span class="n">qp_success</span>
         <span class="p">)</span>
 
         <span class="c1"># Conditionally log stats only if debugging is enabled</span>
@@ -550,11 +654,15 @@
         <span class="n">primal_residual</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">primal_residual</span><span class="p">)</span>
         <span class="n">dual_residual</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dual_residual</span><span class="p">)</span> <span class="k">if</span> <span class="n">dual_residual</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
 
-        <span class="c1"># Track residuals for stats</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_primal_residuals_tracker</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">primal_residual</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dual_residuals_tracker</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dual_residual</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_performance_tracker</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_performance_counter</span>
+        <span class="c1"># Track iteration stats</span>
+        <span class="n">wall_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_performance_counter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stats_tracker</span><span class="o">.</span><span class="n">append_iteration_stats</span><span class="p">(</span>
+            <span class="n">objective</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_total_objective</span><span class="p">,</span>
+            <span class="n">primal</span><span class="o">=</span><span class="n">primal_residual</span><span class="p">,</span>
+            <span class="n">dual</span><span class="o">=</span><span class="n">dual_residual</span><span class="p">,</span>
+            <span class="n">time</span><span class="o">=</span><span class="n">wall_time</span><span class="p">,</span>
+            <span class="n">penalty</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">penalty_parameter</span><span class="p">,</span>
+            <span class="n">qp_penalty</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">qp_penalty</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
@@ -570,7 +678,17 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">log_agent_updates</span><span class="p">(</span><span class="n">iteration</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">iteration</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_iter_interval</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_save_stats</span><span class="p">(</span><span class="n">iterations</span><span class="o">=</span><span class="n">iteration</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_save_stats_aladin</span><span class="p">(</span><span class="n">iterations</span><span class="o">=</span><span class="n">iteration</span><span class="p">)</span>
+
+        <span class="c1"># Update penalty parameters for the next iteration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">penalty_parameter</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">penalty_parameter</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">penalty_variation_factor</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">max_penalty_factor</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qp_penalty</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qp_penalty</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">qp_penalty_variation_factor</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">max_qp_penalty</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="c1"># Check convergence against tolerance</span>
         <span class="k">return</span> <span class="p">(</span>
@@ -674,7 +792,7 @@
             <span class="n">capped</span><span class="p">[</span><span class="n">extreme_indices</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">capped</span><span class="p">[</span><span class="n">extreme_indices</span><span class="p">])</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">lambda_max</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">debug_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Capped </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">extreme_indices</span><span class="p">)</span><span class="si">}</span><span class="s2"> extreme multiplier values&quot;</span>
             <span class="p">)</span>
 
@@ -848,9 +966,11 @@
                         <span class="k">else</span> <span class="n">agent</span><span class="o">.</span><span class="n">hessian</span>
                     <span class="p">)</span>
                 <span class="p">),</span>
-                <span class="s2">&quot;jacobian_shape&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">jacobian</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">jacobian</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">)</span>
-                <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;jacobian_shape&quot;</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="nb">list</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">jacobian</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">jacobian</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="kc">None</span>
+                <span class="p">),</span>
                 <span class="s2">&quot;gradient_norm&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">agent</span><span class="o">.</span><span class="n">gradient</span><span class="p">)),</span>
             <span class="p">}</span>
 
@@ -906,16 +1026,20 @@
 
                 <span class="n">coupling_data</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="s2">&quot;indices&quot;</span><span class="p">:</span> <span class="n">indices</span><span class="p">,</span>
-                    <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="n">values</span><span class="p">,</span>
-                    <span class="s2">&quot;multipliers&quot;</span><span class="p">:</span> <span class="n">multipliers_array</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="n">multipliers_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                    <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s2">&quot;values&quot;</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">values</span>
+                    <span class="p">),</span>
+                    <span class="s2">&quot;multipliers&quot;</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="n">multipliers_array</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">multipliers_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                        <span class="k">else</span> <span class="kc">None</span>
+                    <span class="p">),</span>
                     <span class="s2">&quot;values_norm&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">values</span><span class="p">)),</span>
-                    <span class="s2">&quot;multipliers_norm&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">multipliers_array</span><span class="p">))</span>
-                    <span class="k">if</span> <span class="n">multipliers_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                    <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s2">&quot;multipliers_norm&quot;</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">multipliers_array</span><span class="p">))</span>
+                        <span class="k">if</span> <span class="n">multipliers_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                        <span class="k">else</span> <span class="kc">None</span>
+                    <span class="p">),</span>
                 <span class="p">}</span>
 
                 <span class="c1"># Create coupling visualization</span>
@@ -992,18 +1116,25 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">debug_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Convergence metrics logged for iteration </span><span class="si">{</span><span class="n">iteration</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_save_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterations</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save_stats_aladin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterations</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save iteration statistics to a file.&quot;&quot;&quot;</span>
-        <span class="n">data_dict</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;primal_residual&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_primal_residuals_tracker</span><span class="p">,</span>
-            <span class="s2">&quot;dual_residual&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dual_residuals_tracker</span><span class="p">,</span>
-            <span class="s2">&quot;wall_time&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_performance_tracker</span><span class="p">,</span>
-        <span class="p">}</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_save_stats</span><span class="p">(</span><span class="n">iterations</span><span class="o">=</span><span class="n">iterations</span><span class="p">,</span> <span class="n">data_dict</span><span class="o">=</span><span class="n">data_dict</span><span class="p">)</span>
+        <span class="c1"># Get data from the tracker</span>
+        <span class="n">data_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stats_tracker</span><span class="o">.</span><span class="n">get_data_dict</span><span class="p">()</span>
+        <span class="c1"># Save using the parent method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_stats</span><span class="p">(</span>
+            <span class="n">iterations</span><span class="o">=</span><span class="n">iterations</span><span class="p">,</span>
+            <span class="n">data_dict</span><span class="o">=</span><span class="n">data_dict</span><span class="p">,</span>
+            <span class="n">section_length</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_stats_tracker</span><span class="o">.</span><span class="n">section_length</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Clear the tracker for the next time step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stats_tracker</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_wrap_up_algorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterations</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clean up at the end of an algorithm execution.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_save_stats</span><span class="p">(</span><span class="n">iterations</span><span class="o">=</span><span class="n">iterations</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_stats_aladin</span><span class="p">(</span><span class="n">iterations</span><span class="o">=</span><span class="n">iterations</span><span class="p">)</span>
+        <span class="c1"># Reset penalty parameters for the next control step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">penalty_parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">penalty_factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qp_penalty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">qp_penalty</span></div>
 
 
 <span class="c1"># Helper class for JSON serialization of numpy arrays</span>
