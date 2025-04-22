@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules.mpc &mdash; agentlib_mpc 0.6.3 documentation</title>
+  <title>agentlib_mpc.modules.mpc &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -410,9 +410,17 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Takes the solution from optimization backend and sends the first</span>
 <span class="sd">        step to AgentVariables.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Sending optimal control values to data_broker.&quot;</span><span class="p">)</span>
+        <span class="n">tolerance</span> <span class="o">=</span> <span class="mf">1e-5</span>
         <span class="k">for</span> <span class="n">control</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_ref</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span>
+            <span class="n">ub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">control</span><span class="p">)</span><span class="o">.</span><span class="n">ub</span>
+            <span class="n">lb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">control</span><span class="p">)</span><span class="o">.</span><span class="n">lb</span>
             <span class="c1"># take the first entry of the control trajectory</span>
             <span class="n">actuation</span> <span class="o">=</span> <span class="n">solution</span><span class="p">[</span><span class="n">control</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># if variables only slightly breach boundaries, clip</span>
+            <span class="k">if</span> <span class="n">ub</span> <span class="o">&lt;</span> <span class="n">actuation</span> <span class="o">&lt;</span> <span class="n">ub</span> <span class="o">+</span> <span class="n">tolerance</span><span class="p">:</span>
+                <span class="n">actuation</span> <span class="o">=</span> <span class="n">ub</span>
+            <span class="k">if</span> <span class="n">lb</span> <span class="o">-</span> <span class="n">tolerance</span> <span class="o">&lt;</span> <span class="n">actuation</span> <span class="o">&lt;</span> <span class="n">lb</span><span class="p">:</span>
+                <span class="n">actuation</span> <span class="o">=</span> <span class="n">lb</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="n">actuation</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMPC.set_output"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.mpc.BaseMPC.set_output">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">:</span> <span class="n">Results</span><span class="p">):</span>
