@@ -96,6 +96,16 @@ class MPC(BaseMPC):
                 if timestamp < (self.env.time - lag_in_seconds):
                     var_history.pop(timestamp)
 
+    def register_callbacks(self):
+        super().register_callbacks()
+        opti_back = self.config.optimization_backend
+        if opti_back['type'] == 'casadi_ml':
+            self.agent.data_broker.register_callback(
+                alias="MLModel",
+                source=None,
+                callback=self._update_ml_model,
+            )
+
     def _callback_hist_vars(self, variable: AgentVariable, name: str):
         """Adds received measured inputs to the past trajectory."""
         # if variables are intentionally sent as series, we don't need to store them
@@ -121,6 +131,7 @@ class MPC(BaseMPC):
     def _after_config_update(self):
         self._internal_variables = self._create_internal_variables()
         super()._after_config_update()
+
 
     def _setup_var_ref(self) -> mpc_datamodels.VariableReferenceT:
         return mpc_datamodels.FullVariableReference.from_config(self.config)

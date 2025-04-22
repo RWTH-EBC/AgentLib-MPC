@@ -71,8 +71,7 @@ def plot(results):
     plt.show()
 
 
-def configs(
-    training_time: float = 1000, plot_results: bool = False, step_size: float = 60
+def configs(initial_training_time: float = 1000, plot_results: bool = False, step_size: float = 60
 ):
     trainer_config = {
         "id": "Trainer",
@@ -83,6 +82,7 @@ def configs(
                 "type": "agentlib_mpc.ann_trainer",
                 "epochs": 1000,
                 "batch_size": 64,
+                "online_learning": [True, initial_training_time, None],
                 "inputs": [
                     {"name": "mDot", "value": 0.0225, "source": "PID"},
                     {"name": "load", "value": 30, "source": "Simulator"},
@@ -97,10 +97,9 @@ def configs(
                 "train_share": 0.6,
                 "validation_share": 0.2,
                 "test_share": 0.2,
-                "retrain_delay": training_time,
                 "save_directory": "anns",
                 "use_values_for_incomplete_data": True,
-                "data_sources": ["results//simulation_data_14days.csv"],
+                "data_sources": ["results//simulation_data.csv"],
                 "save_data": True,
                 "save_ml_model": True,
                 "save_plots": True,
@@ -128,7 +127,7 @@ def configs(
                 "save_results": plot_results,
                 "result_filename": "results//simulation_data.csv",
                 "result_causalities": ["local", "input", "output"],
-                "overwrite_result_file": False,
+                "overwrite_result_file": True,
                 "inputs": [
                     {"name": "mDot", "value": 0.0225, "source": "PID"},
                     {"name": "load", "value": 30},
@@ -183,23 +182,24 @@ def configs(
     return [simulator_config, trainer_config, pid_controller]
 
 
-def main(training_time: float = 1000, plot_results=False, step_size: float = 300):
+def main(initial_training_time: float = 1000, plot_results=False, step_size: float = 300):
     env_config = {"rt": False, "t_sample": 3600}
     logging.basicConfig(level=logging.INFO)
     mas = LocalMASAgency(
         agent_configs=configs(
-            training_time=training_time,
+            initial_training_time=initial_training_time,
             plot_results=plot_results,
             step_size=step_size,
         ),
         env=env_config,
         variable_logging=False,
     )
-    mas.run(until=training_time + 100)
+    mas.run(until=initial_training_time + 100)
     if plot_results:
         results = mas.get_results(cleanup=True)
         plot(results)
+    mas.stop_agency()
 
 
 if __name__ == "__main__":
-    main(training_time=3600 * 24 * 1, plot_results=True, step_size=300)
+    main(initial_training_time=90000, plot_results=True, step_size=300)
