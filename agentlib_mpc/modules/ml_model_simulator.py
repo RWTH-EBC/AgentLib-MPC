@@ -66,18 +66,3 @@ class MLModelSimulator(Simulator):
                 f"Tried to update the MLModels, but new MLModels do not have matching 'dt'. "
                 f"Error message from model: '{e}'."
             )
-
-    def update_model_inputs(self):
-        """
-        Internal method to write current data_broker to simulation model.
-        Only update values, not other module_types.
-        """
-        model_input_names = (
-            self.model.get_input_names() + self.model.get_parameter_names()
-        )
-        for inp in self.variables:
-            if inp.name in model_input_names:
-                self.logger.debug("Updating model variable %s=%s", inp.name, inp.value)
-                self.model.set_with_timestamp(
-                    name=inp.name, value=inp.value, timestamp=inp.timestamp
-                )
