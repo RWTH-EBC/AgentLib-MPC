@@ -1,7 +1,7 @@
 import pydantic
 from agentlib.core import AgentVariable, AgentVariables
 from agentlib.core.errors import ConfigurationError
-from agentlib.modules.simulator import SimulatorConfig, Simulator
+from agentlib.modules.simulation.simulator import SimulatorConfig, Simulator
 from pydantic_core.core_schema import FieldValidationInfo
 
 from agentlib_mpc.models.casadi_ml_model import CasadiMLModel
