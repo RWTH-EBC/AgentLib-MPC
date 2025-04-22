@@ -570,8 +570,78 @@ step to AgentVariables.</p>
 </dd></dl>
 
 </section>
-<section id="agentlib-mpc-modules-ml-model-simulator-module">
-<h2>agentlib_mpc.modules.ml_model_simulator module<a class="headerlink" href="#agentlib-mpc-modules-ml-model-simulator-module" title="Permalink to this heading"></a></h2>
+<section id="module-agentlib_mpc.modules.ml_model_simulator">
+<span id="agentlib-mpc-modules-ml-model-simulator-module"></span><h2>agentlib_mpc.modules.ml_model_simulator module<a class="headerlink" href="#module-agentlib_mpc.modules.ml_model_simulator" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_simulator.MLModelSimulator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.ml_model_simulator.</span></span><span class="sig-name descname"><span class="pre">MLModelSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Agent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_simulator.html#MLModelSimulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_simulator.MLModelSimulator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Simulator</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_simulator.MLModelSimulator.register_callbacks">
+<span class="sig-name descname"><span class="pre">register_callbacks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_simulator.html#MLModelSimulator.register_callbacks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_simulator.MLModelSimulator.register_callbacks" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_simulator.MLModelSimulator.update_model_inputs">
+<span class="sig-name descname"><span class="pre">update_model_inputs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_simulator.html#MLModelSimulator.update_model_inputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_simulator.MLModelSimulator.update_model_inputs" title="Permalink to this definition"></a></dt>
+<dd><p>Internal method to write current data_broker to simulation model.
+Only update values, not other module_types.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.ml_model_simulator.</span></span><span class="sig-name descname"><span class="pre">MLModelSimulatorConfig</span></span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_simulator.html#MLModelSimulatorConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SimulatorConfig</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arbitrary_types_allowed</strong>: <em>bool = True</em></p></li>
+<li><p><strong>validate_assignment</strong>: <em>bool = True</em></p></li>
+<li><p><strong>extra</strong>: <em>str = forbid</em></p></li>
+<li><p><strong>frozen</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.serialized_ml_models" title="agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.serialized_ml_models"><code class="xref py py-obj docutils literal notranslate"><span class="pre">serialized_ml_models</span> <span class="pre">(List[agentlib.core.datamodels.AgentVariable])</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-odd">Validators<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.check_t_sample" title="agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.check_t_sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_t_sample</span></code></a> » <code class="xref py py-obj docutils literal notranslate"><span class="pre">t_sample</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.serialized_ml_models">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">serialized_ml_models</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">AgentVariable</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.serialized_ml_models" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method pydantic_validator">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.check_t_sample">
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_t_sample</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">t_sample</span></em><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_simulator.html#MLModelSimulatorConfig.check_t_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.check_t_sample" title="Permalink to this definition"></a></dt>
+<dd><p>Check if t_sample is smaller than stop-start time</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.model_post_init">
+<span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.model_post_init" title="Permalink to this definition"></a></dt>
+<dd><p>This function is meant to behave like a BaseModel method to initialise private attributes.</p>
+<p>It takes context as an argument since that’s what pydantic-core passes when calling it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – The BaseModel instance.</p></li>
+<li><p><strong>context</strong> – The context.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-agentlib_mpc.modules.mpc">
 <span id="agentlib-mpc-modules-mpc-module"></span><h2>agentlib_mpc.modules.mpc module<a class="headerlink" href="#module-agentlib_mpc.modules.mpc" title="Permalink to this heading"></a></h2>
