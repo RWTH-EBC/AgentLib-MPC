@@ -7,6 +7,7 @@ import pandas as pd
 import threading
 import logging
 import time
+import casadi as ca
 
 # Global variable to hold the data for the app instance
 # This is simpler for a single, temporary debugging instance launched programmatically.
@@ -617,74 +618,149 @@ def _prepare_visualization_data(
         discretization_obj: The instance of ALADINDiscretization (self).
         nlp_inputs: The dictionary of inputs passed to the NLP solver.
         nlp_output: The dictionary of outputs from the NLP solver.
-        constraints: Numerical values of constraints at optimum.
-        active_constraints: Boolean mask for active constraints.
-        sensitivities_result: Dictionary from _sensitivities_func.
-        debug_sensitivities: Dictionary holding intermediate sensitivity calculations.
+        constraints: Numerical values of constraints at optimum (numpy array).
+        active_constraints: Boolean mask for active constraints (numpy array).
+        sensitivities_result: Dictionary from _sensitivities_func (numpy arrays).
+        debug_sensitivities: Dictionary holding intermediate sensitivity calculations (numpy arrays).
 
     Returns:
         A dictionary containing data ready for the Dash app.
     """
     data = {}
+    logger.info("Preparing visualization data...")
 
     # --- Variable/Parameter Labels ---
     opt_var_labels = []
-    opt_vars_flat_list = (
-        []
-    )  # Store the symbolic vars in flattened order if needed later
+    # REMOVED: opt_vars_flat_list = [] # Store the symbolic vars in flattened order if needed later
+    if not hasattr(discretization_obj, "_system") or discretization_obj._system is None:
+        logger.error(
+            "Discretization object missing '_system' attribute. Cannot generate detailed labels."
+        )
+        # Add fallback logic or return empty data if labels are critical
+        return {}  # Or handle differently
+
+    if not hasattr(discretization_obj, "mpc_opt_vars"):
+        logger.error(
+            "Discretization object missing 'mpc_opt_vars'. Cannot generate labels."
+        )
+        return {}
+
+    logger.debug(
+        f"Generating labels for opt_vars: {list(discretization_obj.mpc_opt_vars.keys())}"
+    )
     for denotation, container in discretization_obj.mpc_opt_vars.items():
+        # Find the corresponding system variable definition
         sys_var = next(
             (v for v in discretization_obj._system.variables if v.name == denotation),
             None,
-        )  # Get OptimizationVariable definition
+        )
         if sys_var:
             full_names = sys_var.full_names
+            if not full_names:  # Skip if variable group is empty
+                logger.debug(f"Skipping empty variable group: {denotation}")
+                continue
+            if not container.grid:
+                logger.debug(f"Skipping variable group with empty grid: {denotation}")
+                continue
+
+            logger.debug(
+                f"  Processing {denotation}: {len(full_names)} names, {len(container.grid)} grid points."
+            )
             for i, t in enumerate(container.grid):
-                opt_vars_flat_list.extend(container.var[i])  # Add symbolic var
-                for name in full_names:
-                    opt_var_labels.append(
-                        f"{name}_t{t:.2f}"
-                    )  # Or use index k if preferred
+                # REMOVED: opt_vars_flat_list.extend(container.var[i]) # Add symbolic var - THIS CAUSED THE ERROR
+                # Check if container.var has enough elements for index i
+                if i < len(container.var):
+                    # Generate labels based on names and time
+                    for name in full_names:
+                        opt_var_labels.append(
+                            f"{name}_t{t:.2f}"
+                        )  # Or use index k if preferred
+                else:
+                    logger.warning(
+                        f"Grid length mismatch for {denotation}. Grid has {len(container.grid)} points, but var list has {len(container.var)} elements."
+                    )
+                    break  # Stop processing this variable group if mismatch occurs
         else:
             logger.warning(
-                f"Could not find system variable definition for {denotation}"
+                f"Could not find system variable definition for {denotation}. Using basic labels."
             )
             # Fallback if definition not found (less informative labels)
+            if not container.grid:
+                continue
+            num_vars_per_step = container.var[0].shape[0] if container.var else 0
+            if num_vars_per_step == 0:
+                continue
             for i, t in enumerate(container.grid):
-                for j in range(container.var[i].shape[0]):
-                    opt_var_labels.append(f"{denotation}_{j}_t{t:.2f}")
+                if i < len(container.var):
+                    for j in range(num_vars_per_step):
+                        opt_var_labels.append(f"{denotation}_{j}_t{t:.2f}")
+                else:
+                    logger.warning(f"Grid length mismatch for {denotation} (fallback).")
+                    break
 
     opt_par_labels = []
-    opt_pars_flat_list = []
+    # REMOVED: opt_pars_flat_list = []
+    if not hasattr(discretization_obj, "mpc_opt_pars"):
+        logger.error(
+            "Discretization object missing 'mpc_opt_pars'. Cannot generate labels."
+        )
+        return {}
+
+    logger.debug(
+        f"Generating labels for opt_pars: {list(discretization_obj.mpc_opt_pars.keys())}"
+    )
     for denotation, container in discretization_obj.mpc_opt_pars.items():
         sys_par = next(
             (p for p in discretization_obj._system.parameters if p.name == denotation),
             None,
-        )  # Get OptimizationParameter definition
+        )
         if sys_par:
             full_names = sys_par.full_names
-            for i, t in enumerate(container.grid):
-                opt_pars_flat_list.extend(container.var[i])
-                for name in full_names:
-                    opt_par_labels.append(f"{name}_t{t:.2f}")
-        else:
-            logger.warning(
-                f"Could not find system parameter definition for {denotation}"
+            if not full_names:
+                continue
+            if not container.grid:
+                continue
+            logger.debug(
+                f"  Processing {denotation}: {len(full_names)} names, {len(container.grid)} grid points."
             )
             for i, t in enumerate(container.grid):
-                for j in range(container.var[i].shape[0]):
-                    opt_par_labels.append(f"{denotation}_{j}_t{t:.2f}")
+                # REMOVED: opt_pars_flat_list.extend(container.var[i])
+                if i < len(container.var):
+                    for name in full_names:
+                        opt_par_labels.append(f"{name}_t{t:.2f}")
+                else:
+                    logger.warning(f"Grid length mismatch for parameter {denotation}.")
+                    break
+        else:
+            logger.warning(
+                f"Could not find system parameter definition for {denotation}. Using basic labels."
+            )
+            if not container.grid:
+                continue
+            num_pars_per_step = container.var[0].shape[0] if container.var else 0
+            if num_pars_per_step == 0:
+                continue
+            for i, t in enumerate(container.grid):
+                if i < len(container.var):
+                    for j in range(num_pars_per_step):
+                        opt_par_labels.append(f"{denotation}_{j}_t{t:.2f}")
+                else:
+                    logger.warning(
+                        f"Grid length mismatch for parameter {denotation} (fallback)."
+                    )
+                    break
 
     data["opt_var_labels"] = opt_var_labels
     data["opt_par_labels"] = opt_par_labels
+    logger.info(
+        f"Generated {len(opt_var_labels)} variable labels and {len(opt_par_labels)} parameter labels."
+    )
 
     # --- Constraint Labels ---
-    # This is tricky without direct access to how constraints were added.
-    # We might need to modify add_constraint to store labels.
-    # For now, using generic labels.
     num_constraints_total = constraints.shape[0]
     all_constraint_labels = [f"C_{i}" for i in range(num_constraints_total)]
     data["all_constraint_labels"] = all_constraint_labels
+    logger.debug(f"Generated {num_constraints_total} generic constraint labels.")
 
     # Try to get labels for *active* constraints based on Jacobian shape
     if (
@@ -692,54 +768,132 @@ def _prepare_visualization_data(
         and "J" in sensitivities_result
         and sensitivities_result["J"] is not None
     ):
-        num_active_constraints = sensitivities_result["J"].shape[0]
-        # Assuming J rows correspond to the *first* N active constraints found
-        active_indices = np.where(active_constraints)[0][:num_active_constraints]
+        num_active_rows_in_J = sensitivities_result["J"].shape[0]
+        # Find the indices of the active constraints
+        active_indices = np.where(active_constraints)[0]
+
+        # Check if J's row count matches the number of active constraints
+        if num_active_rows_in_J == len(active_indices):
+            data["active_constraint_labels"] = [
+                all_constraint_labels[i] for i in active_indices
+            ]
+            logger.debug(
+                f"Generated {len(active_indices)} active constraint labels based on J shape."
+            )
+        else:
+            # If J doesn't match the active count, the assumption is wrong.
+            # Maybe J includes inactive constraints, or the active_constraints mask is off.
+            logger.warning(
+                f"Jacobian J has {num_active_rows_in_J} rows, but found {len(active_indices)} active constraints. Using generic active labels."
+            )
+            # Fallback: Generate generic labels for the number of rows in J
+            data["active_constraint_labels"] = [
+                f"ActiveC_J_{i}" for i in range(num_active_rows_in_J)
+            ]
+    elif active_constraints is not None:
+        # Fallback if J is not available but active mask is
+        active_indices = np.where(active_constraints)[0]
         data["active_constraint_labels"] = [
             all_constraint_labels[i] for i in active_indices
         ]
-        # If J includes inactive constraints (rows are zero), this needs adjustment
+        logger.debug(
+            f"Generated {len(active_indices)} active constraint labels based on mask (J not available)."
+        )
     else:
-        data["active_constraint_labels"] = [
-            f"ActiveC_{i}" for i in np.where(active_constraints)[0]
-        ]  # Fallback
+        data["active_constraint_labels"] = []  # No active constraint info
 
     # --- Numerical Data ---
     # Convert CasADi DM to numpy arrays where necessary
-    def to_np(val):
+    def to_np(val, name="variable"):
         if isinstance(val, (ca.DM, ca.MX)):
-            return val.toarray().flatten()  # Flatten vectors
+            try:
+                arr = val.toarray()
+                # Flatten if it's clearly a vector (one dimension is 1)
+                if arr.ndim > 1 and (arr.shape[0] == 1 or arr.shape[1] == 1):
+                    return arr.flatten()
+                return arr  # Keep matrices as 2D
+            except Exception as e:
+                logger.error(f"Could not convert CasADi matrix '{name}' to numpy: {e}")
+                return None
         elif isinstance(val, np.ndarray):
             # Ensure it's flat if it's supposed to be a vector
-            if val.ndim > 1 and 1 in val.shape:
+            if val.ndim > 1 and (val.shape[0] == 1 or val.shape[1] == 1):
                 return val.flatten()
             return val  # Keep matrices as 2D
-        return val  # Keep other types (like floats, ints)
+        elif val is None:
+            logger.warning(f"Numerical data for '{name}' is None.")
+            return None
+        return val  # Keep other types (like floats, ints, bools)
 
-    data["opt_vars_vector"] = to_np(nlp_output.get("x"))
-    data["constraint_values"] = to_np(constraints)
-    data["constraint_lbg"] = to_np(nlp_inputs.get("lbg"))
-    data["constraint_ubg"] = to_np(nlp_inputs.get("ubg"))
+    logger.debug("Converting numerical data...")
+    data["opt_vars_vector"] = to_np(nlp_output.get("x"), name="nlp_output['x']")
+    data["constraint_values"] = to_np(
+        constraints, name="constraints"
+    )  # Should already be numpy
+    data["constraint_lbg"] = to_np(nlp_inputs.get("lbg"), name="nlp_inputs['lbg']")
+    data["constraint_ubg"] = to_np(nlp_inputs.get("ubg"), name="nlp_inputs['ubg']")
     data["active_constraint_mask"] = to_np(
-        active_constraints
+        active_constraints, name="active_constraints"
     )  # Should already be bool numpy
-    data["constraint_multipliers"] = to_np(nlp_output.get("lam_g"))
+    data["constraint_multipliers"] = to_np(
+        nlp_output.get("lam_g"), name="nlp_output['lam_g']"
+    )
 
     # Sensitivities (handle potential None)
     if sensitivities_result:
-        data["gradient"] = to_np(sensitivities_result.get("g"))
-        data["jacobian_constraints"] = sensitivities_result.get("J")  # Keep as 2D numpy
-        data["hessian"] = sensitivities_result.get("H")  # Keep as 2D numpy
+        logger.debug("Processing sensitivity results...")
+        data["gradient"] = to_np(
+            sensitivities_result.get("g"), name="sensitivities_result['g']"
+        )
+        data["jacobian_constraints"] = to_np(
+            sensitivities_result.get("J"), name="sensitivities_result['J']"
+        )  # Keep as 2D numpy
+        data["hessian"] = to_np(
+            sensitivities_result.get("H"), name="sensitivities_result['H']"
+        )  # Keep as 2D numpy
+        # Ensure sensitivities_result['x'] is also converted if used
+        data["sens_opt_vars"] = to_np(
+            sensitivities_result.get("x"), name="sensitivities_result['x']"
+        )
 
     # Debug Sensitivities (handle potential None)
     if debug_sensitivities:
-        data["jacobian_all"] = debug_sensitivities.get(
-            "jacobian_all"
+        logger.debug("Processing debug sensitivity results...")
+        data["jacobian_all"] = to_np(
+            debug_sensitivities.get("jacobian_all"),
+            name="debug_sensitivities['jacobian_all']",
         )  # Keep as 2D numpy
-        data["original_hessian"] = debug_sensitivities.get(
-            "H_original"
-        )  # Assuming you store it like this
-        # Add others if needed, e.g., data['debug_x'] = to_np(debug_sensitivities.get('x'))
+        data["original_hessian"] = to_np(
+            debug_sensitivities.get("H_original"),
+            name="debug_sensitivities['H_original']",
+        )  # Keep as 2D numpy
 
     # Filter out None values from data before returning
-    return {k: v for k, v in data.items() if v is not None}
+    final_data = {k: v for k, v in data.items() if v is not None}
+    logger.info(
+        f"Data preparation complete. Returning {len(final_data)} items for visualization."
+    )
+    logger.debug(f"Prepared data keys: {list(final_data.keys())}")
+
+    # Sanity check dimensions (optional but helpful)
+    if "opt_vars_vector" in final_data and len(final_data["opt_vars_vector"]) != len(
+        opt_var_labels
+    ):
+        logger.warning(
+            f"Mismatch! opt_vars_vector length ({len(final_data['opt_vars_vector'])}) != opt_var_labels length ({len(opt_var_labels)})"
+        )
+    if "constraint_multipliers" in final_data and len(
+        final_data["constraint_multipliers"]
+    ) != len(all_constraint_labels):
+        logger.warning(
+            f"Mismatch! constraint_multipliers length ({len(final_data['constraint_multipliers'])}) != all_constraint_labels length ({len(all_constraint_labels)})"
+        )
+    if "jacobian_constraints" in final_data and data["jacobian_constraints"].shape[
+        1
+    ] != len(opt_var_labels):
+        logger.warning(
+            f"Mismatch! jacobian_constraints columns ({data['jacobian_constraints'].shape[1]}) != opt_var_labels length ({len(opt_var_labels)})"
+        )
+    # Add more checks as needed
+
+    return final_data

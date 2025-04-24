@@ -318,6 +318,7 @@ class ALADINDiscretization(Discretization):
                         )
 
                 except Exception as e:
+                    raise
                     logging.error(f"Error during sensitivity calculation: {e}")
                     # Optionally log inputs to sensitivity function
                     # logging.error(f"Sensitivity Inputs: opt_vars={nlp_output['x']}, opt_pars={nlp_inputs['p']}, lam_g={lam_g_active}")
@@ -331,6 +332,8 @@ class ALADINDiscretization(Discretization):
                 )
 
         except Exception as e:
+            raise
+
             logging.error(
                 f"Error during post-processing or sensitivity calculation: {e}"
             )
@@ -388,6 +391,7 @@ class ALADINDiscretization(Discretization):
             )
             return result
         except Exception as e:
+            raise
             logging.error(f"Error formatting final results: {e}")
             # Depending on requirements, return None, raise error, or return partial result
             raise  # Re-raise for now
