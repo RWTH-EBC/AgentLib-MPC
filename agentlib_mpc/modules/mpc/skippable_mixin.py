@@ -9,7 +9,7 @@ from agentlib_mpc.data_structures import mpc_datamodels
 
 
 class SkippableMixinConfig(agentlib.BaseModuleConfig):
-    enable_deactivate_mpc: bool = Field(
+    enable_deactivation: bool = Field(
         default=False,
         description="If true, the MPC module uses an AgentVariable `active` which"
         "other modules may change to disable the MPC operation "
@@ -41,9 +41,9 @@ class SkippableMixinConfig(agentlib.BaseModuleConfig):
 class SkippableMixin(agentlib.BaseModule):
     config: SkippableMixinConfig
 
-    def check_if_mpc_step_should_be_skipped(self):
+    def check_if_should_be_skipped(self):
         """Checks if mpc steps should be skipped based on external activation flag."""
-        if not self.config.enable_deactivate_mpc:
+        if not self.config.enable_deactivation:
             return False
         active = self.get(mpc_datamodels.MPC_FLAG_ACTIVE)
 

@@ -100,7 +100,7 @@ class MiniEmployee(SkippableMixin):
 
         """
         # value is True on start
-        should_step_be_skipped = self.check_if_mpc_step_should_be_skipped()
+        should_step_be_skipped = self.check_if_should_be_skipped()
 
         if should_step_be_skipped:
             self.logger.debug("DMPC participant was externally told to to skip.")

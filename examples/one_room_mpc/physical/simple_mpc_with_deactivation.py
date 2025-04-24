@@ -196,7 +196,7 @@ AGENT_MPC = {
                     "source": "SimAgent",
                 }
             ],
-            "enable_deactivate_mpc": True,
+            "enable_deactivation": True,
             "deactivation_source": {"module_id": "skip_mpc"},
         },
     ],
