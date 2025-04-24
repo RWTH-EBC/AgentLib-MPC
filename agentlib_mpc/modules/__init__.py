@@ -23,9 +23,11 @@ MODULE_TYPES = {
         module_path="agentlib_mpc.modules.data_source", class_name="DataSource"
     ),
     "mpc_basic": ModuleImport(
-        module_path="agentlib_mpc.modules.mpc", class_name="BaseMPC"
+        module_path="agentlib_mpc.modules.mpc.mpc", class_name="BaseMPC"
     ),
-    "mpc": ModuleImport(module_path="agentlib_mpc.modules.mpc_full", class_name="MPC"),
+    "mpc": ModuleImport(
+        module_path="agentlib_mpc.modules.mpc.mpc_full", class_name="MPC"
+    ),
     "minlp_mpc": ModuleImport(
         module_path="agentlib_mpc.modules.minlp_mpc", class_name="MINLPMPC"
     ),

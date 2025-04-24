@@ -11,10 +11,14 @@ from agentlib_mpc.data_structures import mpc_datamodels
 from pydantic import Field, field_validator, FieldValidationInfo
 from rapidfuzz import process, fuzz
 
-from agentlib_mpc.modules.mpc import BaseMPCConfig, BaseMPC
+from agentlib_mpc.modules.mpc.mpc import BaseMPCConfig, BaseMPC
+from agentlib_mpc.modules.mpc.skippable_mixin import (
+    SkippableMixinConfig,
+    SkippableMixin,
+)
 
 
-class MPCConfig(BaseMPCConfig):
+class MPCConfig(BaseMPCConfig, SkippableMixinConfig):
     """
     Pydantic data model for MPC configuration parser
     """
@@ -23,33 +27,6 @@ class MPCConfig(BaseMPCConfig):
         default={},
         description="Weights that are applied to the change in control variables.",
     )
-    enable_deactivate_mpc: bool = Field(
-        default=False,
-        description="If true, the MPC module uses an AgentVariable `active` which"
-        "other modules may change to disable the MPC operation "
-        "temporarily",
-    )
-    deactivation_source: Optional[agentlib.Source] = Field(
-        default=None, description="Source for the deactivation signal."
-    )
-    active: AgentVariable = Field(
-        default=AgentVariable(
-            name=mpc_datamodels.MPC_FLAG_ACTIVE,
-            description="MPC is active",
-            type="bool",
-            value=True,
-            shared=False,
-        ),
-        validate_default=True,
-        description="Variable used to activate or deactivate the MPC operation",
-    )
-
-    @field_validator("active")
-    def add_deactivation_source(cls, active: AgentVariable, info: FieldValidationInfo):
-        source = info.data.get("deactivation_source")
-        if source is not None:
-            active.source = source
-        return active
 
     @field_validator("r_del_u")
     def check_r_del_u_in_controls(
@@ -73,7 +50,7 @@ class MPCConfig(BaseMPCConfig):
         return r_del_u
 
 
-class MPC(BaseMPC):
+class MPC(BaseMPC, SkippableMixin):
     """
     A model predictive controller.
     More info to follow.
@@ -109,20 +86,6 @@ class MPC(BaseMPC):
             history[v][timestamp] = value
         self.history: dict[str, dict[float, float]] = history
         self.register_callbacks_for_lagged_variables()
-
-    def check_if_mpc_step_should_be_skipped(self):
-        """Checks if mpc steps should be skipped based on external activation flag."""
-        if not self.config.enable_deactivate_mpc:
-            return False
-        active = self.get(mpc_datamodels.MPC_FLAG_ACTIVE)
-
-        if active.value == True:
-            return False
-        source = str(active.source)
-        if source == "None_None":
-            source = "unknown (not specified in config)"
-        self.logger.info("MPC was deactivated by source %s", source)
-        return True
 
     def do_step(self):
         if self.check_if_mpc_step_should_be_skipped():
