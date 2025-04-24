@@ -28,7 +28,7 @@ from agentlib_mpc.utils.analysis import load_mpc, load_mpc_stats
 AG_VAR_DICT = dict[str, AgentVariable]
 
 
-class MHEConfig(BaseModuleConfig, SkippableMixinConfig):
+class MHEConfig(SkippableMixinConfig):
     """
     Pydantic data model for MPC configuration parser
     """
@@ -96,7 +96,7 @@ class MHEConfig(BaseModuleConfig, SkippableMixinConfig):
         return state_weights
 
 
-class MHE(BaseModule, SkippableMixin):
+class MHE(SkippableMixin):
     """
     A moving horizon estimator.
     """
