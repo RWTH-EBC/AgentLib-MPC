@@ -187,14 +187,14 @@
 
 <div class="viewcode-block" id="SkipMPCInIntervals.check_mpc_deactivation"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.deactivate_mpc.html#agentlib_mpc.modules.deactivate_mpc.deactivate_mpc.SkipMPCInIntervals.check_mpc_deactivation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_mpc_deactivation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_time_in_intervals</span><span class="p">(</span>
-            <span class="n">time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span> <span class="o">/</span> <span class="n">utils</span><span class="o">.</span><span class="n">TIME_CONVERSION</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">time_unit</span><span class="p">],</span>
+            <span class="n">time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">time</span> <span class="o">/</span> <span class="n">utils</span><span class="o">.</span><span class="n">TIME_CONVERSION</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">time_unit</span><span class="p">],</span>
             <span class="n">intervals</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">intervals</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
                 <span class="s2">&quot;Current time is in skip_mpc_in_intervals, sending active=False to MPC&quot;</span>
             <span class="p">)</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="kc">True</span></div></div>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div></div>
 </pre></div>
 
            </div>
