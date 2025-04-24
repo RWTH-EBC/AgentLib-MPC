@@ -162,7 +162,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">register_callbacks_for_lagged_variables</span><span class="p">()</span>
 
 <div class="viewcode-block" id="MPC.do_step"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.mpc_full.MPC.do_step">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">do_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_if_mpc_step_should_be_skipped</span><span class="p">():</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_if_should_be_skipped</span><span class="p">():</span>
             <span class="k">return</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">do_step</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_remove_old_values_from_history</span><span class="p">()</span></div>

@@ -175,7 +175,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># value is True on start</span>
-        <span class="n">should_step_be_skipped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_if_mpc_step_should_be_skipped</span><span class="p">()</span>
+        <span class="n">should_step_be_skipped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_if_should_be_skipped</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">should_step_be_skipped</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;DMPC participant was externally told to to skip.&quot;</span><span class="p">)</span>

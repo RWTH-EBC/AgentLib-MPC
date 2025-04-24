@@ -285,6 +285,63 @@ should be deactivated, and False if it should be active.</p>
 </dd></dl>
 
 </section>
+<section id="module-agentlib_mpc.modules.deactivate_mpc.fallback_pid">
+<span id="agentlib-mpc-modules-deactivate-mpc-fallback-pid-module"></span><h2>agentlib_mpc.modules.deactivate_mpc.fallback_pid module<a class="headerlink" href="#module-agentlib_mpc.modules.deactivate_mpc.fallback_pid" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.deactivate_mpc.fallback_pid.FallbackPID">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.deactivate_mpc.fallback_pid.</span></span><span class="sig-name descname"><span class="pre">FallbackPID</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#agentlib_mpc.modules.deactivate_mpc.fallback_pid.FallbackPIDConfig" title="agentlib_mpc.modules.deactivate_mpc.fallback_pid.FallbackPIDConfig"><span class="pre">FallbackPIDConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Agent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/deactivate_mpc/fallback_pid.html#FallbackPID"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.deactivate_mpc.fallback_pid.FallbackPID" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PID</span></code></p>
+<p>PID controller active only when the MPC (indicated by mpc_active_flag) is inactive.
+Simplified error handling. Assumes configuration and data are valid.
+Resets integral state and timing upon activation/deactivation.</p>
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.deactivate_mpc.fallback_pid.FallbackPIDConfig">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.deactivate_mpc.fallback_pid.</span></span><span class="sig-name descname"><span class="pre">FallbackPIDConfig</span></span><a class="reference internal" href="../_modules/agentlib_mpc/modules/deactivate_mpc/fallback_pid.html#FallbackPIDConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.deactivate_mpc.fallback_pid.FallbackPIDConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PIDConfig</span></code></p>
+<p>Config for FallbackPID: Adds the MPC active flag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arbitrary_types_allowed</strong>: <em>bool = True</em></p></li>
+<li><p><strong>validate_assignment</strong>: <em>bool = True</em></p></li>
+<li><p><strong>extra</strong>: <em>str = forbid</em></p></li>
+<li><p><strong>frozen</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.deactivate_mpc.fallback_pid.FallbackPIDConfig.mpc_active_flag" title="agentlib_mpc.modules.deactivate_mpc.fallback_pid.FallbackPIDConfig.mpc_active_flag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mpc_active_flag</span> <span class="pre">(agentlib.core.datamodels.AgentVariable)</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-odd">Validators<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.deactivate_mpc.fallback_pid.FallbackPIDConfig.mpc_active_flag">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mpc_active_flag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AgentVariable</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">AgentVariable(name='MPC_FLAG_ACTIVE',</span> <span class="pre">type='bool',</span> <span class="pre">timestamp=None,</span> <span class="pre">unit='Not</span> <span class="pre">defined',</span> <span class="pre">description='Not</span> <span class="pre">defined',</span> <span class="pre">ub=inf,</span> <span class="pre">lb=-inf,</span> <span class="pre">clip=False,</span> <span class="pre">allowed_values=[],</span> <span class="pre">value=True,</span> <span class="pre">alias='MPC_FLAG_ACTIVE',</span> <span class="pre">source=Source(agent_id=None,</span> <span class="pre">module_id=None),</span> <span class="pre">shared=None,</span> <span class="pre">rdf_class=None)</span></em><a class="headerlink" href="#agentlib_mpc.modules.deactivate_mpc.fallback_pid.FallbackPIDConfig.mpc_active_flag" title="Permalink to this definition"></a></dt>
+<dd><p>Boolean variable indicating if MPC is active (True=MPC active, PID inactive).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.deactivate_mpc.fallback_pid.FallbackPIDConfig.model_post_init">
+<span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#agentlib_mpc.modules.deactivate_mpc.fallback_pid.FallbackPIDConfig.model_post_init" title="Permalink to this definition"></a></dt>
+<dd><p>This function is meant to behave like a BaseModel method to initialise private attributes.</p>
+<p>It takes context as an argument since that’s what pydantic-core passes when calling it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – The BaseModel instance.</p></li>
+<li><p><strong>context</strong> – The context.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 </section>
 
 

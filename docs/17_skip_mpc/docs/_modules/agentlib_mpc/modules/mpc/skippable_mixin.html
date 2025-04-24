@@ -83,7 +83,7 @@
 
 
 <div class="viewcode-block" id="SkippableMixinConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.skippable_mixin.SkippableMixinConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SkippableMixinConfig</span><span class="p">(</span><span class="n">agentlib</span><span class="o">.</span><span class="n">BaseModuleConfig</span><span class="p">):</span>
-    <span class="n">enable_deactivate_mpc</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+    <span class="n">enable_deactivation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;If true, the MPC module uses an AgentVariable `active` which&quot;</span>
         <span class="s2">&quot;other modules may change to disable the MPC operation &quot;</span>
@@ -115,9 +115,9 @@
 <div class="viewcode-block" id="SkippableMixin"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.skippable_mixin.SkippableMixin">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SkippableMixin</span><span class="p">(</span><span class="n">agentlib</span><span class="o">.</span><span class="n">BaseModule</span><span class="p">):</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">SkippableMixinConfig</span>
 
-<div class="viewcode-block" id="SkippableMixin.check_if_mpc_step_should_be_skipped"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.skippable_mixin.SkippableMixin.check_if_mpc_step_should_be_skipped">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_if_mpc_step_should_be_skipped</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SkippableMixin.check_if_should_be_skipped"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.skippable_mixin.SkippableMixin.check_if_should_be_skipped">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_if_should_be_skipped</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if mpc steps should be skipped based on external activation flag.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_deactivate_mpc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_deactivation</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="n">active</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MPC_FLAG_ACTIVE</span><span class="p">)</span>
 
