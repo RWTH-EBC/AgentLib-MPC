@@ -241,6 +241,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimization_backend</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
             <span class="n">now</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_optimization_at</span><span class="p">,</span> <span class="n">current_vars</span><span class="o">=</span><span class="n">opt_inputs</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_result_obtained</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="c1"># send optimizationData back to coordinator to signal finished</span>
         <span class="c1"># optimization. Select only trajectory where index is at least zero, to not</span>
