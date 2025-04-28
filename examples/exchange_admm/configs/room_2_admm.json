@@ -20,7 +20,9 @@
           }
         },
         "discretization_options": {
-          "method": "multiple_shooting"
+          "method": "multiple_shooting",
+                    "integrator": "euler"
+
         },
         "results_file": "results//admm_opt_2.csv"
       },
