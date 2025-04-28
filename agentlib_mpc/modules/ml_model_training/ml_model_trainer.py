@@ -119,10 +119,6 @@ class MLModelTrainerConfig(BaseModuleConfig, abc.ABC):
         default=False,
         description="Whether a plot of the created ML Models performance should be saved.",
     )
-    MLModel: AgentVariable = pydantic.Field(
-        default=AgentVariable(name="MLModel", value=None),
-        description="Serialized ML Model which can be sent to other Agents.",
-    )
     use_values_for_incomplete_data: bool = pydantic.Field(
         default=False,
         description="Default False. If True, the values of inputs and outputs which are"
@@ -296,14 +292,12 @@ class MLModelTrainer(BaseModule, abc.ABC):
         yield self.env.timeout(self.config.online_learning.training_at)
         self._update_time_series_data()
         serialized_ml_model, best_model_path, training_data = self.retrain_model()
-        self.set(self.config.MLModel.name, serialized_ml_model)
         self._update_ml_mpc_config(serialized_ml_model)
         if self.config.online_learning.active:
             while True:
                 yield self.env.timeout(self.config.online_learning.training_at)
                 self._update_time_series_data()
                 serialized_ml_model, best_model_path, training_data = self.retrain_model()
-                self.set(self.config.MLModel.name, serialized_ml_model)
                 self._update_ml_mpc_config(serialized_ml_model)
 
     def _initialize_time_series_data(self) -> pd.DataFrame:
@@ -328,7 +322,6 @@ class MLModelTrainer(BaseModule, abc.ABC):
         best_serialized_ml_model = None
         best_score = 0
         best_metrics = None
-        #evaluation_metric = self.config.evaluation_metric  # "singlestep", or "multistep"
         i = 1
 
         self.ml_models = self.build_ml_model_sequence()
@@ -424,6 +417,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
         Returns:
             Merged and resampled dataset for retraining
         """
+        #todo: Balancing of Trainingdata
 
         training_dataset = self.config.data_sources
         feature_names = list(self.history_dict.keys())
@@ -460,7 +454,6 @@ class MLModelTrainer(BaseModule, abc.ABC):
             self.time_series_data = data
         else:
             for column in data.columns:
-                # Fill Values from MPC Data
                 if data[column].isnull().any() and not data[column].isnull().all():
                     mask = data.index % self.config.step_size == 0
                     data_ts = data[mask]
@@ -538,11 +531,17 @@ class MLModelTrainer(BaseModule, abc.ABC):
 
     def _update_ml_mpc_config(self, serialized_ml_model):
         ml_model_variable = AgentVariable(
-            name=self.config.MLModel.name,
-            value=json.dumps(serialized_ml_model.dict()),
-            timestamp=self.env.now
+            name=ml_model_datatypes.ML_MODEL_TO_MPC,
+            alias=ml_model_datatypes.ML_MODEL_TO_MPC,
+            value=serialized_ml_model,
+            timestamp=self.env.time,
+            source=self.source,
+            shared=True
         )
-        self.set(self.config.MLModel.name, ml_model_variable)
+        self.agent.data_broker.send_variable(
+            variable=ml_model_variable,
+            copy=False,
+        )
 
     @abc.abstractmethod
     def build_ml_model(self):

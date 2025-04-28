@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from agentlib.core import AgentVariable
 
-from agentlib_mpc.data_structures import mpc_datamodels
+from agentlib_mpc.data_structures import mpc_datamodels, ml_model_datatypes
 from pydantic import Field, field_validator, FieldValidationInfo
 from rapidfuzz import process, fuzz
 
@@ -98,13 +98,11 @@ class MPC(BaseMPC):
 
     def register_callbacks(self):
         super().register_callbacks()
-        opti_back = self.config.optimization_backend
-        if opti_back['type'] == 'casadi_ml':
-            self.agent.data_broker.register_callback(
-                alias="MLModel",
-                source=None,
-                callback=self._update_ml_model,
-            )
+        self.agent.data_broker.register_callback(
+            alias=ml_model_datatypes.ML_MODEL_TO_MPC,
+            source=None,
+            callback=self._update_ml_model,
+        )
 
     def _callback_hist_vars(self, variable: AgentVariable, name: str):
         """Adds received measured inputs to the past trajectory."""

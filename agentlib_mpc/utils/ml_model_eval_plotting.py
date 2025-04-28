@@ -101,12 +101,6 @@ def evaluate_model(
     train_r2 = calculate_r2(train_true, train_pred[name])
     valid_r2 = calculate_r2(training_data.validation_outputs[name].values, valid_pred[name]) if hasattr(training_data,'validation_outputs') else float('nan')
     test_r2 = calculate_r2(training_data.test_outputs[name].values, test_pred[name]) if hasattr(training_data,'test_outputs') else float('nan')
-    # Wenn ss_tot = 0 also R^1 -inf ist, bedeutet dies dass Messwerte der abhängigen Variable keinerlei Variabilität aufweisen
-    # todo: print Warning für den Fall
-
-    # elif evaluation_metric == "multistep":
-    #     # Implement multistep evaluation logic here
-    #     pass
 
     total_score_mse = (train_score_mse + valid_score_mse + test_score_mse) / 3
 
