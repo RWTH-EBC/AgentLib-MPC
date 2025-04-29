@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 # script variables
 ub = 295.15
 
-ENV_CONFIG = {"rt": False, "factor": 0.01, "t_sample": 3600, "offset": 259200}
+ENV_CONFIG = {"rt": False, "factor": 0.01, "t_sample": 3600, "offset": 0}
 class InputGeneratorConfig(al.ModelConfig):
     outputs: al.ModelOutputs = [
         al.ModelOutput(
@@ -142,11 +142,12 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000, initial_tra
     os.chdir(os.path.abspath(os.path.dirname(__file__)))
     logging.basicConfig(level=log_level)
 
-    #Initial Training
-    # import training_nn
-    # training_nn.main(initial_training_time, plot_results=False, step_size=300)
-    # ann_path = list(Path.cwd().glob("anns/best_model/*/ml_model.json"))[-1]
-    ann_path = r"D:\01_Repos\Repos_AGENT2\agentlib_mpc\AgentLib-MPC_onlinelearning\examples\one_room_mpc\ann\anns\best_model\Trainer_trainer_90000.0\ml_model.json"
+    try:
+        ann_path = list(Path.cwd().glob("anns/best_model/*/ml_model.json"))[-1]
+    except IndexError:
+        import training_ann
+        training_ann.main(training_time=3600 * 24 * 1, plot_results=False, step_size=300)
+        ann_path = list(Path.cwd().glob("anns/best_model/ml_model.json"))[-1]
 
     #Run with Online Learning
     agent_config = agent_configs(ml_model_path=str(ann_path))
@@ -208,4 +209,4 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000, initial_tra
 
 
 if __name__ == "__main__":
-    run_example(until=86400*7, retrain_delay=86400*2)
+    run_example(until=86400*3, retrain_delay=86400)

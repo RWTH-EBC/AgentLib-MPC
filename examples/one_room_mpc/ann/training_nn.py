@@ -82,7 +82,10 @@ def configs(initial_training_time: float = 1000, plot_results: bool = False, ste
                 "type": "agentlib_mpc.ann_trainer",
                 "epochs": 1000,
                 "batch_size": 64,
-                "online_learning": [True, initial_training_time, None],
+                "online_learning": {
+                   "active": False,
+                    "training_at": initial_training_time,
+                },
                 "inputs": [
                     {"name": "mDot", "value": 0.0225, "source": "PID"},
                     {"name": "load", "value": 30, "source": "Simulator"},
@@ -179,7 +182,7 @@ def configs(initial_training_time: float = 1000, plot_results: bool = False, ste
             {"type": "local", "subscriptions": ["Simulator"]},
         ],
     }
-    return [simulator_config, trainer_config, pid_controller]
+    return [simulator_config, pid_controller, trainer_config]
 
 
 def main(initial_training_time: float = 1000, plot_results=False, step_size: float = 300):
