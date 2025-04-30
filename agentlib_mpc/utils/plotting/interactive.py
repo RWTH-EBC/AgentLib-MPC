@@ -1,5 +1,8 @@
 import pandas as pd
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
+from pathlib import Path
+from ast import literal_eval
+from pandas.api.types import is_float_dtype
 
 import socket
 import webbrowser
@@ -22,6 +25,60 @@ except ImportError as e:
         dependency_install="plotly, dash",
         used_object="interactive",
     ) from e
+
+def plot_obj_data_stacked(
+        data: pd.DataFrame,
+        convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds"
+) -> dcc.Graph:
+    """Create a stacked area chart for objective data components."""
+    fig = go.Figure()
+
+    index = data.index.values / TIME_CONVERSION[convert_to]
+
+    # Create a copy of the data for manipulation
+    plot_data = data.copy()
+
+    # Remove 'total' column if it exists as we'll create our own stacked visualization
+    if 'total' in plot_data.columns:
+        plot_data = plot_data.drop(columns=['total'])
+
+    # Create a stacked area chart
+    for column in plot_data.columns:
+        fig.add_trace(
+            go.Scatter(
+                x=index,
+                y=plot_data[column],
+                mode='lines',
+                line=dict(width=0),
+                stackgroup='one',  # This creates the stacking effect
+                name=column,
+                fillcolor=None,  # Auto-assign colors
+            )
+        )
+
+    fig.update_layout(
+        title="Objective Components (Stacked)",
+        xaxis_title=f"Time in {convert_to}",
+        yaxis_title="Objective Value",
+        showlegend=True,
+        legend=dict(
+            groupclick="toggleitem",
+            itemclick="toggle",
+            itemdoubleclick="toggleothers",
+        ),
+        uirevision="same",  # To maintain state when interacting
+    )
+
+    return dcc.Graph(
+        id="plot-obj-stacked",
+        figure=fig,
+        style={
+            "min-width": "600px",
+            "min-height": "400px",
+            "max-width": "900px",
+            "max-height": "450px",
+        },
+    )
 
 
 def make_figure_plotly() -> go.Figure:
@@ -62,10 +119,10 @@ def make_figure_plotly() -> go.Figure:
 
 
 def plot_mpc_plotly(
-    series: pd.Series,
-    step: bool = False,
-    convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds",
-    y_axis_label: str = "",
+        series: pd.Series,
+        step: bool = False,
+        convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds",
+        y_axis_label: str = "",
 ) -> go.Figure:
     """
     Args:
@@ -179,66 +236,12 @@ def plot_mpc_plotly(
     return fig
 
 
-def plot_obj_data_aggregated(
-        data: pd.DataFrame,
-        convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds"
-) -> dcc.Graph:
-    """Create a stacked area chart for objective data components."""
-    fig = go.Figure()
-
-    index = data.index.values / TIME_CONVERSION[convert_to]
-
-    # Create a copy of the data for manipulation
-    plot_data = data.copy()
-
-    # Remove 'total' column if it exists as we'll create our own stacked visualization
-    if 'total' in plot_data.columns:
-        plot_data = plot_data.drop(columns=['total'])
-
-    # Create a stacked area chart
-    for column in plot_data.columns:
-        fig.add_trace(
-            go.Scatter(
-                x=index,
-                y=plot_data[column],
-                mode='lines',
-                line=dict(width=0),
-                stackgroup='one',  # This creates the stacking effect
-                name=column,
-                fillcolor=None,  # Auto-assign colors
-            )
-        )
-
-    fig.update_layout(
-        title="Objective Components (Stacked)",
-        xaxis_title=f"Time in {convert_to}",
-        yaxis_title="Objective Value",
-        showlegend=True,
-        legend=dict(
-            groupclick="toggleitem",
-            itemclick="toggle",
-            itemdoubleclick="toggleothers",
-        ),
-        uirevision="same",  # To maintain state when interacting
-    )
-
-    return dcc.Graph(
-        id="plot-obj-aggregated",
-        figure=fig,
-        style={
-            "min-width": "600px",
-            "min-height": "400px",
-            "max-width": "900px",
-            "max-height": "450px",
-        },
-    )
-
 def plot_admm_plotly(
-    series: pd.Series,
-    plot_actual_values: bool = True,
-    plot_predictions: bool = False,
-    step: bool = False,
-    convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds",
+        series: pd.Series,
+        plot_actual_values: bool = True,
+        plot_predictions: bool = False,
+        step: bool = False,
+        convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds",
 ):
     """
     Args:
@@ -265,10 +268,10 @@ def plot_admm_plotly(
 
 
 def show_dashboard(
-    data: pd.DataFrame,
-    stats: Optional[pd.DataFrame] = None,
-    obj_data: Optional[pd.DataFrame] = None,
-    scale: Literal["seconds", "minutes", "hours", "days"] = "seconds",
+        data: pd.DataFrame,
+        stats: Optional[pd.DataFrame] = None,
+        obj_data: Optional[pd.DataFrame] = None,
+        scale: Literal["seconds", "minutes", "hours", "days"] = "seconds",
 ):
     app = dash.Dash(__name__, title="MPC Results")
 
@@ -304,7 +307,7 @@ def show_dashboard(
             html.H1("MPC Results"),
             # Store for keeping track of trace visibility
             dcc.Store(id="trace-visibility", data={}),
-            make_components(columns_okay, data, stats=stats, obj_data=obj_data, convert_to=scale),
+            make_components(columns_okay, data, obj_data=obj_data, stats=stats, convert_to=scale),
         ]
     )
 
@@ -362,11 +365,13 @@ def make_components(
     # First add stats plots if available
     if stats is not None:
         components.append(html.Div([solver_return(stats, convert_to)]))
-        components.append(html.Div([obj_plot(stats, convert_to)]))
+        # Only add the obj_plot if 'obj' column exists in stats
+        if 'obj' in stats.columns:
+            components.append(html.Div([obj_plot(stats, convert_to)]))
 
-    # Then add objective data aggregated plot if available
-    if obj_data is not None:
-        components.append(html.Div([plot_obj_data_aggregated(obj_data, convert_to)], className="draggable"))
+    # Then add objective data stacked plot if available
+    if obj_data is not None and not obj_data.empty:
+        components.append(html.Div([plot_obj_data_stacked(obj_data, convert_to)], className="draggable"))
 
     # Finally add MPC state plots
     for column in columns:
@@ -407,26 +412,37 @@ def make_components(
 
 
 def obj_plot(
-    data, convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds"
+        data, convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds"
 ) -> dcc.Graph:
     df = data.copy()
     index = df.index.values / TIME_CONVERSION[convert_to]
 
-    trace = go.Scatter(
-        x=index,
-        y=df["obj"],
-        mode="lines",
-        name="Objective Value",
-    )
+    # Check if 'obj' column exists
+    if 'obj' not in df.columns:
+        # Create an empty figure with a note
+        fig = go.Figure()
+        fig.add_annotation(
+            text="Objective data not available",
+            xref="paper", yref="paper",
+            x=0.5, y=0.5,
+            showarrow=False,
+            font=dict(size=16)
+        )
+    else:
+        trace = go.Scatter(
+            x=index,
+            y=df["obj"],
+            mode="lines",
+            name="Objective Value",
+        )
+        fig = go.Figure(data=[trace])
 
-    layout = go.Layout(
+    fig.update_layout(
         title="Objective Value",
         xaxis_title=f"Time in {convert_to}",
         yaxis_title="Objective Value",
         showlegend=True,
     )
-
-    fig = go.Figure(data=[trace], layout=layout)
 
     return dcc.Graph(
         id="plot-obj",
@@ -441,7 +457,7 @@ def obj_plot(
 
 
 def solver_return(
-    data, convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds"
+        data, convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds"
 ) -> dcc.Graph:
     solver_data = []
     indices = []
@@ -455,35 +471,67 @@ def solver_return(
     df = pd.DataFrame(solver_data)
     df = df.iloc[::-1]
 
+    # Determine what type of solver data we have
+    has_success_status = 'success' in df.columns
+    has_detailed_status = 'return_status' in df.columns
+
+    # Create appropriate return status mapping based on the data type
     return_status = {}
-    for idx, success in df.success.items():
-        if success:
-            solver_return = df.return_status[idx]
-        else:
-            solver_return = "Solve_Not_Succeeded"
-        return_status[idx] = solver_return
+
+    if not has_success_status and has_detailed_status:
+        # For solvers with detailed status information
+        for idx, row in df.iterrows():
+            if row.success:
+                return_status[idx] = row.return_status
+            else:
+                return_status[idx] = "Solve_Not_Succeeded"
+
+        # Define colors and legend names for detailed status
+        colors = {
+            "Solve_Succeeded": "green",
+            "Solved_To_Acceptable_Level": "orange",
+            "Solve_Not_Succeeded": "red",
+        }
+        legend_names = {
+            "Solved_To_Acceptable_Level": "Acceptable",
+            "Solve_Succeeded": "Optimal",
+            "Solve_Not_Succeeded": "Failure",
+        }
+    elif has_success_status:
+        # For solvers with only success/failure information
+        for idx, success in df.success.items():
+            return_status[idx] = "Success" if success else "Failure"
+
+        # Define simpler colors and legend names for boolean status
+        colors = {
+            "Success": "green",
+            "Failure": "red",
+        }
+        legend_names = {
+            "Success": "Success",
+            "Failure": "Failure",
+        }
 
     solver_returns = pd.Series(return_status)
     index = solver_returns.index.values / TIME_CONVERSION[convert_to]
 
-    colors = {
-        "Solve_Succeeded": "green",
-        "Solved_To_Acceptable_Level": "orange",
-        "Solve_Not_Succeeded": "red",
-    }
-    legend_names = {
-        "Solved_To_Acceptable_Level": "Acceptable",
-        "Solve_Succeeded": "Optimal",
-        "Solve_Not_Succeeded": "Failure",
-    }
-
+    # Create traces for each status type
     traces = []
     for status in colors:
         mask = solver_returns.values == status
         if mask.any():
+            # Check if 'iter_count' exists, otherwise use a constant value
+            if 'iter_count' in df.columns:
+                y_values = df.loc[solver_returns.index[mask], "iter_count"]
+            else:
+                # Use fixed values for the y-axis if iter_count is not available
+                y_values = [1 if status in ["Solve_Succeeded", "Success"] else
+                            0.5 if status == "Solved_To_Acceptable_Level" else
+                            0 for _ in range(sum(mask))]
+
             trace = go.Scatter(
                 x=index[mask],
-                y=df.loc[solver_returns.index[mask], "iter_count"],
+                y=y_values,
                 mode="markers",
                 marker=dict(
                     color=colors[status],
@@ -492,6 +540,7 @@ def solver_return(
                 name=legend_names[status],
             )
         else:
+            # Add empty trace for the legend
             trace = go.Scatter(
                 x=[None],
                 y=[None],
@@ -504,10 +553,13 @@ def solver_return(
             )
         traces.append(trace)
 
+    # Determine the y-axis label based on available data
+    y_axis_label = "Iterations" if 'iter_count' in df.columns else "Status"
+
     layout = go.Layout(
         title="Solver Return Status",
         xaxis_title=f"Time in {convert_to}",
-        yaxis_title="Iterations",
+        yaxis_title=y_axis_label,
         showlegend=True,
     )
 
@@ -559,17 +611,3 @@ def get_port():
             return port
         else:
             port += 1
-
-
-if __name__ == "__main__":
-    data_ = load_mpc(
-        r"D:\repos\agentlib_mpc\examples\one_room_mpc\physical\results\mpc.csv"
-    )
-    show_dashboard(data_)
-    # fig = plot_mpc_plotly(
-    #     data["variable"]["T"] - 273.15,
-    #     y_axis_label="Room temperature",
-    #     convert_to="minutes",
-    #     step=False,
-    # )
-    # fig.show()
