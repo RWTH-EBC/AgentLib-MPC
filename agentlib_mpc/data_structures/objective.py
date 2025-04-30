@@ -2,13 +2,10 @@ import pandas as pd
 import numpy as np
 import casadi as ca
 
-class SubObjective:
+class EqObjective:
     def __init__(self, expressions, weight: float = 1.0, name: str = None):
         self.expressions = expressions if isinstance(expressions, list) else [expressions]
-        if isinstance(weight, int):
-            self.weight = weight
-        else:
-            self.weight = weight.value
+        self.weight = weight
         self.name = name or f"obj_{id(self)}"
 
     def get_weighted_expression(self):
@@ -16,15 +13,19 @@ class SubObjective:
         result = 1
         for expr in self.expressions:
             result = result * expr
-        return self.weight * result
+        if hasattr(self.weight, 'sym'):
+            weight_value = self.weight.sym
+        else:
+            weight_value = self.weight
+        return weight_value * result
 
-    def calculate_value(self, df):
+    def calculate_value(self, df, weight):
         """Returns the final weighted result by multiplying all expressions"""
         result = 1
         ts = np.diff(df.index)
         for col in df:
             result = result * df[col].values[:-1]
-        return sum(self.weight * result * ts)
+        return sum(weight * result * ts)
 
     def get_expression_names(self):
         """Returns list of names for all expressions"""
@@ -45,7 +46,7 @@ class SubObjective:
         return names
 
 
-class SqObjective(SubObjective):
+class SqObjective(EqObjective):
     """Objective term that squares an expression"""
 
     def __init__(self, expressions, weight=1.0, name=None):
@@ -62,13 +63,17 @@ class SqObjective(SubObjective):
 
     def get_weighted_expression(self):
         """Returns the squared expression with weight"""
-        return (self.weight ** 2) * (self.expression ** 2)
+        if hasattr(self.weight, 'sym'):
+            weight_value = self.weight.sym
+        else:
+            weight_value = self.weight
+        return (weight_value ** 2) * (self.expression ** 2)
 
-    def calculate_value(self, series):
+    def calculate_value(self, series, weight):
         """Returns the final weighted result by multiplying all expressions"""
         ts = np.diff(series.index)
         series = series.values[:-1]
-        return sum(self.weight ** 2 * series ** 2 * ts)
+        return sum(weight ** 2 * series ** 2 * ts)
 
     def get_expression_name(self):
         """Returns the name of the main expression"""
@@ -83,7 +88,7 @@ class SqObjective(SubObjective):
             return expr_str
 
 
-class DeltaUObjective(SubObjective):
+class DeltaUObjective(EqObjective):
     def __init__(self, expressions, weight: float = 1.0, name: str = None):
         """
         Args:
@@ -107,11 +112,11 @@ class DeltaUObjective(SubObjective):
         # is handled in the DirectCollocation._discretize method
         return 0
 
-    def calculate_value(self, series):
+    def calculate_value(self, series, weight):
         """Returns the final weighted result by multiplying all expressions"""
         diff_values = series.diff()
         values = diff_values ** 2
-        return sum(self.weight ** 2 * values.dropna())
+        return sum(weight ** 2 * values.dropna())
 
 class FullObjective:
     """Container for multiple objective terms with normalization"""
@@ -135,7 +140,7 @@ class FullObjective:
         return [obj for obj in self.objectives if isinstance(obj, SqObjective)]
 
     def get_regular_objectives(self):
-        """Returns a list of all regular SubObjective instances"""
+        """Returns a list of all regular EqObjective instances"""
         return [obj for obj in self.objectives if not isinstance(obj, (DeltaUObjective, SqObjective))]
 
     def get_casadi_expression(self):
@@ -154,16 +159,21 @@ class FullObjective:
         total_value = 0
         for obj in self.objectives:
             name = obj.name
+            if hasattr(obj.weight, 'sym'):
+                weight_name = obj.weight.name
+                weight = df.loc[:, ('parameter', weight_name)].iloc[:-1]
+            else:
+                weight = obj.weight
             try:
                 if isinstance(obj, DeltaUObjective):
                     control_name = obj.get_control_name()
                     control_series = df.loc[:, ('variable', control_name)]
-                    value = obj.calculate_value(control_series)
+                    value = obj.calculate_value(control_series, weight)
                     self._values[name] = value / self.normalization
                 elif isinstance(obj, SqObjective):
                     expr_name = obj.get_expression_name()
                     var_series = df.loc[:, ('variable', expr_name)]
-                    value = obj.calculate_value(var_series)
+                    value = obj.calculate_value(var_series, weight)
                     self._values[name] = value/self.normalization
                 else:
                     expr_names = obj.get_expression_names()
@@ -174,7 +184,7 @@ class FullObjective:
                         elif ('parameter', expr_name) in df.columns:
                             expr_cols.append(('parameter', expr_name))
                     expr_df = df.loc[:, expr_cols]
-                    value = obj.calculate_value(expr_df)
+                    value = obj.calculate_value(expr_df, weight)
                     self._values[name] = value / self.normalization
                 if self._values[name] is not None:
                     total_value += self._values[name]

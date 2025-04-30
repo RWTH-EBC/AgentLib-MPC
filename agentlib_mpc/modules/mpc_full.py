@@ -160,21 +160,3 @@ class MPC(BaseMPC):
         #     value: Union[float, list, pd.Series]
         #     interpolation_method: InterpolationMethod
 
-    # def _create_internal_variables(self) -> dict[str, AgentVariable]:
-    #     """Creates a reference of all internal variables that are used for the MPC,
-    #     but not shared as AgentVariables.
-    #
-    #     Currently, this includes:
-    #        - Weights for control change (r_del_u)
-    #     """
-    #     r_del_u: dict[str, mpc_datamodels.MPCVariable] = {}
-    #     for control in self.config.controls:
-    #         r_del_u_name = mpc_datamodels.r_del_u_convention(control.name)
-    #         var = mpc_datamodels.MPCVariable(name=r_del_u_name)
-    #         r_del_u[r_del_u_name] = var
-    #         if control.name in self.config.r_del_u:
-    #             var.value = self.config.r_del_u[control.name]
-    #         else:
-    #             var.value = 0
-    #
-    #     return r_del_u

@@ -3,6 +3,7 @@ import platform
 from pathlib import Path
 from typing import Type, Optional
 import numpy as np
+import os
 import casadi as ca
 import pydantic
 from agentlib.core.errors import ConfigurationError
@@ -283,7 +284,7 @@ class CasADiBackend(OptimizationBackend):
             return objective_values
 
         grid = np.arange(0, self.config.discretization_options.prediction_horizon * (
-                    self.config.discretization_options.time_step + 1), self.config.discretization_options.time_step)
+                self.config.discretization_options.time_step + 1), self.config.discretization_options.time_step)
         objective_values = get_objective_values(system=system, df=df, grid=grid)
 
         obj_file = objective_path(res_file)
@@ -292,10 +293,21 @@ class CasADiBackend(OptimizationBackend):
         else:
             objective_names = ['time'] + list(objective_values.keys())
 
+        # Check if this is the first call and handle overwrite_result_file for objective file
+        if not hasattr(self, '_obj_file_checked'):
+            self._obj_file_checked = True
+            if self.config.overwrite_result_file and obj_file.exists():
+                try:
+                    os.remove(obj_file)
+                except FileNotFoundError:
+                    pass
+
+        # Now handle the file normally: if it doesn't exist, create it with headers
         if not obj_file.exists():
             with open(obj_file, 'w') as f:
                 f.write(','.join(objective_names) + '\n')
 
+        # Append the values
         with open(obj_file, 'a') as f:
             values = [str(now)] + [str(objective_values.get(name, '')) for name in objective_names[1:]]
             f.write(','.join(values) + '\n')

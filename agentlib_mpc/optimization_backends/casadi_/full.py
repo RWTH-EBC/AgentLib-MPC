@@ -83,11 +83,16 @@ class DirectCollocation(basic.DirectCollocation):
             for delta_obj in delta_u_objectives:
                 control_name = delta_obj.get_control_name()
                 if control_name in control_map:
+                    if hasattr(delta_obj.weight, 'sym'):
+                        weight = delta_obj.weight.sym
+                    else:
+                        weight = delta_obj.weight
                     idx = control_map[control_name]
                     control_prev = u_prev[idx]
                     control_curr = uk[idx]
                     delta = control_curr - control_prev
-                    self.objective_function += delta_obj.weight ** 2 * delta ** 2
+                    self.objective_function += ca.dot(weight ** 2, delta ** 2)
+                    #todo: weight as casadi expression in deltaUObjective
 
             # New parameter for inputs
             dk = self.add_opt_par(sys.non_controlled_inputs)
