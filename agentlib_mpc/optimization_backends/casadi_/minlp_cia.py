@@ -102,15 +102,24 @@ class CasADiCIABackend(CasADiMINLPBackend):
         b_rel = [full_results[var] for var in self.var_ref.binary_controls]
         b_rel_np = np.vstack(b_rel)
 
+        # clip binary values within tolerance
+        tolerance = 1e-5
+        bin_array = b_rel_np
+        bin_array = np.where(
+            (-tolerance < bin_array) & (bin_array < 0),
+            0,
+            np.where((1 < bin_array) & (bin_array < 1 + tolerance), 1, bin_array),
+        )
+
         # add additional row to fulfill pycombinas Special Ordered Sets of
         # type 1 condition
-        if len(b_rel_np) == 1:
-            ones = np.full(b_rel_np.shape[1], 1, dtype=float)
-            diff = ones - np.sum(b_rel_np, axis=0)
+        if len(bin_array) == 1:
+            ones = np.full(bin_array.shape[1], 1, dtype=float)
+            diff = ones - np.sum(bin_array, axis=0)
             diff[diff < 0] = 0
-            b_rel_np = np.vstack([b_rel_np, diff])
+            bin_array = np.vstack([bin_array, diff])
 
-        return b_rel_np
+        return bin_array
 
     def do_pycombina(self, b_rel):
         # N = self.discretization.options.prediction_horizon
