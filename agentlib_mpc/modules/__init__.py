@@ -72,4 +72,8 @@ MODULE_TYPES = {
         module_path="agentlib_mpc.modules.deactivate_mpc.deactivate_mpc",
         class_name="SkipMPCInIntervals",
     ),
+    "fallback_pid": ModuleImport(
+        module_path="agentlib_mpc.modules.deactivate_mpc.fallback_pid",
+        class_name="FallbackPID",
+    ),
 }
