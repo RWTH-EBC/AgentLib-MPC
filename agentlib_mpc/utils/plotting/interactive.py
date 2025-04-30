@@ -179,6 +179,60 @@ def plot_mpc_plotly(
     return fig
 
 
+def plot_obj_data_aggregated(
+        data: pd.DataFrame,
+        convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds"
+) -> dcc.Graph:
+    """Create a stacked area chart for objective data components."""
+    fig = go.Figure()
+
+    index = data.index.values / TIME_CONVERSION[convert_to]
+
+    # Create a copy of the data for manipulation
+    plot_data = data.copy()
+
+    # Remove 'total' column if it exists as we'll create our own stacked visualization
+    if 'total' in plot_data.columns:
+        plot_data = plot_data.drop(columns=['total'])
+
+    # Create a stacked area chart
+    for column in plot_data.columns:
+        fig.add_trace(
+            go.Scatter(
+                x=index,
+                y=plot_data[column],
+                mode='lines',
+                line=dict(width=0),
+                stackgroup='one',  # This creates the stacking effect
+                name=column,
+                fillcolor=None,  # Auto-assign colors
+            )
+        )
+
+    fig.update_layout(
+        title="Objective Components (Stacked)",
+        xaxis_title=f"Time in {convert_to}",
+        yaxis_title="Objective Value",
+        showlegend=True,
+        legend=dict(
+            groupclick="toggleitem",
+            itemclick="toggle",
+            itemdoubleclick="toggleothers",
+        ),
+        uirevision="same",  # To maintain state when interacting
+    )
+
+    return dcc.Graph(
+        id="plot-obj-aggregated",
+        figure=fig,
+        style={
+            "min-width": "600px",
+            "min-height": "400px",
+            "max-width": "900px",
+            "max-height": "450px",
+        },
+    )
+
 def plot_admm_plotly(
     series: pd.Series,
     plot_actual_values: bool = True,
@@ -213,6 +267,7 @@ def plot_admm_plotly(
 def show_dashboard(
     data: pd.DataFrame,
     stats: Optional[pd.DataFrame] = None,
+    obj_data: Optional[pd.DataFrame] = None,
     scale: Literal["seconds", "minutes", "hours", "days"] = "seconds",
 ):
     app = dash.Dash(__name__, title="MPC Results")
@@ -249,7 +304,7 @@ def show_dashboard(
             html.H1("MPC Results"),
             # Store for keeping track of trace visibility
             dcc.Store(id="trace-visibility", data={}),
-            make_components(columns_okay, data, stats=stats, convert_to=scale),
+            make_components(columns_okay, data, stats=stats, obj_data=obj_data, convert_to=scale),
         ]
     )
 
@@ -300,36 +355,42 @@ def show_dashboard(
 
 
 def make_components(
-    columns, data, convert_to, stats: Optional[pd.DataFrame] = None
+        columns, data, convert_to, stats: Optional[pd.DataFrame] = None, obj_data: Optional[pd.DataFrame] = None
 ) -> [html.Div]:
-    components = [
-        html.Div(
-            [
-                # html.H3(column),
-                dcc.Graph(
-                    id=f"plot-{column}",
-                    figure=plot_mpc_plotly(
-                        data["variable"][column],
-                        convert_to=convert_to,
-                        y_axis_label=column,
-                    ),
-                    style={
-                        "min-width": "600px",
-                        "min-height": "400px",
-                        "max-width": "900px",
-                        "max-height": "450px",
-                    },
-                ),
-            ],
-            className="draggable",
-        )
-        for column in columns
-    ]
+    components = []
+
+    # First add stats plots if available
     if stats is not None:
-        components.insert(0, html.Div([solver_return(stats, convert_to)]))
-        components.insert(
-            1, html.Div([obj_plot(stats, convert_to)])
-        )  # Add the "obj" plot
+        components.append(html.Div([solver_return(stats, convert_to)]))
+        components.append(html.Div([obj_plot(stats, convert_to)]))
+
+    # Then add objective data aggregated plot if available
+    if obj_data is not None:
+        components.append(html.Div([plot_obj_data_aggregated(obj_data, convert_to)], className="draggable"))
+
+    # Finally add MPC state plots
+    for column in columns:
+        components.append(
+            html.Div(
+                [
+                    dcc.Graph(
+                        id=f"plot-{column}",
+                        figure=plot_mpc_plotly(
+                            data["variable"][column],
+                            convert_to=convert_to,
+                            y_axis_label=column,
+                        ),
+                        style={
+                            "min-width": "600px",
+                            "min-height": "400px",
+                            "max-width": "900px",
+                            "max-height": "450px",
+                        },
+                    ),
+                ],
+                className="draggable",
+            )
+        )
 
     return html.Div(
         components,
