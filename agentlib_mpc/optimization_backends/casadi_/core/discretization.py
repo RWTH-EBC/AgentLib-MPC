@@ -2,6 +2,8 @@
 
 import abc
 import dataclasses
+import logging
+import random
 from pathlib import Path
 from typing import TypeVar, Union, Callable, Optional
 
@@ -17,6 +19,12 @@ from agentlib_mpc.data_structures.casadi_utils import (
     SolverFactory,
     MPCInputs,
     GUESS_PREFIX,
+    LB_PREFIX,
+    UB_PREFIX,
+)
+from agentlib_mpc.optimization_backends.casadi_.core.solver_handler import (
+    SolverHandler,
+    SolverStrategyOptions,
 )
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
     OptimizationQuantity,
@@ -24,6 +32,9 @@ from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
     OptimizationVariable,
 )
 from agentlib_mpc.optimization_backends.casadi_.core.system import System
+
+
+logger = logging.getLogger(__name__)
 
 
 CasadiVariableList = Union[list[ca.MX], ca.MX]
@@ -102,6 +113,7 @@ class Discretization(abc.ABC):
     _mpc_inputs_to_nlp_inputs: ca.Function
     _nlp_outputs_to_mpc_outputs: ca.Function
     _optimizer: ca.Function
+    _solver_handler: SolverHandler = None
     _result_map: ca.Function
     only_positive_times_in_results = True
 
@@ -133,13 +145,20 @@ class Discretization(abc.ABC):
         self._create_results: Optional[Callable[[ca.DM, dict], Results]] = None
         self.logger = None
 
-    def initialize(self, system: System, solver_factory: SolverFactory):
+    def initialize(
+        self,
+        system: System,
+        solver_factory: SolverFactory,
+        solver_strategy_options: SolverStrategyOptions,
+    ):
         """Initializes the trajectory optimization problem, creating all symbolic
         variables of the OCP, the mapping function and the numerical solver."""
         self._discretize(system)
         self._finished_discretization = True
+        # Important: create_nlp_in_out_mapping must be called *before* _create_solver_handler
+        # because it finalizes self.opt_vars and self.mpc_opt_vars
         self.create_nlp_in_out_mapping(system)
-        self._create_solver(solver_factory)
+        self._create_solver_and_handler(solver_factory, solver_strategy_options)
 
     @abc.abstractmethod
     def _discretize(self, sys: System):
@@ -150,10 +169,24 @@ class Discretization(abc.ABC):
         """
         ...
 
-    def _create_solver(self, solver_factory: SolverFactory):
+    def _create_solver_and_handler(
+        self,
+        solver_factory: SolverFactory,
+        solver_strategy_options: SolverStrategyOptions,
+    ):
+        """Creates the raw solver and the handler that wraps it."""
         self._optimizer = solver_factory.create_solver(
             nlp=self.nlp, discrete=self.binary_vars, equalities=self.equalities
         )
+        self._solver_handler = SolverHandler(
+            solver_function=self._optimizer,
+            options=solver_strategy_options,
+            nlp_variables=self.opt_vars,
+            mpc_opt_vars_meta=self.mpc_opt_vars,
+        )
+        # Assign logger to handler if it exists
+        if self.logger:
+            self._solver_handler.logger = self.logger
 
     def solve(self, mpc_inputs: MPCInputs) -> Results:
         """
@@ -179,46 +212,62 @@ class Discretization(abc.ABC):
         mpc_inputs.update(guesses)
         nlp_inputs: dict[str, ca.DM] = self._mpc_inputs_to_nlp_inputs(**mpc_inputs)
 
-        # perform optimization
-        nlp_output = self._optimizer(**nlp_inputs)
+        # perform optimization using the handler
+        nlp_output, success = self._solver_handler.solve_nlp(nlp_inputs)
 
-        # format and return solution
+        # format and return solution (even if solve failed, to provide last attempt)
         mpc_output = self._nlp_outputs_to_mpc_outputs(vars_at_optimum=nlp_output["x"])
-        self._remember_solution(mpc_output)
-        result = self._process_solution(inputs=mpc_inputs, outputs=mpc_output)
+        # Only remember the solution if it was successful to avoid polluting the warmstart
+        if success:
+            self._remember_solution(mpc_output)
+        result = self._process_solution(
+            inputs=mpc_inputs, outputs=mpc_output, stats=self._optimizer.stats()
+        )
         return result
 
     def _determine_initial_guess(self, mpc_inputs: MPCInputs) -> MPCInputs:
         """
-        Collects initial guesses for all mpc variables. If possible, uses result
-        of last optimization.
+        Collects the *first* initial guess for all mpc variables.
+        Uses result of last successful optimization (warmstart).
         If not available, the current measurement is used for states, and the mean of
         the upper and lower bound is used otherwise.
         """
         guesses = {}
 
         for denotation, var in self.mpc_opt_vars.items():
-            guess = var.opt
+            guess = var.opt  # Use previous optimum if available (warmstart)
             if guess is None:
-                # if initial value is available, assume it is constant and make guess
+                # if initial measurement value is available, use it as constant guess
                 guess_denotation = f"initial_{denotation}"
                 if guess_denotation in mpc_inputs:
+                    # Use the latest measurement available
                     # changes here because of the long guess.array caused by np.tile for lags
                     if mpc_inputs[guess_denotation].shape[1] > 1:
                         state_measurements = mpc_inputs[guess_denotation][:, -1]
                     else:
                         state_measurements = mpc_inputs[guess_denotation]
                     guess = np.tile(state_measurements, len(var.grid))
-                # get guess from boundaries if last optimum is not available
+                # Otherwise, get guess from midpoint of boundaries
                 else:
-                    guess = np.array(
-                        0.5
-                        * (
-                            mpc_inputs[f"lb_{denotation}"]
-                            + mpc_inputs[f"ub_{denotation}"]
+                    lb_key = f"{LB_PREFIX}{denotation}"
+                    ub_key = f"{UB_PREFIX}{denotation}"
+                    if lb_key in mpc_inputs and ub_key in mpc_inputs:
+                        guess = 0.5 * (mpc_inputs[lb_key] + mpc_inputs[ub_key])
+                        # Handle potential inf/-inf in bounds
+                        guess = np.nan_to_num(guess, nan=0.0, posinf=0, neginf=0)
+                    else:
+                        # Fallback if bounds are missing (should not happen ideally)
+                        logger.warning(
+                            f"Could not determine initial guess for '{denotation}' using bounds. Defaulting to zero."
                         )
-                    )
-                    guess = np.nan_to_num(guess, posinf=0, neginf=0)
+                        # Create a zero matrix with the expected shape
+                        # Need dimension and grid length
+                        var_dim = var.var[0].shape[
+                            0
+                        ]  # Get dimension from first symbolic var instance
+                        grid_len = len(var.grid)
+                        guess = ca.DM.zeros(var_dim, grid_len)
+
             guesses.update({GUESS_PREFIX + denotation: guess})
 
         return guesses
@@ -227,12 +276,13 @@ class Discretization(abc.ABC):
         """Saves the last optimal solution for all optimization variables
         sorted by type."""
         for den, var in self.mpc_opt_vars.items():
-            var.opt = optimum[den]
+            # Only store if the value is not None (might be None if solve failed)
+            if optimum[den] is not None:
+                var.opt = optimum[den]
 
-    def _process_solution(self, inputs: dict, outputs: dict) -> Results:
+    def _process_solution(self, inputs: dict, outputs: dict, stats: dict) -> Results:
         """
-        If self.result_file is not empty,
-        collect all inputs and outputs of the optimization problem and format
+        Collect all inputs and outputs of the optimization problem and format
         them as DataFrames and pass them to OptimizationBackend.save_df().
         Args:
             inputs: mpc_inputs dict returned from _get_current_mpc_inputs
@@ -247,7 +297,7 @@ class Discretization(abc.ABC):
 
         result_matrix = self._result_map(**inputs)["result"]
 
-        return self._create_results(result_matrix, self._optimizer.stats())
+        return self._create_results(result_matrix, stats)
 
     def create_nlp_in_out_mapping(self, system: System):
         """
