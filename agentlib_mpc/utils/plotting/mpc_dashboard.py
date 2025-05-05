@@ -213,7 +213,8 @@ def make_components(
             components.insert(1, html.Div([obj_value_plot]))
 
     # Create one component for each variable
-    try:
+    # Remove try-except to expose errors directly
+    if isinstance(data.columns, pd.MultiIndex):
         for var_type, column in data.columns:
             if var_type == "variable":
                 components.append(
@@ -239,42 +240,34 @@ def make_components(
                         className="draggable",
                     )
                 )
-    except (AttributeError, ValueError) as e:
-        # If data is not multi-indexed
-        print(f"Error creating components: {e}")
-
-        if isinstance(data.columns, pd.MultiIndex):
-            # Handle case with MultiIndex columns but different structure
-            for column in data.columns:
-                if isinstance(column, tuple) and len(column) >= 2:
-                    var_type, col_name = column[0], column[1]
-                    if var_type == "variable":
-                        try:
-                            components.append(
-                                html.Div(
-                                    [
-                                        dcc.Graph(
-                                            id=f"plot-{col_name}",
-                                            figure=plot_mpc_plotly(
-                                                data[column],
-                                                step=step,
-                                                convert_to=convert_to,
-                                                y_axis_label=str(col_name),
-                                                use_datetime=use_datetime,
-                                            ),
-                                            style={
-                                                "min-width": "600px",
-                                                "min-height": "400px",
-                                                "max-width": "900px",
-                                                "max-height": "450px",
-                                            },
-                                        ),
-                                    ],
-                                    className="draggable",
-                                )
-                            )
-                        except Exception as e2:
-                            print(f"Error plotting column {column}: {e2}")
+    # Handle alternative column structures explicitly without exception handling
+    elif isinstance(data.columns, pd.Index):
+        for column in data.columns:
+            if column.startswith("variable_"):
+                column_name = column.replace("variable_", "")
+                components.append(
+                    html.Div(
+                        [
+                            dcc.Graph(
+                                id=f"plot-{column_name}",
+                                figure=plot_mpc_plotly(
+                                    data[column],
+                                    step=step,
+                                    convert_to=convert_to,
+                                    y_axis_label=column_name,
+                                    use_datetime=use_datetime,
+                                ),
+                                style={
+                                    "min-width": "600px",
+                                    "min-height": "400px",
+                                    "max-width": "900px",
+                                    "max-height": "450px",
+                                },
+                            ),
+                        ],
+                        className="draggable",
+                    )
+                )
 
     return html.Div(
         components,
@@ -337,8 +330,7 @@ def show_multi_room_dashboard(
     agent_ids = list(results.keys())
 
     if not agent_ids:
-        print("No agents found in results dictionary")
-        return
+        raise ValueError("No agents found in results dictionary")
 
     # Find first valid MPC data to determine index type
     first_agent_id = None
@@ -353,8 +345,7 @@ def show_multi_room_dashboard(
             break
 
     if not first_agent_id:
-        print("No valid MPC data found in results")
-        return
+        raise ValueError("No valid MPC data found in results")
 
     first_data = results[first_agent_id][first_module_id]
     is_multi_index, use_datetime = detect_index_type(first_data)
@@ -450,42 +441,35 @@ def show_multi_room_dashboard(
         if not selected_agent or not selected_module:
             return html.Div("Please select both an agent and a module")
 
-        try:
-            data = results[selected_agent][selected_module]
+        data = results[selected_agent][selected_module]
 
-            if not isinstance(data, pd.DataFrame):
-                return html.Div(f"Selected module does not contain valid MPC data")
+        if not isinstance(data, pd.DataFrame):
+            return html.Div(f"Selected module does not contain valid MPC data")
 
-            # Reduce triple index to double index if needed
-            if isinstance(data.index, pd.MultiIndex) and len(data.index.levels) > 2:
-                data = reduce_triple_index(data)
+        # Reduce triple index to double index if needed
+        if isinstance(data.index, pd.MultiIndex) and len(data.index.levels) > 2:
+            data = reduce_triple_index(data)
 
-            # Check if data needs time normalization
-            if is_multi_index and not use_datetime:
-                try:
-                    # Normalize time to start from zero
-                    first_time = data.index.levels[0][0]
-                    data.index = data.index.set_levels(
-                        data.index.levels[0] - first_time, level=0
-                    )
-                except Exception as e:
-                    print(f"Error normalizing time: {e}")
-
-            # Get stats data if available
-            stats = None
-            if f"{selected_module}_stats" in results[selected_agent]:
-                stats = results[selected_agent][f"{selected_module}_stats"]
-
-            # Create the dashboard components
-            return make_components(
-                data=data,
-                convert_to=scale,
-                stats=stats,
-                use_datetime=use_datetime,
-                step=step_state,
+        # Check if data needs time normalization
+        if is_multi_index and not use_datetime:
+            first_time = data.index.levels[0][0]
+            data.index = data.index.set_levels(
+                data.index.levels[0] - first_time, level=0
             )
-        except Exception as e:
-            return html.Div(f"Error creating dashboard: {str(e)}")
+
+        # Get stats data if available
+        stats = None
+        if f"{selected_module}_stats" in results[selected_agent]:
+            stats = results[selected_agent][f"{selected_module}_stats"]
+
+        # Create the dashboard components
+        return make_components(
+            data=data,
+            convert_to=scale,
+            stats=stats,
+            use_datetime=use_datetime,
+            step=step_state,
+        )
 
     # Launch the dashboard
     port = get_port()
@@ -499,9 +483,6 @@ def launch_dashboard_from_results(
     """
     Launch the multi-agent dashboard from results dictionary returned by mas.get_results().
 
-    This function checks if the data has the correct shape for visualization,
-    and launches the dashboard if valid data is found.
-
     Args:
         results: Dictionary with agent results from mas.get_results()
         scale: Time scale for plotting ("seconds", "minutes", "hours", "days")
@@ -511,64 +492,47 @@ def launch_dashboard_from_results(
         bool: True if dashboard was launched, False otherwise
     """
     if not results or not isinstance(results, dict):
-        print("Invalid results: Expected non-empty dictionary")
-        return False
+        raise ValueError("Invalid results: Expected non-empty dictionary")
 
     # Validate results structure
     valid_data_found = False
 
     for agent_id, agent_data in results.items():
         if not isinstance(agent_data, dict):
-            print(f"Warning: Agent '{agent_id}' data is not a dictionary, skipping")
             continue
 
         for module_id, module_data in agent_data.items():
             if not isinstance(module_data, pd.DataFrame):
                 continue
 
-            try:
-                # Check if this DataFrame has the expected structure for MPC data
-                if isinstance(module_data.index, pd.MultiIndex):
-                    if len(module_data.index.levels) > 1:
-                        # This looks like MPC data with multi-level index
-                        valid_data_found = True
-                        break
-                else:
-                    # Single level index might still be valid for some data
-                    valid_data_found = module_data.shape[0] > 0
+            # Check if this DataFrame has the expected structure for MPC data
+            if isinstance(module_data.index, pd.MultiIndex):
+                if len(module_data.index.levels) > 1:
+                    # This looks like MPC data with multi-level index
+                    valid_data_found = True
                     break
-            except Exception as e:
-                print(f"Error checking data for {agent_id}.{module_id}: {e}")
-                continue
+            else:
+                # Single level index might still be valid for some data
+                valid_data_found = module_data.shape[0] > 0
+                break
 
         if valid_data_found:
             break
 
     if not valid_data_found:
-        print("No valid MPC data found in results")
-        return False
+        raise ValueError("No valid MPC data found in results")
 
-    # Launch the dashboard
-    try:
-        print(f"Launching dashboard with scale={scale}")
-        show_multi_room_dashboard(results, scale=scale, step=step)
-        return True
-    except Exception as e:
-        print(f"Error launching dashboard: {e}")
-        return False
+    # Launch the dashboard without catching exceptions
+    print(f"Launching dashboard with scale={scale}")
+    show_multi_room_dashboard(results, scale=scale, step=step)
+    return True
 
 
-# Additional utility function to process results from LocalMASAgency
 def process_mas_results(
     results: Dict[str, Dict[str, Any]],
 ) -> Dict[str, Dict[str, Any]]:
     """
     Process results from LocalMASAgency to prepare them for visualization.
-
-    This function:
-    1. Identifies modules with MPC data
-    2. Reduces triple indices to double indices if needed
-    3. Associates stats data with corresponding MPC data
 
     Args:
         results: Raw results from mas.get_results()
@@ -586,30 +550,26 @@ def process_mas_results(
             if not isinstance(module_data, pd.DataFrame):
                 continue
 
-            try:
-                # Check if this looks like MPC data
-                if isinstance(module_data.index, pd.MultiIndex):
-                    if isinstance(module_data.columns, pd.MultiIndex):
-                        # This is likely MPC data with variables, parameters, etc.
-                        processed_results[agent_id][module_id] = module_data
-                    elif any(
-                        col.startswith(("variable_", "parameter_"))
-                        for col in module_data.columns
-                    ):
-                        # This might be MPC data with flattened column names
-                        processed_results[agent_id][module_id] = module_data
+            # Check if this looks like MPC data
+            if isinstance(module_data.index, pd.MultiIndex):
+                if isinstance(module_data.columns, pd.MultiIndex):
+                    # This is likely MPC data with variables, parameters, etc.
+                    processed_results[agent_id][module_id] = module_data
+                elif any(
+                    col.startswith(("variable_", "parameter_"))
+                    for col in module_data.columns
+                ):
+                    # This might be MPC data with flattened column names
+                    processed_results[agent_id][module_id] = module_data
 
-                    # Check for stats data with matching prefix
-                    stats_module_id = f"{module_id}_stats"
-                    if stats_module_id in agent_data and isinstance(
-                        agent_data[stats_module_id], pd.DataFrame
-                    ):
-                        processed_results[agent_id][stats_module_id] = agent_data[
-                            stats_module_id
-                        ]
-
-            except Exception as e:
-                print(f"Error processing {agent_id}.{module_id}: {e}")
+                # Check for stats data with matching prefix
+                stats_module_id = f"{module_id}_stats"
+                if stats_module_id in agent_data and isinstance(
+                    agent_data[stats_module_id], pd.DataFrame
+                ):
+                    processed_results[agent_id][stats_module_id] = agent_data[
+                        stats_module_id
+                    ]
 
     return processed_results
 
@@ -623,8 +583,9 @@ if __name__ == "__main__":
         path = Path(sys.argv[1])
         if path.exists() and path.is_dir():
             print(f"Loading data from directory: {path}")
-            show_multi_room_dashboard_from_files(path, scale="hours")
+            # Note: This function is referenced but not defined in the provided code
+            # show_multi_room_dashboard_from_files(path, scale="hours")
         else:
-            print(f"Directory not found: {path}")
+            raise FileNotFoundError(f"Directory not found: {path}")
     else:
         print("No directory specified. Please provide a directory path.")
