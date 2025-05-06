@@ -48,6 +48,38 @@ def reduce_triple_index(df: pd.DataFrame) -> pd.DataFrame:
     return df[mask].droplevel(1)
 
 
+def is_mhe_data(series: pd.Series) -> bool:
+    """
+    Detect if the data represents MHE (Moving Horizon Estimator) results
+    rather than MPC predictions.
+
+    Args:
+        series: Series of predictions with time steps as index
+
+    Returns:
+        bool: True if the data appears to be MHE data, False otherwise
+    """
+    # Get the unique prediction time points
+    unique_time_points = series.index.unique(level=0)
+
+    # For each time point, check the distribution of indices
+    negative_indices_count = 0
+    positive_indices_count = 0
+
+    for time_point in unique_time_points:
+        prediction = series.xs(time_point, level=0)
+        # Count negative and non-negative indices
+        negative_indices_count += sum(prediction.index < 0)
+        positive_indices_count += sum(prediction.index >= 0)
+
+    # If we have mostly negative indices with just a few non-negative ones,
+    # it's likely MHE data (which primarily contains past states)
+    if negative_indices_count > 0 and positive_indices_count <= unique_time_points.size:
+        return True
+
+    return False
+
+
 def plot_mpc_plotly(
     series: pd.Series,
     step: bool = False,
@@ -74,6 +106,9 @@ def plot_mpc_plotly(
     predictions_grouped = series.groupby(level=0)
     number_of_predictions = predictions_grouped.ngroups
 
+    # Detect if this is MHE data
+    is_mhe = is_mhe_data(series)
+
     # Sample predictions if there are too many
     if number_of_predictions > max_predictions:
         # Always include the most recent prediction
@@ -97,7 +132,11 @@ def plot_mpc_plotly(
 
     for i, (time_seconds, prediction) in enumerate(predictions_iterator):
         prediction: pd.Series = prediction.dropna()
-        prediction = prediction[prediction.index >= 0]
+
+        # For MPC, only show future values (index >= 0)
+        # For MHE, show all values including past (don't filter)
+        if not is_mhe:
+            prediction = prediction[prediction.index >= 0]
 
         if use_datetime:
             time_converted = pd.Timestamp(time_seconds, unit="s", tz="UTC").tz_convert(
@@ -105,6 +144,8 @@ def plot_mpc_plotly(
             )
             relative_times = prediction.index
             try:
+                # For MHE, the reference point is typically at index 0
+                # For MPC, the reference point is also at index 0
                 actual_values[time_converted] = prediction.loc[0]
             except KeyError:
                 pass
@@ -128,14 +169,19 @@ def plot_mpc_plotly(
             colors=[EBCColors.red, EBCColors.dark_grey],
         )
 
+        # For MHE data, use a different line style to visually distinguish from MPC
+        line_style = "dash" if is_mhe else None
+        line_width = 1.0 if is_mhe else 0.7
+
         trace_kwargs = dict(
             x=prediction.index,
             y=prediction,
             mode="lines",
             line=dict(
                 color=f"rgb{prediction_color}",
-                width=0.7,
+                width=line_width,
                 shape="hv" if step else None,
+                dash=line_style,
             ),
             name=(
                 f"{time_converted}"
@@ -161,6 +207,22 @@ def plot_mpc_plotly(
             legendrank=1,
         )
     )
+
+    # Add annotation to indicate if this is MHE data
+    if is_mhe:
+        fig.add_annotation(
+            x=0.05,
+            y=0.95,
+            xref="paper",
+            yref="paper",
+            text="MHE Data (includes past values)",
+            showarrow=False,
+            font=dict(color="red", size=12),
+            bgcolor="rgba(255, 255, 255, 0.8)",
+            bordercolor="red",
+            borderwidth=1,
+            borderpad=4,
+        )
 
     x_axis_label = "Time" if use_datetime else f"Time in {convert_to}"
     fig.update_layout(
@@ -441,6 +503,7 @@ def show_multi_room_dashboard(
         if not selected_agent or not selected_module:
             return html.Div("Please select both an agent and a module")
 
+        # Remove try-except to expose errors directly
         data = results[selected_agent][selected_module]
 
         if not isinstance(data, pd.DataFrame):
@@ -452,6 +515,7 @@ def show_multi_room_dashboard(
 
         # Check if data needs time normalization
         if is_multi_index and not use_datetime:
+            # Remove try-except to expose errors directly
             first_time = data.index.levels[0][0]
             data.index = data.index.set_levels(
                 data.index.levels[0] - first_time, level=0
@@ -550,6 +614,7 @@ def process_mas_results(
             if not isinstance(module_data, pd.DataFrame):
                 continue
 
+            # Remove try-except to expose errors directly
             # Check if this looks like MPC data
             if isinstance(module_data.index, pd.MultiIndex):
                 if isinstance(module_data.columns, pd.MultiIndex):
