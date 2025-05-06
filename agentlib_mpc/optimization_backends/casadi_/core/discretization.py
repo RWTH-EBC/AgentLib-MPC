@@ -184,15 +184,6 @@ class Discretization(abc.ABC):
 
         # format and return solution
         mpc_output = self._nlp_outputs_to_mpc_outputs(vars_at_optimum=nlp_output["x"])
-        # clip binary values within tolerance
-        if "w" in mpc_output:
-            tolerance = 1e-5
-            bin_array = mpc_output["w"].full()
-            bin_array = np.where((-tolerance < bin_array) & (bin_array < 0), 0,
-                                 np.where((1 < bin_array) & (bin_array < 1 + tolerance),
-                                          1, bin_array))
-            mpc_output["w"] = bin_array
-
         self._remember_solution(mpc_output)
         result = self._process_solution(inputs=mpc_inputs, outputs=mpc_output)
         return result
@@ -227,9 +218,7 @@ class Discretization(abc.ABC):
                             + mpc_inputs[f"ub_{denotation}"]
                         )
                     )
-                    guess = np.nan_to_num(
-                        guess, posinf=100_000_000, neginf=-100_000_000
-                    )
+                    guess = np.nan_to_num(guess, posinf=0, neginf=0)
             guesses.update({GUESS_PREFIX + denotation: guess})
 
         return guesses
@@ -253,7 +242,7 @@ class Discretization(abc.ABC):
         for key, value in inputs.items():
             key: str
             if key.startswith(GUESS_PREFIX):
-                out_key = key[len(GUESS_PREFIX):]
+                out_key = key[len(GUESS_PREFIX) :]
                 inputs[key] = outputs[out_key]
 
         result_matrix = self._result_map(**inputs)["result"]
