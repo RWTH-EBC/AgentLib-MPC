@@ -102,7 +102,7 @@ def create_optimization_backend(optimization_backend, agent_id):
     optimization_backend["name"] = agent_id
     if isinstance(_type, dict):
         custom_cls = custom_injection(config=_type)
-        backend = custom_cls(**optimization_backend)
+        backend = custom_cls(config=optimization_backend)
     elif isinstance(_type, str):
         if _type in uninstalled_backend_types:
             raise OptionalDependencyError(
