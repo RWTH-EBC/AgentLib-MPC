@@ -16,7 +16,6 @@ from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
 from agentlib_mpc.optimization_backends.casadi_.core.discretization import (
     DiscretizationT,
     Results,
-    SolverStrategyOptions,
 )
 from agentlib_mpc.optimization_backends.backend import (
     OptimizationBackend,
@@ -41,13 +40,7 @@ class CasadiBackendConfig(BackendConfig):
     discretization_options: CasadiDiscretizationOptions = pydantic.Field(
         default_factory=CasadiDiscretizationOptions
     )
-    solver: SolverOptions = pydantic.Field(
-        default_factory=SolverOptions, description="Options for the core NLP/QP solver."
-    )
-    solver_strategy: SolverStrategyOptions = pydantic.Field(
-        default_factory=SolverStrategyOptions,
-        description="Options for solver strategies like retries.",
-    )
+    solver: SolverOptions = pydantic.Field(default_factory=SolverOptions)
     build_batch_bat: Optional[Path] = pydantic.Field(
         default=None,
         description="Path to a batch file, which can compile C code on windows.",
@@ -127,9 +120,7 @@ class CasADiBackend(OptimizationBackend):
             logger=self.logger,
         )
         self.discretization.initialize(
-            system=self.system,
-            solver_factory=solver_factory,
-            solver_strategy_options=self.config.solver_strategy,
+            system=self.system, solver_factory=solver_factory
         )
 
     def solve(self, now: float, current_vars: dict[str, MPCVariable]) -> Results:
