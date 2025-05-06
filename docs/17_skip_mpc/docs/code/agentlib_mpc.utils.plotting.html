@@ -550,6 +550,24 @@ optimization should be plotted (default True)</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.mpc_dashboard.is_mhe_data">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.mpc_dashboard.</span></span><span class="sig-name descname"><span class="pre">is_mhe_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils/plotting/mpc_dashboard.html#is_mhe_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.mpc_dashboard.is_mhe_data" title="Permalink to this definition"></a></dt>
+<dd><p>Detect if the data represents MHE (Moving Horizon Estimator) results
+rather than MPC predictions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>series</strong> – Series of predictions with time steps as index</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the data appears to be MHE data, False otherwise</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.mpc_dashboard.launch_dashboard_from_results">
 <span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.mpc_dashboard.</span></span><span class="sig-name descname"><span class="pre">launch_dashboard_from_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hours'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils/plotting/mpc_dashboard.html#launch_dashboard_from_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.mpc_dashboard.launch_dashboard_from_results" title="Permalink to this definition"></a></dt>
 <dd><p>Launch the multi-agent dashboard from results dictionary returned by mas.get_results().</p>

@@ -122,6 +122,38 @@
     <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">droplevel</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="is_mhe_data"><a class="viewcode-back" href="../../../../code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.is_mhe_data">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">is_mhe_data</span><span class="p">(</span><span class="n">series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Detect if the data represents MHE (Moving Horizon Estimator) results</span>
+<span class="sd">    rather than MPC predictions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        series: Series of predictions with time steps as index</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if the data appears to be MHE data, False otherwise</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get the unique prediction time points</span>
+    <span class="n">unique_time_points</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># For each time point, check the distribution of indices</span>
+    <span class="n">negative_indices_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">positive_indices_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">time_point</span> <span class="ow">in</span> <span class="n">unique_time_points</span><span class="p">:</span>
+        <span class="n">prediction</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">xs</span><span class="p">(</span><span class="n">time_point</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># Count negative and non-negative indices</span>
+        <span class="n">negative_indices_count</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">prediction</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">positive_indices_count</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">prediction</span><span class="o">.</span><span class="n">index</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># If we have mostly negative indices with just a few non-negative ones,</span>
+    <span class="c1"># it&#39;s likely MHE data (which primarily contains past states)</span>
+    <span class="k">if</span> <span class="n">negative_indices_count</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">positive_indices_count</span> <span class="o">&lt;=</span> <span class="n">unique_time_points</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
 <div class="viewcode-block" id="plot_mpc_plotly"><a class="viewcode-back" href="../../../../code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.plot_mpc_plotly">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">plot_mpc_plotly</span><span class="p">(</span>
     <span class="n">series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
     <span class="n">step</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -148,6 +180,9 @@
     <span class="n">predictions_grouped</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">number_of_predictions</span> <span class="o">=</span> <span class="n">predictions_grouped</span><span class="o">.</span><span class="n">ngroups</span>
 
+    <span class="c1"># Detect if this is MHE data</span>
+    <span class="n">is_mhe</span> <span class="o">=</span> <span class="n">is_mhe_data</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+
     <span class="c1"># Sample predictions if there are too many</span>
     <span class="k">if</span> <span class="n">number_of_predictions</span> <span class="o">&gt;</span> <span class="n">max_predictions</span><span class="p">:</span>
         <span class="c1"># Always include the most recent prediction</span>
@@ -171,7 +206,11 @@
 
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">time_seconds</span><span class="p">,</span> <span class="n">prediction</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">predictions_iterator</span><span class="p">):</span>
         <span class="n">prediction</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span> <span class="o">=</span> <span class="n">prediction</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
-        <span class="n">prediction</span> <span class="o">=</span> <span class="n">prediction</span><span class="p">[</span><span class="n">prediction</span><span class="o">.</span><span class="n">index</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># For MPC, only show future values (index &gt;= 0)</span>
+        <span class="c1"># For MHE, show all values including past (don&#39;t filter)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_mhe</span><span class="p">:</span>
+            <span class="n">prediction</span> <span class="o">=</span> <span class="n">prediction</span><span class="p">[</span><span class="n">prediction</span><span class="o">.</span><span class="n">index</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">use_datetime</span><span class="p">:</span>
             <span class="n">time_converted</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">time_seconds</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="s2">&quot;UTC&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tz_convert</span><span class="p">(</span>
@@ -179,6 +218,8 @@
             <span class="p">)</span>
             <span class="n">relative_times</span> <span class="o">=</span> <span class="n">prediction</span><span class="o">.</span><span class="n">index</span>
             <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># For MHE, the reference point is typically at index 0</span>
+                <span class="c1"># For MPC, the reference point is also at index 0</span>
                 <span class="n">actual_values</span><span class="p">[</span><span class="n">time_converted</span><span class="p">]</span> <span class="o">=</span> <span class="n">prediction</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
                 <span class="k">pass</span>
@@ -202,14 +243,19 @@
             <span class="n">colors</span><span class="o">=</span><span class="p">[</span><span class="n">EBCColors</span><span class="o">.</span><span class="n">red</span><span class="p">,</span> <span class="n">EBCColors</span><span class="o">.</span><span class="n">dark_grey</span><span class="p">],</span>
         <span class="p">)</span>
 
+        <span class="c1"># For MHE data, use a different line style to visually distinguish from MPC</span>
+        <span class="n">line_style</span> <span class="o">=</span> <span class="s2">&quot;dash&quot;</span> <span class="k">if</span> <span class="n">is_mhe</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">line_width</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="n">is_mhe</span> <span class="k">else</span> <span class="mf">0.7</span>
+
         <span class="n">trace_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="n">x</span><span class="o">=</span><span class="n">prediction</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
             <span class="n">y</span><span class="o">=</span><span class="n">prediction</span><span class="p">,</span>
             <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;lines&quot;</span><span class="p">,</span>
             <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
                 <span class="n">color</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;rgb</span><span class="si">{</span><span class="n">prediction_color</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="n">width</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+                <span class="n">width</span><span class="o">=</span><span class="n">line_width</span><span class="p">,</span>
                 <span class="n">shape</span><span class="o">=</span><span class="s2">&quot;hv&quot;</span> <span class="k">if</span> <span class="n">step</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">dash</span><span class="o">=</span><span class="n">line_style</span><span class="p">,</span>
             <span class="p">),</span>
             <span class="n">name</span><span class="o">=</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">time_converted</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -235,6 +281,22 @@
             <span class="n">legendrank</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="p">)</span>
+
+    <span class="c1"># Add annotation to indicate if this is MHE data</span>
+    <span class="k">if</span> <span class="n">is_mhe</span><span class="p">:</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">add_annotation</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span>
+            <span class="n">xref</span><span class="o">=</span><span class="s2">&quot;paper&quot;</span><span class="p">,</span>
+            <span class="n">yref</span><span class="o">=</span><span class="s2">&quot;paper&quot;</span><span class="p">,</span>
+            <span class="n">text</span><span class="o">=</span><span class="s2">&quot;MHE Data (includes past values)&quot;</span><span class="p">,</span>
+            <span class="n">showarrow</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">font</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">),</span>
+            <span class="n">bgcolor</span><span class="o">=</span><span class="s2">&quot;rgba(255, 255, 255, 0.8)&quot;</span><span class="p">,</span>
+            <span class="n">bordercolor</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
+            <span class="n">borderwidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">borderpad</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="n">x_axis_label</span> <span class="o">=</span> <span class="s2">&quot;Time&quot;</span> <span class="k">if</span> <span class="n">use_datetime</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;Time in </span><span class="si">{</span><span class="n">convert_to</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
@@ -515,6 +577,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">selected_agent</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">selected_module</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">(</span><span class="s2">&quot;Please select both an agent and a module&quot;</span><span class="p">)</span>
 
+        <span class="c1"># Remove try-except to expose errors directly</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">selected_agent</span><span class="p">][</span><span class="n">selected_module</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
@@ -526,6 +589,7 @@
 
         <span class="c1"># Check if data needs time normalization</span>
         <span class="k">if</span> <span class="n">is_multi_index</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">use_datetime</span><span class="p">:</span>
+            <span class="c1"># Remove try-except to expose errors directly</span>
             <span class="n">first_time</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">data</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">set_levels</span><span class="p">(</span>
                 <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">first_time</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span>
@@ -624,6 +688,7 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module_data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
                 <span class="k">continue</span>
 
+            <span class="c1"># Remove try-except to expose errors directly</span>
             <span class="c1"># Check if this looks like MPC data</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module_data</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">module_data</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">):</span>
