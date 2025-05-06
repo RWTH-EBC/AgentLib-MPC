@@ -14,12 +14,15 @@ from agentlib.core import (
 from agentlib.core.datamodels import Source
 from agentlib_mpc.data_structures.coordinator_datatypes import RegistrationMessage
 import agentlib_mpc.data_structures.coordinator_datatypes as cdt
-
+from agentlib_mpc.modules.mpc.skippable_mixin import (
+    SkippableMixinConfig,
+    SkippableMixin,
+)
 
 logger = logging.getLogger(__name__)
 
 
-class MiniEmployeeConfig(BaseModuleConfig):
+class MiniEmployeeConfig(SkippableMixinConfig):
     request_frequency: float = Field(
         default=1, description="Wait time between signup_requests"
     )
@@ -42,13 +45,14 @@ class MiniEmployeeConfig(BaseModuleConfig):
     shared_variable_fields: list[str] = ["messages_out"]
 
 
-class MiniEmployee(BaseModule):
+class MiniEmployee(SkippableMixin):
     config: MiniEmployeeConfig
 
     def __init__(self, *, config: dict, agent: Agent):
         super().__init__(config=config, agent=agent)
         self._registered_coordinator: Source = None
         self._start_optimization_at: float = 0
+        self._result_obtained = False
 
     def process(self):
         # send registration request to coordinator
@@ -96,6 +100,13 @@ class MiniEmployee(BaseModule):
 
         """
         # value is True on start
+        should_step_be_skipped = self.check_if_should_be_skipped()
+
+        if should_step_be_skipped:
+            self.logger.debug("DMPC participant was externally told to to skip.")
+            self.set(cdt.START_ITERATION_A2C, False)
+            return
+
         if variable.value:
             self._start_optimization_at = self.env.time
             # new measurement
@@ -110,7 +121,9 @@ class MiniEmployee(BaseModule):
 
         # value is False on convergence/iteration limit
         else:
-            self._finish_optimization()
+            if self._result_obtained:
+                self._finish_optimization()
+                self._result_obtained = False
 
     def get_new_measurement(self):
         """
@@ -147,6 +160,7 @@ class MiniEmployee(BaseModule):
 
         value = variables.to_dict()
         self.logger.debug("Sent optimal solution.")
+        self._result_obtained = True
         self.set(name=cdt.OPTIMIZATION_A2C, value=value)
 
     def shift_trajectories(self):

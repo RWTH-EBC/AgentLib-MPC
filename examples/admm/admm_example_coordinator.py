@@ -122,6 +122,6 @@ if __name__ == "__main__":
         until=1800,
         start_pred=0,
         show_dashboard=False,
-        cleanup=True,
+        cleanup=False,
         log_level=logging.INFO,
     )

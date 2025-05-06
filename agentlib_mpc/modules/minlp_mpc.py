@@ -4,7 +4,7 @@ from pydantic import field_validator, Field
 
 from agentlib_mpc.data_structures import mpc_datamodels
 from agentlib_mpc.data_structures.mpc_datamodels import MINLPVariableReference
-from agentlib_mpc.modules.mpc import BaseMPCConfig, BaseMPC
+from agentlib_mpc.modules.mpc.mpc import BaseMPCConfig, BaseMPC
 
 logger = logging.getLogger(__name__)
 
