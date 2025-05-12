@@ -256,7 +256,7 @@ class BaseMPC(BaseModule):
     def process(self):
         while True:
             self.do_step()
-            yield self.env.timeout(self.config.time_step)
+            yield self.env.timeout(self.config.sampling_time)
 
     def register_callbacks(self):
         """Registers the init_optimization callback to all parameters which
