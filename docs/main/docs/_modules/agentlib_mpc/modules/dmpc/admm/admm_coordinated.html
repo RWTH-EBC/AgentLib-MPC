@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules.dmpc.admm.admm_coordinated &mdash; agentlib_mpc 0.6.4 documentation</title>
+  <title>agentlib_mpc.modules.dmpc.admm.admm_coordinated &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/autodoc_pydantic.css" />
@@ -76,30 +76,30 @@
 <span></span><span class="sd">&quot;&quot;&quot;Module implementing the coordinated ADMM module, which works together</span>
 <span class="sd">with a coordinator.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">pydantic</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span>
 
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span> <span class="kn">import</span> <span class="n">MPCVariable</span>
-<span class="kn">from</span> <span class="nn">.admm</span> <span class="kn">import</span> <span class="n">ADMM</span><span class="p">,</span> <span class="n">ADMMConfig</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.modules.dmpc.employee</span> <span class="kn">import</span> <span class="n">MiniEmployee</span><span class="p">,</span> <span class="n">MiniEmployeeConfig</span>
-<span class="kn">from</span> <span class="nn">agentlib.utils.validators</span> <span class="kn">import</span> <span class="n">convert_to_list</span>
-<span class="kn">import</span> <span class="nn">agentlib_mpc.data_structures.coordinator_datatypes</span> <span class="k">as</span> <span class="nn">cdt</span>
-<span class="kn">import</span> <span class="nn">agentlib_mpc.data_structures.admm_datatypes</span> <span class="k">as</span> <span class="nn">adt</span>
-<span class="kn">from</span> <span class="nn">agentlib.core</span> <span class="kn">import</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">Agent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPCVariable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.admm</span><span class="w"> </span><span class="kn">import</span> <span class="n">ADMM</span><span class="p">,</span> <span class="n">ADMMConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.modules.dmpc.employee</span><span class="w"> </span><span class="kn">import</span> <span class="n">MiniEmployee</span><span class="p">,</span> <span class="n">MiniEmployeeConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.utils.validators</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_to_list</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.coordinator_datatypes</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cdt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.admm_datatypes</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">adt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">Agent</span>
 
 
 <span class="n">coupInput</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;coup_input&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;lam&quot;</span><span class="p">])</span>
 
 
-<div class="viewcode-block" id="CoordinatedADMMConfig"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMMConfig">[docs]</a><span class="k">class</span> <span class="nc">CoordinatedADMMConfig</span><span class="p">(</span><span class="n">MiniEmployeeConfig</span><span class="p">,</span> <span class="n">ADMMConfig</span><span class="p">):</span>
+<div class="viewcode-block" id="CoordinatedADMMConfig"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMMConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CoordinatedADMMConfig</span><span class="p">(</span><span class="n">MiniEmployeeConfig</span><span class="p">,</span> <span class="n">ADMMConfig</span><span class="p">):</span>
     <span class="n">shared_variable_fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">MiniEmployeeConfig</span><span class="o">.</span><span class="n">default</span><span class="p">(</span>
         <span class="s2">&quot;shared_variable_fields&quot;</span>
     <span class="p">)</span> <span class="o">+</span> <span class="n">ADMMConfig</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="s2">&quot;shared_variable_fields&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CoordinatedADMMConfig.couplings_should_have_values"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMMConfig.couplings_should_have_values">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;couplings&quot;</span><span class="p">,</span> <span class="s2">&quot;exchange&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">couplings_should_have_values</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AgentVariable</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">couplings_should_have_values</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AgentVariable</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Asserts that couplings and exchange have values, as they are needed for</span>
 <span class="sd">        initial guess.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
@@ -111,7 +111,7 @@
         <span class="k">return</span> <span class="n">value</span></div></div>
 
 
-<div class="viewcode-block" id="CoordinatedADMM"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM">[docs]</a><span class="k">class</span> <span class="nc">CoordinatedADMM</span><span class="p">(</span><span class="n">MiniEmployee</span><span class="p">,</span> <span class="n">ADMM</span><span class="p">):</span>
+<div class="viewcode-block" id="CoordinatedADMM"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CoordinatedADMM</span><span class="p">(</span><span class="n">MiniEmployee</span><span class="p">,</span> <span class="n">ADMM</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Module to implement an ADMM agent, which is guided by a coordinator.</span>
 <span class="sd">    Only optimizes based on callbacks.</span>
@@ -119,14 +119,14 @@
 
     <span class="n">config</span><span class="p">:</span> <span class="n">CoordinatedADMMConfig</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_initial_setup</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># flag to check that we don&#39;t compile ipopt twice</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_optimization_inputs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AgentVariable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_coupling_alias_to_name_mapping</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="CoordinatedADMM.process"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CoordinatedADMM.process"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM.process">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># send registration request to coordinator</span>
         <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">registration_interval</span>
 
@@ -139,7 +139,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cdt</span><span class="o">.</span><span class="n">REGISTRATION_A2C</span><span class="p">,</span> <span class="n">answer</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CoordinatedADMM.registration_callback"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM.registration_callback">[docs]</a>    <span class="k">def</span> <span class="nf">registration_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
+<div class="viewcode-block" id="CoordinatedADMM.registration_callback"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM.registration_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">registration_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;callback for registration&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registered_coordinator</span><span class="p">:</span>
             <span class="c1"># ignore if registration has already been done</span>
@@ -162,7 +162,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_registered_coordinator</span> <span class="o">=</span> <span class="n">variable</span><span class="o">.</span><span class="n">source</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cdt</span><span class="o">.</span><span class="n">REGISTRATION_A2C</span><span class="p">,</span> <span class="n">answer</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span></div>
 
-    <span class="k">def</span> <span class="nf">_after_config_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_after_config_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># use some hacks to set jit false for the first time this function is called</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">optimization_backend</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;do_jit&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
@@ -177,7 +177,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">optimization_backend</span><span class="p">[</span><span class="s2">&quot;do_jit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">do_jit</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_initial_setup</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="CoordinatedADMM.get_new_measurement"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM.get_new_measurement">[docs]</a>    <span class="k">def</span> <span class="nf">get_new_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CoordinatedADMM.get_new_measurement"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM.get_new_measurement">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_new_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieve new measurement from relevant sensors</span>
 <span class="sd">        Returns:</span>
@@ -187,7 +187,7 @@
         <span class="n">opt_inputs</span><span class="p">[</span><span class="n">adt</span><span class="o">.</span><span class="n">PENALTY_FACTOR</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">penalty_factor_var</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_optimization_inputs</span> <span class="o">=</span> <span class="n">opt_inputs</span></div>
 
-    <span class="k">def</span> <span class="nf">_create_coupling_alias_to_name_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_coupling_alias_to_name_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        creates a mapping of alias to the variable names for multiplier and</span>
 <span class="sd">        global mean that the optimization backend recognizes</span>
@@ -205,7 +205,7 @@
             <span class="n">alias_to_input_names</span><span class="p">[</span><span class="n">coup_variable</span><span class="o">.</span><span class="n">alias</span><span class="p">]</span> <span class="o">=</span> <span class="n">coup_in</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_alias_to_input_names</span> <span class="o">=</span> <span class="n">alias_to_input_names</span>
 
-<div class="viewcode-block" id="CoordinatedADMM.optimize"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM.optimize">[docs]</a>    <span class="k">def</span> <span class="nf">optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
+<div class="viewcode-block" id="CoordinatedADMM.optimize"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM.optimize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Performs the optimization given the mean trajectories and multipliers from the</span>
 <span class="sd">        coordinator.</span>
@@ -260,7 +260,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sent optimal solution.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">cdt</span><span class="o">.</span><span class="n">OPTIMIZATION_A2C</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">opt_return</span><span class="o">.</span><span class="n">to_json</span><span class="p">())</span></div>
 
-    <span class="k">def</span> <span class="nf">_finish_optimization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_finish_optimization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finalize an iteration. Usually, this includes setting the actuation.</span>
 <span class="sd">        Returns:</span>
@@ -274,7 +274,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">set_actuation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">_set_admm_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">adt</span><span class="o">.</span><span class="n">ADMMParameters</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_admm_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="n">adt</span><span class="o">.</span><span class="n">ADMMParameters</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets new admm parameters, re-initializes the optimization problem</span>
 <span class="sd">        and returns an initial guess of the coupling variables.&quot;&quot;&quot;</span>
 
@@ -290,7 +290,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">new_config_dict</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: Reinitialized optimization problem.&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_initial_coupling_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_initial_coupling_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the initial coupling values with correct trajectory length.&quot;&quot;&quot;</span>
         <span class="n">grid_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimization_backend</span><span class="o">.</span><span class="n">coupling_grid</span><span class="p">)</span>
         <span class="n">guesses</span> <span class="o">=</span> <span class="p">{}</span>
@@ -304,7 +304,7 @@
             <span class="n">exchange_guesses</span><span class="p">[</span><span class="n">var</span><span class="o">.</span><span class="n">alias</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="n">grid_len</span>
         <span class="k">return</span> <span class="n">guesses</span><span class="p">,</span> <span class="n">exchange_guesses</span>
 
-<div class="viewcode-block" id="CoordinatedADMM.init_iteration_callback"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM.init_iteration_callback">[docs]</a>    <span class="k">def</span> <span class="nf">init_iteration_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
+<div class="viewcode-block" id="CoordinatedADMM.init_iteration_callback"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM.init_iteration_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_iteration_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Callback that answers the coordinators init_iteration flag.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registered_coordinator</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">init_iteration_callback</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span></div></div>

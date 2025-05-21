@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.data_structures.casadi_utils &mdash; agentlib_mpc 0.6.4 documentation</title>
+  <title>agentlib_mpc.data_structures.casadi_utils &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -74,21 +74,21 @@
 <span></span><span class="sd">&quot;&quot;&quot;Stores all sorts of Dataclasses, Enums or Factories to help with the</span>
 <span class="sd">CasadiBackend.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">subprocess</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">Logger</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">NamedTuple</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">NamedTuple</span><span class="p">,</span> <span class="n">Literal</span>
 
-<span class="kn">import</span> <span class="nn">casadi</span> <span class="k">as</span> <span class="nn">ca</span>
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">casadi</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ca</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BaseModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BaseModel</span>
 
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures</span> <span class="kn">import</span> <span class="n">mpc_datamodels</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures</span><span class="w"> </span><span class="kn">import</span> <span class="n">mpc_datamodels</span>
 
 
 <span class="n">CaFuncInputs</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">SX</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">Sparsity</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
@@ -112,17 +112,17 @@
 <span class="n">MPCInputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="DiscretizationMethod"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.DiscretizationMethod">[docs]</a><span class="k">class</span> <span class="nc">DiscretizationMethod</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<div class="viewcode-block" id="DiscretizationMethod"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.DiscretizationMethod">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DiscretizationMethod</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
     <span class="n">collocation</span> <span class="o">=</span> <span class="s2">&quot;collocation&quot;</span>
     <span class="n">multiple_shooting</span> <span class="o">=</span> <span class="s2">&quot;multiple_shooting&quot;</span></div>
 
 
-<div class="viewcode-block" id="CollocationMethod"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.CollocationMethod">[docs]</a><span class="k">class</span> <span class="nc">CollocationMethod</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<div class="viewcode-block" id="CollocationMethod"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.CollocationMethod">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CollocationMethod</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
     <span class="n">radau</span> <span class="o">=</span> <span class="s2">&quot;radau&quot;</span>
     <span class="n">legendre</span> <span class="o">=</span> <span class="s2">&quot;legendre&quot;</span></div>
 
 
-<div class="viewcode-block" id="Solvers"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers">[docs]</a><span class="k">class</span> <span class="nc">Solvers</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<div class="viewcode-block" id="Solvers"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Solvers</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
     <span class="n">ipopt</span> <span class="o">=</span> <span class="s2">&quot;ipopt&quot;</span>
     <span class="n">qpoases</span> <span class="o">=</span> <span class="s2">&quot;qpoases&quot;</span>
     <span class="n">sqpmethod</span> <span class="o">=</span> <span class="s2">&quot;sqpmethod&quot;</span>
@@ -133,13 +133,13 @@
     <span class="n">osqp</span> <span class="o">=</span> <span class="s2">&quot;osqp&quot;</span></div>
 
 
-<div class="viewcode-block" id="Integrators"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Integrators">[docs]</a><span class="k">class</span> <span class="nc">Integrators</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<div class="viewcode-block" id="Integrators"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Integrators">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Integrators</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
     <span class="n">cvodes</span> <span class="o">=</span> <span class="s2">&quot;cvodes&quot;</span>
     <span class="n">rk</span> <span class="o">=</span> <span class="s2">&quot;rk&quot;</span>  <span class="c1"># runge-kutta</span>
     <span class="n">euler</span> <span class="o">=</span> <span class="s2">&quot;euler&quot;</span></div>
 
 
-<div class="viewcode-block" id="CasadiDiscretizationOptions"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.CasadiDiscretizationOptions">[docs]</a><span class="k">class</span> <span class="nc">CasadiDiscretizationOptions</span><span class="p">(</span><span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">DiscretizationOptions</span><span class="p">):</span>
+<div class="viewcode-block" id="CasadiDiscretizationOptions"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.CasadiDiscretizationOptions">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CasadiDiscretizationOptions</span><span class="p">(</span><span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">DiscretizationOptions</span><span class="p">):</span>
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
 
     <span class="n">method</span><span class="p">:</span> <span class="n">DiscretizationMethod</span> <span class="o">=</span> <span class="n">DiscretizationMethod</span><span class="o">.</span><span class="n">collocation</span>
@@ -148,14 +148,14 @@
     <span class="n">integrator</span><span class="p">:</span> <span class="n">Integrators</span> <span class="o">=</span> <span class="n">Integrators</span><span class="o">.</span><span class="n">cvodes</span></div>
 
 
-<div class="viewcode-block" id="SolverOptions"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverOptions">[docs]</a><span class="k">class</span> <span class="nc">SolverOptions</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<div class="viewcode-block" id="SolverOptions"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverOptions">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SolverOptions</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">Solvers</span> <span class="o">=</span> <span class="s2">&quot;ipopt&quot;</span>
     <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="p">{})</span>
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="OptParMXContainer"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.OptParMXContainer">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">OptParMXContainer</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptParMXContainer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Stores the necessary MX variables created during discretization for</span>
 <span class="sd">    OptimizationParameters.&quot;&quot;&quot;</span>
 
@@ -164,7 +164,7 @@
 
 
 <div class="viewcode-block" id="OptVarMXContainer"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.OptVarMXContainer">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">OptVarMXContainer</span><span class="p">(</span><span class="n">OptParMXContainer</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptVarMXContainer</span><span class="p">(</span><span class="n">OptParMXContainer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Stores the necessary MX variables created during discretization for</span>
 <span class="sd">    OptimizationVariables.&quot;&quot;&quot;</span>
 
@@ -175,20 +175,20 @@
 
 
 <div class="viewcode-block" id="Constraint"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Constraint">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Constraint</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Constraint</span><span class="p">:</span>
     <span class="n">function</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span>
     <span class="n">lb</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span>
     <span class="n">ub</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span></div>
 
 
-<div class="viewcode-block" id="ModelConstraint"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.ModelConstraint">[docs]</a><span class="k">class</span> <span class="nc">ModelConstraint</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<div class="viewcode-block" id="ModelConstraint"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.ModelConstraint">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ModelConstraint</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
     <span class="n">lb</span><span class="p">:</span> <span class="n">CaFuncInputs</span>
     <span class="n">function</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span>
     <span class="n">ub</span><span class="p">:</span> <span class="n">CaFuncInputs</span></div>
 
 
 <div class="viewcode-block" id="SolverFactory"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">SolverFactory</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SolverFactory</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a solver given an NLP and an options construct.&quot;&quot;&quot;</span>
 
     <span class="n">do_jit</span><span class="p">:</span> <span class="nb">bool</span>
@@ -197,7 +197,7 @@
     <span class="n">options</span><span class="p">:</span> <span class="n">SolverOptions</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">SolverOptions</span><span class="p">)</span>
     <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="SolverFactory.create_solver"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.create_solver">[docs]</a>    <span class="k">def</span> <span class="nf">create_solver</span><span class="p">(</span>
+<div class="viewcode-block" id="SolverFactory.create_solver"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.create_solver">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_solver</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">nlp</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
         <span class="n">discrete</span><span class="p">:</span> <span class="n">DiscreteVars</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -233,7 +233,7 @@
             <span class="sa">f</span><span class="s2">&quot;supported: </span><span class="si">{</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">Solvers</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_create_fatrop_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">equalities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_fatrop_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">equalities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]):</span>
         <span class="c1"># equality = [True for _ in range(nlp[&quot;g&quot;].shape[0])]</span>
 
         <span class="n">default_opts</span> <span class="o">=</span> <span class="p">{</span>
@@ -261,7 +261,7 @@
         <span class="n">nlp</span> <span class="o">=</span> <span class="n">compile_solver</span><span class="p">(</span><span class="n">bat_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bat_file</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_casadi_nlp</span><span class="p">(</span><span class="n">nlp</span><span class="p">,</span> <span class="s2">&quot;fatrop&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="s2">&quot;nlp&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_create_ipopt_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_ipopt_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">default_opts</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
             <span class="s2">&quot;print_time&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
@@ -289,7 +289,7 @@
         <span class="n">nlp</span> <span class="o">=</span> <span class="n">compile_solver</span><span class="p">(</span><span class="n">bat_file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bat_file</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_casadi_nlp</span><span class="p">(</span><span class="n">nlp</span><span class="p">,</span> <span class="s2">&quot;ipopt&quot;</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="s2">&quot;nlp&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_create_sqpmethod_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_sqpmethod_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">default_opts</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;qpsol&quot;</span><span class="p">:</span> <span class="s2">&quot;osqp&quot;</span><span class="p">,</span>
             <span class="s2">&quot;qpsol_options&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;error_on_fail&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
@@ -304,7 +304,7 @@
         <span class="n">opts</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_opts</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">nlpsol</span><span class="p">(</span><span class="s2">&quot;mpc&quot;</span><span class="p">,</span> <span class="s2">&quot;sqpmethod&quot;</span><span class="p">,</span> <span class="n">nlp</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_create_qpoases_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_qpoases_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">default_opts</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
             <span class="s2">&quot;print_time&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
@@ -314,7 +314,7 @@
         <span class="n">opts</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_opts</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">qpsol</span><span class="p">(</span><span class="s2">&quot;mpc&quot;</span><span class="p">,</span> <span class="s2">&quot;qpoases&quot;</span><span class="p">,</span> <span class="n">nlp</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_create_proxqp_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_proxqp_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">default_opts</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
             <span class="s2">&quot;print_time&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
@@ -324,7 +324,7 @@
         <span class="n">opts</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_opts</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">qpsol</span><span class="p">(</span><span class="s2">&quot;mpc&quot;</span><span class="p">,</span> <span class="s2">&quot;proxqp&quot;</span><span class="p">,</span> <span class="n">nlp</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_create_osqp_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_osqp_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">default_opts</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
             <span class="s2">&quot;print_time&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
@@ -334,14 +334,14 @@
         <span class="n">opts</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_opts</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">qpsol</span><span class="p">(</span><span class="s2">&quot;mpc&quot;</span><span class="p">,</span> <span class="s2">&quot;osqp&quot;</span><span class="p">,</span> <span class="n">nlp</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_create_gurobi_solver</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_gurobi_solver</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">discrete</span><span class="p">:</span> <span class="n">DiscreteVars</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
         <span class="n">default_opts</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">opts</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_opts</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">,</span> <span class="s2">&quot;discrete&quot;</span><span class="p">:</span> <span class="n">discrete</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">qpsol</span><span class="p">(</span><span class="s2">&quot;mpc&quot;</span><span class="p">,</span> <span class="s2">&quot;gurobi&quot;</span><span class="p">,</span> <span class="n">nlp</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_create_bonmin_solver</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_bonmin_solver</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">nlp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">discrete</span><span class="p">:</span> <span class="n">DiscreteVars</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
         <span class="n">default_opts</span> <span class="o">=</span> <span class="p">{</span>
@@ -352,7 +352,7 @@
         <span class="n">opts</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">default_opts</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">,</span> <span class="s2">&quot;discrete&quot;</span><span class="p">:</span> <span class="n">discrete</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">nlpsol</span><span class="p">(</span><span class="s2">&quot;mpc&quot;</span><span class="p">,</span> <span class="s2">&quot;bonmin&quot;</span><span class="p">,</span> <span class="n">nlp</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SolverFactory.make_casadi_nlp"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.make_casadi_nlp">[docs]</a>    <span class="k">def</span> <span class="nf">make_casadi_nlp</span><span class="p">(</span>
+<div class="viewcode-block" id="SolverFactory.make_casadi_nlp"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.make_casadi_nlp">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">make_casadi_nlp</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">problem</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
         <span class="n">solver</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -374,7 +374,7 @@
 
 
 <div class="viewcode-block" id="temporary_directory"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.temporary_directory">[docs]</a><span class="nd">@contextmanager</span>
-<span class="k">def</span> <span class="nf">temporary_directory</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">temporary_directory</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
     <span class="n">old_pwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
     <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -383,7 +383,7 @@
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">old_pwd</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="compile_solver"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.compile_solver">[docs]</a><span class="k">def</span> <span class="nf">compile_solver</span><span class="p">(</span><span class="n">bat_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="compile_solver"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.compile_solver">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">compile_solver</span><span class="p">(</span><span class="n">bat_file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Code-generates an ipopt solver and compiles it.</span>
 <span class="sd">    Currently, only works on Windows! Requires a batch file that knows</span>
@@ -429,10 +429,10 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="s2">&quot;You need to provide a batch file to &quot;</span>
             <span class="s2">&quot;compile the solver in the backend config.&quot;</span>
-        <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
     <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="c1"># provided batch file does not exist</span>
-        <span class="k">raise</span> <span class="ne">FileNotFoundError</span> <span class="kn">from</span> <span class="nn">e</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
     <span class="k">if</span> <span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
             <span class="s2">&quot;The provided batch file did not exit properly, please &quot;</span>

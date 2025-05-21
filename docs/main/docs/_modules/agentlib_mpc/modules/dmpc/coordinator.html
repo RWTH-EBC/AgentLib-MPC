@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules.dmpc.coordinator &mdash; agentlib_mpc 0.6.4 documentation</title>
+  <title>agentlib_mpc.modules.dmpc.coordinator &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -73,15 +73,15 @@
            <div itemprop="articleBody">
              
   <h1>Source code for agentlib_mpc.modules.dmpc.coordinator</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">asdict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
-<span class="kn">import</span> <span class="nn">threading</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">asdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span>
 
-<span class="kn">from</span> <span class="nn">agentlib.core</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">BaseModule</span><span class="p">,</span>
     <span class="n">BaseModuleConfig</span><span class="p">,</span>
     <span class="n">AgentVariable</span><span class="p">,</span>
@@ -89,17 +89,17 @@
     <span class="n">Source</span><span class="p">,</span>
     <span class="n">AgentVariables</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures.coordinator_datatypes</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.coordinator_datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">AgentStatus</span><span class="p">,</span>
     <span class="n">RegistrationMessage</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">import</span> <span class="nn">agentlib_mpc.data_structures.coordinator_datatypes</span> <span class="k">as</span> <span class="nn">cdt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.coordinator_datatypes</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cdt</span>
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="CoordinatorConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.CoordinatorConfig">[docs]</a><span class="k">class</span> <span class="nc">CoordinatorConfig</span><span class="p">(</span><span class="n">BaseModuleConfig</span><span class="p">):</span>
+<div class="viewcode-block" id="CoordinatorConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.CoordinatorConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CoordinatorConfig</span><span class="p">(</span><span class="n">BaseModuleConfig</span><span class="p">):</span>
     <span class="n">maxIter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum number of iterations&quot;</span><span class="p">)</span>
     <span class="n">time_out_non_responders</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum wait time for subsystems in seconds&quot;</span>
@@ -117,18 +117,18 @@
     <span class="n">shared_variable_fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;messages_out&quot;</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="Coordinator"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator">[docs]</a><span class="k">class</span> <span class="nc">Coordinator</span><span class="p">(</span><span class="n">BaseModule</span><span class="p">):</span>
+<div class="viewcode-block" id="Coordinator"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Coordinator</span><span class="p">(</span><span class="n">BaseModule</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class implementing the base coordination for distributed MPC&quot;&quot;&quot;</span>
 
     <span class="n">config</span><span class="p">:</span> <span class="n">CoordinatorConfig</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">agent_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Source</span><span class="p">,</span> <span class="n">cdt</span><span class="o">.</span><span class="n">AgentDictEntry</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">:</span> <span class="n">cdt</span><span class="o">.</span><span class="n">CoordinatorStatus</span> <span class="o">=</span> <span class="n">cdt</span><span class="o">.</span><span class="n">CoordinatorStatus</span><span class="o">.</span><span class="n">sleeping</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">received_variable</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Coordinator.process"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Coordinator.process"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator.process">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
 
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
@@ -169,7 +169,7 @@
 
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Coordinator.trigger_optimizations"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator.trigger_optimizations">[docs]</a>    <span class="k">def</span> <span class="nf">trigger_optimizations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Coordinator.trigger_optimizations"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator.trigger_optimizations">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">trigger_optimizations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Triggers the optimization for all agents with status ready.</span>
 <span class="sd">        Returns:</span>
@@ -189,7 +189,7 @@
                 <span class="p">)</span>
                 <span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Coordinator.register_callbacks"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator.register_callbacks">[docs]</a>    <span class="k">def</span> <span class="nf">register_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Coordinator.register_callbacks"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator.register_callbacks">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">register_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">data_broker</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span>
             <span class="n">alias</span><span class="o">=</span><span class="n">cdt</span><span class="o">.</span><span class="n">REGISTRATION_A2C</span><span class="p">,</span>
             <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -206,7 +206,7 @@
             <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">optim_results_callback</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Coordinator.optim_results_callback"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator.optim_results_callback">[docs]</a>    <span class="k">def</span> <span class="nf">optim_results_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
+<div class="viewcode-block" id="Coordinator.optim_results_callback"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator.optim_results_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">optim_results_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Saves the results of a local optimization.</span>
 <span class="sd">        Args:</span>
@@ -221,7 +221,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">agent_dict</span><span class="p">[</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">cdt</span><span class="o">.</span><span class="n">AgentStatus</span><span class="o">.</span><span class="n">ready</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">received_variable</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Coordinator.init_iteration_callback"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator.init_iteration_callback">[docs]</a>    <span class="k">def</span> <span class="nf">init_iteration_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
+<div class="viewcode-block" id="Coordinator.init_iteration_callback"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator.init_iteration_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_iteration_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes and Agents InitIteration confirmation.</span>
 <span class="sd">        Args:</span>
@@ -258,7 +258,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">received_variable</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">all_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">all_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        Returns:</span>
@@ -270,7 +270,7 @@
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="Coordinator.registration_callback"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator.registration_callback">[docs]</a>    <span class="k">def</span> <span class="nf">registration_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
+<div class="viewcode-block" id="Coordinator.registration_callback"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator.registration_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">registration_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;receiving </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
@@ -304,7 +304,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">agent_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="p">)</span>  <span class="c1"># delete agent from dict</span></div>
 
-    <span class="k">def</span> <span class="nf">_wait_for_ready</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wait_for_ready</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait until all coupling variables arrive from the other systems.&quot;&quot;&quot;</span>
@@ -329,7 +329,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_deregister_slow_participants</span><span class="p">()</span>
                 <span class="k">break</span>
 
-    <span class="k">def</span> <span class="nf">_deregister_slow_participants</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_deregister_slow_participants</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets all agents that are still busy to standby, so they won&#39;t be</span>
 <span class="sd">        waited on again.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_dict</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>

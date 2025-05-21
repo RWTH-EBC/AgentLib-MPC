@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.optimization_backends.backend &mdash; agentlib_mpc 0.6.4 documentation</title>
+  <title>agentlib_mpc.optimization_backends.backend &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -72,33 +72,33 @@
            <div itemprop="articleBody">
              
   <h1>Source code for agentlib_mpc.optimization_backends.backend</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">abc</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">pydantic</span>
-<span class="kn">from</span> <span class="nn">agentlib.core.errors</span> <span class="kn">import</span> <span class="n">ConfigurationError</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">ConfigDict</span>
-<span class="kn">from</span> <span class="nn">pydantic_core.core_schema</span> <span class="kn">import</span> <span class="n">FieldValidationInfo</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigurationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_core.core_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldValidationInfo</span>
 
-<span class="kn">from</span> <span class="nn">agentlib.utils</span> <span class="kn">import</span> <span class="n">custom_injection</span>
-<span class="kn">from</span> <span class="nn">agentlib.core</span> <span class="kn">import</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures</span> <span class="kn">import</span> <span class="n">mpc_datamodels</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">custom_injection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">Model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures</span><span class="w"> </span><span class="kn">import</span> <span class="n">mpc_datamodels</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DiscretizationOptions</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span> <span class="kn">import</span> <span class="n">Results</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span><span class="w"> </span><span class="kn">import</span> <span class="n">Results</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">ModelT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ModelT&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Model</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="BackendConfig"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.BackendConfig">[docs]</a><span class="k">class</span> <span class="nc">BackendConfig</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+<div class="viewcode-block" id="BackendConfig"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.BackendConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BackendConfig</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">model</span><span class="p">:</span> <span class="nb">dict</span>
     <span class="n">discretization_options</span><span class="p">:</span> <span class="n">DiscretizationOptions</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -111,7 +111,7 @@
 
 <div class="viewcode-block" id="BackendConfig.check_csv"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.BackendConfig.check_csv">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;results_file&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">check_csv</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_csv</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">file</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.csv&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Results filename has to be a &#39;csv&#39; file. Got </span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2"> instead.&quot;</span>
@@ -120,7 +120,7 @@
 
 <div class="viewcode-block" id="BackendConfig.disable_results_if_no_file"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.BackendConfig.disable_results_if_no_file">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;save_results&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">disable_results_if_no_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">save_results</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">disable_results_if_no_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">save_results</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">save_results</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># if user did not specify if results should be saved, we save them if a</span>
             <span class="c1"># file is specified.</span>
@@ -133,7 +133,7 @@
 
 <div class="viewcode-block" id="BackendConfig.check_overwrite"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.BackendConfig.check_overwrite">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;overwrite_result_file&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">check_overwrite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">overwrite_result_file</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_overwrite</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">overwrite_result_file</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks, whether the overwrite results sttings are valid, and deletes</span>
 <span class="sd">        existing result files if applicable.&quot;&quot;&quot;</span>
         <span class="n">res_file</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;results_file&quot;</span><span class="p">)</span>
@@ -154,7 +154,7 @@
         <span class="k">return</span> <span class="n">overwrite_result_file</span></div></div>
 
 
-<div class="viewcode-block" id="OptimizationBackend"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend">[docs]</a><span class="k">class</span> <span class="nc">OptimizationBackend</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<div class="viewcode-block" id="OptimizationBackend"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">OptimizationBackend</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for all optimization backends. OptimizationBackends are a</span>
 <span class="sd">    plugin for the &#39;mpc&#39; module. They provide means to setup and solve the</span>
@@ -166,7 +166,7 @@
     <span class="n">mpc_backend_parameters</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;time_step&quot;</span><span class="p">,</span> <span class="s2">&quot;prediction_horizon&quot;</span><span class="p">)</span>
     <span class="n">config_type</span> <span class="o">=</span> <span class="n">BackendConfig</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_type</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">:</span> <span class="n">ModelT</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_from_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
@@ -175,12 +175,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_created_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># flag if we checked the file location</span>
 
-<div class="viewcode-block" id="OptimizationBackend.register_logger"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.register_logger">[docs]</a>    <span class="k">def</span> <span class="nf">register_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+<div class="viewcode-block" id="OptimizationBackend.register_logger"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.register_logger">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">register_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Registers a logger, can be used to use the module logger&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span></div>
 
 <div class="viewcode-block" id="OptimizationBackend.setup_optimization"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.setup_optimization">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">setup_optimization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">VariableReference</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_optimization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">VariableReference</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Performs all necessary steps to make the ``solve`` method usable.</span>
 
@@ -191,7 +191,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">var_ref</span> <span class="o">=</span> <span class="n">var_ref</span></div>
 
 <div class="viewcode-block" id="OptimizationBackend.solve"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.solve">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">now</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">datetime</span><span class="p">],</span> <span class="n">current_vars</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AgentVariable</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Results</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -227,14 +227,14 @@
             <span class="s2">&quot;it is individual to the subclasses&quot;</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="OptimizationBackend.update_discretization_options"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.update_discretization_options">[docs]</a>    <span class="k">def</span> <span class="nf">update_discretization_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="OptimizationBackend.update_discretization_options"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.update_discretization_options">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_discretization_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the discretization options with the new dict.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="n">opts</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setup_optimization</span><span class="p">(</span><span class="n">var_ref</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">var_ref</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="OptimizationBackend.model_from_config"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.model_from_config">[docs]</a>    <span class="k">def</span> <span class="nf">model_from_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="OptimizationBackend.model_from_config"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.model_from_config">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">model_from_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the model to the backend.&quot;&quot;&quot;</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">_type</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span>
@@ -253,13 +253,13 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">model</span></div>
 
-<div class="viewcode-block" id="OptimizationBackend.get_lags_per_variable"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.get_lags_per_variable">[docs]</a>    <span class="k">def</span> <span class="nf">get_lags_per_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<div class="viewcode-block" id="OptimizationBackend.get_lags_per_variable"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.get_lags_per_variable">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_lags_per_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the name of variables which include lags and their lag in seconds.</span>
 <span class="sd">        The MPC module can use this information to save relevant past data of lagged</span>
 <span class="sd">        variables&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{}</span></div>
 
-<div class="viewcode-block" id="OptimizationBackend.results_file_exists"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.results_file_exists">[docs]</a>    <span class="k">def</span> <span class="nf">results_file_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="OptimizationBackend.results_file_exists"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.results_file_exists">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">results_file_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if the results file already exists, and if not, creates it with</span>
 <span class="sd">        headers.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_created_file</span><span class="p">:</span>
@@ -275,7 +275,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_created_file</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="OptimizationBackend.update_model_variables"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.update_model_variables">[docs]</a>    <span class="k">def</span> <span class="nf">update_model_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_vars</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AgentVariable</span><span class="p">]):</span>
+<div class="viewcode-block" id="OptimizationBackend.update_model_variables"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend.update_model_variables">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_model_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_vars</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AgentVariable</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Internal method to write current data_broker to model variables.</span>
 <span class="sd">        Only update values, not other module_types.</span>
@@ -288,13 +288,13 @@
 <span class="n">OptimizationBackendT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;OptimizationBackendT&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">OptimizationBackend</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="ADMMBackend"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.ADMMBackend">[docs]</a><span class="k">class</span> <span class="nc">ADMMBackend</span><span class="p">(</span><span class="n">OptimizationBackend</span><span class="p">):</span>
+<div class="viewcode-block" id="ADMMBackend"><a class="viewcode-back" href="../../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.ADMMBackend">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ADMMBackend</span><span class="p">(</span><span class="n">OptimizationBackend</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for implementations of optimization backends for ADMM</span>
 <span class="sd">    algorithms.&quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">coupling_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">coupling_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the grid on which the coupling variables are discretized.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 </pre></div>

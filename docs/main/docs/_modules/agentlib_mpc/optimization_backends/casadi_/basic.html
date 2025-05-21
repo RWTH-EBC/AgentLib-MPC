@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.optimization_backends.casadi_.basic &mdash; agentlib_mpc 0.6.4 documentation</title>
+  <title>agentlib_mpc.optimization_backends.casadi_.basic &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -72,12 +72,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for agentlib_mpc.optimization_backends.casadi_.basic</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
 
-<span class="kn">import</span> <span class="nn">casadi</span> <span class="k">as</span> <span class="nn">ca</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">casadi</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ca</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures.casadi_utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.casadi_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Constraint</span><span class="p">,</span>
     <span class="n">LB_PREFIX</span><span class="p">,</span>
     <span class="n">UB_PREFIX</span><span class="p">,</span>
@@ -85,21 +85,21 @@
     <span class="n">SolverFactory</span><span class="p">,</span>
     <span class="n">Integrators</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span> <span class="kn">import</span> <span class="n">VariableReference</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.models.casadi_model</span> <span class="kn">import</span> <span class="n">CasadiModel</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.optimization_backends.casadi_.core.casadi_backend</span> <span class="kn">import</span> <span class="n">CasADiBackend</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.optimization_backends.casadi_.core.VariableGroup</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariableReference</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.casadi_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasADiBackend</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.VariableGroup</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">OptimizationQuantity</span><span class="p">,</span>
     <span class="n">OptimizationVariable</span><span class="p">,</span>
     <span class="n">OptimizationParameter</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.optimization_backends.casadi_.core.discretization</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.discretization</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Discretization</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.optimization_backends.casadi_.core.system</span> <span class="kn">import</span> <span class="n">System</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.system</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span>
 
 
-<div class="viewcode-block" id="BaseSystem"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.BaseSystem">[docs]</a><span class="k">class</span> <span class="nc">BaseSystem</span><span class="p">(</span><span class="n">System</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseSystem"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.BaseSystem">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BaseSystem</span><span class="p">(</span><span class="n">System</span><span class="p">):</span>
     <span class="c1"># variables</span>
     <span class="n">states</span><span class="p">:</span> <span class="n">OptimizationVariable</span>
     <span class="n">controls</span><span class="p">:</span> <span class="n">OptimizationVariable</span>
@@ -116,7 +116,7 @@
     <span class="n">cost_function</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span>
     <span class="n">ode</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span>
 
-<div class="viewcode-block" id="BaseSystem.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.BaseSystem.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">CasadiModel</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">VariableReference</span><span class="p">):</span>
+<div class="viewcode-block" id="BaseSystem.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.BaseSystem.initialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">CasadiModel</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">VariableReference</span><span class="p">):</span>
         <span class="c1"># define variables</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="n">OptimizationVariable</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
             <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;state&quot;</span><span class="p">,</span>
@@ -169,11 +169,12 @@
             <span class="n">function</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">function</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">()]),</span>
             <span class="n">lb</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">lb</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">()]),</span>
             <span class="n">ub</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">ub</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">()]),</span>
-        <span class="p">)</span></div></div>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">time</span></div></div>
 
 
 <div class="viewcode-block" id="CollocationMatrices"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.CollocationMatrices">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
-<span class="k">class</span> <span class="nc">CollocationMatrices</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CollocationMatrices</span><span class="p">:</span>
     <span class="n">order</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">root</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
     <span class="n">B</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
@@ -181,8 +182,8 @@
     <span class="n">D</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></div>
 
 
-<div class="viewcode-block" id="DirectCollocation"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.DirectCollocation">[docs]</a><span class="k">class</span> <span class="nc">DirectCollocation</span><span class="p">(</span><span class="n">Discretization</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">_discretize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">):</span>
+<div class="viewcode-block" id="DirectCollocation"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.DirectCollocation">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DirectCollocation</span><span class="p">(</span><span class="n">Discretization</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_discretize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Defines a direct collocation discretization.</span>
 <span class="sd">        # pylint: disable=invalid-name</span>
@@ -208,7 +209,6 @@
         <span class="k">while</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
             <span class="c1"># New NLP variable for the control</span>
             <span class="n">uk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="p">)</span>
-
             <span class="c1"># New parameter for inputs</span>
             <span class="n">dk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="p">)</span>
 
@@ -244,7 +244,7 @@
             <span class="k">for</span> <span class="n">constraint</span> <span class="ow">in</span> <span class="n">constraints</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span><span class="o">*</span><span class="n">constraint</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_construct_stage_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_construct_stage_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Combine information from the model and the var_ref to create CasADi</span>
 <span class="sd">        functions which describe the system dynamics and constraints at each</span>
@@ -271,11 +271,13 @@
             <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">all_system_quantities</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">q</span><span class="o">.</span><span class="n">use_in_stage_function</span>
         <span class="p">]</span>
+        <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
         <span class="n">input_denotations</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">q</span><span class="o">.</span><span class="n">name</span>
             <span class="k">for</span> <span class="n">denotation</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">all_system_quantities</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">q</span><span class="o">.</span><span class="n">use_in_stage_function</span>
         <span class="p">]</span>
+        <span class="n">input_denotations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
 
         <span class="c1"># aggregate constraints</span>
         <span class="n">constraints_func</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">function</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">constraints</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
@@ -312,13 +314,13 @@
             <span class="n">output_denotations</span><span class="p">,</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="DirectCollocation.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.DirectCollocation.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">,</span> <span class="n">solver_factory</span><span class="p">:</span> <span class="n">SolverFactory</span><span class="p">):</span>
+<div class="viewcode-block" id="DirectCollocation.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.DirectCollocation.initialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">,</span> <span class="n">solver_factory</span><span class="p">:</span> <span class="n">SolverFactory</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the trajectory optimization problem, creating all symbolic</span>
 <span class="sd">        variables of the OCP, the mapping function and the numerical solver.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_construct_stage_function</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">system</span><span class="o">=</span><span class="n">system</span><span class="p">,</span> <span class="n">solver_factory</span><span class="o">=</span><span class="n">solver_factory</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_collocation_inner_loop</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_collocation_inner_loop</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">state_at_beginning</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">,</span>
         <span class="n">collocation</span><span class="p">:</span> <span class="n">CollocationMatrices</span><span class="p">,</span>
@@ -377,6 +379,7 @@
             <span class="k">for</span> <span class="n">opt_par</span> <span class="ow">in</span> <span class="n">opt_pars</span><span class="p">:</span>
                 <span class="n">par_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">opt_par</span><span class="p">,</span> <span class="n">post_den</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">opt_pars_collocation</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">opt_par</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">par_kj</span><span class="p">})</span>
+            <span class="n">opt_pars_collocation</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span><span class="p">})</span>
 
         <span class="c1"># Loop over collocation points</span>
         <span class="n">state_k_end</span> <span class="o">=</span> <span class="n">collocation</span><span class="o">.</span><span class="n">D</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">state_at_beginning</span>
@@ -410,7 +413,7 @@
 
         <span class="k">return</span> <span class="n">state_k_end</span><span class="p">,</span> <span class="n">constraints</span>
 
-    <span class="k">def</span> <span class="nf">_collocation_polynomial</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CollocationMatrices</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_collocation_polynomial</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CollocationMatrices</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the matrices needed for direct collocation discretization.&quot;&quot;&quot;</span>
         <span class="c1"># Degree of interpolating polynomial</span>
         <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">collocation_order</span>
@@ -461,8 +464,8 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="MultipleShooting"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.MultipleShooting">[docs]</a><span class="k">class</span> <span class="nc">MultipleShooting</span><span class="p">(</span><span class="n">Discretization</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">_discretize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">):</span>
+<div class="viewcode-block" id="MultipleShooting"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.MultipleShooting">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MultipleShooting</span><span class="p">(</span><span class="n">Discretization</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_discretize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Defines a multiple shooting discretization</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -493,6 +496,7 @@
                 <span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">uk</span><span class="p">,</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">dk</span><span class="p">,</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">const_par</span><span class="p">,</span>
+                <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span><span class="p">,</span>
             <span class="p">}</span>
             <span class="c1"># get stage</span>
             <span class="n">stage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stage_function</span><span class="p">(</span><span class="o">**</span><span class="n">stage_arguments</span><span class="p">)</span>
@@ -515,7 +519,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span><span class="n">xk_end</span> <span class="o">-</span> <span class="n">xk</span><span class="p">,</span> <span class="n">gap_closing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">stage</span><span class="p">[</span><span class="s2">&quot;cost_function&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ts</span>
 
-    <span class="k">def</span> <span class="nf">_create_ode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">,</span> <span class="n">opts</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">integrator</span><span class="p">:</span> <span class="n">Integrators</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_ode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">,</span> <span class="n">opts</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">integrator</span><span class="p">:</span> <span class="n">Integrators</span><span class="p">):</span>
         <span class="c1"># dummy function for empty ode, since ca.integrator would throw an error</span>
         <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">full_symbolic</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;xf&quot;</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="s2">&quot;xk_end&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)}</span>
@@ -543,7 +547,7 @@
 
         <span class="k">return</span> <span class="n">opt_integrator</span>
 
-    <span class="k">def</span> <span class="nf">_construct_stage_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_construct_stage_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Combine information from the model and the var_ref to create CasADi</span>
 <span class="sd">        functions which describe the system dynamics and constraints at each</span>
@@ -570,11 +574,13 @@
             <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">all_system_quantities</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">q</span><span class="o">.</span><span class="n">use_in_stage_function</span>
         <span class="p">]</span>
+        <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
         <span class="n">input_denotations</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">q</span><span class="o">.</span><span class="n">name</span>
             <span class="k">for</span> <span class="n">denotation</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">all_system_quantities</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">q</span><span class="o">.</span><span class="n">use_in_stage_function</span>
         <span class="p">]</span>
+        <span class="n">input_denotations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;__time&quot;</span><span class="p">)</span>
 
         <span class="c1"># aggregate constraints</span>
         <span class="n">constraints_func</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">function</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">constraints</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
@@ -611,14 +617,14 @@
             <span class="n">output_denotations</span><span class="p">,</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="MultipleShooting.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.MultipleShooting.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">,</span> <span class="n">solver_factory</span><span class="p">:</span> <span class="n">SolverFactory</span><span class="p">):</span>
+<div class="viewcode-block" id="MultipleShooting.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.MultipleShooting.initialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">,</span> <span class="n">solver_factory</span><span class="p">:</span> <span class="n">SolverFactory</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the trajectory optimization problem, creating all symbolic</span>
 <span class="sd">        variables of the OCP, the mapping function and the numerical solver.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_construct_stage_function</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">system</span><span class="o">=</span><span class="n">system</span><span class="p">,</span> <span class="n">solver_factory</span><span class="o">=</span><span class="n">solver_factory</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="CasADiBaseBackend"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.CasADiBaseBackend">[docs]</a><span class="k">class</span> <span class="nc">CasADiBaseBackend</span><span class="p">(</span><span class="n">CasADiBackend</span><span class="p">):</span>
+<div class="viewcode-block" id="CasADiBaseBackend"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.CasADiBaseBackend">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CasADiBaseBackend</span><span class="p">(</span><span class="n">CasADiBackend</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class doing optimization of ADMM subproblems with CasADi.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

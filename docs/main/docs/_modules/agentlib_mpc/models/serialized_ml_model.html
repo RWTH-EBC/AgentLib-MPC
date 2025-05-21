@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.models.serialized_ml_model &mdash; agentlib_mpc 0.6.4 documentation</title>
+  <title>agentlib_mpc.models.serialized_ml_model &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -71,29 +71,29 @@
            <div itemprop="articleBody">
              
   <h1>Source code for agentlib_mpc.models.serialized_ml_model</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">abc</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">subprocess</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="n">Sequential</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BaseModel</span>
-<span class="kn">from</span> <span class="nn">sklearn.gaussian_process</span> <span class="kn">import</span> <span class="n">GaussianProcessRegressor</span>
-<span class="kn">from</span> <span class="nn">sklearn.gaussian_process.kernels</span> <span class="kn">import</span> <span class="n">ConstantKernel</span><span class="p">,</span> <span class="n">WhiteKernel</span><span class="p">,</span> <span class="n">RBF</span>
-<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BaseModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.gaussian_process</span><span class="w"> </span><span class="kn">import</span> <span class="n">GaussianProcessRegressor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.gaussian_process.kernels</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConstantKernel</span><span class="p">,</span> <span class="n">WhiteKernel</span><span class="p">,</span> <span class="n">RBF</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures.ml_model_datatypes</span> <span class="kn">import</span> <span class="n">OutputFeature</span><span class="p">,</span> <span class="n">Feature</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.ml_model_datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">OutputFeature</span><span class="p">,</span> <span class="n">Feature</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="get_git_revision_short_hash"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.get_git_revision_short_hash">[docs]</a><span class="k">def</span> <span class="nf">get_git_revision_short_hash</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="get_git_revision_short_hash"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.get_git_revision_short_hash">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_git_revision_short_hash</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;rev-parse&quot;</span><span class="p">,</span> <span class="s2">&quot;--short&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">])</span>
         <span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
@@ -101,13 +101,13 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="MLModels"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.MLModels">[docs]</a><span class="k">class</span> <span class="nc">MLModels</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<div class="viewcode-block" id="MLModels"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.MLModels">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MLModels</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
     <span class="n">ANN</span> <span class="o">=</span> <span class="s2">&quot;ANN&quot;</span>
     <span class="n">GPR</span> <span class="o">=</span> <span class="s2">&quot;GPR&quot;</span>
     <span class="n">LINREG</span> <span class="o">=</span> <span class="s2">&quot;LinReg&quot;</span></div>
 
 
-<div class="viewcode-block" id="SerializedMLModel"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel">[docs]</a><span class="k">class</span> <span class="nc">SerializedMLModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<div class="viewcode-block" id="SerializedMLModel"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SerializedMLModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
     <span class="n">dt</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">title</span><span class="o">=</span><span class="s2">&quot;dt&quot;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The length of time step of one prediction of Model in seconds.&quot;</span><span class="p">,</span>
@@ -137,7 +137,7 @@
 
 <div class="viewcode-block" id="SerializedMLModel.serialize"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel.serialize">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">GaussianProcessRegressor</span><span class="p">,</span> <span class="n">LinearRegression</span><span class="p">],</span>
         <span class="n">dt</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
@@ -159,7 +159,7 @@
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="SerializedMLModel.deserialize"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel.deserialize">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Deserializes SerializedMLModel object and returns a specific Machine Learning Model object.</span>
 <span class="sd">        Returns:</span>
@@ -167,7 +167,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="SerializedMLModel.save_serialized_model"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel.save_serialized_model">[docs]</a>    <span class="k">def</span> <span class="nf">save_serialized_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+<div class="viewcode-block" id="SerializedMLModel.save_serialized_model"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel.save_serialized_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_serialized_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Saves MLModel object as json string.</span>
 <span class="sd">        Args:</span>
@@ -183,7 +183,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model has been saved under the following path: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SerializedMLModel.load_serialized_model_from_file"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel.load_serialized_model_from_file">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">load_serialized_model_from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_serialized_model_from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads SerializedMLModel object from a json file and creates a new specific Machine Learning Model object</span>
 <span class="sd">        which is returned.</span>
@@ -198,7 +198,7 @@
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">load_serialized_model_from_dict</span><span class="p">(</span><span class="n">model_data</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SerializedMLModel.load_serialized_model_from_string"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel.load_serialized_model_from_string">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">load_serialized_model_from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_serialized_model_from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads SerializedMLModel object from a json string and creates a new specific Machine Learning Model object</span>
 <span class="sd">        which is returned.</span>
@@ -212,7 +212,7 @@
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">load_serialized_model_from_dict</span><span class="p">(</span><span class="n">model_data</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SerializedMLModel.load_serialized_model_from_dict"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel.load_serialized_model_from_dict">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">load_serialized_model_from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">model_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_serialized_model_from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">model_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads SerializedMLModel object from a dict and creates a new specific Machine Learning Model object</span>
 <span class="sd">        which is returned.</span>
@@ -226,7 +226,7 @@
         <span class="k">return</span> <span class="n">serialized_models</span><span class="p">[</span><span class="n">model_type</span><span class="p">](</span><span class="o">**</span><span class="n">model_data</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SerializedMLModel.load_serialized_model"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel.load_serialized_model">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">load_serialized_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">model_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_serialized_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">model_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Loads the ML model from a source&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">load_serialized_model_from_dict</span><span class="p">(</span><span class="n">model_data</span><span class="p">)</span>
@@ -236,7 +236,7 @@
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">load_serialized_model_from_string</span><span class="p">(</span><span class="n">model_data</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="SerializedANN"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedANN">[docs]</a><span class="k">class</span> <span class="nc">SerializedANN</span><span class="p">(</span><span class="n">SerializedMLModel</span><span class="p">):</span>
+<div class="viewcode-block" id="SerializedANN"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedANN">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SerializedANN</span><span class="p">(</span><span class="n">SerializedMLModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Contains Keras ANN in serialized form and offers functions to transform</span>
 <span class="sd">    Keras Sequential ANNs to SerializedANN objects (from_ANN) and vice versa (deserialize).</span>
@@ -260,7 +260,7 @@
     <span class="n">model_type</span><span class="p">:</span> <span class="n">MLModels</span> <span class="o">=</span> <span class="n">MLModels</span><span class="o">.</span><span class="n">ANN</span>
 
 <div class="viewcode-block" id="SerializedANN.serialize"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedANN.serialize">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">model</span><span class="p">:</span> <span class="n">Sequential</span><span class="p">,</span>
         <span class="n">dt</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
@@ -286,9 +286,9 @@
             <span class="n">trainer_config</span><span class="o">=</span><span class="n">training_info</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="SerializedANN.deserialize"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedANN.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequential</span><span class="p">:</span>
+<div class="viewcode-block" id="SerializedANN.deserialize"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedANN.deserialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequential</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Deserializes SerializedANN object and returns a Keras Sequential ANN.&quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="n">models</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>
 
         <span class="n">ann</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">model_from_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">)</span>
         <span class="n">layer_weights</span> <span class="o">=</span> <span class="p">[]</span>
@@ -302,7 +302,7 @@
             <span class="n">layer</span><span class="o">.</span><span class="n">set_weights</span><span class="p">(</span><span class="n">layer_weights</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">ann</span></div>
 
-<div class="viewcode-block" id="SerializedANN.to_dict"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedANN.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="SerializedANN.to_dict"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedANN.to_dict">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Transforms self to a dictionary and the numpy arrays to lists, so they can</span>
 <span class="sd">        be serialized.&quot;&quot;&quot;</span>
         <span class="n">ann_dict</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
@@ -312,7 +312,7 @@
         <span class="k">return</span> <span class="n">ann_dict</span></div></div>
 
 
-<div class="viewcode-block" id="GPRDataHandlingParameters"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.GPRDataHandlingParameters">[docs]</a><span class="k">class</span> <span class="nc">GPRDataHandlingParameters</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<div class="viewcode-block" id="GPRDataHandlingParameters"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.GPRDataHandlingParameters">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GPRDataHandlingParameters</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">normalize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">title</span><span class="o">=</span><span class="s2">&quot;normalize&quot;</span><span class="p">,</span>
@@ -335,14 +335,14 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="CustomGPR"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.CustomGPR">[docs]</a><span class="k">class</span> <span class="nc">CustomGPR</span><span class="p">(</span><span class="n">GaussianProcessRegressor</span><span class="p">):</span>
+<div class="viewcode-block" id="CustomGPR"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.CustomGPR">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CustomGPR</span><span class="p">(</span><span class="n">GaussianProcessRegressor</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extends scikit-learn GaussianProcessRegressor with normalizing and scaling option</span>
 <span class="sd">    by adding the attribute data_handling, customizing the predict function accordingly</span>
 <span class="sd">    and adding a normalize function.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">kernel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
@@ -365,7 +365,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_handling</span><span class="p">:</span> <span class="n">GPRDataHandlingParameters</span> <span class="o">=</span> <span class="n">data_handling</span>
 
-<div class="viewcode-block" id="CustomGPR.predict"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.CustomGPR.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">return_std</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_cov</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="CustomGPR.predict"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.CustomGPR.predict">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">return_std</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_cov</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overwrite predict method of GaussianProcessRegressor to include normalization.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -373,7 +373,7 @@
             <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">return_std</span><span class="p">,</span> <span class="n">return_cov</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="n">mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_handling</span><span class="o">.</span><span class="n">mean</span>
         <span class="n">std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_handling</span><span class="o">.</span><span class="n">std</span>
 
@@ -383,7 +383,7 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">/</span> <span class="n">std</span></div>
 
 
-<div class="viewcode-block" id="GPRKernelParameters"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.GPRKernelParameters">[docs]</a><span class="k">class</span> <span class="nc">GPRKernelParameters</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<div class="viewcode-block" id="GPRKernelParameters"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.GPRKernelParameters">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GPRKernelParameters</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">constant_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
         <span class="n">title</span><span class="o">=</span><span class="s2">&quot;constant value&quot;</span><span class="p">,</span>
@@ -427,7 +427,7 @@
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <div class="viewcode-block" id="GPRKernelParameters.from_model"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.GPRKernelParameters.from_model">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">CustomGPR</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GPRKernelParameters&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">CustomGPR</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GPRKernelParameters&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
             <span class="n">constant_value</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">kernel_</span><span class="o">.</span><span class="n">k1</span><span class="o">.</span><span class="n">k1</span><span class="o">.</span><span class="n">constant_value</span><span class="p">,</span>
             <span class="n">constant_value_bounds</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">kernel_</span><span class="o">.</span><span class="n">k1</span><span class="o">.</span><span class="n">k1</span><span class="o">.</span><span class="n">constant_value_bounds</span><span class="p">,</span>
@@ -439,7 +439,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="GPRParameters"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.GPRParameters">[docs]</a><span class="k">class</span> <span class="nc">GPRParameters</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<div class="viewcode-block" id="GPRParameters"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.GPRParameters">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GPRParameters</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">alpha</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span>
         <span class="n">title</span><span class="o">=</span><span class="s2">&quot;alpha&quot;</span><span class="p">,</span>
@@ -478,7 +478,7 @@
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <div class="viewcode-block" id="GPRParameters.from_model"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.GPRParameters.from_model">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">CustomGPR</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GPRParameters&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">CustomGPR</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GPRParameters&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
             <span class="n">alpha</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">alpha_</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
             <span class="n">L</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">L_</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
@@ -489,7 +489,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="SerializedGPR"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedGPR">[docs]</a><span class="k">class</span> <span class="nc">SerializedGPR</span><span class="p">(</span><span class="n">SerializedMLModel</span><span class="p">):</span>
+<div class="viewcode-block" id="SerializedGPR"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedGPR">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SerializedGPR</span><span class="p">(</span><span class="n">SerializedMLModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Contains scikit-learn GaussianProcessRegressor and its Kernel and provides functions to transform</span>
 <span class="sd">    these to SerializedGPR objects and vice versa.</span>
@@ -517,7 +517,7 @@
     <span class="n">model_type</span><span class="p">:</span> <span class="n">MLModels</span> <span class="o">=</span> <span class="n">MLModels</span><span class="o">.</span><span class="n">GPR</span>
 
 <div class="viewcode-block" id="SerializedGPR.serialize"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedGPR.serialize">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">model</span><span class="p">:</span> <span class="n">CustomGPR</span><span class="p">,</span>
         <span class="n">dt</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
@@ -558,7 +558,7 @@
             <span class="n">trainer_config</span><span class="o">=</span><span class="n">training_info</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="SerializedGPR.deserialize"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedGPR.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CustomGPR</span><span class="p">:</span>
+<div class="viewcode-block" id="SerializedGPR.deserialize"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedGPR.deserialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CustomGPR</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Deserializes SerializedGPR object and returns a scikit learn GaussionProcessRegressor.</span>
 <span class="sd">        Returns:</span>
@@ -604,7 +604,7 @@
             <span class="n">gpr_fitted</span><span class="o">.</span><span class="n">data_handling</span><span class="o">.</span><span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_handling</span><span class="o">.</span><span class="n">std</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">gpr_fitted</span></div>
 
-    <span class="k">def</span> <span class="nf">_basic_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gpr</span><span class="p">:</span> <span class="n">GaussianProcessRegressor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_basic_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gpr</span><span class="p">:</span> <span class="n">GaussianProcessRegressor</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs an easy fit to be able to populate with kernel_parameters and gpr_parameters</span>
 <span class="sd">        afterward and therefore really fit it.</span>
@@ -622,7 +622,7 @@
         <span class="k">return</span> <span class="n">gpr</span></div>
 
 
-<div class="viewcode-block" id="LinRegParameters"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.LinRegParameters">[docs]</a><span class="k">class</span> <span class="nc">LinRegParameters</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<div class="viewcode-block" id="LinRegParameters"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.LinRegParameters">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">LinRegParameters</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">coef</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">title</span><span class="o">=</span><span class="s2">&quot;coefficients&quot;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Estimated coefficients for the linear regression problem. If multiple targets are passed during the fit (y 2D), this is a 2D array of shape (n_targets, n_features), while if only one target is passed, this is a 1D array of length n_features.&quot;</span><span class="p">,</span>
@@ -645,7 +645,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SerializedLinReg"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedLinReg">[docs]</a><span class="k">class</span> <span class="nc">SerializedLinReg</span><span class="p">(</span><span class="n">SerializedMLModel</span><span class="p">):</span>
+<div class="viewcode-block" id="SerializedLinReg"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedLinReg">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SerializedLinReg</span><span class="p">(</span><span class="n">SerializedMLModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Contains scikit-learn LinearRegression and provides functions to transform</span>
 <span class="sd">    these to SerializedLinReg objects and vice versa.</span>
@@ -662,7 +662,7 @@
     <span class="n">model_type</span><span class="p">:</span> <span class="n">MLModels</span> <span class="o">=</span> <span class="n">MLModels</span><span class="o">.</span><span class="n">LINREG</span>
 
 <div class="viewcode-block" id="SerializedLinReg.serialize"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedLinReg.serialize">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">model</span><span class="p">:</span> <span class="n">LinearRegression</span><span class="p">,</span>
         <span class="n">dt</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
@@ -707,7 +707,7 @@
             <span class="n">trainer_config</span><span class="o">=</span><span class="n">training_info</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="SerializedLinReg.deserialize"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedLinReg.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LinearRegression</span><span class="p">:</span>
+<div class="viewcode-block" id="SerializedLinReg.deserialize"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedLinReg.deserialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LinearRegression</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Deserializes SerializedLinReg object and returns a LinearRegression object of scikit-learn.</span>
 <span class="sd">        Returns:</span>
@@ -723,7 +723,7 @@
         <span class="n">linear_model_fitted</span><span class="o">.</span><span class="n">singular_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">singular</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">linear_model_fitted</span></div>
 
-    <span class="k">def</span> <span class="nf">_basic_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">linear_model</span><span class="p">:</span> <span class="n">LinearRegression</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_basic_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">linear_model</span><span class="p">:</span> <span class="n">LinearRegression</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs an easy fit to be able to populate with parameters and gpr_parameters</span>
 <span class="sd">        afterward and therefore really fit it.</span>

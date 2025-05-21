@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules.estimation.mhe &mdash; agentlib_mpc 0.6.4 documentation</title>
+  <title>agentlib_mpc.modules.estimation.mhe &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -72,33 +72,33 @@
            <div itemprop="articleBody">
              
   <h1>Source code for agentlib_mpc.modules.estimation.mhe</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">pydantic</span>
-<span class="kn">from</span> <span class="nn">agentlib.core</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">BaseModuleConfig</span><span class="p">,</span>
     <span class="n">BaseModule</span><span class="p">,</span>
     <span class="n">Agent</span><span class="p">,</span>
     <span class="n">AgentVariable</span><span class="p">,</span>
     <span class="n">Source</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">agentlib.core.errors</span> <span class="kn">import</span> <span class="n">ConfigurationError</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigurationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span>
 
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures</span> <span class="kn">import</span> <span class="n">mpc_datamodels</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span> <span class="kn">import</span> <span class="n">Results</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.modules.mpc</span> <span class="kn">import</span> <span class="n">create_optimization_backend</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.optimization_backends.backend</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures</span><span class="w"> </span><span class="kn">import</span> <span class="n">mpc_datamodels</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span><span class="w"> </span><span class="kn">import</span> <span class="n">Results</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.modules.mpc</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_optimization_backend</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.backend</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">OptimizationBackendT</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.utils.analysis</span> <span class="kn">import</span> <span class="n">load_mpc</span><span class="p">,</span> <span class="n">load_mpc_stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.utils.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_mpc</span><span class="p">,</span> <span class="n">load_mpc_stats</span>
 
 <span class="n">AG_VAR_DICT</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AgentVariable</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="MHEConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHEConfig">[docs]</a><span class="k">class</span> <span class="nc">MHEConfig</span><span class="p">(</span><span class="n">BaseModuleConfig</span><span class="p">):</span>
+<div class="viewcode-block" id="MHEConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHEConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MHEConfig</span><span class="p">(</span><span class="n">BaseModuleConfig</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pydantic data model for MPC configuration parser</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -151,7 +151,7 @@
 
 <div class="viewcode-block" id="MHEConfig.state_weights_are_in_states"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHEConfig.state_weights_are_in_states">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;state_weights&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">state_weights_are_in_states</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">state_weights_are_in_states</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">state_weights</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">ValidationInfo</span>
     <span class="p">):</span>
         <span class="n">state_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;states&quot;</span><span class="p">]}</span>
@@ -166,7 +166,7 @@
         <span class="k">return</span> <span class="n">state_weights</span></div></div>
 
 
-<div class="viewcode-block" id="MHE"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHE">[docs]</a><span class="k">class</span> <span class="nc">MHE</span><span class="p">(</span><span class="n">BaseModule</span><span class="p">):</span>
+<div class="viewcode-block" id="MHE"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHE">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MHE</span><span class="p">(</span><span class="n">BaseModule</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A moving horizon estimator.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -175,7 +175,7 @@
     <span class="n">config</span><span class="p">:</span> <span class="n">MHEConfig</span>
     <span class="n">var_ref</span><span class="p">:</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MHEVariableReference</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructor for model predictive controller (MPC).</span>
 <span class="sd">        Args:</span>
@@ -211,9 +211,9 @@
             <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;The optimization backend of Agent </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2"> could not &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;finish its setup!&quot;</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span>
 
-    <span class="k">def</span> <span class="nf">_setup_optimization_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptimizationBackendT</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_optimization_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OptimizationBackendT</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs the setup of the optimization_backend, keeps track of status&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_status</span> <span class="o">=</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">InitStatus</span><span class="o">.</span><span class="n">during_update</span>
         <span class="n">opti_back</span> <span class="o">=</span> <span class="n">create_optimization_backend</span><span class="p">(</span>
@@ -224,27 +224,27 @@
         <span class="n">disc_opts</span><span class="o">.</span><span class="n">time_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">time_step</span>
         <span class="k">return</span> <span class="n">opti_back</span>
 
-    <span class="k">def</span> <span class="nf">_setup_var_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MHEVariableReference</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_var_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MHEVariableReference</span><span class="p">:</span>
         <span class="n">var_ref</span> <span class="o">=</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MHEVariableReference</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
         <span class="n">var_ref</span><span class="o">.</span><span class="n">measured_states</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">measured_states</span><span class="p">)</span>
         <span class="n">var_ref</span><span class="o">.</span><span class="n">weights_states</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights_states</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">var_ref</span>
 
-    <span class="k">def</span> <span class="nf">_after_config_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_after_config_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_auxiliary_variables</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">var_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_var_ref</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">optimization_backend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_optimization_backend</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_optimization</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_status</span> <span class="o">=</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">InitStatus</span><span class="o">.</span><span class="n">ready</span>
 
-    <span class="k">def</span> <span class="nf">_init_optimization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_optimization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs the setup of the optimization backend.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">optimization_backend</span><span class="o">.</span><span class="n">setup_optimization</span><span class="p">(</span>
             <span class="n">var_ref</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">var_ref</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: Initialized optimization problem.&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MHE.process"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHE.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MHE.process"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHE.process">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">current_vars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collect_variables_for_optimization</span><span class="p">()</span>
             <span class="n">solution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimization_backend</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
@@ -254,7 +254,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_remove_old_values_from_history</span><span class="p">()</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">time_step</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_remove_old_values_from_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_remove_old_values_from_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clears the history of all entries that are older than current time minus</span>
 <span class="sd">        horizon length.&quot;&quot;&quot;</span>
         <span class="n">backwards_horizon_seconds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">horizon</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">time_step</span>
@@ -262,7 +262,7 @@
         <span class="n">filt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">index</span> <span class="o">&gt;=</span> <span class="n">oldest_relevant_time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="n">filt</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">_set_estimation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">:</span> <span class="n">Results</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_estimation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">:</span> <span class="n">Results</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the estimated variables to the DataBroker.&quot;&quot;&quot;</span>
 
         <span class="c1"># parameters are scalars defined at the beginning of the problem, so we send</span>
@@ -276,7 +276,7 @@
             <span class="n">value</span> <span class="o">=</span> <span class="n">solution</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
 
-<div class="viewcode-block" id="MHE.register_callbacks"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHE.register_callbacks">[docs]</a>    <span class="k">def</span> <span class="nf">register_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MHE.register_callbacks"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHE.register_callbacks">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">register_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Registers callbacks which listen to the variables which have to be saved as</span>
 <span class="sd">        time series. These callbacks save the values in the history for use in the</span>
 <span class="sd">        optimization.&quot;&quot;&quot;</span>
@@ -302,7 +302,7 @@
                 <span class="n">name</span><span class="o">=</span><span class="n">meas_state</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="MHE.collect_variables_for_optimization"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHE.collect_variables_for_optimization">[docs]</a>    <span class="k">def</span> <span class="nf">collect_variables_for_optimization</span><span class="p">(</span>
+<div class="viewcode-block" id="MHE.collect_variables_for_optimization"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHE.collect_variables_for_optimization">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">collect_variables_for_optimization</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MHEVariableReference</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AgentVariable</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets all variables noted in the var ref and puts them in a flat</span>
@@ -336,11 +336,11 @@
 
         <span class="k">return</span> <span class="n">all_variables</span></div>
 
-    <span class="k">def</span> <span class="nf">_callback_hist_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_callback_hist_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds received measured inputs to the past trajectory.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">variable</span><span class="o">.</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">variable</span><span class="o">.</span><span class="n">value</span>
 
-    <span class="k">def</span> <span class="nf">_create_auxiliary_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">AG_VAR_DICT</span><span class="p">,</span> <span class="n">AG_VAR_DICT</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_auxiliary_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">AG_VAR_DICT</span><span class="p">,</span> <span class="n">AG_VAR_DICT</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates variables holding the weights and measurements of the states&quot;&quot;&quot;</span>
         <span class="n">states</span><span class="p">:</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MPCVariables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">states</span>
         <span class="n">measured_states</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AgentVariable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -365,7 +365,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">measured_states</span> <span class="o">=</span> <span class="n">measured_states</span>
         <span class="k">return</span> <span class="n">measured_states</span><span class="p">,</span> <span class="n">weights_states</span>
 
-<div class="viewcode-block" id="MHE.get_results"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHE.get_results">[docs]</a>    <span class="k">def</span> <span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<div class="viewcode-block" id="MHE.get_results"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHE.get_results">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Read the results that were saved from the optimization backend and</span>
 <span class="sd">        returns them as Dataframe.</span>
 
@@ -381,7 +381,7 @@
             <span class="k">return</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="MHE.read_results_file"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHE.read_results_file">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">read_results_file</span><span class="p">(</span><span class="n">results_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_results_file</span><span class="p">(</span><span class="n">results_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read the provided csv-file as an MPC results file.</span>
 <span class="sd">        Args:</span>
@@ -397,7 +397,7 @@
         <span class="n">stats</span> <span class="o">=</span> <span class="n">load_mpc_stats</span><span class="p">(</span><span class="n">results_file</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">results</span><span class="p">,</span> <span class="n">stats</span></div>
 
-<div class="viewcode-block" id="MHE.cleanup_results"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHE.cleanup_results">[docs]</a>    <span class="k">def</span> <span class="nf">cleanup_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MHE.cleanup_results"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHE.cleanup_results">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cleanup_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">results_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimization_backend</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">results_file</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">results_file</span><span class="p">:</span>
             <span class="k">return</span>

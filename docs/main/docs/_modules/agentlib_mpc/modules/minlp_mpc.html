@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules.minlp_mpc &mdash; agentlib_mpc 0.6.4 documentation</title>
+  <title>agentlib_mpc.modules.minlp_mpc &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -72,18 +72,18 @@
            <div itemprop="articleBody">
              
   <h1>Source code for agentlib_mpc.modules.minlp_mpc</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">Field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">Field</span>
 
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures</span> <span class="kn">import</span> <span class="n">mpc_datamodels</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span> <span class="kn">import</span> <span class="n">MINLPVariableReference</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.modules.mpc</span> <span class="kn">import</span> <span class="n">BaseMPCConfig</span><span class="p">,</span> <span class="n">BaseMPC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures</span><span class="w"> </span><span class="kn">import</span> <span class="n">mpc_datamodels</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span><span class="w"> </span><span class="kn">import</span> <span class="n">MINLPVariableReference</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.modules.mpc</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseMPCConfig</span><span class="p">,</span> <span class="n">BaseMPC</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="MINLPMPCConfig"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.minlp_mpc.MINLPMPCConfig">[docs]</a><span class="k">class</span> <span class="nc">MINLPMPCConfig</span><span class="p">(</span><span class="n">BaseMPCConfig</span><span class="p">):</span>
+<div class="viewcode-block" id="MINLPMPCConfig"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.minlp_mpc.MINLPMPCConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MINLPMPCConfig</span><span class="p">(</span><span class="n">BaseMPCConfig</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pydantic data model for MPC configuration parser</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -95,10 +95,10 @@
 
 <div class="viewcode-block" id="MINLPMPCConfig.validate_binary_bounds"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.minlp_mpc.MINLPMPCConfig.validate_binary_bounds">[docs]</a>    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;binary_controls&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">validate_binary_bounds</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">binary_controls</span><span class="p">:</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MPCVariables</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_binary_bounds</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">binary_controls</span><span class="p">:</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MPCVariables</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Assures all binary variables have 0 and 1 as boundaries.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">bc</span> <span class="ow">in</span> <span class="n">binary_controls</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">bc</span><span class="o">.</span><span class="n">ub</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">bc</span><span class="o">.</span><span class="n">lb</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">bc</span><span class="o">.</span><span class="n">ub</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">bc</span><span class="o">.</span><span class="n">lb</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Binary variable </span><span class="si">{</span><span class="n">bc</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> does not have bounds &#39;0, 1&#39;. This will be&quot;</span>
@@ -109,13 +109,13 @@
         <span class="k">return</span> <span class="n">binary_controls</span></div></div>
 
 
-<div class="viewcode-block" id="MINLPMPC"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.minlp_mpc.MINLPMPC">[docs]</a><span class="k">class</span> <span class="nc">MINLPMPC</span><span class="p">(</span><span class="n">BaseMPC</span><span class="p">):</span>
+<div class="viewcode-block" id="MINLPMPC"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.minlp_mpc.MINLPMPC">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MINLPMPC</span><span class="p">(</span><span class="n">BaseMPC</span><span class="p">):</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">MINLPMPCConfig</span>
 
-    <span class="k">def</span> <span class="nf">_setup_var_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">VariableReferenceT</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_var_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">VariableReferenceT</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">MINLPVariableReference</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MINLPMPC.assert_mpc_variables_are_in_model"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.minlp_mpc.MINLPMPC.assert_mpc_variables_are_in_model">[docs]</a>    <span class="k">def</span> <span class="nf">assert_mpc_variables_are_in_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MINLPMPC.assert_mpc_variables_are_in_model"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.minlp_mpc.MINLPMPC.assert_mpc_variables_are_in_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">assert_mpc_variables_are_in_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks whether all variables of var_ref are contained in the model.</span>
 <span class="sd">        Returns names of model variables not contained in the var_ref,</span>
@@ -160,7 +160,7 @@
 
         <span class="k">return</span> <span class="n">unassigned_by_model_var</span></div>
 
-<div class="viewcode-block" id="MINLPMPC.set_actuation"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.minlp_mpc.MINLPMPC.set_actuation">[docs]</a>    <span class="k">def</span> <span class="nf">set_actuation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">):</span>
+<div class="viewcode-block" id="MINLPMPC.set_actuation"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.minlp_mpc.MINLPMPC.set_actuation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_actuation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Takes the solution from optimization backend and sends the first</span>
 <span class="sd">        step to AgentVariables.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">set_actuation</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>

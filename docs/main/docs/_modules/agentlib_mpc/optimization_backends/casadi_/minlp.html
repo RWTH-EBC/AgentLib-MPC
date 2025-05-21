@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.optimization_backends.casadi_.minlp &mdash; agentlib_mpc 0.6.4 documentation</title>
+  <title>agentlib_mpc.optimization_backends.casadi_.minlp &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -72,30 +72,30 @@
            <div itemprop="articleBody">
              
   <h1>Source code for agentlib_mpc.optimization_backends.casadi_.minlp</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">casadi</span> <span class="k">as</span> <span class="nn">ca</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">casadi</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ca</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures.casadi_utils</span> <span class="kn">import</span> <span class="n">DiscretizationMethod</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span> <span class="kn">import</span> <span class="n">MINLPVariableReference</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.models.casadi_model</span> <span class="kn">import</span> <span class="n">CasadiModel</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.optimization_backends.casadi_.core.VariableGroup</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.casadi_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscretizationMethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span><span class="w"> </span><span class="kn">import</span> <span class="n">MINLPVariableReference</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.VariableGroup</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">OptimizationVariable</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">agentlib_mpc.optimization_backends.casadi_</span> <span class="kn">import</span> <span class="n">basic</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.optimization_backends.casadi_.core.casadi_backend</span> <span class="kn">import</span> <span class="n">CasADiBackend</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_</span><span class="w"> </span><span class="kn">import</span> <span class="n">basic</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.casadi_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasADiBackend</span>
 
 <span class="c1"># todo: All the names are minlp, but this is actually minlp capable</span>
 
 
-<div class="viewcode-block" id="CasadiMINLPSystem"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.minlp.CasadiMINLPSystem">[docs]</a><span class="k">class</span> <span class="nc">CasadiMINLPSystem</span><span class="p">(</span><span class="n">basic</span><span class="o">.</span><span class="n">BaseSystem</span><span class="p">):</span>
+<div class="viewcode-block" id="CasadiMINLPSystem"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.minlp.CasadiMINLPSystem">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CasadiMINLPSystem</span><span class="p">(</span><span class="n">basic</span><span class="o">.</span><span class="n">BaseSystem</span><span class="p">):</span>
     <span class="n">binary_controls</span><span class="p">:</span> <span class="n">OptimizationVariable</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_linear</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="CasadiMINLPSystem.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.minlp.CasadiMINLPSystem.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">CasadiModel</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">MINLPVariableReference</span><span class="p">):</span>
+<div class="viewcode-block" id="CasadiMINLPSystem.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.minlp.CasadiMINLPSystem.initialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">CasadiModel</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">MINLPVariableReference</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">binary_controls</span> <span class="o">=</span> <span class="n">OptimizationVariable</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
             <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">binary_controls</span><span class="p">),</span>
@@ -106,7 +106,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">var_ref</span><span class="o">=</span><span class="n">var_ref</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_linear</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_minlp</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">_is_minlp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_minlp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">inputs</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">full_symbolic</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">))</span>
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span>
             <span class="o">*</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">full_symbolic</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">use_in_stage_function</span><span class="p">)</span>
@@ -135,8 +135,8 @@
         <span class="k">return</span> <span class="n">jac_func</span><span class="p">(</span><span class="n">test_input</span><span class="p">,</span> <span class="n">test_params</span><span class="p">)</span> <span class="o">==</span> <span class="n">jac_func</span><span class="p">(</span><span class="n">test2</span><span class="p">,</span> <span class="n">test_params</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DirectCollocation"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.minlp.DirectCollocation">[docs]</a><span class="k">class</span> <span class="nc">DirectCollocation</span><span class="p">(</span><span class="n">basic</span><span class="o">.</span><span class="n">DirectCollocation</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">_discretize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="n">CasadiMINLPSystem</span><span class="p">):</span>
+<div class="viewcode-block" id="DirectCollocation"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.minlp.DirectCollocation">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DirectCollocation</span><span class="p">(</span><span class="n">basic</span><span class="o">.</span><span class="n">DirectCollocation</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_discretize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="n">CasadiMINLPSystem</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Defines a direct collocation discretization.</span>
 <span class="sd">        # pylint: disable=invalid-name</span>
@@ -163,16 +163,12 @@
             <span class="n">uk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="p">)</span>
             <span class="n">wk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">binary_controls</span><span class="p">)</span>
 
-            <span class="c1"># New parameter for inputs</span>
-            <span class="n">dk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="p">)</span>
-
             <span class="c1"># perform inner collocation loop</span>
             <span class="n">opt_vars_inside_inner</span> <span class="o">=</span> <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">algebraics</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span>
-            <span class="n">opt_pars_inside_inner</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">opt_pars_inside_inner</span> <span class="o">=</span> <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="p">]</span>
 
             <span class="n">constant_over_inner</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span> <span class="n">uk</span><span class="p">,</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="p">:</span> <span class="n">dk</span><span class="p">,</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">:</span> <span class="n">const_par</span><span class="p">,</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">binary_controls</span><span class="p">:</span> <span class="n">wk</span><span class="p">,</span>
             <span class="p">}</span>
@@ -200,7 +196,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span><span class="o">*</span><span class="n">constraint</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="CasADiMINLPBackend"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.minlp.CasADiMINLPBackend">[docs]</a><span class="k">class</span> <span class="nc">CasADiMINLPBackend</span><span class="p">(</span><span class="n">CasADiBackend</span><span class="p">):</span>
+<div class="viewcode-block" id="CasADiMINLPBackend"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.minlp.CasADiMINLPBackend">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CasADiMINLPBackend</span><span class="p">(</span><span class="n">CasADiBackend</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class doing optimization of ADMM subproblems with CasADi.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

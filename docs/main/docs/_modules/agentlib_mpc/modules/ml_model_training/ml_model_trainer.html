@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules.ml_model_training.ml_model_trainer &mdash; agentlib_mpc 0.6.4 documentation</title>
+  <title>agentlib_mpc.modules.ml_model_training.ml_model_trainer &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -72,16 +72,16 @@
            <div itemprop="articleBody">
              
   <h1>Source code for agentlib_mpc.modules.ml_model_training.ml_model_trainer</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">abc</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">pydantic</span>
-<span class="kn">from</span> <span class="nn">agentlib.core</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">BaseModuleConfig</span><span class="p">,</span>
     <span class="n">Agent</span><span class="p">,</span>
     <span class="n">BaseModule</span><span class="p">,</span>
@@ -89,31 +89,31 @@
     <span class="n">AgentVariable</span><span class="p">,</span>
     <span class="n">Source</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">agentlib.core.errors</span> <span class="kn">import</span> <span class="n">ConfigurationError</span>
-<span class="kn">from</span> <span class="nn">pydantic_core.core_schema</span> <span class="kn">import</span> <span class="n">FieldValidationInfo</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigurationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_core.core_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldValidationInfo</span>
 
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures.ml_model_datatypes</span> <span class="kn">import</span> <span class="n">name_with_lag</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.models.casadi_predictor</span> <span class="kn">import</span> <span class="n">CasadiPredictor</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.utils.analysis</span> <span class="kn">import</span> <span class="n">load_sim</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.models.serialized_ml_model</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.ml_model_datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">name_with_lag</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_predictor</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiPredictor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.utils.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_sim</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.serialized_ml_model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">SerializedMLModel</span><span class="p">,</span>
     <span class="n">SerializedANN</span><span class="p">,</span>
     <span class="n">SerializedGPR</span><span class="p">,</span>
     <span class="n">SerializedLinReg</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.models.serialized_ml_model</span> <span class="kn">import</span> <span class="n">CustomGPR</span><span class="p">,</span> <span class="n">MLModels</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures</span> <span class="kn">import</span> <span class="n">ml_model_datatypes</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures.interpolation</span> <span class="kn">import</span> <span class="n">InterpolationMethods</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.utils.plotting.ml_model_test</span> <span class="kn">import</span> <span class="n">evaluate_model</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.utils.sampling</span> <span class="kn">import</span> <span class="n">sample_values_to_target_grid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.serialized_ml_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomGPR</span><span class="p">,</span> <span class="n">MLModels</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ml_model_datatypes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">InterpolationMethods</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.utils.plotting.ml_model_test</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate_model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.utils.sampling</span><span class="w"> </span><span class="kn">import</span> <span class="n">sample_values_to_target_grid</span>
 
-<span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequential</span>
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="MLModelTrainerConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig">[docs]</a><span class="k">class</span> <span class="nc">MLModelTrainerConfig</span><span class="p">(</span><span class="n">BaseModuleConfig</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<div class="viewcode-block" id="MLModelTrainerConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MLModelTrainerConfig</span><span class="p">(</span><span class="n">BaseModuleConfig</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract Base Class for all Trainer Configs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -205,7 +205,7 @@
 
 <div class="viewcode-block" id="MLModelTrainerConfig.check_shares_amount_to_one"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.check_shares_amount_to_one">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;train_share&quot;</span><span class="p">,</span> <span class="s2">&quot;validation_share&quot;</span><span class="p">,</span> <span class="s2">&quot;test_share&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">check_shares_amount_to_one</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">current_share</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_shares_amount_to_one</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">current_share</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Makes sure, the shares amount to one.&quot;&quot;&quot;</span>
         <span class="n">shares</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="s2">&quot;train_share&quot;</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
@@ -225,7 +225,7 @@
 
 <div class="viewcode-block" id="MLModelTrainerConfig.fill_lags"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.fill_lags">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;lags&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">fill_lags</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fill_lags</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">lags</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds lag one to all unspecified lags.&quot;&quot;&quot;</span>
         <span class="n">all_features</span> <span class="o">=</span> <span class="p">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]}</span>
         <span class="n">lag_to_var_diff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">lags</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">all_features</span><span class="p">)</span>
@@ -240,7 +240,7 @@
 
 <div class="viewcode-block" id="MLModelTrainerConfig.fill_output_types"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.fill_output_types">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;output_types&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">fill_output_types</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">output_types</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fill_output_types</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">output_types</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds output type one to all unspecified output types.&quot;&quot;&quot;</span>
         <span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">out</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">out</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]}</span>
         <span class="n">type_to_var_diff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">output_types</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">output_names</span><span class="p">)</span>
@@ -256,7 +256,7 @@
 
 <div class="viewcode-block" id="MLModelTrainerConfig.fill_interpolations"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.fill_interpolations">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;interpolations&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">fill_interpolations</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">interpolations</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fill_interpolations</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">interpolations</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds interpolation method to all unspecified methods.&quot;&quot;&quot;</span>
         <span class="n">all_features</span> <span class="o">=</span> <span class="p">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]}</span>
         <span class="n">interp_to_var_diff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">interpolations</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">all_features</span><span class="p">)</span>
@@ -272,7 +272,7 @@
 
 <div class="viewcode-block" id="MLModelTrainerConfig.fill_recursive_outputs"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.fill_recursive_outputs">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;recursive_outputs&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">fill_recursive_outputs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">recursives</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fill_recursive_outputs</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">recursives</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds recursive flag to all unspecified outputs.&quot;&quot;&quot;</span>
         <span class="n">output_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]}</span>
         <span class="n">recursives_to_var_diff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">recursives</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">output_names</span><span class="p">)</span>
@@ -288,7 +288,7 @@
 
 <div class="viewcode-block" id="MLModelTrainerConfig.check_data_sources_exist"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.check_data_sources_exist">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;data_sources&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">check_data_sources_exist</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_sources</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_data_sources_exist</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_sources</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if all given data sources exist&quot;&quot;&quot;</span>
         <span class="n">existing_data</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">data_src</span> <span class="ow">in</span> <span class="n">data_sources</span><span class="p">:</span>
@@ -300,7 +300,7 @@
 
 <div class="viewcode-block" id="MLModelTrainerConfig.check_if_save_path_is_there"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.check_if_save_path_is_there">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;save_data&quot;</span><span class="p">,</span> <span class="s2">&quot;save_ml_model&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">check_if_save_path_is_there</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">save_on</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_if_save_path_is_there</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">save_on</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
         <span class="n">save_path</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;save_directory&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">save_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
@@ -309,7 +309,7 @@
         <span class="k">return</span> <span class="n">save_on</span></div></div>
 
 
-<div class="viewcode-block" id="MLModelTrainer"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer">[docs]</a><span class="k">class</span> <span class="nc">MLModelTrainer</span><span class="p">(</span><span class="n">BaseModule</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<div class="viewcode-block" id="MLModelTrainer"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MLModelTrainer</span><span class="p">(</span><span class="n">BaseModule</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract Base Class for all Trainer classes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -317,7 +317,7 @@
     <span class="n">config</span><span class="p">:</span> <span class="n">MLModelTrainerConfig</span>
     <span class="n">model_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">SerializedMLModel</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructor for model predictive controller (MPC).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -334,7 +334,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">input_features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_define_features</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">training_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">training_info</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a dict with relevant config parameters regarding the training.&quot;&quot;&quot;</span>
         <span class="c1"># We exclude all fields of the Base Trainer, as its fields are with regard to</span>
         <span class="c1"># data handling etc., and other relevant things from base trainer are already</span>
@@ -344,7 +344,7 @@
         <span class="n">exclude</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">MLModelTrainerConfig</span><span class="o">.</span><span class="n">model_fields</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MLModelTrainer.register_callbacks"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.register_callbacks">[docs]</a>    <span class="k">def</span> <span class="nf">register_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MLModelTrainer.register_callbacks"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.register_callbacks">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">register_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">inputs</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span>
             <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">feat</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">data_broker</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span>
@@ -354,14 +354,14 @@
                 <span class="n">name</span><span class="o">=</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="MLModelTrainer.process"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MLModelTrainer.process"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.process">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">retrain_delay</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_update_time_series_data</span><span class="p">()</span>
             <span class="n">serialized_ml_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrain_model</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">MLModel</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">serialized_ml_model</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_initialize_time_series_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_initialize_time_series_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Loads simulation data to initialize the time_series data&quot;&quot;&quot;</span>
         <span class="n">feature_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">lags</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="n">time_series_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">feature_names</span><span class="p">}</span>
@@ -376,7 +376,7 @@
 
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">time_series_data</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MLModelTrainer.retrain_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.retrain_model">[docs]</a>    <span class="k">def</span> <span class="nf">retrain_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MLModelTrainer.retrain_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.retrain_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">retrain_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Trains the model based on the current historic data.&quot;&quot;&quot;</span>
         <span class="n">sampled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resample</span><span class="p">()</span>
         <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_inputs_and_outputs</span><span class="p">(</span><span class="n">sampled</span><span class="p">)</span>
@@ -386,7 +386,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">save_all</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">,</span> <span class="n">training_data</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">serialized_ml_model</span></div>
 
-<div class="viewcode-block" id="MLModelTrainer.save_all"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.save_all">[docs]</a>    <span class="k">def</span> <span class="nf">save_all</span><span class="p">(</span>
+<div class="viewcode-block" id="MLModelTrainer.save_all"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.save_all">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_all</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">serialized_ml_model</span><span class="p">:</span> <span class="n">SerializedMLModel</span><span class="p">,</span>
         <span class="n">training_data</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">,</span>
@@ -405,7 +405,7 @@
                 <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_callback_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_callback_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds received measured inputs to the past trajectory.&quot;&quot;&quot;</span>
         <span class="c1"># check that only data from the same source is used</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_sources</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -424,7 +424,7 @@
             <span class="sa">f</span><span class="s2">&quot;Updated variable </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">timestamp</span><span class="si">}</span><span class="s2"> s.&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_update_time_series_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_time_series_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clears the history of all entries that are older than current time minus</span>
 <span class="sd">        horizon length.&quot;&quot;&quot;</span>
         <span class="n">df_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -448,20 +448,20 @@
             <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">[:</span><span class="n">del_rows_at_once</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MLModelTrainer.build_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.build_ml_model">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">build_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Builds and returns an ann model</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="MLModelTrainer.fit_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.fit_ml_model">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">fit_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">training_data</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">training_data</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fits the ML Model with the training data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="MLModelTrainer.resample"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.resample">[docs]</a>    <span class="k">def</span> <span class="nf">resample</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<div class="viewcode-block" id="MLModelTrainer.resample"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.resample">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">resample</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Samples the available time_series data to the required step size.&quot;&quot;&quot;</span>
         <span class="n">source_grids</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">col</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series_data</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">index</span>
@@ -510,7 +510,7 @@
 
         <span class="k">return</span> <span class="n">sampled_data</span></div>
 
-<div class="viewcode-block" id="MLModelTrainer.serialize_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.serialize_ml_model">[docs]</a>    <span class="k">def</span> <span class="nf">serialize_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SerializedMLModel</span><span class="p">:</span>
+<div class="viewcode-block" id="MLModelTrainer.serialize_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.serialize_ml_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">serialize_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SerializedMLModel</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Serializes the ML Model, sa that it can be saved</span>
 <span class="sd">        as json file.</span>
@@ -528,11 +528,11 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">serialized_ann</span></div>
 
-<div class="viewcode-block" id="MLModelTrainer.save_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.save_ml_model">[docs]</a>    <span class="k">def</span> <span class="nf">save_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serialized_ml_model</span><span class="p">:</span> <span class="n">SerializedMLModel</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+<div class="viewcode-block" id="MLModelTrainer.save_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.save_ml_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serialized_ml_model</span><span class="p">:</span> <span class="n">SerializedMLModel</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves the ML Model in serialized format.&quot;&quot;&quot;</span>
         <span class="n">serialized_ml_model</span><span class="o">.</span><span class="n">save_serialized_model</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;ml_model.json&quot;</span><span class="p">))</span></div>
 
-    <span class="k">def</span> <span class="nf">_define_features</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_define_features</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span>
         <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">Feature</span><span class="p">],</span>
@@ -557,19 +557,19 @@
         <span class="k">return</span> <span class="n">ann_inputs</span><span class="p">,</span> <span class="n">ann_outputs</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">agent_and_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">agent_and_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;A string that specifies id and time. Used to create save paths&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">input_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">input_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">inp</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">inputs</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">output_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">output_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">out</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">out</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span>
 
-<div class="viewcode-block" id="MLModelTrainer.create_inputs_and_outputs"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.create_inputs_and_outputs">[docs]</a>    <span class="k">def</span> <span class="nf">create_inputs_and_outputs</span><span class="p">(</span>
+<div class="viewcode-block" id="MLModelTrainer.create_inputs_and_outputs"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.create_inputs_and_outputs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_inputs_and_outputs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">full_data_sampled</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates extra columns in the data which contain the shifted time-series data</span>
@@ -615,7 +615,7 @@
 
         <span class="k">return</span> <span class="n">input_df</span><span class="p">,</span> <span class="n">output_df</span></div>
 
-    <span class="k">def</span> <span class="nf">_create_output_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_output_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">column</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an output column in the table for training data. Depending on</span>
 <span class="sd">        whether the feature is recursive, or represents a time delta, some changes have</span>
 <span class="sd">         to be made.&quot;&quot;&quot;</span>
@@ -628,7 +628,7 @@
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># output_type == OutputType.absolute</span>
             <span class="k">return</span> <span class="n">column</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MLModelTrainer.divide_in_tvt"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.divide_in_tvt">[docs]</a>    <span class="k">def</span> <span class="nf">divide_in_tvt</span><span class="p">(</span>
+<div class="viewcode-block" id="MLModelTrainer.divide_in_tvt"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.divide_in_tvt">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">divide_in_tvt</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">inputs</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">outputs</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
@@ -656,7 +656,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="ANNTrainerConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.ANNTrainerConfig">[docs]</a><span class="k">class</span> <span class="nc">ANNTrainerConfig</span><span class="p">(</span><span class="n">MLModelTrainerConfig</span><span class="p">):</span>
+<div class="viewcode-block" id="ANNTrainerConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.ANNTrainerConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ANNTrainerConfig</span><span class="p">(</span><span class="n">MLModelTrainerConfig</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pydantic data model for ANNTrainer configuration parser</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -677,7 +677,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ANNTrainer"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.ANNTrainer">[docs]</a><span class="k">class</span> <span class="nc">ANNTrainer</span><span class="p">(</span><span class="n">MLModelTrainer</span><span class="p">):</span>
+<div class="viewcode-block" id="ANNTrainer"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.ANNTrainer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ANNTrainer</span><span class="p">(</span><span class="n">MLModelTrainer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Module that generates ANNs based on received data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -685,12 +685,12 @@
     <span class="n">config</span><span class="p">:</span> <span class="n">ANNTrainerConfig</span>
     <span class="n">model_type</span> <span class="o">=</span> <span class="n">SerializedANN</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">agent</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ANNTrainer.build_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.ANNTrainer.build_ml_model">[docs]</a>    <span class="k">def</span> <span class="nf">build_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequential</span><span class="p">:</span>
+<div class="viewcode-block" id="ANNTrainer.build_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.ANNTrainer.build_ml_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">build_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequential</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Build an ANN with a one layer structure, can only create one ANN&quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="n">layers</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">layers</span>
 
         <span class="n">ann</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
         <span class="n">ann</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
@@ -700,7 +700,7 @@
         <span class="n">ann</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s2">&quot;mse&quot;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="s2">&quot;adam&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ann</span></div>
 
-<div class="viewcode-block" id="ANNTrainer.fit_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.ANNTrainer.fit_ml_model">[docs]</a>    <span class="k">def</span> <span class="nf">fit_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">training_data</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">):</span>
+<div class="viewcode-block" id="ANNTrainer.fit_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.ANNTrainer.fit_ml_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">fit_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">training_data</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">):</span>
         <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">early_stopping</span><span class="o">.</span><span class="n">activate</span><span class="p">:</span>
             <span class="n">callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">early_stopping</span><span class="o">.</span><span class="n">callback</span><span class="p">())</span>
@@ -718,7 +718,7 @@
         <span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="GPRTrainerConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.GPRTrainerConfig">[docs]</a><span class="k">class</span> <span class="nc">GPRTrainerConfig</span><span class="p">(</span><span class="n">MLModelTrainerConfig</span><span class="p">):</span>
+<div class="viewcode-block" id="GPRTrainerConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.GPRTrainerConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GPRTrainerConfig</span><span class="p">(</span><span class="n">MLModelTrainerConfig</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pydantic data model for GPRTrainer configuration parser</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -744,7 +744,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GPRTrainer"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.GPRTrainer">[docs]</a><span class="k">class</span> <span class="nc">GPRTrainer</span><span class="p">(</span><span class="n">MLModelTrainer</span><span class="p">):</span>
+<div class="viewcode-block" id="GPRTrainer"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.GPRTrainer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">GPRTrainer</span><span class="p">(</span><span class="n">MLModelTrainer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Module that generates ANNs based on received data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -752,12 +752,12 @@
     <span class="n">config</span><span class="p">:</span> <span class="n">GPRTrainerConfig</span>
     <span class="n">model_type</span> <span class="o">=</span> <span class="n">SerializedGPR</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">agent</span><span class="p">)</span>
 
-<div class="viewcode-block" id="GPRTrainer.build_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.GPRTrainer.build_ml_model">[docs]</a>    <span class="k">def</span> <span class="nf">build_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GPRTrainer.build_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.GPRTrainer.build_ml_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">build_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a GPR with a constant Kernel in combination with a white kernel.&quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sklearn.gaussian_process.kernels</span> <span class="kn">import</span> <span class="n">ConstantKernel</span><span class="p">,</span> <span class="n">RBF</span><span class="p">,</span> <span class="n">WhiteKernel</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.gaussian_process.kernels</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConstantKernel</span><span class="p">,</span> <span class="n">RBF</span><span class="p">,</span> <span class="n">WhiteKernel</span>
 
         <span class="n">kernel</span> <span class="o">=</span> <span class="n">ConstantKernel</span><span class="p">(</span>
             <span class="n">constant_value_bounds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">constant_value_bounds</span>
@@ -775,7 +775,7 @@
         <span class="n">gpr</span><span class="o">.</span><span class="n">data_handling</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">scale</span>
         <span class="k">return</span> <span class="n">gpr</span></div>
 
-<div class="viewcode-block" id="GPRTrainer.fit_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.GPRTrainer.fit_ml_model">[docs]</a>    <span class="k">def</span> <span class="nf">fit_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">training_data</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">):</span>
+<div class="viewcode-block" id="GPRTrainer.fit_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.GPRTrainer.fit_ml_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">fit_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">training_data</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fits GPR to training data&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">normalize</span><span class="p">:</span>
             <span class="n">x_train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize</span><span class="p">(</span><span class="n">training_data</span><span class="o">.</span><span class="n">training_inputs</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
@@ -787,7 +787,7 @@
             <span class="n">y</span><span class="o">=</span><span class="n">y_train</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="c1"># update the normal and the mean</span>
         <span class="n">mean</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
         <span class="n">std</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
@@ -809,13 +809,13 @@
         <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">/</span> <span class="n">std</span></div>
 
 
-<div class="viewcode-block" id="LinRegTrainerConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.LinRegTrainerConfig">[docs]</a><span class="k">class</span> <span class="nc">LinRegTrainerConfig</span><span class="p">(</span><span class="n">MLModelTrainerConfig</span><span class="p">):</span>
+<div class="viewcode-block" id="LinRegTrainerConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.LinRegTrainerConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">LinRegTrainerConfig</span><span class="p">(</span><span class="n">MLModelTrainerConfig</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pydantic data model for GPRTrainer configuration parser</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="LinRegTrainer"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.LinRegTrainer">[docs]</a><span class="k">class</span> <span class="nc">LinRegTrainer</span><span class="p">(</span><span class="n">MLModelTrainer</span><span class="p">):</span>
+<div class="viewcode-block" id="LinRegTrainer"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.LinRegTrainer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">LinRegTrainer</span><span class="p">(</span><span class="n">MLModelTrainer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Module that generates ANNs based on received data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -823,17 +823,17 @@
     <span class="n">config</span><span class="p">:</span> <span class="n">LinRegTrainerConfig</span>
     <span class="n">model_type</span> <span class="o">=</span> <span class="n">SerializedLinReg</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">agent</span><span class="p">)</span>
 
-<div class="viewcode-block" id="LinRegTrainer.build_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.LinRegTrainer.build_ml_model">[docs]</a>    <span class="k">def</span> <span class="nf">build_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LinRegTrainer.build_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.LinRegTrainer.build_ml_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">build_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a linear model.&quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
 
         <span class="n">linear_model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">linear_model</span></div>
 
-<div class="viewcode-block" id="LinRegTrainer.fit_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.LinRegTrainer.fit_ml_model">[docs]</a>    <span class="k">def</span> <span class="nf">fit_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">training_data</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">):</span>
+<div class="viewcode-block" id="LinRegTrainer.fit_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.LinRegTrainer.fit_ml_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">fit_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">training_data</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fits linear model to training data&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ml_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
             <span class="n">X</span><span class="o">=</span><span class="n">training_data</span><span class="o">.</span><span class="n">training_inputs</span><span class="p">,</span>

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules.dmpc.admm.admm &mdash; agentlib_mpc 0.6.4 documentation</title>
+  <title>agentlib_mpc.modules.dmpc.admm.admm &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/autodoc_pydantic.css" />
@@ -75,33 +75,33 @@
   <h1>Source code for agentlib_mpc.modules.dmpc.admm.admm</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Holds functionality for ADMM modules.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">import</span> <span class="nn">queue</span>
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">queue</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">agentlib.core.errors</span> <span class="kn">import</span> <span class="n">ConfigurationError</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">Field</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigurationError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">Field</span>
 
-<span class="kn">from</span> <span class="nn">agentlib.core</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Source</span><span class="p">,</span>
     <span class="n">AgentVariable</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span> <span class="kn">import</span> <span class="n">MPCVariable</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.modules.dmpc</span> <span class="kn">import</span> <span class="n">DistributedMPC</span><span class="p">,</span> <span class="n">DistributedMPCConfig</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.optimization_backends.backend</span> <span class="kn">import</span> <span class="n">ADMMBackend</span>
-<span class="kn">from</span> <span class="nn">agentlib.utils.validators</span> <span class="kn">import</span> <span class="n">convert_to_list</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures</span> <span class="kn">import</span> <span class="n">mpc_datamodels</span>
-<span class="kn">import</span> <span class="nn">agentlib_mpc.data_structures.admm_datatypes</span> <span class="k">as</span> <span class="nn">adt</span>
-<span class="kn">from</span> <span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span> <span class="kn">import</span> <span class="n">Results</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPCVariable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.modules.dmpc</span><span class="w"> </span><span class="kn">import</span> <span class="n">DistributedMPC</span><span class="p">,</span> <span class="n">DistributedMPCConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">ADMMBackend</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.utils.validators</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_to_list</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures</span><span class="w"> </span><span class="kn">import</span> <span class="n">mpc_datamodels</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.admm_datatypes</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">adt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span><span class="w"> </span><span class="kn">import</span> <span class="n">Results</span>
 
 
 <span class="c1"># noinspection PyArgumentList</span>
-<div class="viewcode-block" id="ModuleStatus"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ModuleStatus">[docs]</a><span class="k">class</span> <span class="nc">ModuleStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<div class="viewcode-block" id="ModuleStatus"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ModuleStatus">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ModuleStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">not_started</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">syncing</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">at_registration</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -112,35 +112,35 @@
 
 
 <span class="c1"># noinspection PyArgumentList</span>
-<div class="viewcode-block" id="ParticipantStatus"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ParticipantStatus">[docs]</a><span class="k">class</span> <span class="nc">ParticipantStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<div class="viewcode-block" id="ParticipantStatus"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ParticipantStatus">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ParticipantStatus</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">not_participating</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">available</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">confirmed</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">not_available</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="ADMMParticipation"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMMParticipation">[docs]</a><span class="k">class</span> <span class="nc">ADMMParticipation</span><span class="p">:</span>
+<div class="viewcode-block" id="ADMMParticipation"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMMParticipation">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ADMMParticipation</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Holds data for the status of a shared variable of another system.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span> <span class="o">=</span> <span class="n">variable</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">:</span> <span class="n">ParticipantStatus</span> <span class="o">=</span> <span class="n">ParticipantStatus</span><span class="o">.</span><span class="n">not_participating</span>
         <span class="c1"># no more than two messages should stack</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">received</span><span class="p">:</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ADMMParticipation.empty_memory"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMMParticipation.empty_memory">[docs]</a>    <span class="k">def</span> <span class="nf">empty_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ADMMParticipation.empty_memory"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMMParticipation.empty_memory">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">empty_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">received</span><span class="o">.</span><span class="n">get_nowait</span><span class="p">()</span>
             <span class="k">except</span> <span class="n">queue</span><span class="o">.</span><span class="n">Empty</span><span class="p">:</span>
                 <span class="k">break</span></div>
 
-<div class="viewcode-block" id="ADMMParticipation.de_register"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMMParticipation.de_register">[docs]</a>    <span class="k">def</span> <span class="nf">de_register</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ADMMParticipation.de_register"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMMParticipation.de_register">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">de_register</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">ParticipantStatus</span><span class="o">.</span><span class="n">not_participating</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">empty_memory</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="ADMMConfig"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMMConfig">[docs]</a><span class="k">class</span> <span class="nc">ADMMConfig</span><span class="p">(</span><span class="n">DistributedMPCConfig</span><span class="p">):</span>
+<div class="viewcode-block" id="ADMMConfig"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMMConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ADMMConfig</span><span class="p">(</span><span class="n">DistributedMPCConfig</span><span class="p">):</span>
     <span class="n">couplings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MPCVariable</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">exchange</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MPCVariable</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -171,7 +171,7 @@
         <span class="s2">&quot;exchange&quot;</span><span class="p">,</span> <span class="s2">&quot;couplings&quot;</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">,</span> <span class="s2">&quot;inputs&quot;</span><span class="p">,</span> <span class="s2">&quot;outputs&quot;</span><span class="p">,</span> <span class="s2">&quot;controls&quot;</span><span class="p">,</span> <span class="s2">&quot;states&quot;</span>
     <span class="p">)</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">check_prefixes_of_variables</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AgentVariable</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_prefixes_of_variables</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AgentVariable</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensures no user provided variable is named with the reserved ADMM prefix.&quot;&quot;&quot;</span>
         <span class="n">conf_err</span> <span class="o">=</span> <span class="n">ConfigurationError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Do not use variables that start with &quot;</span>
@@ -186,7 +186,7 @@
 <span class="n">ADMMConfigT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ADMMConfigT&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">ADMMConfig</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="ADMM"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM">[docs]</a><span class="k">class</span> <span class="nc">ADMM</span><span class="p">(</span><span class="n">DistributedMPC</span><span class="p">):</span>
+<div class="viewcode-block" id="ADMM"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ADMM</span><span class="p">(</span><span class="n">DistributedMPC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class represents a module participating in a fully decentralized</span>
 <span class="sd">    Consensus-ADMM optimization for distributed MPC.</span>
@@ -197,7 +197,7 @@
     <span class="n">config</span><span class="p">:</span> <span class="n">ADMMConfig</span>
     <span class="n">var_ref</span><span class="p">:</span> <span class="n">adt</span><span class="o">.</span><span class="n">VariableReference</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">agent</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">var_qu</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_step</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="p">:</span> <span class="n">ModuleStatus</span> <span class="o">=</span> <span class="n">ModuleStatus</span><span class="o">.</span><span class="n">syncing</span>
@@ -205,7 +205,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_admm_variables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AgentVariable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ADMM.collect_couplings_for_optimization"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.collect_couplings_for_optimization">[docs]</a>    <span class="k">def</span> <span class="nf">collect_couplings_for_optimization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ADMM.collect_couplings_for_optimization"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.collect_couplings_for_optimization">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">collect_couplings_for_optimization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Collects updated AgentVariables only of the coupling variables.&quot;&quot;&quot;</span>
         <span class="n">coup_vars</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">coup</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_ref</span><span class="o">.</span><span class="n">couplings</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_ref</span><span class="o">.</span><span class="n">exchange</span><span class="p">:</span>
@@ -215,7 +215,7 @@
         <span class="n">coup_vars</span><span class="p">[</span><span class="s2">&quot;penalty_factor&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">penalty_factor_var</span>
         <span class="k">return</span> <span class="n">coup_vars</span></div>
 
-<div class="viewcode-block" id="ADMM.process"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ADMM.process"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.process">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># this thread will perform the optimization whenever start_step is set</span>
         <span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
             <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_admm_loop</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;admm_loop_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -231,7 +231,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">start_step</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">time_step</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_sync_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sync_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Waits until time is a multiple of the time step.&quot;&quot;&quot;</span>
         <span class="n">time_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">time_step</span>
         <span class="n">delta</span> <span class="o">=</span> <span class="n">time_step</span> <span class="o">-</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">%</span> <span class="n">time_step</span><span class="p">)</span>
@@ -239,7 +239,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Waiting </span><span class="si">%s</span><span class="s2"> s to sync admm algorithm&quot;</span><span class="p">,</span> <span class="n">wait_time</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="n">wait_time</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_admm_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_admm_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Triggers the optimization whenever self.start_step is set.&quot;&quot;&quot;</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="p">:</span> <span class="n">ModuleStatus</span> <span class="o">=</span> <span class="n">ModuleStatus</span><span class="o">.</span><span class="n">sleeping</span>
@@ -254,7 +254,7 @@
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">start_step</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
-<div class="viewcode-block" id="ADMM.admm_step"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.admm_step">[docs]</a>    <span class="k">def</span> <span class="nf">admm_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ADMM.admm_step"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.admm_step">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">admm_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs an entire ADMM optimization.&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_perform_registration</span><span class="p">()</span>
@@ -296,7 +296,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">deregister_all_participants</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_actuation</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_solve_local_optimization</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_solve_local_optimization</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">opt_inputs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AgentVariable</span><span class="p">],</span>
         <span class="n">current_iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -321,7 +321,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Solved local optimization #</span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">current_iteration</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
 
-    <span class="k">def</span> <span class="nf">_perform_registration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_perform_registration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Registers participants in current round&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="p">:</span> <span class="n">ModuleStatus</span> <span class="o">=</span> <span class="n">ModuleStatus</span><span class="o">.</span><span class="n">at_registration</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Start registration of round at </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
@@ -335,7 +335,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="p">:</span> <span class="n">ModuleStatus</span> <span class="o">=</span> <span class="n">ModuleStatus</span><span class="o">.</span><span class="n">updating</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: Finished registration of round&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_check_termination</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">admm_iter</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">start_iteration</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_termination</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">admm_iter</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">start_iteration</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        Args:</span>
@@ -370,7 +370,7 @@
 
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">_receive_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_receive_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait until all coupling variables arrive from the other systems.&quot;&quot;&quot;</span>
 
         <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">iteration_timeout</span>
@@ -395,13 +395,13 @@
 
             <span class="n">remaining_time</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">timeout</span> <span class="o">-</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ADMM.all_coupling_statuses"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.all_coupling_statuses">[docs]</a>    <span class="k">def</span> <span class="nf">all_coupling_statuses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ADMMParticipation</span><span class="p">]:</span>
+<div class="viewcode-block" id="ADMM.all_coupling_statuses"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.all_coupling_statuses">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">all_coupling_statuses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ADMMParticipation</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gives and iterator of all ADMMParticipation that are registered.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">coup_participants</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_participants</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">participant</span> <span class="ow">in</span> <span class="n">coup_participants</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="k">yield</span> <span class="n">participant</span></div>
 
-    <span class="k">def</span> <span class="nf">_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequence</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">grid</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequence</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">grid</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Shifts the sequence forward by one sampling time.</span>
 <span class="sd">        Args:</span>
@@ -416,7 +416,7 @@
         <span class="n">shifted</span> <span class="o">=</span> <span class="n">sequence</span><span class="p">[</span><span class="n">index</span><span class="p">:]</span> <span class="o">+</span> <span class="n">sequence</span><span class="p">[</span><span class="o">-</span><span class="n">index</span><span class="p">:]</span>
         <span class="k">return</span> <span class="n">shifted</span>
 
-    <span class="k">def</span> <span class="nf">_shift_multipliers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_shift_multipliers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Shifts lagrange multipliers by one sampling interval. If a scalar</span>
 <span class="sd">        is given, expands to the correct length.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">coup</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons_and_exchange</span><span class="p">:</span>
@@ -428,7 +428,7 @@
             <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shift</span><span class="p">(</span><span class="n">sequence</span><span class="o">=</span><span class="n">val</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_admm_variables</span><span class="p">[</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">val</span>
 
-    <span class="k">def</span> <span class="nf">_shift_and_send_coupling_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_shift_and_send_coupling_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Shifts global coupling variables by one sampling interval. If a</span>
 <span class="sd">        scalar is given, expands to the correct length.</span>
 <span class="sd">        Sets the values as output to the data_broker, sending them.&quot;&quot;&quot;</span>
@@ -449,7 +449,7 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">send_coupling_variable</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ADMM.assert_mpc_variables_are_in_model"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.assert_mpc_variables_are_in_model">[docs]</a>    <span class="k">def</span> <span class="nf">assert_mpc_variables_are_in_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ADMM.assert_mpc_variables_are_in_model"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.assert_mpc_variables_are_in_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">assert_mpc_variables_are_in_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">unassigned_model</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">assert_mpc_variables_are_in_model</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">coup</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">couplings</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">exchange</span><span class="p">:</span>
@@ -468,7 +468,7 @@
         <span class="k">return</span> <span class="n">unassigned_model</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">registered_participants</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ADMMParticipation</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">registered_participants</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ADMMParticipation</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Dictionary containing all other agents this agent shares variables with.</span>
 <span class="sd">        Ordered in a two-layer form, with variables at the first layer and</span>
 <span class="sd">        agents at the second layer. Contains ADMMParticipation objects at</span>
@@ -488,14 +488,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registered_participants</span>
 
     <span class="nd">@registered_participants</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">registered_participants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg_par</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">registered_participants</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg_par</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_registered_participants</span> <span class="o">=</span> <span class="n">reg_par</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">cons_and_exchange</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">adt</span><span class="o">.</span><span class="n">ExchangeEntry</span><span class="p">,</span> <span class="n">adt</span><span class="o">.</span><span class="n">CouplingEntry</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cons_and_exchange</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">adt</span><span class="o">.</span><span class="n">ExchangeEntry</span><span class="p">,</span> <span class="n">adt</span><span class="o">.</span><span class="n">CouplingEntry</span><span class="p">]]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_ref</span><span class="o">.</span><span class="n">exchange</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_ref</span><span class="o">.</span><span class="n">couplings</span>
 
-<div class="viewcode-block" id="ADMM.reset_participants_ready"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.reset_participants_ready">[docs]</a>    <span class="k">def</span> <span class="nf">reset_participants_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ADMM.reset_participants_ready"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.reset_participants_ready">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reset_participants_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the ready status of all participating agents to False.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">coup_participants</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_participants</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">participant</span> <span class="ow">in</span> <span class="n">coup_participants</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -504,7 +504,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">participant</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">ParticipantStatus</span><span class="o">.</span><span class="n">not_available</span></div>
 
-<div class="viewcode-block" id="ADMM.deregister_all_participants"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.deregister_all_participants">[docs]</a>    <span class="k">def</span> <span class="nf">deregister_all_participants</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ADMM.deregister_all_participants"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.deregister_all_participants">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">deregister_all_participants</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the participating status of all participating agents to</span>
 <span class="sd">        False.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;De-registering all participants for next round.&quot;</span><span class="p">)</span>
@@ -512,13 +512,13 @@
             <span class="k">for</span> <span class="n">participant</span> <span class="ow">in</span> <span class="n">coup_participants</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="n">participant</span><span class="o">.</span><span class="n">de_register</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="ADMM.participant_callback"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.participant_callback">[docs]</a>    <span class="k">def</span> <span class="nf">participant_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
+<div class="viewcode-block" id="ADMM.participant_callback"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.participant_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">participant_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Puts received variables in the correct queue, depending on</span>
 <span class="sd">        registration status of this agent.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">agent_id</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">receive_participant</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ADMM.receive_participant"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.receive_participant">[docs]</a>    <span class="k">def</span> <span class="nf">receive_participant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
+<div class="viewcode-block" id="ADMM.receive_participant"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.receive_participant">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">receive_participant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the participation to true for the given coupling input.&quot;&quot;&quot;</span>
         <span class="c1"># Create copy just in case</span>
         <span class="n">reg_par_of_coupling</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_participants</span><span class="p">[</span><span class="n">variable</span><span class="o">.</span><span class="n">alias</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -575,7 +575,7 @@
         <span class="c1"># Set the altered copy again</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">registered_participants</span><span class="p">[</span><span class="n">variable</span><span class="o">.</span><span class="n">alias</span><span class="p">]</span> <span class="o">=</span> <span class="n">reg_par_of_coupling</span></div>
 
-<div class="viewcode-block" id="ADMM.get_participants_values"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.get_participants_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_participants_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coupling_alias</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
+<div class="viewcode-block" id="ADMM.get_participants_values"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.get_participants_values">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_participants_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coupling_alias</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the values of all agents for a coupling variable.&quot;&quot;&quot;</span>
         <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">participant</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered_participants</span><span class="p">[</span><span class="n">coupling_alias</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -585,7 +585,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Did not get participants values for this round&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">values</span></div>
 
-<div class="viewcode-block" id="ADMM.send_coupling_values"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.send_coupling_values">[docs]</a>    <span class="k">def</span> <span class="nf">send_coupling_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">:</span> <span class="n">Results</span><span class="p">):</span>
+<div class="viewcode-block" id="ADMM.send_coupling_values"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.send_coupling_values">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_coupling_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">:</span> <span class="n">Results</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the coupling outputs to the data_broker, which automatically sends them.</span>
 
@@ -596,7 +596,7 @@
         <span class="k">for</span> <span class="n">coup</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons_and_exchange</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">send_coupling_variable</span><span class="p">(</span><span class="n">coup</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">solution</span><span class="p">[</span><span class="n">coup</span><span class="o">.</span><span class="n">name</span><span class="p">]))</span></div>
 
-    <span class="k">def</span> <span class="nf">_set_mean_coupling_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_mean_coupling_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes the current global value of a coupling variable and saves</span>
 <span class="sd">        it in the data_broker.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">coupling</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_ref</span><span class="o">.</span><span class="n">couplings</span><span class="p">:</span>
@@ -640,7 +640,7 @@
                 <span class="s2">&quot;Updated mean_</span><span class="si">%s</span><span class="s2"> = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">own_exchange_var</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">mean_coup_value</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_solve_local_optimization_debug</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_solve_local_optimization_debug</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">opt_inputs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AgentVariable</span><span class="p">],</span>
         <span class="n">current_iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -673,14 +673,14 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
 
-<div class="viewcode-block" id="ADMM.send_coupling_variable"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.send_coupling_variable">[docs]</a>    <span class="k">def</span> <span class="nf">send_coupling_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MPCValue</span><span class="p">):</span>
+<div class="viewcode-block" id="ADMM.send_coupling_variable"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.send_coupling_variable">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_coupling_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MPCValue</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sends an admm coupling variable through the data_broker and sets its</span>
 <span class="sd">        value locally&quot;&quot;&quot;</span>
         <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_admm_variables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
         <span class="n">var</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">data_broker</span><span class="o">.</span><span class="n">send_variable</span><span class="p">(</span><span class="n">var</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ADMM.update_lambda"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.update_lambda">[docs]</a>    <span class="k">def</span> <span class="nf">update_lambda</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ADMM.update_lambda"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.update_lambda">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_lambda</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Performs the update of the lagrange multipliers.</span>
 <span class="sd">        lambda^k+1 := lambda^k - rho*(z-x_i)</span>
@@ -725,7 +725,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_admm_variables</span><span class="p">[</span><span class="n">exchange</span><span class="o">.</span><span class="n">multiplier</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">updated_value</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Updated lambda_</span><span class="si">%s</span><span class="s2"> = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exchange</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">updated_value</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ADMM.get_results"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.get_results">[docs]</a>    <span class="k">def</span> <span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<div class="viewcode-block" id="ADMM.get_results"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.get_results">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Read the results that were saved from the optimization backend and</span>
 <span class="sd">        returns them as Dataframe.</span>
 
@@ -744,18 +744,18 @@
             <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">penalty_factor_var</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MPCVariable</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">penalty_factor_var</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MPCVariable</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">MPCVariable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;penalty_factor&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">penalty_factor</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_setup_var_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">adt</span><span class="o">.</span><span class="n">VariableReference</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_var_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">adt</span><span class="o">.</span><span class="n">VariableReference</span><span class="p">:</span>
         <span class="c1"># Extend var_ref with coupling variables</span>
         <span class="k">return</span> <span class="n">adt</span><span class="o">.</span><span class="n">VariableReference</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_setup_optimization_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ADMMBackend</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_optimization_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ADMMBackend</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_admm_variables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_couplings</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_setup_optimization_backend</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_create_couplings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MPCVariable</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_couplings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MPCVariable</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Map coupling variables based on already setup model&quot;&quot;&quot;</span>
         <span class="c1"># Check if coupling even exist</span>
 
@@ -883,7 +883,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">registered_participants</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">alias</span><span class="p">:</span> <span class="p">{}})</span>
         <span class="k">return</span> <span class="n">_admm_variables</span>
 
-<div class="viewcode-block" id="ADMM.collect_variables_for_optimization"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.collect_variables_for_optimization">[docs]</a>    <span class="k">def</span> <span class="nf">collect_variables_for_optimization</span><span class="p">(</span>
+<div class="viewcode-block" id="ADMM.collect_variables_for_optimization"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.collect_variables_for_optimization">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">collect_variables_for_optimization</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">VariableReference</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AgentVariable</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets all variables noted in the var ref and puts them in a flat</span>
@@ -921,27 +921,27 @@
         <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">variables</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_internal_variables</span><span class="p">}</span></div></div>
 
 
-<div class="viewcode-block" id="LocalADMMConfig"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.LocalADMMConfig">[docs]</a><span class="k">class</span> <span class="nc">LocalADMMConfig</span><span class="p">(</span><span class="n">ADMMConfig</span><span class="p">):</span>
+<div class="viewcode-block" id="LocalADMMConfig"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.LocalADMMConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">LocalADMMConfig</span><span class="p">(</span><span class="n">ADMMConfig</span><span class="p">):</span>
     <span class="n">sync_delay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span>
     <span class="n">registration_delay</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span></div>
 
 
-<div class="viewcode-block" id="LocalADMM"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.LocalADMM">[docs]</a><span class="k">class</span> <span class="nc">LocalADMM</span><span class="p">(</span><span class="n">ADMM</span><span class="p">):</span>
+<div class="viewcode-block" id="LocalADMM"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.LocalADMM">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">LocalADMM</span><span class="p">(</span><span class="n">ADMM</span><span class="p">):</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">LocalADMMConfig</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sync_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sync_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Timeout value used to sync local admm processes. Should be very</span>
 <span class="sd">        small.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">sync_delay</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">registration_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">registration_delay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Timeout value used to wait one on registration. Waits in real time</span>
 <span class="sd">        (time.sleep)&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">registration_delay</span>
 
-<div class="viewcode-block" id="LocalADMM.process"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.LocalADMM.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="LocalADMM.process"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.LocalADMM.process">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">first_registration</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">start_round</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">time</span>

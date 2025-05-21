@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.optimization_backends.casadi_.core.VariableGroup &mdash; agentlib_mpc 0.6.4 documentation</title>
+  <title>agentlib_mpc.optimization_backends.casadi_.core.VariableGroup &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/autodoc_pydantic.css" />
@@ -72,17 +72,17 @@
            <div itemprop="articleBody">
              
   <h1>Source code for agentlib_mpc.optimization_backends.casadi_.core.VariableGroup</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
 
-<span class="kn">import</span> <span class="nn">casadi</span> <span class="k">as</span> <span class="nn">ca</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">casadi</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ca</span>
 
-<span class="kn">from</span> <span class="nn">agentlib_mpc.models.casadi_model</span> <span class="kn">import</span> <span class="n">CasadiVariable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiVariable</span>
 
 
 <div class="viewcode-block" id="OptimizationQuantity"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationQuantity">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">OptimizationQuantity</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptimizationQuantity</span><span class="p">:</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">full_symbolic</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span>  <span class="c1"># used in complex cost functions for admm etc</span>
     <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span>
@@ -90,11 +90,11 @@
     <span class="n">full_names</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>  <span class="c1"># used in create_res_format</span>
     <span class="n">use_in_stage_function</span><span class="p">:</span> <span class="nb">bool</span>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_check_ref_in_full</span><span class="p">(</span><span class="n">ref</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">full_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_ref_in_full</span><span class="p">(</span><span class="n">ref</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">full_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
     <span class="n">diff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">full_names</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">diff</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -104,14 +104,14 @@
 
 
 <div class="viewcode-block" id="OptimizationVariable"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">OptimizationVariable</span><span class="p">(</span><span class="n">OptimizationQuantity</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptimizationVariable</span><span class="p">(</span><span class="n">OptimizationQuantity</span><span class="p">):</span>
     <span class="n">input_map</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span>  <span class="c1"># get mpc inputs</span>
     <span class="n">output_map</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span>  <span class="c1"># get mpc outputs</span>
     <span class="n">use_in_stage_function</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="n">binary</span><span class="p">:</span> <span class="nb">bool</span>
 
 <div class="viewcode-block" id="OptimizationVariable.declare"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable.declare">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">declare</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">declare</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">denotation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CasadiVariable</span><span class="p">],</span>
@@ -210,17 +210,17 @@
             <span class="n">binary</span><span class="o">=</span><span class="n">binary</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="OptimizationParameter"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationParameter">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">OptimizationParameter</span><span class="p">(</span><span class="n">OptimizationQuantity</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OptimizationParameter</span><span class="p">(</span><span class="n">OptimizationQuantity</span><span class="p">):</span>
     <span class="n">full_with_defaults</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span>
     <span class="n">add_default_values</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span>
 
 <div class="viewcode-block" id="OptimizationParameter.declare"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationParameter.declare">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">declare</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">declare</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">denotation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CasadiVariable</span><span class="p">],</span>
@@ -296,7 +296,7 @@
             <span class="n">add_default_values</span><span class="o">=</span><span class="n">add_default_values</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
 </pre></div>
 

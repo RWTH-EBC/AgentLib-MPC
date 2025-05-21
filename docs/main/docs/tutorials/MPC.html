@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Model Predictive Control &mdash; agentlib_mpc 0.6.4 documentation</title>
+  <title>Model Predictive Control &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
@@ -99,12 +99,12 @@ is explained. Open the ‘examples/one_room_mpc/physical/simple_mpc.py’ exampl
 <section id="imports">
 <h3>Imports<a class="headerlink" href="#imports" title="Permalink to this heading"></a></h3>
 <p>As usual, let’s look at the imports first.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">agentlib.models.casadi_model</span> <span class="kn">import</span> <span class="n">CasadiModel</span><span class="p">,</span> <span class="n">CasadiInput</span><span class="p">,</span> <span class="n">CasadiState</span><span class="p">,</span> \
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.models.casadi_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiModel</span><span class="p">,</span> <span class="n">CasadiInput</span><span class="p">,</span> <span class="n">CasadiState</span><span class="p">,</span> \
     <span class="n">CasadiParameter</span><span class="p">,</span> <span class="n">CasadiOutput</span>
-<span class="kn">from</span> <span class="nn">agentlib.utils.multi_agent_system</span> <span class="kn">import</span> <span class="n">LocalMASAgency</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.utils.multi_agent_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">LocalMASAgency</span>
 </pre></div>
 </div>
 <p>We import logging as usual and
@@ -151,7 +151,7 @@ Since modeling in agentlib is based on the FMU-standard, we divide our
 variables into inputs, outputs, parameters and locals (called states to
 avoid clash with the python builtin <em>locals</em>). First, we need to create a custom
 config for our CasadiModel.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyCasadiModelConfig</span><span class="p">(</span><span class="n">CasadiModelConfig</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyCasadiModelConfig</span><span class="p">(</span><span class="n">CasadiModelConfig</span><span class="p">):</span>
     <span class="n">inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">CasadiInput</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
         <span class="c1"># controls</span>
         <span class="n">CasadiInput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mDot&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">0.0225</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Air mass flow into zone&quot;</span><span class="p">),</span>
@@ -221,11 +221,11 @@ We can access the variables defined above by referencing <code class="docutils l
 Differential equations are associated with a variable by setting the <code class="docutils literal notranslate"><span class="pre">ode</span></code>
 attribute of that variable. In the same way, algebraic equations can be
 defined by setting the <code class="docutils literal notranslate"><span class="pre">alg</span></code> attribute.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyCasadiModel</span><span class="p">(</span><span class="n">CasadiModel</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyCasadiModel</span><span class="p">(</span><span class="n">CasadiModel</span><span class="p">):</span>
 
     <span class="n">config</span><span class="p">:</span> <span class="n">MyCasadiModelConfig</span>
 
-    <span class="k">def</span> <span class="nf">setup_system</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_system</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Define ode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">ode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cp</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mDot</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span> <span class="o">*</span> \
                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T_in</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> \
@@ -425,7 +425,7 @@ use the <code class="docutils literal notranslate"><span class="pre">LocalMASAge
 setting the <code class="docutils literal notranslate"><span class="pre">variable_logging</span></code> option to True, time series of all agent
 variables present in the system will be saved. After running the MAS, we can
 retrieve and plot the results of our simulation.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">run_example</span><span class="p">(</span><span class="n">with_plots</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">run_example</span><span class="p">(</span><span class="n">with_plots</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">mas</span> <span class="o">=</span> <span class="n">LocalMASAgency</span><span class="p">(</span><span class="n">agent_configs</span><span class="o">=</span><span class="p">[</span><span class="n">AGENT_MPC</span><span class="p">,</span> <span class="n">AGENT_SIM</span><span class="p">],</span>
                          <span class="n">env</span><span class="o">=</span><span class="n">ENV_CONFIG</span><span class="p">,</span>
                          <span class="n">variable_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
