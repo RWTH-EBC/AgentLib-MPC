@@ -94,16 +94,12 @@ class DirectCollocation(basic.DirectCollocation):
                     self.objective_function += ca.dot(weight ** 2, delta ** 2)
                     #todo: weight as casadi expression in deltaUObjective
 
-            # New parameter for inputs
-            dk = self.add_opt_par(sys.non_controlled_inputs)
-
             # perform inner collocation loop
             opt_vars_inside_inner = [sys.algebraics, sys.outputs]
-            opt_pars_inside_inner = []
+            opt_pars_inside_inner = [sys.non_controlled_inputs]
 
             constant_over_inner = {
                 sys.controls: uk,
-                sys.non_controlled_inputs: dk,
                 sys.model_parameters: const_par
             }
             xk_end, constraints = self._collocation_inner_loop(
