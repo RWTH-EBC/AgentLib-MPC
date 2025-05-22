@@ -70,6 +70,15 @@ class MPC(BaseMPC):
                 if timestamp < (self.env.time - lag_in_seconds):
                     var_history.pop(timestamp)
 
+                    
+    def register_callbacks(self):
+        super().register_callbacks()
+        self.agent.data_broker.register_callback(
+            alias=ml_model_datatypes.ML_MODEL_TO_MPC,
+            source=None,
+            callback=self._update_ml_model,
+        )
+
 
     def _callback_hist_vars(self, variable: AgentVariable, name: str):
         """Adds received measured inputs to the past trajectory."""
