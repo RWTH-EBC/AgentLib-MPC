@@ -99,6 +99,7 @@ class BaseSystem(System):
         self.time = model.time
 
 
+
 @dataclasses.dataclass
 class CollocationMatrices:
     order: int

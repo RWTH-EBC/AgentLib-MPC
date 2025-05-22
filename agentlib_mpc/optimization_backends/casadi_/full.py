@@ -16,10 +16,15 @@ from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
 
 class FullSystem(basic.BaseSystem):
     last_control: OptimizationParameter
-    r_del_u: OptimizationParameter  # penalty on change of control between time steps
+
+    def __init__(self):
+        super().__init__()
+        self._model = None
 
     def initialize(self, model: CasadiModel, var_ref: FullVariableReference):
         super().initialize(model=model, var_ref=var_ref)
+
+        self._model = model
 
         self.last_control = OptimizationParameter.declare(
             denotation="u_prev",
@@ -28,15 +33,14 @@ class FullSystem(basic.BaseSystem):
             use_in_stage_function=False,
             assert_complete=True,
         )
-        self.r_del_u = OptimizationParameter.declare(
-            denotation="r_del_u",
-            variables=[CasadiParameter(name=r_del_u) for r_del_u in var_ref.r_del_u],
-            ref_list=var_ref.r_del_u,
-            use_in_stage_function=False,
-            assert_complete=True,
-        )
 
         self.time = model.time
+
+    @property
+    def model(self):
+        if not hasattr(self, '_model') or self._model is None:
+            raise AttributeError("Model reference not initialized yet")
+        return self._model
 
 
 class DirectCollocation(basic.DirectCollocation):
@@ -60,7 +64,14 @@ class DirectCollocation(basic.DirectCollocation):
 
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
-        du_weights = self.add_opt_par(sys.r_del_u)
+        try:
+            delta_u_objectives = sys.model.objective.get_delta_u_objectives()
+        except (AttributeError, Exception) as e:
+            self.logger.warning(f"Failed to get delta_u_objectives: {str(e)}")
+
+        control_map = {}
+        for i, control_name in enumerate(sys.controls.ref_names):
+            control_map[control_name] = i
 
         # Formulate the NLP
         # loop over prediction horizon
@@ -69,7 +80,19 @@ class DirectCollocation(basic.DirectCollocation):
             u_prev = uk
             uk = self.add_opt_var(sys.controls)
             # penalty for control change between time steps
-            self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
+            for delta_obj in delta_u_objectives:
+                control_name = delta_obj.get_control_name()
+                if control_name in control_map:
+                    if hasattr(delta_obj.weight, 'sym'):
+                        weight = delta_obj.weight.sym
+                    else:
+                        weight = delta_obj.weight
+                    idx = control_map[control_name]
+                    control_prev = u_prev[idx]
+                    control_curr = uk[idx]
+                    delta = control_curr - control_prev
+                    self.objective_function += ca.dot(weight ** 2, delta ** 2)
+                    #todo: weight as casadi expression in deltaUObjective
 
             # perform inner collocation loop
             opt_vars_inside_inner = [sys.algebraics, sys.outputs]
@@ -103,6 +126,8 @@ class DirectCollocation(basic.DirectCollocation):
                 self.add_constraint(*constraint)
 
 
+
+
 class MultipleShooting(basic.MultipleShooting):
     def _discretize(self, sys: FullSystem):
         """
@@ -119,8 +144,16 @@ class MultipleShooting(basic.MultipleShooting):
         uk = self.add_opt_par(sys.last_control)
 
         # Parameters that are constant over the horizon
-        du_weights = self.add_opt_par(sys.r_del_u)
         const_par = self.add_opt_par(sys.model_parameters)
+
+        try:
+            delta_u_objectives = sys.model.objective.get_delta_u_objectives()
+        except (AttributeError, Exception) as e:
+            self.logger.warning(f"Failed to get delta_u_objectives: {str(e)}")
+
+        control_map = {}
+        for i, control_name in enumerate(sys.controls.ref_names):
+            control_map[control_name] = i
 
         # ODE is used here because the algebraics can be calculated with the stage function
         opt_integrator = self._create_ode(sys, opts, self.options.integrator)
@@ -129,7 +162,15 @@ class MultipleShooting(basic.MultipleShooting):
             u_prev = uk
             uk = self.add_opt_var(sys.controls)
             # penalty for control change between time steps
-            self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
+            for delta_obj in delta_u_objectives:
+                control_name = delta_obj.get_control_name()
+                if control_name in control_map:
+                    idx = control_map[control_name]
+                    control_prev = u_prev[idx]
+                    control_curr = uk[idx]
+                    delta = control_curr - control_prev
+                    self.objective_function += delta_obj.weight ** 2 * delta ** 2
+
             dk = self.add_opt_par(sys.non_controlled_inputs)
             zk = self.add_opt_var(sys.algebraics)
             yk = self.add_opt_var(sys.outputs)

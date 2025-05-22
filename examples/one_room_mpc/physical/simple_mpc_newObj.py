@@ -15,9 +15,9 @@ from agentlib_mpc.models.casadi_model import (
 )
 from agentlib.utils.multi_agent_system import LocalMASAgency
 
-from agentlib_mpc.utils.analysis import load_mpc_stats
+from agentlib_mpc.utils.analysis import load_mpc_stats, load_mpc_obj_res
 from agentlib_mpc.utils.plotting.interactive import show_dashboard
-from agentlib_mpc.data_structures.objective import FullObjective, SubObjective, DeltaUObjective, SqObjective
+from agentlib_mpc.data_structures.objective import FullObjective, EqObjective, DeltaUObjective, SqObjective
 
 
 logger = logging.getLogger(__name__)
@@ -114,28 +114,23 @@ class MyCasadiModel(CasadiModel):
 
         obj1 = DeltaUObjective(
             expressions=self.mDot,
-            weight=50,
+            weight=self.r_mDot,
             name="delta_m",
         )
 
-        obj3 = SubObjective(
+        obj3 = EqObjective(
             expressions=[self.mDot],
-            weight=20,
+            weight=self.r_mDot,
             name="power_cost"
         )
 
         obj2 = SqObjective(
             expressions=self.T_slack,
-            weight=100,
+            weight=self.s_T,
             name="temp_slack"
         )
 
-        #todo:
-        #multiple shooting
-        #ml modelle
-
-
-        objective = FullObjective(obj1, obj2, obj3, normalization=43200)
+        objective = FullObjective(obj3, obj2, obj1, normalization=43200)
         return objective
 
 
@@ -166,7 +161,7 @@ AGENT_MPC = {
             "prediction_horizon": 15,
             "parameters": [
                 {"name": "s_T", "value": 100},
-                {"name": "r_mDot", "value": 1},
+                {"name": "r_mDot", "value": 5},
             ],
             "inputs": [
                 {"name": "T_in", "value": 290.15},
@@ -226,16 +221,20 @@ def run_example(
     )
     mas.run(until=until)
     try:
-        stats = load_mpc_stats("results/__mpc.csv")
+        stats = load_mpc_stats("results/mpc.csv")
     except Exception:
         stats = None
+    try:
+        obj_data = load_mpc_obj_res("results/mpc.csv")
+    except Exception:
+        obj_data = None
     results = mas.get_results(cleanup=False)
     mpc_results = results["myMPCAgent"]["myMPC"]
     sim_res = results["SimAgent"]["room"]
 
 
     if with_dashboard:
-        show_dashboard(mpc_results, stats)
+        show_dashboard(mpc_results, stats, obj_data)
 
     if with_plots:
         plot(mpc_results, sim_res, until)
@@ -286,5 +285,5 @@ def plot(mpc_results: pd.DataFrame, sim_res: pd.DataFrame, until: float):
 
 if __name__ == "__main__":
     run_example(
-        with_plots=True, with_dashboard=False, until=7200, log_level=logging.INFO
+        with_plots=True, with_dashboard=True, until=7200, log_level=logging.INFO
     )
