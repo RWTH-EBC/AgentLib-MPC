@@ -5,7 +5,7 @@ from agentlib_mpc.data_structures.casadi_utils import (
     DiscretizationMethod,
 )
 from agentlib_mpc.data_structures.mpc_datamodels import (
-    FullVariableReference,
+    VariableReference,
 )
 from agentlib_mpc.models.casadi_model import CasadiModel, CasadiParameter
 from agentlib_mpc.optimization_backends.casadi_.core.casadi_backend import CasADiBackend
@@ -21,7 +21,7 @@ class FullSystem(basic.BaseSystem):
         super().__init__()
         self._model = None
 
-    def initialize(self, model: CasadiModel, var_ref: FullVariableReference):
+    def initialize(self, model: CasadiModel, var_ref: VariableReference):
         super().initialize(model=model, var_ref=var_ref)
 
         self._model = model
@@ -41,6 +41,10 @@ class FullSystem(basic.BaseSystem):
         if not hasattr(self, '_model') or self._model is None:
             raise AttributeError("Model reference not initialized yet")
         return self._model
+
+    @model.setter
+    def model(self, value):
+        self._model = value
 
 
 class DirectCollocation(basic.DirectCollocation):
@@ -145,6 +149,7 @@ class MultipleShooting(basic.MultipleShooting):
 
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
+        
 
         try:
             delta_u_objectives = sys.model.objective.get_delta_u_objectives()
