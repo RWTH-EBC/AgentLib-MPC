@@ -5,7 +5,7 @@ from agentlib_mpc.data_structures.casadi_utils import (
     DiscretizationMethod,
 )
 from agentlib_mpc.data_structures.mpc_datamodels import (
-    FullVariableReference,
+    VariableReference,
 )
 from agentlib_mpc.models.casadi_model import CasadiModel, CasadiParameter
 from agentlib_mpc.optimization_backends.casadi_.core.casadi_backend import CasADiBackend
@@ -21,7 +21,7 @@ class FullSystem(basic.BaseSystem):
         super().__init__()
         self._model = None
 
-    def initialize(self, model: CasadiModel, var_ref: FullVariableReference):
+    def initialize(self, model: CasadiModel, var_ref: VariableReference):
         super().initialize(model=model, var_ref=var_ref)
 
         self._model = model
@@ -41,6 +41,10 @@ class FullSystem(basic.BaseSystem):
         if not hasattr(self, '_model') or self._model is None:
             raise AttributeError("Model reference not initialized yet")
         return self._model
+
+    @model.setter
+    def model(self, value):
+        self._model = value
 
 
 class DirectCollocation(basic.DirectCollocation):
@@ -89,16 +93,12 @@ class DirectCollocation(basic.DirectCollocation):
                     delta = control_curr - control_prev
                     self.objective_function += delta_obj.weight ** 2 * delta ** 2
 
-            # New parameter for inputs
-            dk = self.add_opt_par(sys.non_controlled_inputs)
-
             # perform inner collocation loop
             opt_vars_inside_inner = [sys.algebraics, sys.outputs]
-            opt_pars_inside_inner = []
+            opt_pars_inside_inner = [sys.non_controlled_inputs]
 
             constant_over_inner = {
                 sys.controls: uk,
-                sys.non_controlled_inputs: dk,
                 sys.model_parameters: const_par
             }
             xk_end, constraints = self._collocation_inner_loop(
@@ -144,6 +144,7 @@ class MultipleShooting(basic.MultipleShooting):
 
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
+        
 
         try:
             delta_u_objectives = sys.model.objective.get_delta_u_objectives()

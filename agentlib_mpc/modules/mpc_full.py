@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from agentlib.core import AgentVariable
 
-from agentlib_mpc.data_structures import mpc_datamodels
+from agentlib_mpc.data_structures import mpc_datamodels, ml_model_datatypes
 from pydantic import Field, field_validator, FieldValidationInfo
 from rapidfuzz import process, fuzz
 
@@ -15,32 +15,6 @@ class MPCConfig(BaseMPCConfig):
     """
     Pydantic data model for MPC configuration parser
     """
-
-    r_del_u: dict[str, float] = Field(
-        default={},
-        description="Weights that are applied to the change in control variables.",
-    )
-
-    @field_validator("r_del_u")
-    def check_r_del_u_in_controls(
-        cls, r_del_u: dict[str, float], info: FieldValidationInfo
-    ):
-        """Ensures r_del_u is only set for control variables."""
-        controls = {ctrl.name for ctrl in info.data["controls"]}
-        for name in r_del_u:
-            if name in controls:
-                # everything is fine
-                continue
-
-            # raise error
-            matches = process.extract(query=name, choices=controls, scorer=fuzz.WRatio)
-            matches = [m[0] for m in matches]
-            raise ValueError(
-                f"Tried to specify control change weight for {name}. However, "
-                f"{name} is not in the set of control variables. Did you mean one "
-                f"of these? {', '.join(matches)}"
-            )
-        return r_del_u
 
 
 class MPC(BaseMPC):
@@ -96,6 +70,16 @@ class MPC(BaseMPC):
                 if timestamp < (self.env.time - lag_in_seconds):
                     var_history.pop(timestamp)
 
+                    
+    def register_callbacks(self):
+        super().register_callbacks()
+        self.agent.data_broker.register_callback(
+            alias=ml_model_datatypes.ML_MODEL_TO_MPC,
+            source=None,
+            callback=self._update_ml_model,
+        )
+
+
     def _callback_hist_vars(self, variable: AgentVariable, name: str):
         """Adds received measured inputs to the past trajectory."""
         # if variables are intentionally sent as series, we don't need to store them
@@ -123,8 +107,9 @@ class MPC(BaseMPC):
         self._internal_variables = {}
         super()._after_config_update()
 
+
     def _setup_var_ref(self) -> mpc_datamodels.VariableReferenceT:
-        return mpc_datamodels.FullVariableReference.from_config(self.config)
+        return mpc_datamodels.VariableReference.from_config(self.config)
 
     def collect_variables_for_optimization(
         self, var_ref: mpc_datamodels.VariableReference = None

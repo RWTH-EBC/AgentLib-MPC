@@ -89,16 +89,12 @@ class DirectCollocation(basic.DirectCollocation):
             uk = self.add_opt_var(sys.controls)
             wk = self.add_opt_var(sys.binary_controls)
 
-            # New parameter for inputs
-            dk = self.add_opt_par(sys.non_controlled_inputs)
-
             # perform inner collocation loop
             opt_vars_inside_inner = [sys.algebraics, sys.outputs]
-            opt_pars_inside_inner = []
+            opt_pars_inside_inner = [sys.non_controlled_inputs]
 
             constant_over_inner = {
                 sys.controls: uk,
-                sys.non_controlled_inputs: dk,
                 sys.model_parameters: const_par,
                 sys.binary_controls: wk,
             }

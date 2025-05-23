@@ -13,7 +13,7 @@ from agentlib_mpc.data_structures.casadi_utils import (
 )
 from agentlib_mpc.data_structures.ml_model_datatypes import name_with_lag
 from agentlib_mpc.data_structures.mpc_datamodels import (
-    FullVariableReference,
+    VariableReference,
 )
 from agentlib_mpc.models.casadi_ml_model import CasadiMLModel
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
@@ -35,7 +35,7 @@ class CasadiMLSystem(FullSystem):
     lags_dict: dict[str, int]
     sim_step: ca.Function
 
-    def initialize(self, model: CasadiMLModel, var_ref: FullVariableReference):
+    def initialize(self, model: CasadiMLModel, var_ref: VariableReference):
         # define variables
         self.states = OptimizationVariable.declare(
             denotation="state",
@@ -86,13 +86,6 @@ class CasadiMLSystem(FullSystem):
             use_in_stage_function=False,
             assert_complete=True,
         )
-        self.r_del_u = OptimizationParameter.declare(
-            denotation="r_del_u",
-            variables=[CasadiParameter(name=r_del_u) for r_del_u in var_ref.r_del_u],
-            ref_list=var_ref.r_del_u,
-            use_in_stage_function=False,
-            assert_complete=True,
-        )
         self.cost_function = model.cost_func
         self.model_constraints = Constraint(
             function=ca.vertcat(*[c.function for c in model.get_constraints()]),
@@ -100,7 +93,7 @@ class CasadiMLSystem(FullSystem):
             ub=ca.vertcat(*[c.ub for c in model.get_constraints()]),
         )
         self.sim_step = model.make_predict_function_for_mpc()
-        self.model = model
+        self._model = model
         self.lags_dict: dict[str, int] = model.lags_dict
         self.time = model.time
 
@@ -123,7 +116,15 @@ class MultipleShooting_ML(MultipleShooting):
         n = self.options.prediction_horizon
         ts = self.options.time_step
         const_par = self.add_opt_par(sys.model_parameters)
-        du_weights = self.add_opt_par(sys.r_del_u)
+
+        try:
+            delta_u_objectives = sys.model.objective.get_delta_u_objectives()
+        except (AttributeError, Exception) as e:
+            self.logger.warning(f"Failed to get delta_u_objectives: {str(e)}")
+
+        control_map = {}
+        for i, control_name in enumerate(sys.controls.ref_names):
+            control_map[control_name] = i
 
         pre_grid_states = [ts * i for i in range(-sys.max_lag + 1, 1)]
         inputs_lag = min(-2, -sys.max_lag)  # at least -2, to consider last control
@@ -188,7 +189,14 @@ class MultipleShooting_ML(MultipleShooting):
             # add penalty on control change between intervals
             u_prev = mx_dict[time - ts][sys.controls.name]
             uk = stage_mx[sys.controls.name]
-            self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
+            for delta_obj in delta_u_objectives:
+                control_name = delta_obj.get_control_name()
+                if control_name in control_map:
+                    idx = control_map[control_name]
+                    control_prev = u_prev[idx]
+                    control_curr = uk[idx]
+                    delta = control_curr - control_prev
+                    self.objective_function += delta_obj.weight ** 2 * delta ** 2
 
             # get stage arguments from current time step
             stage_arguments = {
