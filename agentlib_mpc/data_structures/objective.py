@@ -152,6 +152,7 @@ class FullObjective:
             return sum(terms) / self.normalization
         return 0
 
+
     def calculate_values(self, result_df, grid):
         """Calculate values for each objective component using the result dataframe"""
         self._values = {}
@@ -266,3 +267,89 @@ class FullObjective:
                 new_series.iloc[nan_idx] = mean_val
         df[col] = new_series
 
+
+import casadi as ca
+
+
+class ConditionalObjective:
+    """Represents a conditional objective that switches between different objectives based on conditions"""
+
+    def __init__(self, *condition_objective_pairs, default_objective=None):
+        """
+        Args:
+            *condition_objective_pairs: Tuples of (condition, objective)
+                where condition is a CasADi expression that evaluates to True/False
+                and objective is a FullObjective
+            default_objective: The objective to use when all conditions are False
+        """
+        self.condition_objective_pairs = condition_objective_pairs
+        self.default_objective = default_objective or FullObjective()
+
+        # Collect all objectives
+        self.all_objectives = [self.default_objective]
+        for _, objective in condition_objective_pairs:
+            if objective not in self.all_objectives:
+                self.all_objectives.append(objective)
+
+        # Flatten all individual objective terms for reporting
+        self._flattened_objectives = []
+        for obj in self.all_objectives:
+            if hasattr(obj, 'objectives'):
+                self._flattened_objectives.extend(obj.objectives)
+
+    @property
+    def objectives(self):
+        """Return flattened list of all objective terms for reporting"""
+        return self._flattened_objectives
+
+    def get_casadi_expression(self):
+        """Combine all objectives into a conditional CasADi expression"""
+        result = self.default_objective.get_casadi_expression()
+
+        # Apply each condition in reverse order
+        for condition, objective in reversed(self.condition_objective_pairs):
+            result = ca.if_else(condition, objective.get_casadi_expression(), result)
+
+        return result
+
+    def get_delta_u_objectives(self):
+        """Returns all DeltaUObjective instances from all contained objectives"""
+        all_delta_u = []
+        for objective in self.all_objectives:
+            all_delta_u.extend(objective.get_delta_u_objectives())
+        return list(set(all_delta_u))  # Remove duplicates
+
+    def get_sq_objectives(self):
+        """Returns all SqObjective instances"""
+        all_sq = []
+        for objective in self.all_objectives:
+            all_sq.extend(objective.get_sq_objectives())
+        return list(set(all_sq))
+
+    def get_regular_objectives(self):
+        """Returns all regular EqObjective instances"""
+        all_regular = []
+        for objective in self.all_objectives:
+            all_regular.extend(objective.get_regular_objectives())
+        return list(set(all_regular))
+
+    def calculate_values(self, result_df, grid):
+        """Calculate values for each objective component."""
+        all_values = {}
+        total_value = 0
+
+        # Calculate values for all objectives
+        for objective in self.all_objectives:
+            values = objective.calculate_values(result_df, grid)
+
+            for name, value in values.items():
+                if name == 'total':
+                    continue  # Skip total as we'll calculate it differently
+
+                all_values[name] = value
+
+                if value is not None:
+                    total_value += value
+
+        all_values['total'] = total_value
+        return all_values
