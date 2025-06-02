@@ -55,7 +55,7 @@ MODULE_TYPES = {
         class_name="LinRegTrainer",
     ),
     "ann_simulator": ModuleImport(
-        module_path="agentlib_mpc.modules.ann_model_simulator",
+        module_path="agentlib_mpc.modules.ann_simulator",
         class_name="MLModelSimulator",
     ),
 	"pinn_trainer": ModuleImport(
