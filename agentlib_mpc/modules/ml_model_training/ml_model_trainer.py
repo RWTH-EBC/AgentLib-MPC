@@ -32,6 +32,7 @@ from agentlib_mpc.data_structures import ml_model_datatypes
 from agentlib_mpc.data_structures.interpolation import InterpolationMethods
 from agentlib_mpc.utils.plotting.ml_model_test import evaluate_model
 from agentlib_mpc.utils.sampling import sample_values_to_target_grid
+from agentlib_mpc.modules.ml_model_training.losses import PINNLoss
 
 from keras import Sequential
 
@@ -644,6 +645,110 @@ class ANNTrainer(MLModelTrainer):
         )
 
 
+
+class PINNTrainerConfig(ANNTrainerConfig):
+    """
+    Pydantic data model for PINNTrainer configuration parser
+    """
+    weight_phys_losses: float = pydantic.Field(
+        default=0.5,
+        description=('Weights the proportion of data-driven and physical losses. Value between 0 and 1')
+    )
+    loss_function: str = pydantic.Field(
+        default='mean_squared_error',
+        description=(
+            "Loss function for fitting. Supported options include:\n"
+            "- mean_squared_error: Mean Squared Error\n"
+            "- mean_absolute_error: Mean Absolute Error\n"
+            "- mean_absolute_percentage_error: Mean Absolute Percentage Error\n"
+            "- mean_squared_logarithmic_error: Mean Squared Logarithmic Error\n"
+            "For a complete list, refer to Keras documentation."
+        )
+    )
+    additional_losses: list = pydantic.Field(
+        default=[], description="Add losses based on physical behavior of the system"
+    )
+
+class PINNTrainer(ANNTrainer):
+    """
+    Module that generates Physics Informed Neural Networks (PINNs) based on received data.
+    """
+    config: PINNTrainerConfig
+    model_type = SerializedANN
+
+    def __init__(self, config: dict, agent: Agent):
+        super().__init__(config, agent)
+
+    @property
+    def additional_losses(self):
+        if not hasattr(self, '_additional_losses'):
+            self._additional_losses = self._load_additional_losses()
+        return self._additional_losses
+
+    def _load_additional_losses(self):
+        additional_losses = []
+        for loss in self.config.additional_losses:
+            module = importlib.import_module(loss['module_path'])
+            loss_function = getattr(module, loss['function'])
+            additional_losses.append({
+                'name': loss['name'],
+                'scale': loss['scale'],
+                'function': loss_function,
+                'features': loss['features']
+            })
+        return additional_losses
+
+    def build_ml_model(self, training_data=None) -> Sequential:
+        """Build a PINN with a one layer structure"""
+        pinn = Sequential()
+        pinn.add(layers.BatchNormalization(axis=1))
+        for units, activation in self.config.layers:
+            pinn.add(layers.Dense(units=units, activation=activation))
+        pinn.add(layers.Dense(units=len(self.config.outputs), activation="linear"))
+
+        loss = PINNLoss(
+            main_loss_function=self.config.loss_function,
+            additional_losses=self.additional_losses,
+            n_outputs=len(self.config.outputs),
+            weight_phys_losses=self.config.weight_phys_losses
+        )
+
+        pinn.compile(loss=loss, optimizer="adam")
+        return pinn
+
+    def get_additionals(self, training_data):
+        y_train_additional = training_data.training_outputs.copy()
+        y_val_additional = training_data.validation_outputs.copy()
+
+        for i, add_loss in enumerate(self.additional_losses):
+            y_train_add = add_loss['function'](training_data.training_outputs)
+            y_val_add = add_loss['function'](training_data.validation_outputs)
+
+            y_train_additional[f'add_{i}'] = y_train_add
+            y_val_additional[f'add_{i}'] = y_val_add
+
+        return y_train_additional, y_val_additional
+
+    def fit_ml_model(self, training_data: ml_model_datatypes.TrainingData):
+        callbacks = []
+        if self.config.early_stopping.activate:
+            callbacks.append(self.config.early_stopping.callback())
+
+        y_train_additional, y_val_additional = self.get_additionals(training_data)
+
+        self.ml_model.fit(
+            x=training_data.training_inputs,
+            y=y_train_additional,
+            validation_data=(
+                training_data.validation_inputs,
+                y_val_additional,
+            ),
+            epochs=self.config.epochs,
+            batch_size=self.config.batch_size,
+            callbacks=callbacks,
+        )
+
+
 class GPRTrainerConfig(MLModelTrainerConfig):
     """
     Pydantic data model for GPRTrainer configuration parser
@@ -769,6 +874,7 @@ class LinRegTrainer(MLModelTrainer):
 
 ml_model_trainer = {
     MLModels.ANN: ANNTrainer,
+    MLModels.PINN: PINNTrainer,
     MLModels.GPR: GPRTrainer,
     MLModels.LINREG: LinRegTrainer,
 }
