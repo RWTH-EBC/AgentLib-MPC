@@ -3,6 +3,9 @@ import logging
 import math
 from pathlib import Path
 from typing import Type, TYPE_CHECKING
+from typing import Type
+import importlib
+
 
 import numpy as np
 import pandas as pd
@@ -35,6 +38,7 @@ from agentlib_mpc.utils.sampling import sample_values_to_target_grid
 from agentlib_mpc.modules.ml_model_training.losses import PINNLoss
 
 from keras import Sequential
+from keras import layers
 
 
 logger = logging.getLogger(__name__)
@@ -693,8 +697,7 @@ class PINNTrainer(ANNTrainer):
             additional_losses.append({
                 'name': loss['name'],
                 'scale': loss['scale'],
-                'function': loss_function,
-                'features': loss['features']
+                'function': loss_function
             })
         return additional_losses
 
@@ -720,9 +723,19 @@ class PINNTrainer(ANNTrainer):
         y_train_additional = training_data.training_outputs.copy()
         y_val_additional = training_data.validation_outputs.copy()
 
+        train_data = {
+            'inputs': training_data.training_inputs,
+            'outputs': training_data.training_outputs
+        }
+
+        val_data = {
+            'inputs': training_data.validation_inputs,
+            'outputs': training_data.validation_outputs
+        }
+
         for i, add_loss in enumerate(self.additional_losses):
-            y_train_add = add_loss['function'](training_data.training_outputs)
-            y_val_add = add_loss['function'](training_data.validation_outputs)
+            y_train_add = add_loss['function'](train_data)
+            y_val_add = add_loss['function'](val_data)
 
             y_train_additional[f'add_{i}'] = y_train_add
             y_val_additional[f'add_{i}'] = y_val_add

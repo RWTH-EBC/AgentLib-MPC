@@ -6,7 +6,6 @@ import agentlib as al
 import random
 import matplotlib.pyplot as plt
 
-#todo: check ist sys.path.append() notwendig?
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import model
 
@@ -61,19 +60,17 @@ def configs(training_time, step_size, plot_results):
         "modules": [
             {
                 "step_size": step_size,
-                "module_id": "trainer_testing_new",
+                "module_id": "trainer_T_pred_max_change",
                 "type": "agentlib_mpc.pinn_trainer",
                 "epochs": 1000,
                 "batch_size": 64,
                 "loss_function": "mean_squared_error",
-                "number_of_training_repetitions": 2,
                 "weight_phys_losses": 0.5,
                 "additional_losses": [
                     {
                         "name": "PhysicalLoss",
                         "scale": 1,
-                        "function": "T_pred",
-                        "features": ["T"],
+                        "function": "T_pred_max_change",
                         "module_path": "physical_eq",
                     },
                 ],

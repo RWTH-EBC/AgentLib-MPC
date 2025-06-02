@@ -34,6 +34,7 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                         "method": "multiple_shooting",
                     },
                     "results_file": "results//opt.csv",
+                    "overwrite_result_file": True,
                     "solver": {"name": "ipopt", "options": {"ipopt.print_level": 0}},
                 },
                 "time_step": 300,

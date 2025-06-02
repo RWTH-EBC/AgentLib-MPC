@@ -31,6 +31,7 @@ def get_git_revision_short_hash() -> str:
 class MLModels(str, Enum):
     ANN = "ANN"
     GPR = "GPR"
+    PINN = "PINN"
     LINREG = "LinReg"
 
 
