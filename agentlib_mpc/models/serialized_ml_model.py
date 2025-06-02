@@ -60,6 +60,7 @@ class SerializedMLModel(BaseModel, abc.ABC):
         title="Training Info",
         description="Config of Trainer class with all the meta data used for training of the Model.",
     )
+
     model_type: MLModels
     model_config = ConfigDict(protected_namespaces=())
 
@@ -184,6 +185,16 @@ class SerializedANN(SerializedMLModel):
         title="structure",
         description="The structure of the ANN as json string.",
     )
+    optimizer: str = Field(
+        default=None,
+        title="optimizer",
+        description="The optimizer used for training the ANN.",
+    )
+    loss: str = Field(
+        default=None,
+        title="loss",
+        description="The loss function used for training the ANN.",
+    )
     model_config = ConfigDict(arbitrary_types_allowed=True)
     model_type: MLModels = MLModels.ANN
 
@@ -205,6 +216,9 @@ class SerializedANN(SerializedMLModel):
                 weight_l[idx] = weight_l[idx].tolist()
             weights.append(weight_l)
 
+        optimizer = model.optimizer.__class__.__name__.lower()
+        loss = model.loss
+
         return cls(
             structure=structure,
             weights=weights,
@@ -212,6 +226,8 @@ class SerializedANN(SerializedMLModel):
             input=input,
             output=output,
             trainer_config=training_info,
+            optimizer=optimizer,
+            loss=loss,
         )
 
     def deserialize(self) -> Sequential:

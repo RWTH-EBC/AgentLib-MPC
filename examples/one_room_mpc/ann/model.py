@@ -72,7 +72,9 @@ class PhysicalModelConfig(CasadiModelConfig):
         ),
     ]
     outputs: List[CasadiOutput] = [
-        CasadiOutput(name="T_out", unit="K", description="Temperature of zone")
+        CasadiOutput(name="T_out", unit="K", description="Temperature of zone"),
+        CasadiOutput(name="T_in_sim", unit="K"),
+        CasadiOutput(name="load_sim", unit="W"),
     ]
 
 
@@ -87,6 +89,8 @@ class PhysicalModel(CasadiModel):
 
         # Define ae
         self.T_out.alg = self.T  # math operation to get the symbolic variable
+        self.T_in_sim.alg = self.T_in
+        self.load_sim.alg = self.load
 
         # Constraints: List[(lower bound, function, upper bound)]
         self.constraints = [
