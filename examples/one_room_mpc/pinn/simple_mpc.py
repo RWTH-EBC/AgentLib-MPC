@@ -91,7 +91,7 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000, days=1, ste
     try:
         pinn_path = list(Path.cwd().glob("pinns/*/ml_model.json"))[-1]
     except IndexError:
-        import training_pinn
+        from examples.one_room_mpc.pinn import training_pinn
 
         training_pinn.main(days=days, training_time=86400*days, step_size=step_size)
         pinn_path = list(Path.cwd().glob("pinns/*/ml_model.json"))[-1]

@@ -33,6 +33,7 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                         "method": "multiple_shooting",
                     },
                     "results_file": "results//opt.csv",
+                    "overwrite_result_file": True,
                     "solver": {"name": "ipopt", "options": {"ipopt.print_level": 0}},
                 },
                 "time_step": 300,
@@ -91,9 +92,9 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000):
         ann_path = list(Path.cwd().glob("anns/*/ml_model.json"))[-1]
     except IndexError:
         # if there is none, we have to perform the training first
-        import training_nn
+        from examples.one_room_mpc.ann.training_nn import main
 
-        training_nn.main(training_time=3600 * 24 * 1, plot_results=False, step_size=300)
+        main(training_time=3600 * 24 * 1, plot_results=False, step_size=300)
         ann_path = list(Path.cwd().glob("anns/*/ml_model.json"))[-1]
 
     mas = LocalMASAgency(

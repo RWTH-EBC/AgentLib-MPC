@@ -1,13 +1,10 @@
 import logging
 from agentlib.utils.multi_agent_system import LocalMASAgency
-import os
-import sys
 import agentlib as al
 import random
 import matplotlib.pyplot as plt
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import model
+from examples.one_room_mpc.pinn import model
 
 logger = logging.getLogger(__name__)
 
