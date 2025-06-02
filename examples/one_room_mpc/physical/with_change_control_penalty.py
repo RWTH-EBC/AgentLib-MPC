@@ -137,6 +137,7 @@ AGENT_MPC = {
                 },
                 "results_file": "results//mpc.csv",
                 "save_results": True,
+                "overwrite_result_file": True,
             },
             "time_step": 300,
             "prediction_horizon": 15,
