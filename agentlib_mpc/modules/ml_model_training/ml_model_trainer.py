@@ -635,22 +635,35 @@ class MLModelTrainer(BaseModule, abc.ABC):
 
         return sampled_data
 
+    def loss_for_serialization(self):
+        """Convert custom loss to string representation for serialization"""
+        if hasattr(self.ml_model, 'loss') and not isinstance(self.ml_model.loss, str):
+            # Store the original loss
+            original_loss = self.ml_model.loss
+            # Replace with string representation temporarily
+            self.ml_model.loss = self.ml_model.loss.__class__.__name__
+            return original_loss
+        return None
+
     def serialize_ml_model(self) -> SerializedMLModel:
-        """
-        Serializes the ML Model, sa that it can be saved
-        as json file.
-        Returns:
-            SerializedMLModel version of the passed ML Model.
-        """
+        """Serializes the ML Model so it can be saved as json file."""
         ml_inputs, ml_outputs = self._define_features()
 
-        serialized_ml = self.model_type.serialize(
-            model=self.ml_model,
-            dt=self.config.step_size,
-            input=ml_inputs,
-            output=ml_outputs,
-            training_info=self.training_info,
-        )
+        # Prepare model for serialization
+        original_loss = self.loss_for_serialization()
+
+        try:
+            serialized_ml = self.model_type.serialize(
+                model=self.ml_model,
+                dt=self.config.step_size,
+                input=ml_inputs,
+                output=ml_outputs,
+                training_info=self.training_info,
+            )
+        finally:
+            if original_loss is not None:
+                self.ml_model.loss = original_loss
+
         return serialized_ml
 
     def save_ml_model(self, serialized_ml_model: SerializedMLModel, path: Path):
