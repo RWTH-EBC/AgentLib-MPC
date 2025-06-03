@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 from agentlib.utils.multi_agent_system import LocalMASAgency
 
-import model
+from examples.one_room_mpc.gpr import model
 
 logger = logging.getLogger(__name__)
 

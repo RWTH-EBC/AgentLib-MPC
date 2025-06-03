@@ -19,6 +19,7 @@ from agentlib_mpc.data_structures.mpc_datamodels import (
     InitStatus,
     Results,
 )
+from agentlib_mpc.models.serialized_ml_model import SerializedMLModel
 from agentlib_mpc.optimization_backends import backend_types, uninstalled_backend_types
 from agentlib_mpc.optimization_backends.backend import (
     OptimizationBackend,
@@ -168,6 +169,20 @@ class BaseMPC(BaseModule):
         disc_opts.prediction_horizon = self.config.prediction_horizon
         disc_opts.time_step = self.config.time_step
         return opti_back
+
+    def _update_ml_model(self, variable: AgentVariable):
+        #todo: check if var is a model or path --> both possible
+        value = variable.value
+        opti_back = self.config.optimization_backend['model']
+        # if isinstance(value, dict):
+        #     opti_back['ml_model_sources'] = [value]
+        # elif isinstance(value, str):
+        #     opti_back['ml_model_sources'] = [value]
+        opti_back['ml_model_sources'] = [value]
+        self.init_status = mpc_datamodels.InitStatus.during_update
+        self._init_optimization()
+        self.init_status = mpc_datamodels.InitStatus.ready
+
 
     def _setup_var_ref(self) -> mpc_datamodels.VariableReferenceT:
         return VariableReference.from_config(self.config)

@@ -70,6 +70,34 @@ class TestExamples(unittest.TestCase):
             log_level=logging.FATAL,
         )
 
+
+    def test_ml_mpc(self):
+        """Test the mpc agent example"""
+        self._run_example_with_return(
+            file="one_room_mpc//ann//simple_mpc_nn.py",
+            func_name="run_example",
+            with_plots=False,
+            log_level=logging.FATAL,
+        )
+        self._run_example_with_return(
+            file="one_room_mpc//gpr//simple_mpc_gpr.py",
+            func_name="run_example",
+            with_plots=False,
+            log_level=logging.FATAL,
+        )
+        self._run_example_with_return(
+            file="one_room_mpc//linreg//simple_mpc_linreg.py",
+            func_name="run_example",
+            with_plots=False,
+            log_level=logging.FATAL,
+        )
+        self._run_example_with_return(
+            file="one_room_mpc//pinn//simple_mpc.py",
+            func_name="run_example",
+            with_plots=False,
+            log_level=logging.FATAL,
+        )
+
     def test_admm_local(self):
         self._run_example_with_return(
             file="admm//admm_example_local.py",

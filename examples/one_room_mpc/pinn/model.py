@@ -19,7 +19,7 @@ class PhysicalModelConfig(CasadiModelConfig):
         ),
         # disturbances
         CasadiInput(
-            name="load", value=150, unit="W", description="Heat load into zone"
+            name="load", value=150, unit="W", description="Heat " "load into zone"
         ),
         CasadiInput(
             name="T_in", value=290.15, unit="K", description="Inflow air temperature"
@@ -72,9 +72,7 @@ class PhysicalModelConfig(CasadiModelConfig):
         ),
     ]
     outputs: List[CasadiOutput] = [
-        CasadiOutput(name="T_out", unit="K", description="Temperature of zone"),
-        CasadiOutput(name="T_in_sim", unit="K"),
-        CasadiOutput(name="load_sim", unit="W"),
+        CasadiOutput(name="T_out", unit="K", description="Temperature of zone")
     ]
 
 
@@ -89,8 +87,6 @@ class PhysicalModel(CasadiModel):
 
         # Define ae
         self.T_out.alg = self.T  # math operation to get the symbolic variable
-        self.T_in_sim.alg = self.T_in
-        self.load_sim.alg = self.load
 
         # Constraints: List[(lower bound, function, upper bound)]
         self.constraints = [
@@ -143,7 +139,7 @@ class DataDrivenModelConfig(CasadiMLModelConfig, PhysicalModelConfig):
             value=0,
             unit="K",
             description="Slack variable of temperature of zone",
-        ),
+        )
     ]
 
     parameters: List[CasadiParameter] = [
@@ -176,6 +172,8 @@ class DataDrivenModelConfig(CasadiMLModelConfig, PhysicalModelConfig):
 
 class DataDrivenModel(CasadiMLModel):
     config: DataDrivenModelConfig
+
+    # self.anns = ["temp_ann"]
 
     def setup_system(self):
         # ode

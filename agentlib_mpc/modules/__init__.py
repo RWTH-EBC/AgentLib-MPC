@@ -4,7 +4,6 @@ distributed model predictive control using multi agent systems.
 
 It contains classes for local optimization and global coordination.
 """
-
 import importlib
 
 
@@ -58,6 +57,10 @@ MODULE_TYPES = {
     "ann_simulator": ModuleImport(
         module_path="agentlib_mpc.modules.ann_simulator",
         class_name="MLModelSimulator",
+    ),
+	"pinn_trainer": ModuleImport(
+        module_path="agentlib_mpc.modules.ml_model_training.ml_model_trainer",
+        class_name="PINNTrainer",
     ),
     "set_point_generator": ModuleImport(
         module_path="agentlib_mpc.modules.ml_model_training.setpoint_generator",

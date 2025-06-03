@@ -2,6 +2,9 @@ import logging
 import os
 from pathlib import Path
 from typing import List
+
+import pandas as pd
+
 from agentlib_mpc.models.casadi_model import (
     CasadiModel,
     CasadiInput,
@@ -11,6 +14,10 @@ from agentlib_mpc.models.casadi_model import (
     CasadiModelConfig,
 )
 from agentlib.utils.multi_agent_system import LocalMASAgency
+
+from agentlib_mpc.utils.analysis import load_mpc_stats, load_mpc_obj_res
+from agentlib_mpc.utils.plotting.interactive import show_dashboard
+from agentlib_mpc.data_structures.objective import FullObjective, EqObjective, DeltaUObjective, SqObjective
 
 
 logger = logging.getLogger(__name__)
@@ -23,11 +30,14 @@ class MyCasadiModelConfig(CasadiModelConfig):
     inputs: List[CasadiInput] = [
         # controls
         CasadiInput(
-            name="mDot", value=0.0225, unit="K", description="Air mass flow into zone"
+            name="mDot",
+            value=0.0225,
+            unit="m³/s",
+            description="Air mass flow into zone",
         ),
         # disturbances
         CasadiInput(
-            name="load", value=150, unit="W", description="Heat " "load into zone"
+            name="load", value=150, unit="W", description="Heat load into zone"
         ),
         CasadiInput(
             name="T_in", value=290.15, unit="K", description="Inflow air temperature"
@@ -102,14 +112,25 @@ class MyCasadiModel(CasadiModel):
             (0, self.T + self.T_slack, self.T_upper),
         ]
 
-        # Objective function
-        objective = sum(
-            [
-                self.r_mDot * self.mDot,
-                self.s_T * self.T_slack**2,
-            ]
+        obj1 = DeltaUObjective(
+            expressions=self.mDot,
+            weight=self.r_mDot,
+            name="delta_m",
         )
 
+        obj3 = EqObjective(
+            expressions=[self.mDot],
+            weight=self.r_mDot,
+            name="power_cost"
+        )
+
+        obj2 = SqObjective(
+            expressions=self.T_slack,
+            weight=self.s_T,
+            name="temp_slack"
+        )
+
+        objective = FullObjective(obj3, obj2, obj1, normalization=43200)
         return objective
 
 
@@ -125,15 +146,12 @@ AGENT_MPC = {
             "optimization_backend": {
                 "type": "casadi",
                 "model": {"type": {"file": __file__, "class_name": "MyCasadiModel"}},
-                "discretization_options": {"method": "multiple_shooting"},
+                "discretization_options": {
+                    "collocation_order": 2,
+                    "collocation_method": "legendre",
+                },
                 "solver": {
-                    "name": "sqpmethod",
-                    "options": {
-                        "print_header": False,
-                        "print_iteration": False,
-                        "qpsol": "qpoases",
-                        "qpsol_options": {"printLevel": "low"},
-                    },
+                    "name": "ipopt",  # use fatrop with casadi 3.6.6 for speedup
                 },
                 "results_file": "results//mpc.csv",
                 "save_results": True,
@@ -142,17 +160,26 @@ AGENT_MPC = {
             "time_step": 300,
             "prediction_horizon": 15,
             "parameters": [
-                {"name": "s_T", "value": 3},
-                {"name": "r_mDot", "value": 1},
+                {"name": "s_T", "value": 100},
+                {"name": "r_mDot", "value": 5},
             ],
             "inputs": [
+                {"name": "T_in", "value": 290.15},
                 {"name": "load", "value": 150},
                 {"name": "T_upper", "value": ub},
-                {"name": "T_in", "value": 290.15},
             ],
             "controls": [{"name": "mDot", "value": 0.02, "ub": 0.05, "lb": 0}],
-            "r_del_u": {"mDot": 40},
-            "states": [{"name": "T", "value": 298.16, "ub": 303.15, "lb": 288.15}],
+            "outputs": [{"name": "T_out"}],
+            "states": [
+                {
+                    "name": "T",
+                    "value": 298.16,
+                    "ub": 303.15,
+                    "lb": 288.15,
+                    "alias": "T",
+                    "source": "SimAgent",
+                }
+            ],
         },
     ],
 }
@@ -169,6 +196,7 @@ AGENT_SIM = {
             },
             "t_sample": 10,
             "update_inputs_on_callback": False,
+            "save_results": True,
             "outputs": [
                 {"name": "T_out", "value": 298, "alias": "T"},
             ],
@@ -180,48 +208,82 @@ AGENT_SIM = {
 }
 
 
-def run_example(with_plots=True, log_level=logging.INFO, until=10000):
+def run_example(
+    with_plots=True, log_level=logging.INFO, until=10000, with_dashboard=False
+):
     # Change the working directly so that relative paths work
     os.chdir(Path(__file__).parent)
 
     # Set the log-level
     logging.basicConfig(level=log_level)
     mas = LocalMASAgency(
-        agent_configs=[AGENT_MPC, AGENT_SIM], env=ENV_CONFIG, variable_logging=True
+        agent_configs=[AGENT_MPC, AGENT_SIM], env=ENV_CONFIG, variable_logging=False
     )
     mas.run(until=until)
-    results = mas.get_results()
+    try:
+        stats = load_mpc_stats("results/mpc.csv")
+    except Exception:
+        stats = None
+    try:
+        obj_data = load_mpc_obj_res("results/mpc.csv")
+    except Exception:
+        obj_data = None
+    results = mas.get_results(cleanup=False)
+    mpc_results = results["myMPCAgent"]["myMPC"]
+    sim_res = results["SimAgent"]["room"]
+
+
+    if with_dashboard:
+        show_dashboard(mpc_results, stats, obj_data)
+
     if with_plots:
-        import matplotlib.pyplot as plt
-        from agentlib_mpc.utils.plotting.mpc import plot_mpc
-
-        mpc_results = results["myMPCAgent"]["myMPC"]
-        fig, ax = plt.subplots(2, 1, sharex=True)
-        plot_mpc(
-            series=mpc_results["variable"]["T"] - 273.15,
-            ax=ax[0],
-            plot_actual_values=True,
-            plot_predictions=True,
-        )
-        ax[0].axhline(ub - 273.15, color="grey", linestyle="--", label="upper boundary")
-        plot_mpc(
-            series=mpc_results["variable"]["mDot"],
-            ax=ax[1],
-            plot_actual_values=True,
-            plot_predictions=True,
-        )
-
-        ax[1].legend()
-        ax[0].legend()
-        ax[0].set_ylabel("$T_{room}$ / °C")
-        ax[1].set_ylabel("$\dot{m}_{air}$ / kg/s")
-        ax[1].set_xlabel("simulation time / s")
-        ax[1].set_ylim([0, 0.06])
-        ax[1].set_xlim([0, until])
-        plt.show()
+        plot(mpc_results, sim_res, until)
 
     return results
 
 
+def plot(mpc_results: pd.DataFrame, sim_res: pd.DataFrame, until: float):
+    import matplotlib.pyplot as plt
+    from agentlib_mpc.utils.plotting.mpc import plot_mpc
+
+    fig, ax = plt.subplots(2, 1, sharex=True)
+    t_sim = sim_res["T_out"]
+    t_sample = t_sim.index[1] - t_sim.index[0]
+    aie_kh = (t_sim - ub).abs().sum() * t_sample / 3600
+    energy_cost_kWh = (
+        (sim_res["mDot"] * (sim_res["T_out"] - sim_res["T_in"])).sum()
+        * t_sample
+        * 1
+        / 3600
+    )  # cp is 1
+    print(f"Absoulute integral error: {aie_kh} Kh.")
+    print(f"Cooling energy used: {energy_cost_kWh} kWh.")
+
+    plot_mpc(
+        series=mpc_results["variable"]["T"] - 273.15,
+        ax=ax[0],
+        plot_actual_values=True,
+        plot_predictions=True,
+    )
+    ax[0].axhline(ub - 273.15, color="grey", linestyle="--", label="upper boundary")
+    plot_mpc(
+        series=mpc_results["variable"]["mDot"],
+        ax=ax[1],
+        plot_actual_values=True,
+        plot_predictions=True,
+    )
+
+    ax[1].legend()
+    ax[0].legend()
+    ax[0].set_ylabel("$T_{room}$ / °C")
+    ax[1].set_ylabel("$\dot{m}_{air}$ / kg/s")
+    ax[1].set_xlabel("simulation time / s")
+    ax[1].set_ylim([0, 0.06])
+    ax[1].set_xlim([0, until])
+    plt.show()
+
+
 if __name__ == "__main__":
-    run_example(with_plots=True, until=3600)
+    run_example(
+        with_plots=True, with_dashboard=True, until=7200, log_level=logging.INFO
+    )

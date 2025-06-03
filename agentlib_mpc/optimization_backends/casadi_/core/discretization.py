@@ -2,8 +2,9 @@
 
 import abc
 import dataclasses
+import traceback
 from pathlib import Path
-from typing import TypeVar, Union, Callable, Optional
+from typing import TypeVar, Union, Callable, Optional, Dict
 
 import casadi as ca
 import numpy as np
@@ -25,7 +26,6 @@ from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
 )
 from agentlib_mpc.optimization_backends.casadi_.core.system import System
 
-
 CasadiVariableList = Union[list[ca.MX], ca.MX]
 
 
@@ -37,6 +37,7 @@ class Results:
     stats: dict
     variable_grid_indices: dict[str, list[int]]
     _variable_name_to_index: dict[str, int] = None
+    objective_values: dict = dataclasses.field(default_factory=dict)
 
     def __post_init__(self):
         self._variable_name_to_index = self.variable_lookup()
@@ -63,6 +64,7 @@ class Results:
             if label[0] == "variable":
                 lookup[label[1]] = index
         return lookup
+
 
     @property
     def df(self) -> pd.DataFrame:
@@ -194,8 +196,25 @@ class Discretization(abc.ABC):
             mpc_output["w"] = bin_array
 
         self._remember_solution(mpc_output)
-        result = self._process_solution(inputs=mpc_inputs, outputs=mpc_output)
+
+        result = self._process_solution(
+            inputs=mpc_inputs,
+            outputs=mpc_output
+        )
         return result
+
+
+    def _get_variable_values(self, var_name):
+        """Helper to extract variable values across time steps from optimization results"""
+        if var_name not in self.mpc_opt_vars:
+            return []
+
+        var_container = self.mpc_opt_vars[var_name]
+        if not hasattr(var_container, 'opt') or var_container.opt is None:
+            return []
+
+        return var_container.opt.toarray().flatten()
+
 
     def _determine_initial_guess(self, mpc_inputs: MPCInputs) -> MPCInputs:
         """
@@ -242,12 +261,8 @@ class Discretization(abc.ABC):
 
     def _process_solution(self, inputs: dict, outputs: dict) -> Results:
         """
-        If self.result_file is not empty,
-        collect all inputs and outputs of the optimization problem and format
-        them as DataFrames and pass them to OptimizationBackend.save_df().
-        Args:
-            inputs: mpc_inputs dict returned from _get_current_mpc_inputs
-            outputs: mpc_output from self._nlp_outputs_to_mpc_outputs
+        Collect all inputs and outputs of the optimization problem and format
+        them for return and optionally save them.
         """
         # update the guess values at the variable positions with the outputs
         for key, value in inputs.items():
@@ -258,7 +273,11 @@ class Discretization(abc.ABC):
 
         result_matrix = self._result_map(**inputs)["result"]
 
-        return self._create_results(result_matrix, self._optimizer.stats())
+        result = self._create_results(
+            result_matrix,
+            self._optimizer.stats(),
+        )
+        return result
 
     def create_nlp_in_out_mapping(self, system: System):
         """
@@ -348,7 +367,10 @@ class Discretization(abc.ABC):
             "result_map", mpc_inputs, [matrix], mpc_input_denotations, ["result"]
         )
 
-        def make_results_view(result_matrix: ca.DM, stats: dict) -> Results:
+        def make_results_view(
+                result_matrix: ca.DM,
+                stats: dict,
+        ) -> Results:
             return Results(
                 matrix=result_matrix,
                 columns=col_index,
@@ -518,6 +540,9 @@ class Discretization(abc.ABC):
         var_list.ub.append(upper)
         var_list.guess.append(opt_var)
         var_list.grid.append(self.pred_time)
+
+        if not hasattr(var_list, 'ref_names') and hasattr(quantity, 'ref_names'):
+            var_list.ref_names = quantity.ref_names
 
         return opt_var
 
