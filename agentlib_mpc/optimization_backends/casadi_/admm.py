@@ -274,6 +274,7 @@ class ADMMMultipleShooting(MultipleShooting):
                 p=ca.vertcat(
                     current_control,
                     local_coupling,
+                    local_exchange,
                     disturbance,
                     model_parameters,
                     algebraic_vars,
@@ -311,6 +312,7 @@ class ADMMMultipleShooting(MultipleShooting):
         p = ca.vertcat(
             sys.controls.full_symbolic,
             sys.local_couplings.full_symbolic,
+            sys.local_exchange.full_symbolic,
             sys.non_controlled_inputs.full_symbolic,
             sys.model_parameters.full_symbolic,
             sys.algebraics.full_symbolic,
