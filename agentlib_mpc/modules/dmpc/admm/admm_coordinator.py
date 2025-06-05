@@ -260,7 +260,7 @@ class ADMMCoordinator(Coordinator):
         """Process function for use in fast-as-possible simulations. Regularly yields
         control back to the environment, to allow the callbacks to run."""
         yield self._wait_non_rt()
-
+        self._status = cdt.CoordinatorStatus.sleeping
         while True:
             # ------------------
             # start iteration
@@ -654,6 +654,13 @@ class ADMMCoordinator(Coordinator):
                 self._initial_registration(variable)
 
     def _wrap_up_algorithm(self, iterations):
+        active_agents_sources = self._agents_with_status(
+            cdt.AgentStatus.ready
+        )  # Get list before changing status
+        for source in active_agents_sources:
+            # Reset status to standby, ready for the next cycle's init signal
+            self.agent_dict[source].status = cdt.AgentStatus.standby
+
         self._save_stats(iterations=iterations)
         self.penalty_parameter = self.config.penalty_factor
 

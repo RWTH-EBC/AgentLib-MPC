@@ -1,4 +1,4 @@
-from agentlib_mpc.modules.mpc_full import MPC, MPCConfig
+from agentlib_mpc.modules.mpc.mpc_full import MPC, MPCConfig
 
 
 class DistributedMPCConfig(MPCConfig):
