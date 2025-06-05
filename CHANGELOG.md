@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.0
+- Integrate with new mas dashboard from agentlib
+
 ## 0.6.7
 - Add option to skip MPC calculation in given time intervals, e.g. during summer period
 - Add a fallback pid module that listens to the same deactivation module and switches on

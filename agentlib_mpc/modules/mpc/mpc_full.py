@@ -6,6 +6,7 @@ import agentlib
 import numpy as np
 import pandas as pd
 from agentlib.core import AgentVariable
+from agentlib.core.errors import OptionalDependencyError
 
 from agentlib_mpc.data_structures import mpc_datamodels
 from pydantic import Field, field_validator, FieldValidationInfo
@@ -185,3 +186,121 @@ class MPC(BaseMPC, SkippableMixin):
                 var.value = 0
 
         return r_del_u
+
+    @classmethod
+    def visualize_results(
+        cls,
+        results_data: pd.DataFrame,
+        module_id: str,
+        agent_id: str,
+        convert_to: str = "hours",
+        step: bool = False,
+        use_datetime: bool = False,
+        max_predictions: int = 1000,
+    ):
+        """
+        Create visualization components for MPC results to be displayed in MAS dashboard.
+
+        Args:
+            results_data: DataFrame with MPC results data
+            module_id: ID of the MPC module
+            agent_id: ID of the agent containing this module
+            convert_to: Time unit for plotting ("seconds", "minutes", "hours", "days")
+            step: Whether to use step plots
+            use_datetime: Whether to interpret timestamps as datetime
+            max_predictions: Maximum number of predictions to show
+
+        Returns:
+            Dash HTML Div containing the visualization components
+        """
+        try:
+            from dash import html, dcc
+            import plotly.graph_objects as go
+            from agentlib_mpc.utils.plotting.interactive import get_port
+            from agentlib_mpc.utils.plotting.mpc import interpolate_colors
+            from agentlib_mpc.utils.plotting.basic import EBCColors
+            from agentlib_mpc.utils import TIME_CONVERSION
+        except ImportError as e:
+            raise OptionalDependencyError(
+                dependency_name="interactive",
+                dependency_install="plotly, dash",
+                used_object="MPC visualization",
+            ) from e
+
+        if results_data is None or results_data.empty:
+            return html.Div(
+                [
+                    html.H4(f"MPC Results - {module_id}"),
+                    html.P("No data available for visualization."),
+                ]
+            )
+
+        # Import the plotting functions from mpc_dashboard
+        from agentlib_mpc.utils.plotting.mpc_dashboard import (
+            make_components,
+            reduce_triple_index,
+            detect_index_type,
+        )
+
+        try:
+            # Process the data similar to mpc_dashboard
+            data = results_data.copy()
+
+            # Reduce triple index to double index if needed
+            if isinstance(data.index, pd.MultiIndex) and len(data.index.levels) > 2:
+                data = reduce_triple_index(data)
+
+            # Detect index type
+            is_multi_index, detected_use_datetime = detect_index_type(data)
+
+            # Normalize time if needed
+            if is_multi_index and not detected_use_datetime:
+                first_time = data.index.levels[0][0]
+                data.index = data.index.set_levels(
+                    data.index.levels[0] - first_time, level=0
+                )
+
+            # Check for stats data (look for companion stats in the same results)
+            stats = None
+            # Note: stats would need to be passed separately or found in a predictable way
+
+            # Create the dashboard components using existing MPC dashboard logic
+            components_div = make_components(
+                data=data,
+                convert_to=convert_to,
+                stats=stats,
+                use_datetime=detected_use_datetime or use_datetime,
+                step=step,
+            )
+
+            # Wrap with a header indicating this is MPC data
+            return html.Div(
+                [
+                    html.H4(f"MPC Results - Agent: {agent_id}, Module: {module_id}"),
+                    components_div,
+                ]
+            )
+
+        except Exception as e:
+            # Return error information for debugging
+            return html.Div(
+                [
+                    html.H4(f"MPC Visualization Error - {module_id}"),
+                    html.P(f"Error processing MPC results: {str(e)}"),
+                    html.Details(
+                        [
+                            html.Summary("Data Info"),
+                            html.P(
+                                f"Data shape: {results_data.shape if results_data is not None else 'None'}"
+                            ),
+                            html.P(f"Data type: {type(results_data)}"),
+                            html.P(
+                                f"Index type: {type(results_data.index) if results_data is not None else 'None'}"
+                            ),
+                            html.P(
+                                f"Columns: {list(results_data.columns) if results_data is not None else 'None'}"
+                            ),
+                        ]
+                    ),
+                ]
+            )

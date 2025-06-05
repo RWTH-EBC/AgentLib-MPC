@@ -211,13 +211,13 @@ def run_example(
         stats = load_mpc_stats("results/__mpc.csv")
     except Exception:
         stats = None
+
+    if with_dashboard:
+        mas.show_results_dashboard()
+
     results = mas.get_results(cleanup=False)
     mpc_results = results["myMPCAgent"]["myMPC"]
     sim_res = results["SimAgent"]["room"]
-
-    if with_dashboard:
-        show_dashboard(mpc_results, stats)
-
     if with_plots:
         plot(mpc_results, sim_res, until)
 
