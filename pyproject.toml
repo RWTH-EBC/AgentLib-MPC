@@ -44,7 +44,8 @@ dynamic = ["version"]
 fmu = ['FMPy>=0.3.6']
 ml = ["keras>=2.6.0", "tensorflow>=2.6.0", "scikit-learn"]
 interactive = ['plotly>=5.20.0', 'dash>=2.16.1', 'dash_daq']
-full = ['agentlib_mpc[fmu,ml,interactive]', 'agentlib[full]']
+hdf5 = ['h5py>=3.0.0']
+full = ['agentlib_mpc[fmu,ml,interactive,hdf5]', 'agentlib[full]']
 
 [package.urls]
 homepage = "https://github.com/RWTH-EBC/AgentLib_MPC"

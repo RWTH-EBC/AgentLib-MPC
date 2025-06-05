@@ -18,6 +18,7 @@ from agentlib_mpc.data_structures.mpc_datamodels import (
     DiscretizationOptions,
 )
 from agentlib_mpc.data_structures.mpc_datamodels import Results
+from agentlib_mpc.data_structures.result_writers import ResultWriterFactory
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ class BackendConfig(pydantic.BaseModel):
     @pydantic.field_validator("results_file")
     @classmethod
     def check_csv(cls, file: Path):
-        if not file.suffix == ".csv":
+        if not file.suffix in ResultWriterFactory.writers:
             raise ConfigurationError(
                 f"Results filename has to be a 'csv' file. Got {file} instead."
             )

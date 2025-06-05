@@ -3,6 +3,7 @@ import pandas as pd
 
 from agentlib_mpc.data_structures.casadi_utils import DiscretizationMethod, Integrators
 from agentlib_mpc.data_structures.mpc_datamodels import stats_path
+from agentlib_mpc.data_structures.result_writers import HDF5ResultWriter
 from agentlib_mpc.models.casadi_model import CasadiModel, CasadiInput, CasadiParameter
 from agentlib_mpc.data_structures import admm_datatypes
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
@@ -150,7 +151,7 @@ class ADMMCollocation(DirectCollocation):
                 sys.multipliers,
                 sys.exchange_multipliers,
                 sys.exchange_diff,
-                sys.non_controlled_inputs
+                sys.non_controlled_inputs,
             ]
             constant_over_inner = {
                 sys.controls: uk,
@@ -347,64 +348,53 @@ class CasADiADMMBackend(CasADiBaseBackend, ADMMBackend):
     def coupling_grid(self):
         return self.discretization.grid(self.system.multipliers)
 
-    def save_result_df(
-        self,
-        results: Results,
-        now: float = 0,
-    ):
-        """
-        Save the results of `solve` into a dataframe at each time step.
-
-        Example results dataframe:
-
-        value_type               variable              ...     lower
-        variable                      T_0   T_0_slack  ... T_0_slack mDot_0
-        time_step                                      ...
-        2         0.000000     298.160000         NaN  ...       NaN    NaN
-                  101.431499   297.540944 -149.465942  ...      -inf    0.0
-                  450.000000   295.779780 -147.704779  ...      -inf    0.0
-                  798.568501   294.720770 -146.645769  ...      -inf    0.0
-        Args:
-            results:
-            now:
-
-        Returns:
-
-        """
-        if not self.config.save_results:
+    def save_result_df(self, results: Results, now: float = 0):
+        """Save ADMM results with iteration tracking."""
+        writer = self._get_result_writer()
+        if writer is None:
             return
 
-        res_file = self.config.results_file
-
-        if self.results_file_exists():
-            self.it += 1
-            if now != self.now:  # means we advanced to next step
-                self.it = 0
-                self.now = now
-        else:
+        # Check if we're starting a new time step
+        if now != self.now:
             self.it = 0
             self.now = now
-            results.write_columns(res_file)
-            results.write_stats_columns(stats_path(res_file))
+        else:
+            self.it += 1
 
-        df = results.df
-        df.index = list(map(lambda x: str((now, self.it, x)), df.index))
+        # For HDF5, we can write immediately
+        if isinstance(writer, HDF5ResultWriter):
+            if not self.results_file_exists():
+                writer.initialize(results.df)
+            writer.write_results(results.df, now, self.it)
+            writer.write_stats(results.stats_line(f"({now}, {self.it})"))
+        else:
+            # For CSV, maintain existing buffering behavior
+            self._buffer_csv_results(results, now)
+
+    def _buffer_csv_results(self, results: Results, now: float):
+        """Maintain existing CSV buffering behavior for ADMM."""
+        # Add to buffers
+        df = results.df.copy()
+        df.index = [f"({now}, {self.it}, {idx})" for idx in df.index]
         self.results.append(df)
 
-        # append solve stats
-        index = str((now, self.it))
+        # Append solve stats
+        index = f"({now}, {self.it})"
         self.result_stats.append(results.stats_line(index))
 
-        # save last results at the start of new sampling time, or if 1000 iterations
-        # are exceeded
-        if not (self.it == 0 or self.it % 1000 == 0):
-            return
+        # Save results at the start of new sampling time, or if 1000 iterations
+        # are exceeded (to prevent memory issues)
+        if self.it == 0 or self.it % 1000 == 0:
+            writer = self._get_result_writer()
 
-        with open(res_file, "a", newline="") as f:
+            # Write all buffered results
             for iteration_result in self.results:
-                iteration_result.to_csv(f, mode="a", header=False)
+                writer.write_results(iteration_result, now, self.it)
 
-        with open(stats_path(res_file), "a") as f:
-            f.writelines(self.result_stats)
-        self.results = []
-        self.result_stats = []
+            # Write all buffered stats
+            for stat_line in self.result_stats:
+                writer.write_stats(stat_line)
+
+            # Clear buffers
+            self.results = []
+            self.result_stats = []

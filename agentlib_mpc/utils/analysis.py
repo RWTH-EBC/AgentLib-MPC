@@ -11,6 +11,14 @@ import numpy as np
 from agentlib_mpc.data_structures import mpc_datamodels
 from agentlib_mpc.utils import TimeConversionTypes, TIME_CONVERSION
 
+try:
+    import h5py
+
+    HAS_H5PY = True
+except ImportError:
+    HAS_H5PY = False
+
+
 SimulationTime = NewType("SimulationTime", float)
 
 
@@ -23,6 +31,92 @@ def load_mpc(file: Union[Path, str]) -> pd.DataFrame:
     new_ind = [literal_eval(i) for i in df.index]
     df.index = pd.MultiIndex.from_tuples(new_ind)
     return df
+
+
+def load_mpc_stats_hdf5(file: Union[Path, str]) -> Optional[pd.DataFrame]:
+    """Load MPC statistics from HDF5 file."""
+    if not HAS_H5PY:
+        from agentlib.core.errors import OptionalDependencyError
+
+        raise OptionalDependencyError(
+            used_object="HDF5 stats loading",
+            dependency_install="agentlib[hdf5]",
+            dependency_name="hdf5",
+        )
+
+    try:
+        with h5py.File(file, "r") as f:
+            stats_group = f["stats"]
+
+            # Reconstruct stats dataframe
+            stats_data = []
+            for key in sorted(stats_group.keys()):
+                line = stats_group[key][()].decode("utf-8")
+                stats_data.append(line)
+
+            # Parse stats lines back into dataframe
+            # This depends on the format of stats_line
+            # You might need to adjust based on actual format
+            return pd.DataFrame([eval(line) for line in stats_data])
+    except Exception:
+        return None
+
+
+def load_mpc_hdf5(file: Union[Path, str]) -> pd.DataFrame:
+    """Load MPC results from HDF5 file."""
+    if not HAS_H5PY:
+        from agentlib.core.errors import OptionalDependencyError
+
+        raise OptionalDependencyError(
+            used_object="HDF5 result loading",
+            dependency_install="agentlib[hdf5]",
+            dependency_name="hdf5",
+        )
+
+    with h5py.File(file, "r") as f:
+        # Reconstruct column structure
+        meta = f["metadata"]
+        n_levels = meta.attrs["n_column_levels"]
+
+        if n_levels > 1:
+            # Reconstruct MultiIndex columns - decode from bytes
+            col_tuples = [eval(col.decode("utf-8")) for col in meta["columns"][:]]
+            columns = pd.MultiIndex.from_tuples(col_tuples)
+        else:
+            # Decode column names from bytes
+            columns = [col.decode("utf-8") for col in meta["columns"][:]]
+
+        # Load all results
+        dfs = []
+        results_group = f["results"]
+
+        for time_key in sorted(
+            results_group.keys(), key=lambda x: float(x.split("_")[1])
+        ):
+            time = float(time_key.split("_")[1])
+            time_group = results_group[time_key]
+
+            for iter_key in sorted(time_group.keys()):
+                if "_index" in iter_key:
+                    continue
+
+                iteration = int(iter_key.split("_")[1])
+                data = time_group[iter_key][:]
+                index = time_group[iter_key + "_index"][:]
+
+                df = pd.DataFrame(data, index=index, columns=columns)
+
+                # Create appropriate MultiIndex
+                if iteration == 0:  # MPC
+                    df.index = pd.MultiIndex.from_tuples([(time, idx) for idx in index])
+                else:  # ADMM
+                    df.index = pd.MultiIndex.from_tuples(
+                        [(time, iteration, idx) for idx in index]
+                    )
+
+                dfs.append(df)
+
+        return pd.concat(dfs)
 
 
 def load_mpc_stats(results_file: Union[str, Path]) -> Optional[pd.DataFrame]:

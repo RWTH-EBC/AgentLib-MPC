@@ -1,6 +1,7 @@
 """Holds the base class for MPCs."""
 
 import os
+from pathlib import Path
 from typing import Tuple, Dict, Optional
 
 import pandas as pd
@@ -25,7 +26,12 @@ from agentlib_mpc.optimization_backends.backend import (
     OptimizationBackendT,
 )
 from agentlib_mpc.data_structures import mpc_datamodels
-from agentlib_mpc.utils.analysis import load_mpc, load_mpc_stats
+from agentlib_mpc.utils.analysis import (
+    load_mpc,
+    load_mpc_stats,
+    load_mpc_hdf5,
+    load_mpc_stats_hdf5,
+)
 
 
 class BaseMPCConfig(BaseModuleConfig):
@@ -389,7 +395,7 @@ class BaseMPC(BaseModule):
     @staticmethod
     def read_results_file(results_file: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
-        Read the provided csv-file as an MPC results file.
+        Read the provided results file (CSV or HDF5).
         Args:
             results_file: File path
 
@@ -399,14 +405,38 @@ class BaseMPC(BaseModule):
             optimizations.
             stats is the Dataframe with matching solver stats
         """
+        from pathlib import Path
 
-        results = load_mpc(results_file)
-        stats = load_mpc_stats(results_file)
+        file_path = Path(results_file)
+
+        # Choose loader based on extension
+        if file_path.suffix.lower() in [".h5", ".hdf5"]:
+            results = load_mpc_hdf5(results_file)
+            stats = load_mpc_stats_hdf5(results_file)
+        else:
+            # Default to CSV for any other extension
+            results = load_mpc(results_file)
+            stats = load_mpc_stats(results_file)
+
         return results, stats
 
     def cleanup_results(self):
         results_file = self.optimization_backend.config.results_file
         if not results_file:
             return
-        os.remove(results_file)
-        os.remove(mpc_datamodels.stats_path(results_file))
+
+        file_path = Path(results_file)
+
+        # Remove main results file
+        if file_path.exists():
+            os.remove(results_file)
+
+        # Remove stats file based on format
+        if file_path.suffix.lower() in [".h5", ".hdf5"]:
+            # Stats are included in the HDF5 file, no separate file to remove
+            pass
+        else:
+            # Remove separate CSV stats file
+            stats_file = mpc_datamodels.stats_path(results_file)
+            if Path(stats_file).exists():
+                os.remove(stats_file)

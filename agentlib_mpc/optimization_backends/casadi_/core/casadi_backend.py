@@ -8,6 +8,10 @@ import pydantic
 from agentlib.core.errors import ConfigurationError
 
 from agentlib_mpc.data_structures.mpc_datamodels import MPCVariable, stats_path
+from agentlib_mpc.data_structures.result_writers import (
+    ResultWriter,
+    ResultWriterFactory,
+)
 from agentlib_mpc.optimization_backends.casadi_.core import system
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
     OptimizationVariable,
@@ -49,6 +53,10 @@ class CasadiBackendConfig(BackendConfig):
         default=None,
         description="Boolean to turn JIT of the optimization problems on or off.",
         validate_default=True,
+    )
+    result_options: dict = pydantic.Field(
+        default_factory=dict,
+        description="Options for result writer (e.g., compression settings for HDF5)",
     )
 
     @pydantic.field_validator("do_jit")
@@ -97,6 +105,42 @@ class CasADiBackend(OptimizationBackend):
     discretization: DiscretizationT
     _supported_models = {"CasadiModel": CasadiModel}
     config_type = CasadiBackendConfig
+
+    def __init__(self, config: dict):
+        super().__init__(config)
+        self._result_writer: Optional[ResultWriter] = None
+
+    def _get_result_writer(self) -> Optional[ResultWriter]:
+        """Get or create result writer."""
+        if not self.config.save_results or not self.config.results_file:
+            return None
+
+        # Get result_options with fallback for backward compatibility
+        result_options = getattr(self.config, "result_options", {})
+
+        self._result_writer = ResultWriterFactory.create(
+            Path(self.config.results_file), result_options
+        )
+
+        return self._result_writer
+
+    def save_result_df(self, results: Results, now: float = 0):
+        """Save results using appropriate writer."""
+        writer = self._get_result_writer()
+        if writer is None:
+            return
+
+        df = results.df
+
+        # Initialize writer if needed
+        if not self.results_file_exists():
+            writer.initialize(df)
+
+        # Write results
+        writer.write_results(df, now)
+
+        # Write stats
+        writer.write_stats(results.stats_line(str(now)))
 
     def setup_optimization(self, var_ref: mpc_datamodels.VariableReference):
         """
@@ -252,42 +296,3 @@ class CasADiBackend(OptimizationBackend):
         method = opts.method
         self.discretization = self.discretization_types[method](options=opts)
         self.discretization.logger = self.logger
-
-    def save_result_df(
-        self,
-        results: Results,
-        now: float = 0,
-    ):
-        """
-        Save the results of `solve` into a dataframe at each time step.
-
-        Example results dataframe:
-
-        value_type               variable              ...     lower
-        variable                      T_0   T_0_slack  ... T_0_slack mDot_0
-        time_step                                      ...
-        2         0.000000     298.160000         NaN  ...       NaN    NaN
-                  101.431499   297.540944 -149.465942  ...      -inf    0.0
-                  450.000000   295.779780 -147.704779  ...      -inf    0.0
-                  798.568501   294.720770 -146.645769  ...      -inf    0.0
-        Args:
-            results:
-            now:
-
-        Returns:
-
-        """
-        if not self.config.save_results:
-            return
-
-        res_file = self.config.results_file
-        if not self.results_file_exists():
-            results.write_columns(res_file)
-            results.write_stats_columns(stats_path(res_file))
-
-        df = results.df
-        df.index = list(map(lambda x: str((now, x)), df.index))
-        df.to_csv(res_file, mode="a", header=False)
-
-        with open(stats_path(res_file), "a") as f:
-            f.writelines(results.stats_line(str(now)))
