@@ -406,8 +406,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
             f"Updated variable {name} with {variable.value} at {variable.timestamp} s."
         )
 
-
-    def _update_time_series_data(self, sample_size:int=100000):
+    def _update_time_series_data(self, sample_size: int = 100000):
         """
         Update Trainings Dataset with collected dara during simulation
 
@@ -417,7 +416,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
         Returns:
             Merged and resampled dataset for retraining
         """
-        #todo: Balancing of Trainingdata
+        # todo: Balancing of Trainingdata
 
         training_dataset = self.config.data_sources
         feature_names = list(self.history_dict.keys())
@@ -436,13 +435,29 @@ class MLModelTrainer(BaseModule, abc.ABC):
         else:
             trainings_data = pd.DataFrame(columns=self.time_series_data.columns)
 
-        df_list: list[pd.DataFrame] = []
+        # Check if data comes from severals sources
+        df_list = []
         for feature_name, (time_stamps, values) in self.history_dict.items():
-            df = pd.DataFrame({feature_name: values}, index=time_stamps)
-            df_list.append(df)
-        self.time_series_data = pd.concat(df_list, axis=1).sort_index()
+            temp_df = pd.DataFrame({feature_name: values}, index=time_stamps)
 
-        data = self.time_series_data
+            duplicated_indices = temp_df.index.duplicated(keep=False)
+            if duplicated_indices.any():
+                for idx in temp_df.index[duplicated_indices].unique():
+                    values_at_idx = temp_df.loc[idx, feature_name]
+                    if isinstance(values_at_idx, pd.Series):
+                        rounded_values = values_at_idx.round(3)
+                        first_value = rounded_values.iloc[0]
+                        if not all(v == first_value for v in rounded_values):
+                            raise ValueError(f"Inconsistent values for feature '{feature_name}' at timestamp {idx}. "
+                                             f"Values: {rounded_values.values}")
+                temp_df = temp_df[~temp_df.index.duplicated(keep='first')]
+
+            df_list.append(temp_df)
+
+        if df_list:
+            data = pd.concat(df_list, axis=1).sort_index()
+        else:
+            data = pd.DataFrame()
 
         for column in data.columns:
             if data[column].isnull().all():
