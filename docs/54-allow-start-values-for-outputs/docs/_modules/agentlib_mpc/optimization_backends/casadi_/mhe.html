@@ -1,0 +1,646 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>agentlib_mpc.optimization_backends.casadi_.mhe &mdash; agentlib_mpc 0.6.6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../../../_static/jquery.js"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+      <script src="../../../../_static/doctools.js"></script>
+      <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            agentlib_mpc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../PackageReference.html">Package Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">agentlib_mpc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../optimization_backends.html">agentlib_mpc.optimization_backends</a></li>
+      <li class="breadcrumb-item active">agentlib_mpc.optimization_backends.casadi_.mhe</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for agentlib_mpc.optimization_backends.casadi_.mhe</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">casadi</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ca</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">interpolate</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.casadi_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Constraint</span><span class="p">,</span>
+    <span class="n">LB_PREFIX</span><span class="p">,</span>
+    <span class="n">UB_PREFIX</span><span class="p">,</span>
+    <span class="n">DiscretizationMethod</span><span class="p">,</span>
+    <span class="n">SolverFactory</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span><span class="w"> </span><span class="kn">import</span> <span class="n">MHEVariableReference</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiModel</span><span class="p">,</span> <span class="n">CasadiInput</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.casadi_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasADiBackend</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.VariableGroup</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">OptimizationQuantity</span><span class="p">,</span>
+    <span class="n">OptimizationVariable</span><span class="p">,</span>
+    <span class="n">OptimizationParameter</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.discretization</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Discretization</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.system</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="MHESystem"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.mhe.MHESystem">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MHESystem</span><span class="p">(</span><span class="n">System</span><span class="p">):</span>
+    <span class="c1"># variables</span>
+    <span class="n">estimated_states</span><span class="p">:</span> <span class="n">OptimizationVariable</span>
+    <span class="n">estimated_inputs</span><span class="p">:</span> <span class="n">OptimizationVariable</span>
+    <span class="n">estimated_parameters</span><span class="p">:</span> <span class="n">OptimizationVariable</span>
+    <span class="n">algebraics</span><span class="p">:</span> <span class="n">OptimizationVariable</span>
+    <span class="n">outputs</span><span class="p">:</span> <span class="n">OptimizationVariable</span>
+
+    <span class="c1"># parameters</span>
+    <span class="n">measured_states</span><span class="p">:</span> <span class="n">OptimizationParameter</span>
+    <span class="n">known_inputs</span><span class="p">:</span> <span class="n">OptimizationParameter</span>
+    <span class="n">known_parameters</span><span class="p">:</span> <span class="n">OptimizationParameter</span>
+
+    <span class="c1"># dynamics</span>
+    <span class="n">model_constraints</span><span class="p">:</span> <span class="n">Constraint</span>
+    <span class="n">cost_function</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span>
+    <span class="n">ode</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span>
+
+<div class="viewcode-block" id="MHESystem.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.mhe.MHESystem.initialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">CasadiModel</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">MHEVariableReference</span><span class="p">):</span>
+        <span class="c1"># define variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="n">OptimizationVariable</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;states&quot;</span><span class="p">,</span>
+            <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_states</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">states</span><span class="p">),</span>
+            <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">states</span><span class="p">,</span>
+            <span class="n">assert_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">estimated_inputs</span> <span class="o">=</span> <span class="n">OptimizationVariable</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;estimated_inputs&quot;</span><span class="p">,</span>
+            <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">estimated_inputs</span><span class="p">),</span>
+            <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">estimated_inputs</span><span class="p">,</span>
+            <span class="n">assert_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">estimated_parameters</span> <span class="o">=</span> <span class="n">OptimizationVariable</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;estimated_parameters&quot;</span><span class="p">,</span>
+            <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">estimated_parameters</span><span class="p">),</span>
+            <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">estimated_parameters</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">algebraics</span> <span class="o">=</span> <span class="n">OptimizationVariable</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;algebraics&quot;</span><span class="p">,</span>
+            <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">auxiliaries</span><span class="p">,</span>
+            <span class="n">ref_list</span><span class="o">=</span><span class="p">[],</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">OptimizationVariable</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;outputs&quot;</span><span class="p">,</span>
+            <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span>
+            <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">known_inputs</span> <span class="o">=</span> <span class="n">OptimizationParameter</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;known_inputs&quot;</span><span class="p">,</span>
+            <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">known_inputs</span><span class="p">),</span>
+            <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">known_inputs</span><span class="p">,</span>
+            <span class="n">assert_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">known_parameter_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">get_parameter_names</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">var_ref</span><span class="o">.</span><span class="n">estimated_parameters</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">known_parameters</span> <span class="o">=</span> <span class="n">OptimizationParameter</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;known_parameters&quot;</span><span class="p">,</span>
+            <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">known_parameter_names</span><span class="p">)),</span>
+            <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">known_parameters</span><span class="p">,</span>
+            <span class="n">assert_complete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">measured_states</span> <span class="o">=</span> <span class="n">OptimizationParameter</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;measured_states&quot;</span><span class="p">,</span>
+            <span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="n">CasadiInput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">var_ref</span><span class="o">.</span><span class="n">measured_states</span><span class="p">],</span>
+            <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">measured_states</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights_states</span> <span class="o">=</span> <span class="n">OptimizationParameter</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;weight_states&quot;</span><span class="p">,</span>
+            <span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="n">CasadiInput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">var_ref</span><span class="o">.</span><span class="n">weights_states</span><span class="p">],</span>
+            <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">weights_states</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># add admm terms to objective function</span>
+        <span class="n">objective</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">states</span><span class="p">)):</span>
+            <span class="n">states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">full_symbolic</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">measured_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">measured_states</span><span class="o">.</span><span class="n">full_symbolic</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights_states</span><span class="o">.</span><span class="n">full_symbolic</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">objective</span> <span class="o">+=</span> <span class="n">weights</span> <span class="o">*</span> <span class="p">(</span><span class="n">states</span> <span class="o">-</span> <span class="n">measured_states</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="c1"># dynamics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ode</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">sta</span><span class="o">.</span><span class="n">ode</span> <span class="k">for</span> <span class="n">sta</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_states</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">states</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cost_function</span> <span class="o">=</span> <span class="n">objective</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_constraints</span> <span class="o">=</span> <span class="n">Constraint</span><span class="p">(</span>
+            <span class="n">function</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">function</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">()]),</span>
+            <span class="n">lb</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">lb</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">()]),</span>
+            <span class="n">ub</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">ub</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">()]),</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CollocationMatrices"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.mhe.CollocationMatrices">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CollocationMatrices</span><span class="p">:</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">root</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">B</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">C</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">D</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></div>
+
+
+<div class="viewcode-block" id="DirectCollocation"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.mhe.DirectCollocation">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DirectCollocation</span><span class="p">(</span><span class="n">Discretization</span><span class="p">):</span>
+    <span class="n">only_positive_times_in_results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_discretize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="n">MHESystem</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Defines a direct collocation discretization.</span>
+<span class="sd">        # pylint: disable=invalid-name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># setup the polynomial base</span>
+        <span class="n">collocation_matrices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collocation_polynomial</span><span class="p">()</span>
+
+        <span class="c1"># shorthands</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">prediction_horizon</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">time_step</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="o">-</span><span class="n">n</span> <span class="o">*</span> <span class="n">ts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span> <span class="o">=</span> <span class="n">start_time</span>
+
+        <span class="c1"># Initial State</span>
+        <span class="n">x_est_k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="p">)</span>
+
+        <span class="c1"># Parameters that are constant over the horizon</span>
+        <span class="n">known_pars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">known_parameters</span><span class="p">)</span>
+        <span class="n">estimated_pars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">estimated_parameters</span><span class="p">)</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">weights_states</span><span class="p">)</span>
+
+        <span class="c1"># Formulate the NLP</span>
+        <span class="c1"># loop over prediction horizon</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+            <span class="c1"># New NLP variable for the control</span>
+            <span class="n">inp_known</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">known_inputs</span><span class="p">)</span>
+            <span class="n">inp_est</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">estimated_inputs</span><span class="p">)</span>
+
+            <span class="c1"># perform inner collocation loop</span>
+            <span class="n">opt_vars_inside_inner</span> <span class="o">=</span> <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">algebraics</span><span class="p">]</span>
+            <span class="n">opt_pars_inside_inner</span> <span class="o">=</span> <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">measured_states</span><span class="p">]</span>
+
+            <span class="n">constant_over_inner</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">known_inputs</span><span class="p">:</span> <span class="n">inp_known</span><span class="p">,</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">estimated_inputs</span><span class="p">:</span> <span class="n">inp_est</span><span class="p">,</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">estimated_parameters</span><span class="p">:</span> <span class="n">estimated_pars</span><span class="p">,</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">known_parameters</span><span class="p">:</span> <span class="n">known_pars</span><span class="p">,</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">weights_states</span><span class="p">:</span> <span class="n">weights</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="n">xk_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collocation_inner_loop</span><span class="p">(</span>
+                <span class="n">collocation</span><span class="o">=</span><span class="n">collocation_matrices</span><span class="p">,</span>
+                <span class="n">state_at_beginning</span><span class="o">=</span><span class="n">x_est_k</span><span class="p">,</span>
+                <span class="n">states</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="p">,</span>
+                <span class="n">opt_vars</span><span class="o">=</span><span class="n">opt_vars_inside_inner</span><span class="p">,</span>
+                <span class="n">opt_pars</span><span class="o">=</span><span class="n">opt_pars_inside_inner</span><span class="p">,</span>
+                <span class="n">const</span><span class="o">=</span><span class="n">constant_over_inner</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="c1"># increment loop counter and time</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span> <span class="o">=</span> <span class="n">start_time</span> <span class="o">+</span> <span class="n">ts</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span>
+
+            <span class="c1"># New NLP variable for differential state at end of interval</span>
+            <span class="n">xk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="p">)</span>
+
+            <span class="c1"># Add continuity constraint</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span><span class="n">xk_end</span> <span class="o">-</span> <span class="n">xk</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_construct_stage_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">MHESystem</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Combine information from the model and the var_ref to create CasADi</span>
+<span class="sd">        functions which describe the system dynamics and constraints at each</span>
+<span class="sd">        stage of the optimization problem. Sets the stage function. It has</span>
+<span class="sd">        all mpc variables as inputs, sorted by denotation (declared in</span>
+<span class="sd">        self.declare_quantities) and outputs ode, cost function and 3 outputs</span>
+<span class="sd">        per constraint (constraint, lb_constraint, ub_constraint).</span>
+
+<span class="sd">        In the basic case, it has the form:</span>
+<span class="sd">        CasadiFunction: [&#39;x&#39;, &#39;z&#39;, &#39;u&#39;, &#39;y&#39;, &#39;d&#39;, &#39;p&#39;] -&gt;</span>
+<span class="sd">            [&#39;ode&#39;, &#39;cost_function&#39;, &#39;model_constraints&#39;,</span>
+<span class="sd">            &#39;ub_model_constraints&#39;, &#39;lb_model_constraints&#39;]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            system</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_system_quantities</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">OptimizationQuantity</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">system</span><span class="o">.</span><span class="n">quantities</span>
+        <span class="p">}</span>
+        <span class="n">constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model_constraints&quot;</span><span class="p">:</span> <span class="n">system</span><span class="o">.</span><span class="n">model_constraints</span><span class="p">}</span>
+
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">q</span><span class="o">.</span><span class="n">full_symbolic</span>
+            <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">all_system_quantities</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">q</span><span class="o">.</span><span class="n">use_in_stage_function</span>
+        <span class="p">]</span>
+        <span class="n">input_denotations</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">q</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">for</span> <span class="n">denotation</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">all_system_quantities</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">q</span><span class="o">.</span><span class="n">use_in_stage_function</span>
+        <span class="p">]</span>
+
+        <span class="c1"># aggregate constraints</span>
+        <span class="n">constraints_func</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">function</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">constraints</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="n">constraints_lb</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">lb</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">constraints</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="n">constraints_ub</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">ub</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">constraints</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="n">constraint_denotations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">constraints</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">constraint_lb_denotations</span> <span class="o">=</span> <span class="p">[</span><span class="n">LB_PREFIX</span> <span class="o">+</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">constraints</span><span class="p">]</span>
+        <span class="n">constraint_ub_denotations</span> <span class="o">=</span> <span class="p">[</span><span class="n">UB_PREFIX</span> <span class="o">+</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">constraints</span><span class="p">]</span>
+
+        <span class="c1"># aggregate outputs</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">ode</span><span class="p">,</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">cost_function</span><span class="p">,</span>
+            <span class="o">*</span><span class="n">constraints_func</span><span class="p">,</span>
+            <span class="o">*</span><span class="n">constraints_lb</span><span class="p">,</span>
+            <span class="o">*</span><span class="n">constraints_ub</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">output_denotations</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;ode&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;cost_function&quot;</span><span class="p">,</span>
+            <span class="o">*</span><span class="n">constraint_denotations</span><span class="p">,</span>
+            <span class="o">*</span><span class="n">constraint_lb_denotations</span><span class="p">,</span>
+            <span class="o">*</span><span class="n">constraint_ub_denotations</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="c1"># function describing system dynamics and cost function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stage_function</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span>
+            <span class="s2">&quot;f&quot;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="p">,</span>
+            <span class="n">outputs</span><span class="p">,</span>
+            <span class="c1"># input handles to make kwarg use possible and to debug</span>
+            <span class="n">input_denotations</span><span class="p">,</span>
+            <span class="c1"># output handles to make kwarg use possible and to debug</span>
+            <span class="n">output_denotations</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="DirectCollocation.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.mhe.DirectCollocation.initialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">MHESystem</span><span class="p">,</span> <span class="n">solver_factory</span><span class="p">:</span> <span class="n">SolverFactory</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the trajectory optimization problem, creating all symbolic</span>
+<span class="sd">        variables of the OCP, the mapping function and the numerical solver.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_construct_stage_function</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">system</span><span class="o">=</span><span class="n">system</span><span class="p">,</span> <span class="n">solver_factory</span><span class="o">=</span><span class="n">solver_factory</span><span class="p">)</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_collocation_inner_loop</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">state_at_beginning</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">,</span>
+        <span class="n">collocation</span><span class="p">:</span> <span class="n">CollocationMatrices</span><span class="p">,</span>
+        <span class="n">states</span><span class="p">:</span> <span class="n">OptimizationVariable</span><span class="p">,</span>
+        <span class="n">opt_vars</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">OptimizationVariable</span><span class="p">],</span>
+        <span class="n">opt_pars</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">OptimizationParameter</span><span class="p">],</span>
+        <span class="n">const</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">OptimizationQuantity</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructs the inner loop of a collocation discretization. Takes the</span>
+
+<span class="sd">        Args</span>
+<span class="sd">            collocation: The collocation matrices</span>
+<span class="sd">            state_at_beginning: The casadi MX instance representing the state at the</span>
+<span class="sd">                beginning of the collocation interval</span>
+<span class="sd">            states: The OptimizationVariable representing the states</span>
+<span class="sd">            opt_vars: The OptimizationVariables which should be defined at each</span>
+<span class="sd">                collocation point</span>
+<span class="sd">            par_vars: The OptimizationParameters which should be defined at each</span>
+<span class="sd">                collocation point</span>
+<span class="sd">            const: Variables or parameters to feed into the system function that are</span>
+<span class="sd">                constant over the inner loop. Value is the current MX to be used.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            state_k_end[MX]: state at the end of collocation interval</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">constants</span> <span class="o">=</span> <span class="p">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">mx</span> <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">mx</span> <span class="ow">in</span> <span class="n">const</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="c1"># remember time at start of collocation loop</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span>
+
+        <span class="c1"># shorthands</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">time_step</span>
+
+        <span class="c1"># State variables at collocation points</span>
+        <span class="n">state_collocation</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">opt_vars_collocation</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">opt_pars_collocation</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># add variables at collocation points</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">collocation</span><span class="o">.</span><span class="n">order</span><span class="p">):</span>  <span class="c1"># d is collocation order</span>
+            <span class="c1"># set time</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span> <span class="o">=</span> <span class="n">start_time</span> <span class="o">+</span> <span class="n">collocation</span><span class="o">.</span><span class="n">root</span><span class="p">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">ts</span>
+
+            <span class="c1"># differential state</span>
+            <span class="n">state_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">post_den</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">state_collocation</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state_kj</span><span class="p">)</span>
+
+            <span class="n">opt_vars_collocation</span><span class="o">.</span><span class="n">append</span><span class="p">({})</span>
+            <span class="k">for</span> <span class="n">opt_var</span> <span class="ow">in</span> <span class="n">opt_vars</span><span class="p">:</span>
+                <span class="n">var_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">opt_var</span><span class="p">,</span> <span class="n">post_den</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">opt_vars_collocation</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">opt_var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">var_kj</span><span class="p">})</span>
+
+            <span class="n">opt_pars_collocation</span><span class="o">.</span><span class="n">append</span><span class="p">({})</span>
+            <span class="k">for</span> <span class="n">opt_par</span> <span class="ow">in</span> <span class="n">opt_pars</span><span class="p">:</span>
+                <span class="n">par_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">opt_par</span><span class="p">,</span> <span class="n">post_den</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">opt_pars_collocation</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">opt_par</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">par_kj</span><span class="p">})</span>
+
+        <span class="c1"># Loop over collocation points</span>
+        <span class="n">state_k_end</span> <span class="o">=</span> <span class="n">collocation</span><span class="o">.</span><span class="n">D</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">state_at_beginning</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">collocation</span><span class="o">.</span><span class="n">order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="c1"># Expression for the state derivative at the collocation point</span>
+            <span class="n">xp</span> <span class="o">=</span> <span class="n">collocation</span><span class="o">.</span><span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">state_at_beginning</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">collocation</span><span class="o">.</span><span class="n">order</span><span class="p">):</span>
+                <span class="n">xp</span> <span class="o">=</span> <span class="n">xp</span> <span class="o">+</span> <span class="n">collocation</span><span class="o">.</span><span class="n">C</span><span class="p">[</span><span class="n">r</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">state_collocation</span><span class="p">[</span><span class="n">r</span><span class="p">]</span>
+
+            <span class="n">stage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stage_function</span><span class="p">(</span>
+                <span class="o">**</span><span class="p">{</span><span class="n">states</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">state_collocation</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]},</span>
+                <span class="o">**</span><span class="n">opt_pars_collocation</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="o">**</span><span class="n">opt_vars_collocation</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="o">**</span><span class="n">constants</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span><span class="n">ts</span> <span class="o">*</span> <span class="n">stage</span><span class="p">[</span><span class="s2">&quot;ode&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">xp</span><span class="p">)</span>
+
+            <span class="c1"># Append inequality constraints</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span>
+                <span class="n">stage</span><span class="p">[</span><span class="s2">&quot;model_constraints&quot;</span><span class="p">],</span>
+                <span class="n">lb</span><span class="o">=</span><span class="n">stage</span><span class="p">[</span><span class="s2">&quot;lb_model_constraints&quot;</span><span class="p">],</span>
+                <span class="n">ub</span><span class="o">=</span><span class="n">stage</span><span class="p">[</span><span class="s2">&quot;ub_model_constraints&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Add contribution to the end state</span>
+            <span class="n">state_k_end</span> <span class="o">=</span> <span class="n">state_k_end</span> <span class="o">+</span> <span class="n">collocation</span><span class="o">.</span><span class="n">D</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">state_collocation</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+            <span class="c1"># Add contribution to quadrature function</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">collocation</span><span class="o">.</span><span class="n">B</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">stage</span><span class="p">[</span><span class="s2">&quot;cost_function&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ts</span>
+
+        <span class="k">return</span> <span class="n">state_k_end</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_collocation_polynomial</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CollocationMatrices</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the matrices needed for direct collocation discretization.&quot;&quot;&quot;</span>
+        <span class="c1"># Degree of interpolating polynomial</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">collocation_order</span>
+        <span class="n">polynomial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">collocation_method</span>
+
+        <span class="c1"># Get collocation points</span>
+        <span class="n">tau_root</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">collocation_points</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">polynomial</span><span class="p">))</span>
+
+        <span class="c1"># Coefficients of the collocation equation</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">d</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">d</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># Coefficients of the continuity equation</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">d</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Coefficients of the quadrature function</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">d</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Construct polynomial basis</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="c1"># Construct Lagrange polynomials to get the polynomial basis at</span>
+            <span class="c1"># the collocation point</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">poly1d</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">r</span> <span class="o">!=</span> <span class="n">j</span><span class="p">:</span>
+                    <span class="n">p</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">poly1d</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="n">tau_root</span><span class="p">[</span><span class="n">r</span><span class="p">]])</span> <span class="o">/</span> <span class="p">(</span><span class="n">tau_root</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">tau_root</span><span class="p">[</span><span class="n">r</span><span class="p">])</span>
+
+            <span class="c1"># Evaluate the polynomial at the final time to get the</span>
+            <span class="c1"># coefficients of the continuity equation</span>
+            <span class="n">D</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+
+            <span class="c1"># Evaluate the time derivative of the polynomial at all collocation</span>
+            <span class="c1"># points to get the coefficients of the continuity equation</span>
+            <span class="n">pder</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyder</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">C</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="n">pder</span><span class="p">(</span><span class="n">tau_root</span><span class="p">[</span><span class="n">r</span><span class="p">])</span>
+
+            <span class="c1"># Evaluate the integral of the polynomial to get the coefficients</span>
+            <span class="c1"># of the quadrature function</span>
+            <span class="n">pint</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyint</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="n">B</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">pint</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">CollocationMatrices</span><span class="p">(</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">d</span><span class="p">,</span>
+            <span class="n">root</span><span class="o">=</span><span class="n">tau_root</span><span class="p">,</span>
+            <span class="n">B</span><span class="o">=</span><span class="n">B</span><span class="p">,</span>
+            <span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">,</span>
+            <span class="n">D</span><span class="o">=</span><span class="n">D</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MHEBackend"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.mhe.MHEBackend">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MHEBackend</span><span class="p">(</span><span class="n">CasADiBackend</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class doing optimization of ADMM subproblems with CasADi.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">system_type</span> <span class="o">=</span> <span class="n">MHESystem</span>
+    <span class="n">discretization_types</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">DiscretizationMethod</span><span class="o">.</span><span class="n">collocation</span><span class="p">:</span> <span class="n">DirectCollocation</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">system</span><span class="p">:</span> <span class="n">MHESystem</span>
+
+<div class="viewcode-block" id="MHEBackend.sample"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.mhe.MHEBackend.sample">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span>
+        <span class="n">trajectory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]],</span>
+        <span class="n">grid</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">current</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtain the specified portion of the trajectory.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            trajectory:  The trajectory to be sampled. Scalars will be</span>
+<span class="sd">                expanded onto the grid. Lists need to exactly match the provided</span>
+<span class="sd">                grid. Otherwise, a list of tuples is accepted with the form (</span>
+<span class="sd">                timestamp, value). A dict with the keys &#39;grid&#39; and &#39;value&#39; is also</span>
+<span class="sd">                accepted.</span>
+<span class="sd">            current: start time of requested trajectory</span>
+<span class="sd">            grid: target interpolation grid in seconds in relative terms (i.e.</span>
+<span class="sd">                starting from 0 usually)</span>
+<span class="sd">            method: interpolation method, currently accepted: &#39;linear&#39;,</span>
+<span class="sd">                &#39;spline&#39;, &#39;previous&#39;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Sampled list of values.</span>
+
+<span class="sd">        Takes a slice of the trajectory from the current time step with the</span>
+<span class="sd">        specified length and interpolates it to match the requested sampling.</span>
+<span class="sd">        If the requested horizon is longer than the available data, the last</span>
+<span class="sd">        available value will be used for the remainder.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError</span>
+<span class="sd">            TypeError</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">target_grid_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+            <span class="c1"># return constant trajectory for scalars</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">trajectory</span><span class="p">]</span> <span class="o">*</span> <span class="n">target_grid_length</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="c1"># return lists of matching length without timestamps</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span> <span class="o">==</span> <span class="n">target_grid_length</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">trajectory</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Passed list with length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;does not match target (</span><span class="si">{</span><span class="n">target_grid_length</span><span class="si">}</span><span class="s2">).&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+            <span class="n">source_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">trajectory</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Passed trajectory of type &#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; &quot;</span> <span class="sa">f</span><span class="s2">&quot;cannot be sampled.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">target_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span> <span class="o">+</span> <span class="n">current</span>
+
+        <span class="c1"># expand scalar values</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">source_grid</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">trajectory</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="n">target_grid_length</span>
+
+        <span class="c1"># skip resampling if grids are (almost) the same</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">target_grid</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">source_grid</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">target_grid</span> <span class="o">==</span> <span class="n">source_grid</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="c1"># check requested portion of trajectory, whether the most recent value in the</span>
+        <span class="c1"># source grid is older than the first value in the MHE trajectory</span>
+        <span class="k">if</span> <span class="n">target_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">source_grid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="c1"># return the last value of the trajectory if requested sample</span>
+            <span class="c1"># starts out of range</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Latest value of source grid %s is older than &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;current time (%s. Returning latest value anyway.&quot;</span><span class="p">,</span>
+                <span class="n">source_grid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">current</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">*</span> <span class="n">target_grid_length</span>
+
+        <span class="c1"># determine whether the target grid lies within the available source grid, and</span>
+        <span class="c1"># how many entries to extrapolate on either side</span>
+        <span class="n">source_grid_oldest_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">source_grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">source_grid_newest_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">source_grid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">source_is_recent_enough</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">target_grid</span> <span class="o">&lt;</span> <span class="n">source_grid_newest_time</span>
+        <span class="n">source_is_old_enough</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">target_grid</span> <span class="o">&gt;</span> <span class="n">source_grid_oldest_time</span>
+        <span class="n">number_of_missing_old_entries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">target_grid_length</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span>
+            <span class="n">source_is_old_enough</span>
+        <span class="p">)</span>
+        <span class="n">number_of_missing_new_entries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">target_grid_length</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span>
+            <span class="n">source_is_recent_enough</span>
+        <span class="p">)</span>
+        <span class="c1"># shorten target interpolation grid by extra points that go above or below</span>
+        <span class="c1"># available data range</span>
+        <span class="n">target_grid</span> <span class="o">=</span> <span class="n">target_grid</span><span class="p">[</span><span class="n">source_is_recent_enough</span> <span class="o">*</span> <span class="n">source_is_old_enough</span><span class="p">]</span>
+
+        <span class="c1"># interpolate data to match new grid</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
+            <span class="n">tck</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">source_grid</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">)</span>
+            <span class="n">sequence_new</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tck</span><span class="p">(</span><span class="n">target_grid</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;spline&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;Spline interpolation is currently not &quot;</span> <span class="s2">&quot;supported&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;previous&quot;</span><span class="p">:</span>
+            <span class="n">tck</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">source_grid</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;previous&quot;</span><span class="p">)</span>
+            <span class="n">sequence_new</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tck</span><span class="p">(</span><span class="n">target_grid</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Chosen &#39;method&#39; </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> is not a valid method. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Currently supported: linear, spline, previous&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># extrapolate sequence with last available value if necessary</span>
+        <span class="n">interpolated_trajectory</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="n">number_of_missing_old_entries</span>
+            <span class="o">+</span> <span class="n">sequence_new</span>
+            <span class="o">+</span> <span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">*</span> <span class="n">number_of_missing_new_entries</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">interpolated_trajectory</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, AGENT-Project Associates.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
