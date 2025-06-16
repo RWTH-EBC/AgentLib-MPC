@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules.mpc package &mdash; agentlib_mpc 0.6.7 documentation</title>
+  <title>agentlib_mpc.modules.mpc package &mdash; agentlib_mpc 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
@@ -399,6 +399,28 @@ dictionary.</p>
 <dd><p>Registers callbacks which listen to the variables which have to be saved as
 time series. These callbacks save the values in the history for use in the
 optimization.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.mpc.mpc_full.MPC.visualize_results">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">visualize_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convert_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hours'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_datetime</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_predictions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/mpc/mpc_full.html#MPC.visualize_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.mpc.mpc_full.MPC.visualize_results" title="Permalink to this definition"></a></dt>
+<dd><p>Create visualization components for MPC results to be displayed in MAS dashboard.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>results_data</strong> – DataFrame with MPC results data</p></li>
+<li><p><strong>module_id</strong> – ID of the MPC module</p></li>
+<li><p><strong>agent_id</strong> – ID of the agent containing this module</p></li>
+<li><p><strong>convert_to</strong> – Time unit for plotting (“seconds”, “minutes”, “hours”, “days”)</p></li>
+<li><p><strong>step</strong> – Whether to use step plots</p></li>
+<li><p><strong>use_datetime</strong> – Whether to interpret timestamps as datetime</p></li>
+<li><p><strong>max_predictions</strong> – Maximum number of predictions to show</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dash HTML Div containing the visualization components</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
