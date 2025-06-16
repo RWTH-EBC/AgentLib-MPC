@@ -101,7 +101,6 @@ class MHE(SkippableMixin):
     A moving horizon estimator.
     """
 
-    config_type = MHEConfig
     config: MHEConfig
     var_ref: mpc_datamodels.MHEVariableReference
 
