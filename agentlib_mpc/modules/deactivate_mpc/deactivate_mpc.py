@@ -38,6 +38,7 @@ class MPCOnOffConfig(BaseModuleConfig):
 
     shared_variable_fields: list[str] = [
         "public_active_message",
+        "public_inactive_message",
         "controls_when_deactivated",
     ]
 

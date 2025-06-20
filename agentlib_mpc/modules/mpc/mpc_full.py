@@ -29,6 +29,11 @@ class MPCConfig(BaseMPCConfig, SkippableMixinConfig):
         description="Weights that are applied to the change in control variables.",
     )
 
+    enable_state_fallback: bool = Field(
+        default=False,
+        description="Enable fallback to predicted states when measurements are too old",
+    )
+
     @field_validator("r_del_u")
     def check_r_del_u_in_controls(
         cls, r_del_u: dict[str, float], info: FieldValidationInfo
@@ -88,11 +93,19 @@ class MPC(BaseMPC, SkippableMixin):
         self.history: dict[str, dict[float, float]] = history
         self.register_callbacks_for_lagged_variables()
 
+        # Initialize predicted states storage for fallback functionality
+        if self.config.enable_state_fallback:
+            self.predicted_states: dict[str, dict[float, float]] = {}
+            for state_name in self.var_ref.states:
+                self.predicted_states[state_name] = {}
+
     def do_step(self):
         if self.check_if_should_be_skipped():
             return
         super().do_step()
         self._remove_old_values_from_history()
+        if self.config.enable_state_fallback:
+            self._remove_old_predicted_states()
 
     def _remove_old_values_from_history(self):
         """Clears the history of all entries that are older than current time minus
@@ -105,6 +118,74 @@ class MPC(BaseMPC, SkippableMixin):
             for timestamp in list(var_history):
                 if timestamp < (self.env.time - lag_in_seconds):
                     var_history.pop(timestamp)
+
+    def _remove_old_predicted_states(self):
+        """Clears predicted states that are older than current time minus horizon length."""
+        max_age = self.config.prediction_horizon * self.config.time_step
+        cutoff_time = self.env.time - max_age
+
+        for state_name in self.predicted_states:
+            state_predictions = self.predicted_states[state_name]
+            for timestamp in list(state_predictions):
+                if timestamp < cutoff_time:
+                    state_predictions.pop(timestamp)
+
+    def _store_predicted_states(self, solution: mpc_datamodels.Results):
+        """Store predicted state trajectories for fallback functionality."""
+        if not self.config.enable_state_fallback:
+            return
+
+        df = solution.df
+        current_time = self.env.time
+
+        for state_name in self.var_ref.states:
+            state_trajectory = df["variable"][state_name]
+            # Convert index (which starts at 0) to actual timestamps
+            for idx, value in state_trajectory.items():
+                prediction_time = current_time + idx
+                self.predicted_states[state_name][prediction_time] = value
+
+    def _get_predicted_state_value(
+        self, state_name: str, target_time: float
+    ) -> Optional[float]:
+        """Get predicted state value at target_time using linear interpolation if needed."""
+        state_predictions = self.predicted_states[state_name]
+
+        if not state_predictions:
+            return None
+
+        timestamps = sorted(state_predictions.keys())
+
+        # Exact match
+        if target_time in state_predictions:
+            return state_predictions[target_time]
+
+        # Find surrounding timestamps for interpolation
+        before = None
+        after = None
+
+        for timestamp in timestamps:
+            if timestamp <= target_time:
+                before = timestamp
+            elif timestamp > target_time and after is None:
+                after = timestamp
+                break
+
+        # Linear interpolation between before and after
+        if before is not None and after is not None:
+            t1, t2 = before, after
+            v1, v2 = state_predictions[t1], state_predictions[t2]
+            # Linear interpolation
+            alpha = (target_time - t1) / (t2 - t1)
+            return v1 + alpha * (v2 - v1)
+
+        # Use nearest value if we can't interpolate
+        if before is not None:
+            return state_predictions[before]
+        elif after is not None:
+            return state_predictions[after]
+
+        return None
 
     def _callback_hist_vars(self, variable: AgentVariable, name: str):
         """Adds received measured inputs to the past trajectory."""
@@ -146,6 +227,10 @@ class MPC(BaseMPC, SkippableMixin):
         # config variables
         variables = {v: self.get(v) for v in var_ref.all_variables()}
 
+        # Apply state fallback if enabled
+        if self.config.enable_state_fallback:
+            self._apply_state_fallback(variables)
+
         # history variables
         for hist_var in self._lags_dict_seconds:
             past_values = self.history[hist_var]
@@ -161,6 +246,71 @@ class MPC(BaseMPC, SkippableMixin):
             variables[hist_var] = updated_var
 
         return {**variables, **self._internal_variables}
+
+    def _apply_state_fallback(self, variables: dict[str, AgentVariable]):
+        """Apply fallback logic for state variables with old measurements."""
+        current_time = self.env.time
+        fallback_threshold = self.config.time_step + 0.1
+
+        for state_name in self.var_ref.states:
+            if state_name not in variables:
+                continue
+
+            state_var = variables[state_name]
+            measurement_time = state_var.timestamp
+
+            # Check if measurement is too old
+            if measurement_time is None:
+                # probably default value, we don't have fallback anyway
+                measurement_age = 0
+            else:
+                measurement_age = current_time - measurement_time
+
+            if measurement_age > fallback_threshold:
+                # Try to use predicted value
+                predicted_value = self._get_predicted_state_value(
+                    state_name, current_time
+                )
+
+                if predicted_value is not None:
+                    self.logger.info(
+                        f"Using predicted fallback value for state '{state_name}'. "
+                        f"Measurement age: {measurement_age:.2f}s > threshold: {fallback_threshold:.2f}s"
+                    )
+                    # Create updated variable with predicted value
+                    variables[state_name] = state_var.copy(
+                        update={"value": predicted_value, "timestamp": current_time}
+                    )
+                else:
+                    self.logger.info(
+                        f"State '{state_name}' measurement is old ({measurement_age:.2f}s) "
+                        f"but no predicted value available for fallback"
+                    )
+
+    def do_step(self):
+        """
+        Performs an MPC step.
+        """
+        if self.check_if_should_be_skipped():
+            return
+
+        # Call parent do_step which handles the optimization
+        super().do_step()
+
+        # Clean up old data
+        self._remove_old_values_from_history()
+        if self.config.enable_state_fallback:
+            self._remove_old_predicted_states()
+
+    def set_actuation(self, solution: mpc_datamodels.Results):
+        """Takes the solution from optimization backend and sends the first
+        step to AgentVariables."""
+        # Store predicted states for fallback before setting actuation
+        if self.config.enable_state_fallback:
+            self._store_predicted_states(solution)
+
+        # Call parent method to handle actuation
+        super().set_actuation(solution)
 
         # class AgVarDropin:
         #     ub: float

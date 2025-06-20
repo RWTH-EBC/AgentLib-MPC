@@ -829,6 +829,10 @@ class ADMM(DistributedMPC):
                 )
             variables[lagged_admm_var] = variable
 
+        # Apply state fallback if enabled
+        if self.config.enable_state_fallback:
+            self._apply_state_fallback(variables)
+
         # history variables
         for hist_var in self._lags_dict_seconds:
             past_values = self.history[hist_var]

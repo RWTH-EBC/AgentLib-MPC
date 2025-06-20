@@ -6,6 +6,7 @@ from typing import Dict, Optional, List
 import pandas as pd
 import pydantic
 
+from agentlib_mpc.data_structures import mpc_datamodels
 from agentlib_mpc.data_structures.mpc_datamodels import MPCVariable
 from .admm import ADMM, ADMMConfig
 from agentlib_mpc.modules.dmpc.employee import MiniEmployee, MiniEmployeeConfig
@@ -234,3 +235,18 @@ class CoordinatedADMM(MiniEmployee, ADMM):
         """Callback that answers the coordinators init_iteration flag."""
         if self._registered_coordinator:
             super().init_iteration_callback(variable)
+
+    def _store_predicted_states(self, solution: mpc_datamodels.Results):
+        """Store predicted state trajectories for fallback functionality."""
+        if not self.config.enable_state_fallback:
+            return
+
+        df = solution.df
+        current_time = self._start_optimization_at
+
+        for state_name in self.var_ref.states:
+            state_trajectory = df["variable"][state_name]
+            # Convert index (which starts at 0) to actual timestamps
+            for idx, value in state_trajectory.items():
+                prediction_time = current_time + idx
+                self.predicted_states[state_name][prediction_time] = value
