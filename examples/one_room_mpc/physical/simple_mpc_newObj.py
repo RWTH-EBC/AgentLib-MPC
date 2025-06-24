@@ -114,7 +114,7 @@ class MyCasadiModel(CasadiModel):
 
         obj1 = DeltaUObjective(
             expressions=self.mDot,
-            weight=self.r_mDot,
+            weight=0.01,
             name="delta_m",
         )
 
@@ -285,5 +285,5 @@ def plot(mpc_results: pd.DataFrame, sim_res: pd.DataFrame, until: float):
 
 if __name__ == "__main__":
     run_example(
-        with_plots=True, with_dashboard=True, until=7200, log_level=logging.INFO
+        with_plots=True, with_dashboard=False, until=7200, log_level=logging.INFO
     )
