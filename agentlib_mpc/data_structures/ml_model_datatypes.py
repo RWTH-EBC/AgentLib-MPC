@@ -10,7 +10,6 @@ from agentlib.core.errors import ConfigurationError
 from pydantic import BaseModel
 from pydantic_core.core_schema import FieldValidationInfo
 
-ML_MODEL_TO_MPC = "__mlmodel_to_mpc"
 
 class OutputType(str, Enum):
     absolute = "absolute"

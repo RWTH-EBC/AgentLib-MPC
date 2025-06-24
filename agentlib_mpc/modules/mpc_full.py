@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from agentlib.core import AgentVariable
 
-from agentlib_mpc.data_structures import mpc_datamodels, ml_model_datatypes
+from agentlib_mpc.data_structures import mpc_datamodels
 from pydantic import Field, field_validator, FieldValidationInfo
 from rapidfuzz import process, fuzz
 
@@ -70,14 +70,6 @@ class MPC(BaseMPC):
                 if timestamp < (self.env.time - lag_in_seconds):
                     var_history.pop(timestamp)
 
-                    
-    def register_callbacks(self):
-        super().register_callbacks()
-        self.agent.data_broker.register_callback(
-            alias=ml_model_datatypes.ML_MODEL_TO_MPC,
-            source=None,
-            callback=self._update_ml_model,
-        )
 
 
     def _callback_hist_vars(self, variable: AgentVariable, name: str):
