@@ -315,7 +315,7 @@ class CasadiModel(Model):
         else:
             print(
                 "\033[93mWARNING:\033[0m Your model uses the deprecated objective formulation. "
-                "Backwards compartibility needs revision.\n"
+                "Backwards compartibility needs revision.\n")
 
         # save system equations as a single casadi vector
         system = ca.vertcat(*[sta.ode for sta in self.differentials])
