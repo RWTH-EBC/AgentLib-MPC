@@ -108,7 +108,6 @@ class CasadiMLSystem(FullSystem):
     def all_system_quantities(self) -> dict[str, OptimizationQuantity]:
         return {var.name: var for var in self.quantities}
 
-
 class MultipleShooting_ML(MultipleShooting):
     max_lag: int
 
@@ -196,7 +195,21 @@ class MultipleShooting_ML(MultipleShooting):
                     control_prev = u_prev[idx]
                     control_curr = uk[idx]
                     delta = control_curr - control_prev
-                    self.objective_function += delta_obj.weight ** 2 * delta ** 2
+
+                    if hasattr(delta_obj.weight, 'sym'):
+                        param_found = False
+                        for i, param_name in enumerate(sys.model_parameters.ref_names):
+                            if param_name == delta_obj.weight.name:
+                                weight_value = const_par[i]
+                                param_found = True
+                                break
+
+                        if not param_found:
+                            raise ValueError(f"Parameter {delta_obj.weight.name} not found in model parameters")
+                    else:
+                        weight_value = delta_obj.weight
+
+                    self.objective_function += weight_value ** 2 * delta ** 2
 
             # get stage arguments from current time step
             stage_arguments = {
@@ -383,7 +396,7 @@ class MultipleShooting_ML(MultipleShooting):
                     lv_names.append(v_name)
 
         return
-
+    
 
 class CasADiBBBackend(CasADiBaseBackend):
     """

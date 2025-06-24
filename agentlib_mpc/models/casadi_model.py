@@ -313,23 +313,9 @@ class CasadiModel(Model):
         if hasattr(objective_result, "get_casadi_expression"):
             self.cost_func = objective_result.get_casadi_expression()
         else:
-            #todo: failed dann auch wenn man Casadi Model als simulator laufen lassen will
-            import warnings
-            warnings.warn(
-                "Your model uses the deprecated objective formulation that returns a symbolic expression. ",
-                DeprecationWarning, stacklevel=2
-            )
             print(
                 "\033[93mWARNING:\033[0m Your model uses the deprecated objective formulation. "
-                "This is no longer supported in the current version.\n"
-                "Please either:\n"
-                "1. Downgrade to agentlib_mpc version 0.6.6 using: pip install agentlib_mpc==0.6.6\n"
-                "2. Update your model to use the new objective classes (FullObjective, DeltaUObjective, etc.)\n"
-                "See information: CHANGELOG.md version 0.6.7 and examples.one_room_mpc.physical.simple_mpc_newObj")
-            # raise ValueError(
-            #     "Incompatible objective format. This version requires using the new objective classes. "
-            #     "Please downgrade to agentlib_mpc version 0.6.6 to use this model as-is."
-            # )
+                "Backwards compartibility needs revision.\n"
 
         # save system equations as a single casadi vector
         system = ca.vertcat(*[sta.ode for sta in self.differentials])

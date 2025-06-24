@@ -25,7 +25,13 @@ class EqObjective:
         ts = np.diff(df.index)
         for col in df:
             result = result * df[col].values[:-1]
-        return sum(weight * result * ts)
+        results = weight * result * ts
+        if isinstance(results, pd.Series):
+            return sum(results.dropna())
+        elif isinstance(results, np.ndarray):
+            return np.nansum(results)
+        else:
+            return sum(results)
 
     def get_expression_names(self):
         """Returns list of names for all expressions"""
@@ -97,7 +103,7 @@ class DeltaUObjective(EqObjective):
             name: Optional name for identification/reporting
         """
         self.control = expressions
-        super().__init__(expressions=[], weight=weight, name=name or f"delta_{expressions.name}")
+        super().__init__(expressions=[expressions], weight=weight, name=name or f"delta_{expressions.name}")
 
     def get_control_name(self):
         """Return the name of the associated control variable"""
@@ -109,14 +115,22 @@ class DeltaUObjective(EqObjective):
         The actual penalty calculation happens in the discretization step.
         """
         # Return 0 as the symbolic expression since the actual calculation
-        # is handled in the DirectCollocation._discretize method
+        # is handled in the optimization backend
         return 0
 
     def calculate_value(self, series, weight):
         """Returns the final weighted result by multiplying all expressions"""
         diff_values = series.diff()
-        values = diff_values ** 2
-        return sum(weight ** 2 * values.dropna())
+        diff = diff_values.values[:-1]
+        ts = np.diff(series.index)
+        results = weight ** 2 * diff ** 2 * ts
+        if isinstance(results, pd.Series):
+            return sum(results.dropna())
+        elif isinstance(results, np.ndarray):
+            return np.nansum(results)
+        else:
+            return sum(results)
+
 
 class FullObjective:
     """Container for multiple objective terms with normalization"""
@@ -185,6 +199,7 @@ class FullObjective:
                         elif ('parameter', expr_name) in df.columns:
                             expr_cols.append(('parameter', expr_name))
                     expr_df = df.loc[:, expr_cols]
+                    expr_df["parameter"] = expr_df["parameter"].bfill().ffill()
                     value = obj.calculate_value(expr_df, weight)
                     self._values[name] = value / self.normalization
                 if self._values[name] is not None:
