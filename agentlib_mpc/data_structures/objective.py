@@ -4,52 +4,90 @@ import casadi as ca
 
 class EqObjective:
     def __init__(self, expressions, weight: float = 1.0, name: str = None):
-        self.expressions = expressions if isinstance(expressions, list) else [expressions]
+        """
+        Create an objective term
+
+        Args:
+            expressions: Expression to be used in the objective
+            weight: Weight factor for this objective
+            name: Optional name for identification
+        """
+        self.expression = expressions
         self.weight = weight
         self.name = name or f"obj_{id(self)}"
+        self.is_complex_expr = hasattr(expressions, 'dep')
 
     def get_weighted_expression(self):
-        """Returns the final weighted expression by multiplying all expressions"""
-        result = 1
-        for expr in self.expressions:
-            result = result * expr
+        """Returns the final weighted expression"""
         if hasattr(self.weight, 'sym'):
             weight_value = self.weight.sym
         else:
             weight_value = self.weight
-        return weight_value * result
+        return weight_value * self.expression
 
-    def calculate_value(self, df, weight):
-        """Returns the final weighted result by multiplying all expressions"""
-        result = 1
-        ts = np.diff(df.index)
-        for col in df:
-            result = result * df[col].values[:-1]
-        results = weight * result * ts
-        if isinstance(results, pd.Series):
-            return sum(results.dropna())
-        elif isinstance(results, np.ndarray):
-            return np.nansum(results)
-        else:
-            return sum(results)
+    def calculate_value(self, data, weight):
+        """Calculate the objective value from data"""
+        ts = np.diff(data.index)
+        if isinstance(data, pd.Series):
+            return sum(weight * data.values[:-1] * ts)
+        result = self._evaluate_expression(self.expression, data)
+        return sum(weight * result * ts)
 
-    def get_expression_names(self):
-        """Returns list of names for all expressions"""
-        names = []
-        for expr in self.expressions:
-            if hasattr(expr, 'name'):
-                names.append(expr.name)
-            elif hasattr(expr, '_name'):
-                names.append(expr._name)
-            else:
-                # Try to extract name from string representation
-                expr_str = str(expr)
-                if '(' in expr_str and ')' in expr_str:
-                    potential_name = expr_str.split('(')[1].split(')')[0]
-                    names.append(potential_name)
+    def _evaluate_expression(self, expr, df):
+        """Evaluate a complex expression using dataframe values"""
+        if hasattr(expr, 'name') and not hasattr(expr, 'dep'):
+            try:
+                if callable(expr.name):
+                    var_name = expr.name()
                 else:
-                    names.append(expr_str)
-        return names
+                    var_name = expr.name
+                for col_type in ['variable', 'parameter']:
+                    if (col_type, var_name) in df.columns:
+                        return df.loc[:, (col_type, var_name)].values[:-1]
+                if var_name in df.columns:
+                    return df.loc[:, var_name].values[:-1]
+            except Exception as e:
+                print(f"Name access error: {e}")
+
+        expr_str = str(expr)
+
+        var_names = re.findall(r'[a-zA-Z][a-zA-Z0-9_]*', expr_str)
+
+        if var_names:
+            values_found = {}
+            for var_name in var_names:
+                for col_type in ['variable', 'parameter']:
+                    if (col_type, var_name) in df.columns:
+                        values_found[var_name] = df.loc[:, (col_type, var_name)].values[:-1]
+                        break
+
+            if len(values_found) == len(var_names):
+                if '+' in expr_str:
+                    return sum(values_found.values())
+                elif '*' in expr_str:
+                    result = 1
+                    for val in values_found.values():
+                        result = result * val
+                    return result
+                elif '-' in expr_str and len(values_found) == 2:
+                    keys = list(values_found.keys())
+                    return values_found[keys[0]] - values_found[keys[1]]
+                elif '/' in expr_str and len(values_found) == 2:
+                    keys = list(values_found.keys())
+                    return values_found[keys[0]] / values_found[keys[1]]
+
+            elif len(values_found) > 0:
+                return next(iter(values_found.values()))
+
+        if isinstance(expr, (int, float)):
+            return np.full(len(df.index) - 1, expr)
+        try:
+            const_val = float(expr)
+            return np.full(len(df.index) - 1, const_val)
+        except:
+            pass
+
+        raise ValueError(f"Unable to evaluate expression: {expr}")
 
 
 class SqObjective(EqObjective):
@@ -60,12 +98,11 @@ class SqObjective(EqObjective):
         Create an objective term that squares an expression
 
         Args:
-            expression: Expression to be squared
+            expressions: Expression to be squared (can be a complex expression)
             weight: Weight factor for this objective
             name: Optional name for identification
         """
-        self.expression = expressions
-        super().__init__(expressions=[expressions], weight=weight, name=name)
+        super().__init__(expressions=expressions, weight=weight, name=name)
 
     def get_weighted_expression(self):
         """Returns the squared expression with weight"""
@@ -75,53 +112,67 @@ class SqObjective(EqObjective):
             weight_value = self.weight
         return (weight_value ** 2) * (self.expression ** 2)
 
-    def calculate_value(self, series, weight):
-        """Returns the final weighted result by multiplying all expressions"""
-        ts = np.diff(series.index)
-        series = series.values[:-1]
-        return sum(weight ** 2 * series ** 2 * ts)
+    def calculate_value(self, data, weight):
+        """Calculate value using the expression"""
+        ts = np.diff(data.index)
+        if isinstance(data, pd.Series):
+            result = data.values[:-1] ** 2
+            return sum((weight ** 2) * result * ts)
 
-    def get_expression_name(self):
-        """Returns the name of the main expression"""
-        if hasattr(self.expression, 'name'):
-            return self.expression.name
-        elif hasattr(self.expression, '_name'):
-            return self.expression._name
-        else:
-            expr_str = str(self.expression)
-            if '(' in expr_str and ')' in expr_str:
-                return expr_str.split('(')[1].split(')')[0]
-            return expr_str
+        result = self._evaluate_expression(self.expression, data)
+        return sum((weight ** 2) * (result ** 2) * ts)
+
+    # def get_expression_name(self):
+    #     """Returns a representative name for the expression"""
+    #     names = self._extract_variable_names(self.expression)
+    #     if len(names) == 1:
+    #         return names[0]
+    #     return f"expr_{'_'.join(names)}"
+
 
 
 class DeltaUObjective(EqObjective):
     def __init__(self, expressions, weight: float = 1.0, name: str = None):
         """
         Args:
-            control: Control variable to track changes
+            expressions: Control variable to track changes
             weight: Weight factor for this objective
             name: Optional name for identification/reporting
         """
         self.control = expressions
-        super().__init__(expressions=[expressions], weight=weight, name=name or f"delta_{expressions.name}")
+        super().__init__(expressions=expressions, weight=weight,
+                         name=name or f"delta_{self._get_control_name(expressions)}")
+
+    def _get_control_name(self, control):
+        """Get the name of the control variable safely"""
+        if hasattr(control, 'name'):
+            if callable(control.name):
+                try:
+                    return control.name()
+                except Exception:
+                    pass
+            else:
+                return control.name
+        return str(control)
 
     def get_control_name(self):
         """Return the name of the associated control variable"""
-        return self.control.name
+        return self._get_control_name(self.control)
 
     def get_weighted_expression(self):
         """
         Override parent method to provide a placeholder.
         The actual penalty calculation happens in the discretization step.
         """
-        # Return 0 as the symbolic expression since the actual calculation
-        # is handled in the optimization backend
+        # Include weight in expression to ensure it's properly registered
+        if hasattr(self.weight, 'sym'):
+            return 0 * self.weight.sym
         return 0
 
     def calculate_value(self, series, weight):
         """Returns the final weighted result by multiplying all expressions"""
         diff_values = series.diff()
-        diff = diff_values.values[:-1]
+        diff = diff_values.values[1:]  # Skip first NaN value
         ts = np.diff(series.index)
         results = weight ** 2 * diff ** 2 * ts
         if isinstance(results, pd.Series):
@@ -130,6 +181,12 @@ class DeltaUObjective(EqObjective):
             return np.nansum(results)
         else:
             return sum(results)
+
+    def get_weight(self):
+        """Return the weight in a way that ensures proper symbolic handling"""
+        if hasattr(self.weight, 'sym'):
+            return self.weight.sym
+        return self.weight
 
 
 class FullObjective:
@@ -166,17 +223,21 @@ class FullObjective:
             return sum(terms) / self.normalization
         return 0
 
-
     def calculate_values(self, result_df, grid):
         """Calculate values for each objective component using the result dataframe"""
         self._values = {}
         df = self._prepare_dataframe(result_df, grid)
         total_value = 0
+
         for obj in self.objectives:
             name = obj.name
+            # Handle symbolic or numeric weights
             if hasattr(obj.weight, 'sym'):
                 weight_name = obj.weight.name
-                weight = df.loc[:, ('parameter', weight_name)].iloc[:-1]
+                if ('parameter', weight_name) in df.columns:
+                    weight = df.loc[:, ('parameter', weight_name)].iloc[:-1]
+                else:
+                    weight = obj.weight
             else:
                 weight = obj.weight
             try:
@@ -186,27 +247,18 @@ class FullObjective:
                     value = obj.calculate_value(control_series, weight)
                     self._values[name] = value / self.normalization
                 elif isinstance(obj, SqObjective):
-                    expr_name = obj.get_expression_name()
-                    var_series = df.loc[:, ('variable', expr_name)]
-                    value = obj.calculate_value(var_series, weight)
-                    self._values[name] = value/self.normalization
-                else:
-                    expr_names = obj.get_expression_names()
-                    expr_cols = []
-                    for expr_name in expr_names:
-                        if ('variable', expr_name) in df.columns:
-                            expr_cols.append(('variable', expr_name))
-                        elif ('parameter', expr_name) in df.columns:
-                            expr_cols.append(('parameter', expr_name))
-                    expr_df = df.loc[:, expr_cols]
-                    expr_df["parameter"] = expr_df["parameter"].bfill().ffill()
-                    value = obj.calculate_value(expr_df, weight)
+                    value = obj.calculate_value(df, weight)
+                    self._values[name] = value / self.normalization
+                elif isinstance(obj, EqObjective):
+                    value = obj.calculate_value(df, weight)
                     self._values[name] = value / self.normalization
                 if self._values[name] is not None:
                     total_value += self._values[name]
             except Exception as e:
                 self._values[name] = None
                 print(f"Error calculating {name}: {e}")
+                import traceback
+                traceback.print_exc()
 
         self._values['total'] = total_value
         return self._values
@@ -237,7 +289,6 @@ class FullObjective:
                     new_indices.append(idx)
             new_df.index = new_indices
 
-        # Discretization and nan handling
         for col in new_df.columns:
             if col[0] in ['upper', 'lower']:
                 continue

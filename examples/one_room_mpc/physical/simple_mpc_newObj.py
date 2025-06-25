@@ -88,6 +88,12 @@ class MyCasadiModelConfig(CasadiModelConfig):
             unit="-",
             description="Weight for mDot in objective function",
         ),
+        CasadiParameter(
+            name="m_delta",
+            value=1,
+            unit="-",
+            description="Weight for delta mDot in objective function",
+        ),
     ]
     outputs: List[CasadiOutput] = [
         CasadiOutput(name="T_out", unit="K", description="Temperature of zone")
@@ -114,12 +120,12 @@ class MyCasadiModel(CasadiModel):
 
         obj1 = DeltaUObjective(
             expressions=self.mDot,
-            weight=0.01,
+            weight=self.m_delta,
             name="delta_m",
         )
 
         obj3 = EqObjective(
-            expressions=[self.mDot],
+            expressions=self.mDot,
             weight=self.r_mDot,
             name="power_cost"
         )
@@ -162,6 +168,7 @@ AGENT_MPC = {
             "parameters": [
                 {"name": "s_T", "value": 100},
                 {"name": "r_mDot", "value": 5},
+                {"name": "m_delta", "value": 0}
             ],
             "inputs": [
                 {"name": "T_in", "value": 290.15},
