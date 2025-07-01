@@ -87,16 +87,24 @@ class DirectCollocation(basic.DirectCollocation):
             for delta_obj in delta_u_objectives:
                 control_name = delta_obj.get_control_name()
                 if control_name in control_map:
-                    if hasattr(delta_obj.weight, 'sym'):
-                        weight = delta_obj.weight.sym
-                    else:
-                        weight = delta_obj.weight
                     idx = control_map[control_name]
                     control_prev = u_prev[idx]
                     control_curr = uk[idx]
                     delta = control_curr - control_prev
-                    self.objective_function += ca.dot(weight ** 2, delta ** 2)
-                    #todo: weight as casadi expression in deltaUObjective
+                    if hasattr(delta_obj.weight, 'sym'):
+                        param_found = False
+                        for i, param_name in enumerate(sys.model_parameters.ref_names):
+                            if param_name == delta_obj.weight.name:
+                                weight_value = const_par[i]
+                                param_found = True
+                                break
+
+                        if not param_found:
+                            raise ValueError(f"Parameter {delta_obj.weight.name} not found in model parameters")
+                    else:
+                        weight_value = delta_obj.weight
+
+                    self.objective_function += weight_value ** 2 * delta ** 2
 
             # perform inner collocation loop
             opt_vars_inside_inner = [sys.algebraics, sys.outputs]
@@ -130,8 +138,6 @@ class DirectCollocation(basic.DirectCollocation):
                 self.add_constraint(*constraint)
 
 
-
-
 class MultipleShooting(basic.MultipleShooting):
     def _discretize(self, sys: FullSystem):
         """
@@ -149,7 +155,6 @@ class MultipleShooting(basic.MultipleShooting):
 
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
-        
 
         try:
             delta_u_objectives = sys.model.objective.get_delta_u_objectives()
@@ -174,7 +179,21 @@ class MultipleShooting(basic.MultipleShooting):
                     control_prev = u_prev[idx]
                     control_curr = uk[idx]
                     delta = control_curr - control_prev
-                    self.objective_function += delta_obj.weight ** 2 * delta ** 2
+
+                    if hasattr(delta_obj.weight, 'sym'):
+                        param_found = False
+                        for i, param_name in enumerate(sys.model_parameters.ref_names):
+                            if param_name == delta_obj.weight.name:
+                                weight_value = const_par[i]
+                                param_found = True
+                                break
+
+                        if not param_found:
+                            raise ValueError(f"Parameter {delta_obj.weight.name} not found in model parameters")
+                    else:
+                        weight_value = delta_obj.weight
+
+                    self.objective_function += weight_value ** 2 * delta ** 2
 
             dk = self.add_opt_par(sys.non_controlled_inputs)
             zk = self.add_opt_var(sys.algebraics)
