@@ -10,7 +10,8 @@ from agentlib_mpc.data_structures.mpc_datamodels import (
 from agentlib_mpc.models.casadi_model import CasadiModel, CasadiParameter
 from agentlib_mpc.optimization_backends.casadi_.core.casadi_backend import CasADiBackend
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
-    OptimizationParameter
+    OptimizationParameter,
+    OptimizationVariable,
 )
 
 
@@ -34,6 +35,18 @@ class FullSystem(basic.BaseSystem):
             ref_list=var_ref.r_del_u,
             use_in_stage_function=False,
             assert_complete=True,
+        )
+        global_opt_vars = model.get_states(var_ref.global_opt_vars)
+        auxiliaries = [var for var in model.auxiliaries if var not in global_opt_vars]
+        self.global_opt_vars = OptimizationVariable.declare(
+            denotation="global_opt_vars",
+            variables=global_opt_vars,
+            ref_list=var_ref.global_opt_vars,
+        )
+        self.algebraics = OptimizationVariable.declare(
+            denotation="z",
+            variables=auxiliaries,
+            ref_list=[],
         )
 
         self.time = model.time
@@ -60,6 +73,7 @@ class DirectCollocation(basic.DirectCollocation):
 
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
+        const_var = self.add_opt_var(sys.global_opt_vars)
         du_weights = self.add_opt_par(sys.r_del_u)
 
         # Formulate the NLP
@@ -77,7 +91,8 @@ class DirectCollocation(basic.DirectCollocation):
 
             constant_over_inner = {
                 sys.controls: uk,
-                sys.model_parameters: const_par
+                sys.model_parameters: const_par,
+                sys.global_opt_vars: const_var,
             }
             xk_end, constraints = self._collocation_inner_loop(
                 collocation=collocation_matrices,
@@ -85,7 +100,7 @@ class DirectCollocation(basic.DirectCollocation):
                 states=sys.states,
                 opt_vars=opt_vars_inside_inner,
                 opt_pars=opt_pars_inside_inner,
-                const=constant_over_inner
+                const=constant_over_inner,
             )
 
             # increment loop counter and time

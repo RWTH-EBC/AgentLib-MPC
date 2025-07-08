@@ -44,7 +44,8 @@ class DiscretizationOptions(pydantic.BaseModel):
 class Results(Protocol):
     df: pd.DataFrame
 
-    def __getitem__(self, item: str) -> Sequence[float]: ...
+    def __getitem__(self, item: str) -> Sequence[float]:
+        ...
 
 
 @dataclasses.dataclass
@@ -71,6 +72,7 @@ class BaseVariableReference:
         all_variables = set(chain.from_iterable(self.__dict__.values()))
         return item in all_variables
 
+
 VariableReferenceT = TypeVar("VariableReferenceT", bound=BaseVariableReference)
 
 
@@ -93,6 +95,8 @@ class FullVariableReference(VariableReference):
     @property
     def r_del_u(self) -> List[str]:
         return [r_del_u_convention(cont) for cont in self.controls]
+
+    global_opt_vars: List[str] = dataclasses.field(default_factory=list)
 
 
 @dataclasses.dataclass

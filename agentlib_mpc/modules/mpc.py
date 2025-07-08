@@ -321,6 +321,7 @@ class BaseMPC(BaseModule):
         # Set variables in data_broker
         self.set_actuation(result)
         self.set_output(result)
+        return result
 
     def set_actuation(self, solution: Results):
         """Takes the solution from optimization backend and sends the first

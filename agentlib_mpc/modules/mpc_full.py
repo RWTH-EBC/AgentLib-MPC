@@ -9,6 +9,7 @@ from pydantic import Field, field_validator, FieldValidationInfo
 from rapidfuzz import process, fuzz
 
 from agentlib_mpc.modules.mpc import BaseMPCConfig, BaseMPC
+from agentlib_mpc.optimization_backends.casadi_.core.discretization import Results
 
 
 class MPCConfig(BaseMPCConfig):
@@ -19,6 +20,12 @@ class MPCConfig(BaseMPCConfig):
     r_del_u: dict[str, float] = Field(
         default={},
         description="Weights that are applied to the change in control variables.",
+    )
+    global_opt_vars: mpc_datamodels.MPCVariables = Field(
+        default=[],
+        description="List of all optimization variables that should stay constant "
+        "over the horizon. For example, this could be used to model peak "
+        "loads over the horizon.",
     )
 
     @field_validator("r_del_u")
@@ -81,7 +88,8 @@ class MPC(BaseMPC):
         self.register_callbacks_for_lagged_variables()
 
     def do_step(self):
-        super().do_step()
+        result = super().do_step()
+        self.set_global_opt_vars(result)
         self._remove_old_values_from_history()
 
     def _remove_old_values_from_history(self):
@@ -103,6 +111,16 @@ class MPC(BaseMPC):
         # only store scalar values
         if isinstance(variable.value, (float, int)):
             self.history[name][variable.timestamp] = variable.value
+
+    def set_global_opt_vars(self, solution: Results):
+        """Takes the solution from optimization backend and sends it to AgentVariables."""
+        # Output must be defined in the conig as "type"="pd.Series"
+        self.var_ref: mpc_datamodels.FullVariableReference
+        self.logger.info("Sending optimal global variables values to data_broker.")
+        df = solution.df
+        for global_var in self.var_ref.global_opt_vars:
+            value = float(df.variable[global_var].iloc[0])
+            self.set(global_var, value)
 
     def register_callbacks_for_lagged_variables(self):
         """Registers callbacks which listen to the variables which have to be saved as
