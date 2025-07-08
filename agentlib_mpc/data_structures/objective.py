@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import casadi as ca
+import re
 
 class EqObjective:
     def __init__(self, expressions, weight: float = 1.0, name: str = None):
