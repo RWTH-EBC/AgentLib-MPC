@@ -3,9 +3,9 @@ import numpy as np
 
 from agentlib_mpc.data_structures.casadi_utils import DiscretizationMethod
 from agentlib_mpc.data_structures.mpc_datamodels import MINLPVariableReference
-from agentlib_mpc.models.casadi_model import CasadiModel
+from agentlib_mpc.models.casadi_model import CasadiModel, CasadiParameter
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
-    OptimizationVariable,
+    OptimizationVariable, OptimizationParameter
 )
 
 from agentlib_mpc.optimization_backends.casadi_ import basic
@@ -16,6 +16,8 @@ from agentlib_mpc.optimization_backends.casadi_.core.casadi_backend import CasAD
 
 class CasadiMINLPSystem(basic.BaseSystem):
     binary_controls: OptimizationVariable
+    last_control: OptimizationParameter
+    r_del_u: OptimizationParameter  # penalty on change of control between time steps
 
     def __init__(self):
         super().__init__()
@@ -28,6 +30,20 @@ class CasadiMINLPSystem(basic.BaseSystem):
             ref_list=var_ref.binary_controls,
             assert_complete=True,
             binary=True,
+        )
+        self.r_del_u = OptimizationParameter.declare(
+            denotation="r_del_u",
+            variables=[CasadiParameter(name=r_del_u) for r_del_u in var_ref.r_del_u],
+            ref_list=var_ref.r_del_u,
+            use_in_stage_function=False,
+            assert_complete=True,
+        )
+        self.last_control = OptimizationParameter.declare(
+            denotation="u_prev",
+            variables=model.get_inputs(var_ref.controls),
+            ref_list=var_ref.controls,
+            use_in_stage_function=False,
+            assert_complete=True,
         )
         super().initialize(model=model, var_ref=var_ref)
         self.is_linear = self._is_minlp()
@@ -78,16 +94,22 @@ class DirectCollocation(basic.DirectCollocation):
         # Initial State
         x0 = self.add_opt_par(sys.initial_state)
         xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)
+        uk = self.add_opt_par(sys.last_control)
 
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
+        du_weights = self.add_opt_par(sys.r_del_u)
 
         # Formulate the NLP
         # loop over prediction horizon
         while self.k < n:
             # New NLP variable for the control
+            u_prev = uk
             uk = self.add_opt_var(sys.controls)
             wk = self.add_opt_var(sys.binary_controls)
+
+            # penalty for control change between time steps
+            self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
 
             # perform inner collocation loop
             opt_vars_inside_inner = [sys.algebraics, sys.outputs]

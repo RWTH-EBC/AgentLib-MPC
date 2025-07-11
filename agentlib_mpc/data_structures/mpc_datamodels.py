@@ -98,6 +98,9 @@ class FullVariableReference(VariableReference):
 @dataclasses.dataclass
 class MINLPVariableReference(VariableReference):
     binary_controls: List[str] = dataclasses.field(default_factory=list)
+    @property
+    def r_del_u(self) -> List[str]:
+        return [r_del_u_convention(cont) for cont in self.controls]
 
 
 @dataclasses.dataclass

@@ -1,7 +1,9 @@
 import logging
 
-from pydantic import field_validator, Field
+from pydantic import field_validator, Field, FieldValidationInfo
+from rapidfuzz import process, fuzz
 
+from agentlib.core import AgentVariable
 from agentlib_mpc.data_structures import mpc_datamodels
 from agentlib_mpc.data_structures.mpc_datamodels import MINLPVariableReference
 from agentlib_mpc.modules.mpc import BaseMPCConfig, BaseMPC
@@ -19,6 +21,11 @@ class MINLPMPCConfig(BaseMPCConfig):
         default=[], description="List of all binary control variables of the MPC. "
     )
 
+    r_del_u: dict[str, float] = Field(
+        default={},
+        description="Weights that are applied to the change in control variables.",
+    )
+
     @field_validator("binary_controls")
     @classmethod
     def validate_binary_bounds(cls, binary_controls: mpc_datamodels.MPCVariables):
@@ -34,12 +41,51 @@ class MINLPMPCConfig(BaseMPCConfig):
             bc.lb = 0
         return binary_controls
 
+    @field_validator("r_del_u")
+    def check_r_del_u_in_controls(
+            cls, r_del_u: dict[str, float], info: FieldValidationInfo
+    ):
+        """Ensures r_del_u is only set for control variables."""
+        controls = {ctrl.name for ctrl in
+                    info.data["controls"] + info.data["binary_controls"]}
+        for name in r_del_u:
+            if name in controls:
+                # everything is fine
+                continue
+
+            # raise error
+            matches = process.extract(query=name, choices=controls, scorer=fuzz.WRatio)
+            matches = [m[0] for m in matches]
+            raise ValueError(
+                f"Tried to specify control change weight for {name}. However, "
+                f"{name} is not in the set of control variables. Did you mean one "
+                f"of these? {', '.join(matches)}"
+            )
+        return r_del_u
+
 
 class MINLPMPC(BaseMPC):
     config: MINLPMPCConfig
 
+    def _after_config_update(self):
+        self._internal_variables = self._create_internal_variables()
+        super()._after_config_update()
+
     def _setup_var_ref(self) -> mpc_datamodels.VariableReferenceT:
         return MINLPVariableReference.from_config(self.config)
+
+    def collect_variables_for_optimization(
+        self, var_ref: mpc_datamodels.VariableReference = None
+    ) -> dict[str, AgentVariable]:
+        """Gets all variables noted in the var ref and puts them in a flat
+        dictionary."""
+        if var_ref is None:
+            var_ref = self.var_ref
+
+        # config variables
+        variables = {v: self.get(v) for v in var_ref.all_variables()}
+
+        return {**variables, **self._internal_variables}
 
     def assert_mpc_variables_are_in_model(self):
         """
@@ -94,3 +140,22 @@ class MINLPMPC(BaseMPC):
             # take the first entry of the control trajectory
             actuation = solution[b_control][0]
             self.set(b_control, actuation)
+
+    def _create_internal_variables(self) -> dict[str, AgentVariable]:
+        """Creates a reference of all internal variables that are used for the MPC,
+        but not shared as AgentVariables.
+
+        Currently, this includes:
+           - Weights for control change (r_del_u)
+        """
+        r_del_u: dict[str, mpc_datamodels.MPCVariable] = {}
+        for control in self.config.controls:
+            r_del_u_name = mpc_datamodels.r_del_u_convention(control.name)
+            var = mpc_datamodels.MPCVariable(name=r_del_u_name)
+            r_del_u[r_del_u_name] = var
+            if control.name in self.config.r_del_u:
+                var.value = self.config.r_del_u[control.name]
+            else:
+                var.value = 0
+
+        return r_del_u
