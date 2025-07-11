@@ -96,6 +96,7 @@ class BaseSystem(System):
             lb=ca.vertcat(*[c.lb for c in model.get_constraints()]),
             ub=ca.vertcat(*[c.ub for c in model.get_constraints()]),
         )
+        self.time = model.time
 
 
 @dataclasses.dataclass
@@ -134,7 +135,6 @@ class DirectCollocation(Discretization):
         while k < n:
             # New NLP variable for the control
             uk = self.add_opt_var(sys.controls)
-
             # New parameter for inputs
             dk = self.add_opt_par(sys.non_controlled_inputs)
 
@@ -197,11 +197,13 @@ class DirectCollocation(Discretization):
             for q in all_system_quantities.values()
             if q.use_in_stage_function
         ]
+        inputs.append(system.time)
         input_denotations = [
             q.name
             for denotation, q in all_system_quantities.items()
             if q.use_in_stage_function
         ]
+        input_denotations.append("time")
 
         # aggregate constraints
         constraints_func = [c.function for c in constraints.values()]
@@ -303,6 +305,7 @@ class DirectCollocation(Discretization):
             for opt_par in opt_pars:
                 par_kj = self.add_opt_par(opt_par, post_den=f"_{j}")
                 opt_pars_collocation[-1].update({opt_par.name: par_kj})
+            opt_pars_collocation[-1].update({"time": self.pred_time})
 
         # Loop over collocation points
         state_k_end = collocation.D[0] * state_at_beginning
@@ -419,6 +422,7 @@ class MultipleShooting(Discretization):
                 sys.controls.name: uk,
                 sys.non_controlled_inputs.name: dk,
                 sys.model_parameters.name: const_par,
+                "time": self.pred_time,
             }
             # get stage
             stage = self._stage_function(**stage_arguments)
@@ -496,11 +500,13 @@ class MultipleShooting(Discretization):
             for q in all_system_quantities.values()
             if q.use_in_stage_function
         ]
+        inputs.append(system.time)
         input_denotations = [
             q.name
             for denotation, q in all_system_quantities.items()
             if q.use_in_stage_function
         ]
+        input_denotations.append("__time")
 
         # aggregate constraints
         constraints_func = [c.function for c in constraints.values()]

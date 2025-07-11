@@ -14,7 +14,8 @@
           }
         },
         "discretization_options": {
-          "method": "multiple_shooting"
+          "method": "multiple_shooting",
+          "integrator": "euler"
         },
         "solver": {
           "name": "ipopt",

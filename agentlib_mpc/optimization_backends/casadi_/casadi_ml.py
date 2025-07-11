@@ -102,6 +102,7 @@ class CasadiMLSystem(FullSystem):
         self.sim_step = model.make_predict_function_for_mpc()
         self.model = model
         self.lags_dict: dict[str, int] = model.lags_dict
+        self.time = model.time
 
     @property
     def max_lag(self) -> int:
@@ -201,6 +202,7 @@ class MultipleShooting_ML(MultipleShooting):
                     sys.non_controlled_inputs.name
                 ],
                 sys.model_parameters.name: const_par,
+                "__time": time,
             }
 
             # collect stage arguments for lagged variables
@@ -259,11 +261,13 @@ class MultipleShooting_ML(MultipleShooting):
             for q in all_system_quantities.values()
             if q.use_in_stage_function
         ]
+        inputs.append(system.time)
         input_denotations = [
             q.name
             for denotation, q in all_system_quantities.items()
             if q.use_in_stage_function
         ]
+        input_denotations.append("__time")
 
         # aggregate constraints
         constraints_func = [c.function for c in constraints.values()]

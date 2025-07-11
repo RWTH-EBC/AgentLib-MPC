@@ -137,9 +137,6 @@ class ADMMCollocation(DirectCollocation):
             # penalty for control change between time steps
             self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
 
-            # New parameter for inputs
-            dk = self.add_opt_par(sys.non_controlled_inputs)
-
             # perform inner collocation loop
             # perform inner collocation loop
             opt_vars_inside_inner = [
@@ -153,10 +150,10 @@ class ADMMCollocation(DirectCollocation):
                 sys.multipliers,
                 sys.exchange_multipliers,
                 sys.exchange_diff,
+                sys.non_controlled_inputs
             ]
             constant_over_inner = {
                 sys.controls: uk,
-                sys.non_controlled_inputs: dk,
                 sys.model_parameters: const_par,
                 sys.penalty_factor: rho,
             }
@@ -186,93 +183,117 @@ class ADMMCollocation(DirectCollocation):
 
 class ADMMMultipleShooting(MultipleShooting):
     def _discretize(self, sys: CasadiADMMSystem):
+        """Performs a multiple shooting discretization for ADMM-based optimization.
+
+        This method implements the multiple shooting discretization scheme for both consensus
+        and exchange ADMM variants. It handles:
+        1. State continuity across shooting intervals
+        2. Local coupling variables and their consensus terms
+        3. Exchange variables between subsystems
+        4. Integration of system dynamics
+        5. Objective function construction including ADMM penalty terms
+
+        Args:
+            sys (CasadiADMMSystem): The system to be discretized, containing states,
+                controls, and ADMM-specific variables
         """
-        Performs a multiple shooting discretization for ADMM
-        """
-        vars_dict = {
-            sys.states.name: {},
-            sys.controls.name: {},
-            sys.non_controlled_inputs.name: {},
-            sys.local_couplings.name: {},
-            sys.global_couplings.name: {},
-            sys.local_exchange.name: {},
-            sys.exchange_diff.name: {},
-            sys.exchange_multipliers.name: {},
-        }
-        n = self.options.prediction_horizon
-        ts = self.options.time_step
-        opts = {"t0": 0, "tf": ts}
-        # Initial State
-        x0 = self.add_opt_par(sys.initial_state)
-        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)
-        vars_dict[sys.states.name][0] = xk
-        uk = self.add_opt_par(sys.last_control)
+        # Extract key parameters
+        prediction_horizon = self.options.prediction_horizon
+        timestep = self.options.time_step
+        integration_options = {"t0": 0, "tf": timestep}
 
-        # Parameters that are constant over the horizon
-        du_weights = self.add_opt_par(sys.r_del_u)
-        const_par = self.add_opt_par(sys.model_parameters)
-        rho = self.add_opt_par(sys.penalty_factor)
-        e_diff0 = self.add_opt_par(sys.exchange_diff)
-        e_multi0 = self.add_opt_par(sys.exchange_multipliers)
+        # Initialize state trajectory
+        initial_state = self.add_opt_par(sys.initial_state)
+        current_state = self.add_opt_var(
+            sys.states, lb=initial_state, ub=initial_state, guess=initial_state
+        )
 
-        # create integrator
-        opt_integrator = self._create_ode(sys, opts, self.options.integrator)
-        # initiate states
-        while self.k < n:
-            u_prev = uk
-            uk = self.add_opt_var(sys.controls)
-            # penalty for control change between time steps
-            self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
-            dk = self.add_opt_par(sys.non_controlled_inputs)
-            zk = self.add_opt_var(sys.algebraics)
-            yk = self.add_opt_var(sys.outputs)
-            v_localk = self.add_opt_var(sys.local_couplings)
-            v_meank = self.add_opt_par(sys.global_couplings)
-            lamk = self.add_opt_par(sys.multipliers)
-            vars_dict[sys.global_couplings.name][self.k] = v_meank
+        # Initialize control input
+        previous_control = self.add_opt_par(sys.last_control)
 
-            e_localk = self.add_opt_var(sys.local_exchange)
-            vars_dict[sys.local_exchange.name][self.k] = e_localk
+        # Add time-invariant parameters
+        control_rate_weights = self.add_opt_par(sys.r_del_u)
+        model_parameters = self.add_opt_par(sys.model_parameters)
+        admm_penalty = self.add_opt_par(sys.penalty_factor)
 
-            # get stage_function
-            stage_arguments = {
-                # variables
-                sys.states.name: xk,
-                sys.algebraics.name: zk,
-                sys.local_couplings.name: v_localk,
-                sys.outputs.name: yk,
-                sys.local_exchange.name: e_localk,
-                # parameters
-                sys.global_couplings.name: v_meank,
-                sys.multipliers.name: lamk,
-                sys.controls.name: uk,
-                sys.non_controlled_inputs.name: dk,
-                sys.model_parameters.name: const_par,
-                sys.penalty_factor.name: rho,
-                sys.exchange_diff.name: e_diff0,
-                sys.exchange_multipliers.name: e_multi0,
+        # Create system integrator
+        dynamics_integrator = self._create_ode(
+            sys, integration_options, self.options.integrator
+        )
+
+        # Perform multiple shooting discretization
+        for k in range(prediction_horizon):
+            # 1. Handle control inputs and their rate penalties
+            current_control = self.add_opt_var(sys.controls)
+            control_rate_penalty = timestep * ca.dot(
+                control_rate_weights, (previous_control - current_control) ** 2
+            )
+            self.objective_function += control_rate_penalty
+            previous_control = current_control
+
+            # 2. Add optimization variables for current shooting interval
+            disturbance = self.add_opt_par(sys.non_controlled_inputs)
+            algebraic_vars = self.add_opt_var(sys.algebraics)
+            output_vars = self.add_opt_var(sys.outputs)
+
+            # 3. Add ADMM consensus variables
+            local_coupling = self.add_opt_var(sys.local_couplings)
+            global_coupling = self.add_opt_par(sys.global_couplings)
+            coupling_multipliers = self.add_opt_par(sys.multipliers)
+
+            # 4. Add ADMM exchange variables
+            exchange_difference = self.add_opt_par(sys.exchange_diff)
+            exchange_multipliers = self.add_opt_par(sys.exchange_multipliers)
+            local_exchange = self.add_opt_var(sys.local_exchange)
+
+            # 5. Construct stage-wise optimization problem
+            stage_variables = {
+                sys.states.name: current_state,
+                sys.algebraics.name: algebraic_vars,
+                sys.local_couplings.name: local_coupling,
+                sys.outputs.name: output_vars,
+                sys.local_exchange.name: local_exchange,
+                sys.global_couplings.name: global_coupling,
+                sys.multipliers.name: coupling_multipliers,
+                sys.controls.name: current_control,
+                sys.non_controlled_inputs.name: disturbance,
+                sys.model_parameters.name: model_parameters,
+                sys.penalty_factor.name: admm_penalty,
+                sys.exchange_diff.name: exchange_difference,
+                sys.exchange_multipliers.name: exchange_multipliers,
             }
-            stage = self._stage_function(**stage_arguments)
 
-            # integral and multiple shooting constraint
-            fk = opt_integrator(
-                x0=xk,
-                p=ca.vertcat(uk, v_localk, dk, const_par, zk, yk),
+            stage_result = self._stage_function(**stage_variables)
+
+            # 6. Integrate system dynamics
+            integration_result = dynamics_integrator(
+                x0=current_state,
+                p=ca.vertcat(
+                    current_control,
+                    local_coupling,
+                    disturbance,
+                    model_parameters,
+                    algebraic_vars,
+                    output_vars,
+                ),
             )
-            xk_end = fk["xf"]
-            self.k += 1
-            self.pred_time = ts * self.k
-            xk = self.add_opt_var(sys.states)
-            vars_dict[sys.states.name][self.k] = xk
-            self.add_constraint(xk - xk_end, gap_closing=True)
 
-            # add model constraints last due to fatrop
+            # 7. Add continuity constraints
+            self.k = k + 1
+            self.pred_time = timestep * self.k
+            next_state = self.add_opt_var(sys.states)
+            self.add_constraint(next_state - integration_result["xf"], gap_closing=True)
+
+            # 8. Add model constraints and objective contributions
             self.add_constraint(
-                stage["model_constraints"],
-                lb=stage["lb_model_constraints"],
-                ub=stage["ub_model_constraints"],
+                stage_result["model_constraints"],
+                lb=stage_result["lb_model_constraints"],
+                ub=stage_result["ub_model_constraints"],
             )
-            self.objective_function += stage["cost_function"] * ts
+            self.objective_function += stage_result["cost_function"] * timestep
+
+            # Update for next interval
+            current_state = next_state
 
     def _create_ode(
         self, sys: CasadiADMMSystem, opts: dict, integrator: Integrators
