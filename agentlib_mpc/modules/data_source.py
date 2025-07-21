@@ -177,7 +177,7 @@ class DataSource(BaseModule):
                 self.logger.debug(
                     f"At {self.env.now}: Sending variable {index} with value {value} to data broker."
                 )
-                variable = AgentVariable(name=index, value=value, shared=self.config.shared)
+                variable = AgentVariable(name=index, value=value, shared=self.config.shared, timestamp=self.env.now)
                 self.agent.data_broker.send_variable(variable, copy=False)
             yield self.env.timeout(self.config.t_sample)
 

@@ -214,6 +214,7 @@ def show_dashboard(
     data: pd.DataFrame,
     stats: Optional[pd.DataFrame] = None,
     scale: Literal["seconds", "minutes", "hours", "days"] = "seconds",
+    port: Optional[int] = None,
 ):
     app = dash.Dash(__name__, title="MPC Results")
 
@@ -253,7 +254,8 @@ def show_dashboard(
         ]
     )
 
-    port = get_port()
+    if port is None:
+        port = get_port()
 
     @app.callback(
         [Output(f"plot-{column}", "figure") for column in columns_okay],
