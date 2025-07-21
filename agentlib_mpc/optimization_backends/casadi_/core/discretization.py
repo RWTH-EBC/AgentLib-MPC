@@ -218,7 +218,7 @@ class Discretization(abc.ABC):
                             + mpc_inputs[f"ub_{denotation}"]
                         )
                     )
-                    guess = np.nan_to_num(guess, posinf=0, neginf=0)
+                    guess = np.nan_to_num(guess, posinf=0, neginf=-0)
             guesses.update({GUESS_PREFIX + denotation: guess})
 
         return guesses
