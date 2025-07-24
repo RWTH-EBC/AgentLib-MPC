@@ -1,0 +1,345 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>agentlib_mpc.modules.estimation package &mdash; agentlib_mpc 0.7.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../_static/jquery.js"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+      <script src="../_static/doctools.js"></script>
+      <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            agentlib_mpc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../PackageReference.html">Package Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">agentlib_mpc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">agentlib_mpc.modules.estimation package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/agentlib_mpc.modules.estimation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-agentlib_mpc.modules.estimation">
+<span id="agentlib-mpc-modules-estimation-package"></span><h1>agentlib_mpc.modules.estimation package<a class="headerlink" href="#module-agentlib_mpc.modules.estimation" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-agentlib_mpc.modules.estimation.mhe">
+<span id="agentlib-mpc-modules-estimation-mhe-module"></span><h2>agentlib_mpc.modules.estimation.mhe module<a class="headerlink" href="#module-agentlib_mpc.modules.estimation.mhe" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHE">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.estimation.mhe.</span></span><span class="sig-name descname"><span class="pre">MHE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Agent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/estimation/mhe.html#MHE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHE" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.skippable_mixin.SkippableMixin" title="agentlib_mpc.modules.mpc.skippable_mixin.SkippableMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SkippableMixin</span></code></a></p>
+<p>A moving horizon estimator.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHE.cleanup_results">
+<span class="sig-name descname"><span class="pre">cleanup_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/estimation/mhe.html#MHE.cleanup_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHE.cleanup_results" title="Permalink to this definition"></a></dt>
+<dd><p>Deletes all files this module created.</p>
+<p>Override this method, if your module creates e.g. results files etc.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHE.collect_variables_for_optimization">
+<span class="sig-name descname"><span class="pre">collect_variables_for_optimization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference" title="agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference"><span class="pre">MHEVariableReference</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">AgentVariable</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/modules/estimation/mhe.html#MHE.collect_variables_for_optimization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHE.collect_variables_for_optimization" title="Permalink to this definition"></a></dt>
+<dd><p>Gets all variables noted in the var ref and puts them in a flat
+dictionary. The MHE Version of this function has to perform some checks and
+lookups extra, since variables come from different sources, and some need to
+incorporate trajectories of past values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHE.do_step">
+<span class="sig-name descname"><span class="pre">do_step</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/estimation/mhe.html#MHE.do_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHE.do_step" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHE.get_results">
+<span class="sig-name descname"><span class="pre">get_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/modules/estimation/mhe.html#MHE.get_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHE.get_results" title="Permalink to this definition"></a></dt>
+<dd><p>Read the results that were saved from the optimization backend and
+returns them as Dataframe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(results, stats) tuple of Dataframes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHE.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/estimation/mhe.html#MHE.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHE.process" title="Permalink to this definition"></a></dt>
+<dd><p>This abstract method must be implemented in order to sync the module
+with the other processes of the agent and the whole MAS.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHE.read_results_file">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_results_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/modules/estimation/mhe.html#MHE.read_results_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHE.read_results_file" title="Permalink to this definition"></a></dt>
+<dd><p>Read the provided csv-file as an MPC results file.
+:param results_file: File path</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>results, stats
+results is the Dataframe with all inputs and outputs of the MPC
+optimizations.
+stats is the Dataframe with matching solver stats</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHE.register_callbacks">
+<span class="sig-name descname"><span class="pre">register_callbacks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/estimation/mhe.html#MHE.register_callbacks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHE.register_callbacks" title="Permalink to this definition"></a></dt>
+<dd><p>Registers callbacks which listen to the variables which have to be saved as
+time series. These callbacks save the values in the history for use in the
+optimization.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHE.var_ref">
+<span class="sig-name descname"><span class="pre">var_ref</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference" title="agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference"><span class="pre">MHEVariableReference</span></a></em><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHE.var_ref" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHEConfig">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.estimation.mhe.</span></span><span class="sig-name descname"><span class="pre">MHEConfig</span></span><a class="reference internal" href="../_modules/agentlib_mpc/modules/estimation/mhe.html#MHEConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.skippable_mixin.SkippableMixinConfig" title="agentlib_mpc.modules.mpc.skippable_mixin.SkippableMixinConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">SkippableMixinConfig</span></code></a></p>
+<p>Pydantic data model for MPC configuration parser</p>
+<dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arbitrary_types_allowed</strong>: <em>bool = True</em></p></li>
+<li><p><strong>validate_assignment</strong>: <em>bool = True</em></p></li>
+<li><p><strong>extra</strong>: <em>str = forbid</em></p></li>
+<li><p><strong>frozen</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.estimated_inputs" title="agentlib_mpc.modules.estimation.mhe.MHEConfig.estimated_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimated_inputs</span> <span class="pre">(List[agentlib_mpc.data_structures.mpc_datamodels.MPCVariable])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.estimated_parameters" title="agentlib_mpc.modules.estimation.mhe.MHEConfig.estimated_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimated_parameters</span> <span class="pre">(List[agentlib_mpc.data_structures.mpc_datamodels.MPCVariable])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.horizon" title="agentlib_mpc.modules.estimation.mhe.MHEConfig.horizon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">horizon</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.known_inputs" title="agentlib_mpc.modules.estimation.mhe.MHEConfig.known_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">known_inputs</span> <span class="pre">(List[agentlib_mpc.data_structures.mpc_datamodels.MPCVariable])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.known_parameters" title="agentlib_mpc.modules.estimation.mhe.MHEConfig.known_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">known_parameters</span> <span class="pre">(List[agentlib_mpc.data_structures.mpc_datamodels.MPCVariable])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.optimization_backend" title="agentlib_mpc.modules.estimation.mhe.MHEConfig.optimization_backend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimization_backend</span> <span class="pre">(dict)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.shared_variable_fields" title="agentlib_mpc.modules.estimation.mhe.MHEConfig.shared_variable_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_variable_fields</span> <span class="pre">(list[str])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.state_weights" title="agentlib_mpc.modules.estimation.mhe.MHEConfig.state_weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">state_weights</span> <span class="pre">(dict[str,</span> <span class="pre">float])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.states" title="agentlib_mpc.modules.estimation.mhe.MHEConfig.states"><code class="xref py py-obj docutils literal notranslate"><span class="pre">states</span> <span class="pre">(List[agentlib_mpc.data_structures.mpc_datamodels.MPCVariable])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.time_step" title="agentlib_mpc.modules.estimation.mhe.MHEConfig.time_step"><code class="xref py py-obj docutils literal notranslate"><span class="pre">time_step</span> <span class="pre">(float)</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-odd">Validators<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_valid_fields</span></code> » <a class="reference internal" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.shared_variable_fields" title="agentlib_mpc.modules.estimation.mhe.MHEConfig.shared_variable_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_variable_fields</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHEConfig.estimated_inputs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">estimated_inputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MPCVariable" title="agentlib_mpc.data_structures.mpc_datamodels.MPCVariable"><span class="pre">MPCVariable</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.estimated_inputs" title="Permalink to this definition"></a></dt>
+<dd><p>List of unknown input variables of the MHE. Includes mainly disturbances.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHEConfig.estimated_parameters">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">estimated_parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MPCVariable" title="agentlib_mpc.data_structures.mpc_datamodels.MPCVariable"><span class="pre">MPCVariable</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.estimated_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>List of unknown parameters of the MHE. They are constant over the horizon and will be estimated.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHEConfig.horizon">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">horizon</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.horizon" title="Permalink to this definition"></a></dt>
+<dd><p>Estimation horizon of the MHE.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Constraints<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ge</strong> = 0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHEConfig.known_inputs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">known_inputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MPCVariable" title="agentlib_mpc.data_structures.mpc_datamodels.MPCVariable"><span class="pre">MPCVariable</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.known_inputs" title="Permalink to this definition"></a></dt>
+<dd><p>List of known input variables of the MHE. Includes controls, disturbances, setpoints, dynamic constraint boundaries etc.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHEConfig.known_parameters">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">known_parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MPCVariable" title="agentlib_mpc.data_structures.mpc_datamodels.MPCVariable"><span class="pre">MPCVariable</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.known_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>List of known parameters of the MHE. They are constant over the horizon. Parameters not listed here will have their default from the model file.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHEConfig.optimization_backend">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">optimization_backend</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.optimization_backend" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHEConfig.shared_variable_fields">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shared_variable_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.shared_variable_fields" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Validated by<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_valid_fields</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHEConfig.state_weights">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">state_weights</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.state_weights" title="Permalink to this definition"></a></dt>
+<dd><p>Mapping of state names to their weight in the MHE problem. If you are certain with your measurement, chose a high value. If you dont have a measurement / do not trust it, choose 0. Default is 0.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHEConfig.states">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">states</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MPCVariable" title="agentlib_mpc.data_structures.mpc_datamodels.MPCVariable"><span class="pre">MPCVariable</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.states" title="Permalink to this definition"></a></dt>
+<dd><p>List of all differential states of the MHE.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHEConfig.time_step">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time_step</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60</span></em><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.time_step" title="Permalink to this definition"></a></dt>
+<dd><p>Time step of the MHE.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Constraints<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ge</strong> = 0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHEConfig.model_post_init">
+<span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.model_post_init" title="Permalink to this definition"></a></dt>
+<dd><p>This function is meant to behave like a BaseModel method to initialise private attributes.</p>
+<p>It takes context as an argument since that’s what pydantic-core passes when calling it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – The BaseModel instance.</p></li>
+<li><p><strong>context</strong> – The context.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHEConfig.state_weights_are_in_states">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">state_weights_are_in_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ValidationInfo</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/estimation/mhe.html#MHEConfig.state_weights_are_in_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.state_weights_are_in_states" title="Permalink to this definition"></a></dt>
+<dd><p>Wrap a classmethod, staticmethod, property or unbound function
+and act as a descriptor that allows us to detect decorated items
+from the class’ attributes.</p>
+<p>This class’ __get__ returns the wrapped item’s __get__ result,
+which makes it transparent for classmethods and staticmethods.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHEConfig.wrapped">
+<span class="sig-name descname"><span class="pre">wrapped</span></span><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.wrapped" title="Permalink to this definition"></a></dt>
+<dd><p>The decorator that has to be wrapped.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHEConfig.decorator_info">
+<span class="sig-name descname"><span class="pre">decorator_info</span></span><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.decorator_info" title="Permalink to this definition"></a></dt>
+<dd><p>The decorator info.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.estimation.mhe.MHEConfig.shim">
+<span class="sig-name descname"><span class="pre">shim</span></span><a class="headerlink" href="#agentlib_mpc.modules.estimation.mhe.MHEConfig.shim" title="Permalink to this definition"></a></dt>
+<dd><p>A wrapper function to wrap V1 style function.</p>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, AGENT-Project Associates.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
