@@ -54,7 +54,7 @@ class Results:
     def __getitem__(self, item: str) -> np.ndarray:
         return self.matrix[
             self.variable_grid_indices[item], self._variable_name_to_index[item]
-        ].toarray(simplify=True)
+        ].toarray(simplify=False)
 
     def variable_lookup(self) -> dict[str, int]:
         """Creates a mapping from variable names to the column index in the Matrix"""
