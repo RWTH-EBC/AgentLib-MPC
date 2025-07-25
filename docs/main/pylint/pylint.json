@@ -1511,6 +1511,28 @@
             "type": "convention",
             "module": "test_mpc",
             "obj": "",
+            "line": 176,
+            "column": 0,
+            "path": "tests/test_mpc.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (108/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "test_mpc",
+            "obj": "",
+            "line": 187,
+            "column": 0,
+            "path": "tests/test_mpc.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (127/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "test_mpc",
+            "obj": "",
             "line": 1,
             "column": 0,
             "path": "tests/test_mpc.py",
@@ -1622,6 +1644,28 @@
             "module": "test_mpc",
             "obj": "TestCasadiMPC.test_incomplete_config",
             "line": 166,
+            "column": 4,
+            "path": "tests/test_mpc.py",
+            "symbol": "missing-function-docstring",
+            "message": "Missing function or method docstring",
+            "message-id": "C0116"
+        },
+        {
+            "type": "convention",
+            "module": "test_mpc",
+            "obj": "TestCasadiMPC.test_bad_names",
+            "line": 173,
+            "column": 4,
+            "path": "tests/test_mpc.py",
+            "symbol": "missing-function-docstring",
+            "message": "Missing function or method docstring",
+            "message-id": "C0116"
+        },
+        {
+            "type": "convention",
+            "module": "test_mpc",
+            "obj": "TestCasadiMPC.test_instance_setter",
+            "line": 184,
             "column": 4,
             "path": "tests/test_mpc.py",
             "symbol": "missing-function-docstring",
@@ -1928,12 +1972,12 @@
                 "warning": 0
             },
             "test_mpc": {
-                "convention": 11,
+                "convention": 15,
                 "error": 0,
                 "fatal": 0,
                 "info": 0,
                 "refactor": 0,
-                "statement": 71,
+                "statement": 89,
                 "warning": 2
             },
             "test_serialized_ann": {
@@ -1967,7 +2011,7 @@
         "by_msg": {
             "import-error": 4,
             "pointless-string-statement": 1,
-            "missing-function-docstring": 26,
+            "missing-function-docstring": 28,
             "unused-import": 3,
             "missing-module-docstring": 6,
             "redefined-outer-name": 9,
@@ -1976,6 +2020,7 @@
             "unused-variable": 4,
             "protected-access": 14,
             "attribute-defined-outside-init": 4,
+            "line-too-long": 2,
             "wrong-import-order": 15
         },
         "code_type_count": {
@@ -2005,11 +2050,11 @@
                 "test_admm"
             ],
             "numpy": [
-                "test_serialized_gpr",
                 "test_serialized_linreg",
+                "test_serialized_ann",
                 "test_admm",
                 "test_mpc",
-                "test_serialized_ann"
+                "test_serialized_gpr"
             ],
             "agentlib.core": [
                 "test_admm"
@@ -2030,8 +2075,8 @@
                 "test_casadi_backend"
             ],
             "agentlib_mpc.models.casadi_model": [
-                "test_casadi_backend",
-                "test_casadi_ml_model"
+                "test_casadi_ml_model",
+                "test_casadi_backend"
             ],
             "agentlib_mpc.optimization_backends.casadi_.basic": [
                 "test_casadi_backend"
@@ -2068,26 +2113,26 @@
             ],
             "agentlib_mpc.data_structures.ml_model_datatypes": [
                 "test_serialized_gpr",
-                "test_serialized_linreg",
-                "test_serialized_ann"
+                "test_serialized_ann",
+                "test_serialized_linreg"
             ],
             "agentlib_mpc.models.casadi_predictor": [
                 "test_serialized_gpr",
-                "test_serialized_linreg",
-                "test_serialized_ann"
+                "test_serialized_ann",
+                "test_serialized_linreg"
             ],
             "agentlib_mpc.models.serialized_ml_model": [
                 "test_serialized_gpr",
-                "test_serialized_linreg",
-                "test_serialized_ann"
+                "test_serialized_ann",
+                "test_serialized_linreg"
             ],
             "fixtures.ann": [
                 "test_serialized_ann"
             ],
             "fixtures.data_generator": [
                 "test_serialized_gpr",
-                "test_serialized_linreg",
-                "test_serialized_ann"
+                "test_serialized_ann",
+                "test_serialized_linreg"
             ],
             "sklearn.gaussian_process": [
                 "test_serialized_gpr"
@@ -2109,21 +2154,21 @@
         "node_count": {
             "function": 13,
             "klass": 9,
-            "method": 36,
+            "method": 38,
             "module": 12
         },
         "undocumented": {
             "function": 12,
             "klass": 4,
-            "method": 14,
+            "method": 16,
             "module": 6
         },
-        "convention": 56,
+        "convention": 60,
         "error": 4,
         "fatal": 0,
         "info": 0,
         "refactor": 0,
-        "statement": 419,
+        "statement": 437,
         "warning": 35,
         "global_note": 0,
         "nb_duplicated_lines": 0,
@@ -2155,7 +2200,7 @@
                 "statement": 3,
                 "warning": 0
             },
-            "ci.test_examples": {
+            "test_examples": {
                 "convention": 4,
                 "error": 1,
                 "fatal": 0,
@@ -2219,12 +2264,12 @@
                 "warning": 0
             },
             "test_mpc": {
-                "convention": 11,
+                "convention": 15,
                 "error": 0,
                 "fatal": 0,
                 "info": 0,
                 "refactor": 0,
-                "statement": 71,
+                "statement": 89,
                 "warning": 2
             },
             "test_serialized_ann": {
@@ -2258,7 +2303,7 @@
         "by_msg": {
             "import-error": 4,
             "pointless-string-statement": 1,
-            "missing-function-docstring": 26,
+            "missing-function-docstring": 28,
             "unused-import": 3,
             "missing-module-docstring": 6,
             "redefined-outer-name": 9,
@@ -2267,6 +2312,7 @@
             "unused-variable": 4,
             "protected-access": 14,
             "attribute-defined-outside-init": 4,
+            "line-too-long": 2,
             "wrong-import-order": 15
         },
         "code_type_count": {
@@ -2284,23 +2330,23 @@
                 "agentlib_mpc"
             ],
             "pandas": [
-                "test_mpc",
-                "ci.test_examples"
+                "test_examples",
+                "test_mpc"
             ],
             "agentlib.utils": [
-                "ci.test_examples",
+                "test_examples",
                 "conftest"
             ],
             "agentlib.utils.local_broadcast_broker": [
-                "ci.test_examples",
+                "test_examples",
                 "test_admm"
             ],
             "numpy": [
-                "test_serialized_gpr",
                 "test_serialized_linreg",
+                "test_serialized_ann",
                 "test_admm",
                 "test_mpc",
-                "test_serialized_ann"
+                "test_serialized_gpr"
             ],
             "agentlib.core": [
                 "test_admm"
@@ -2359,26 +2405,26 @@
             ],
             "agentlib_mpc.data_structures.ml_model_datatypes": [
                 "test_serialized_gpr",
-                "test_serialized_linreg",
-                "test_serialized_ann"
+                "test_serialized_ann",
+                "test_serialized_linreg"
             ],
             "agentlib_mpc.models.casadi_predictor": [
                 "test_serialized_gpr",
-                "test_serialized_linreg",
-                "test_serialized_ann"
+                "test_serialized_ann",
+                "test_serialized_linreg"
             ],
             "agentlib_mpc.models.serialized_ml_model": [
                 "test_serialized_gpr",
-                "test_serialized_linreg",
-                "test_serialized_ann"
+                "test_serialized_ann",
+                "test_serialized_linreg"
             ],
             "fixtures.ann": [
                 "test_serialized_ann"
             ],
             "fixtures.data_generator": [
                 "test_serialized_gpr",
-                "test_serialized_linreg",
-                "test_serialized_ann"
+                "test_serialized_ann",
+                "test_serialized_linreg"
             ],
             "sklearn.gaussian_process": [
                 "test_serialized_gpr"
@@ -2400,23 +2446,23 @@
         "node_count": {
             "function": 13,
             "klass": 9,
-            "method": 36,
+            "method": 38,
             "module": 12
         },
         "undocumented": {
             "function": 12,
             "klass": 4,
-            "method": 14,
+            "method": 16,
             "module": 6
         },
-        "convention": 56,
+        "convention": 60,
         "error": 4,
         "fatal": 0,
         "info": 0,
         "refactor": 0,
-        "statement": 419,
+        "statement": 437,
         "warning": 35,
-        "global_note": 7.350835322195704,
+        "global_note": 7.368421052631579,
         "nb_duplicated_lines": 0,
         "percent_duplicated_lines": 0.0
     }
