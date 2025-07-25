@@ -47,6 +47,35 @@ class MyCasadiModel(CasadiModel):
         return (self.state - 290) ** 2
 
 
+class BadNamesModelConfig(CasadiModelConfig):
+    parameters: List[CasadiParameter] = [
+        CasadiParameter(name="system"),
+        CasadiParameter(name="time"),
+    ]
+
+
+class BadNamesModel(CasadiModel):
+    config: BadNamesModelConfig
+
+    def setup_system(self):
+        return self.time + self.system
+
+
+class InstanceAttributeSetterTestModel(CasadiModel):
+    config = MyCasadiModelConfig
+
+    def setup_system(self):
+        self.state.ode = (
+            self.myctrl + self.par * (self.state - self.disturbance) - self.par2
+        )
+
+        self.myout = self.state
+
+        # cost function
+        return (self.state - 290) ** 2
+
+
+
 # @pytest.fixture
 # def example_casadi_model():
 #     return MyCasadiModel()
