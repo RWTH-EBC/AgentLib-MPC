@@ -318,7 +318,6 @@ class MLModelTrainer(BaseModule, abc.ABC):
                     time_series_data[column] = pd.concat([time_series_data[column], srs])
         return pd.DataFrame(time_series_data)
 
-
     def retrain_model(self):
         """Trains the model based on the current historic data."""
         sampled = self.resample()
@@ -327,6 +326,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
 
         best_serialized_ml_model = None
         best_score = 0
+        best_cross_check = None
         best_metrics = None
         i = 1
 
@@ -337,7 +337,9 @@ class MLModelTrainer(BaseModule, abc.ABC):
             serialized_ml_model = self.serialize_ml_model()
             outputs = training_data.training_outputs.columns
             for name in outputs:
-                total_score_mse, metrics_dict = evaluate_model(name, training_data, CasadiPredictor.from_serialized_model(serialized_ml_model))
+                total_score_mse, metrics_dict = evaluate_model(name, training_data,
+                                                               CasadiPredictor.from_serialized_model(
+                                                                   serialized_ml_model))
                 train_r2 = metrics_dict[name]["train_score_r2"]
 
                 if abs(1 - train_r2) < abs(1 - best_score):
@@ -358,6 +360,8 @@ class MLModelTrainer(BaseModule, abc.ABC):
                         show_plot=False,
                         save_path=path
                     )
+                if self.config.save_ml_model:
+                    self.save_ml_model(serialized_ml_model, path=path)
                 i += 1
 
         best_model_path = Path(self.config.save_directory, "best_model", self.agent_and_time)
