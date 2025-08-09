@@ -3,6 +3,8 @@
 ## 0.7.0
 - Integrate with new mas dashboard from agentlib
 - Add state fallback to mpc. Allows the config option "enable_state_fallback" to be set to true (default false). If active, the age of a measurement is checked, and if it is older than the sample time, the predicted state from the last optimization will be used to initialize the problem.
+- Fix bugs that occur with newer numpy versions in ADMM.
+- Remove relative tolerance from ADMM, must provide tolerance for primal and dual residual in absolute values.
 
 ## 0.6.7
 - Add option to skip MPC calculation in given time intervals, e.g. during summer period

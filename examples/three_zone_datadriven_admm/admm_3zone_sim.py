@@ -24,12 +24,9 @@ import os
 import logging
 from pathlib import Path
 
-import sys
-
-sys.path.append(r"D:\Repositories\agentlib_mpc")
-
 
 from agentlib.utils.multi_agent_system import LocalMASAgency
+from agentlib.utils.plotting.mas_dashboard import launch_mas_dashboard
 
 
 agent_configs = [
@@ -68,6 +65,7 @@ def run_example(
     mas = LocalMASAgency(
         agent_configs=agent_configs, env=env_config, variable_logging=False
     )
+    launch_mas_dashboard(mas=mas, live_update=True)
     mas.run(until=until)
     results = mas.get_results(cleanup=cleanup)
 
@@ -89,7 +87,7 @@ if __name__ == "__main__":
     start = time.perf_counter()
     run_example(
         with_plots=True,
-        until=3600 * 24 * 3,
+        until=3600 * 24 * 10,
         start_pred=2 * 3600,
         cleanup=True,
         log_level=logging.INFO,

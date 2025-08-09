@@ -4,6 +4,7 @@ Defines classes that coordinate an ADMM process.
 
 import os
 import time
+import warnings
 from ast import literal_eval
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -11,7 +12,6 @@ import queue
 import logging
 from dataclasses import asdict
 import threading
-import math
 
 from pydantic import field_validator, Field
 import numpy as np
@@ -71,16 +71,6 @@ class ADMMCoordinatorConfig(CoordinatorConfig):
         default=10,
         description="Prediction horizon of participating agents.",
     )
-    abs_tol: float = Field(
-        title="abs_tol",
-        default=1e-3,
-        description="Absolute stopping criterion.",
-    )
-    rel_tol: float = Field(
-        title="rel_tol",
-        default=1e-3,
-        description="Relative stopping criterion.",
-    )
     primal_tol: float = Field(
         default=1e-3,
         description="Absolute primal stopping criterion.",
@@ -114,6 +104,15 @@ class ADMMCoordinatorConfig(CoordinatorConfig):
     save_iter_interval: int = Field(
         default=1000,
     )
+
+    @field_validator("use_relative_tolerances")
+    def deprecate_relative_tol(cls, value):
+        warnings.warn(
+            "Field 'use_relative_tolerances' is deprecated. Convergence "
+            "tolerance should always be provided as primal and dual "
+            "tolerance in absolute values."
+        )
+        return False
 
     @field_validator("solve_stats_file")
     @classmethod
@@ -362,7 +361,6 @@ class ADMMCoordinator(Coordinator):
         primal_residuals = []
         dual_residuals = []
         active_agents = self._agents_with_status(cdt.AgentStatus.ready)
-        flat_locals = []
         flat_means = []
         flat_multipliers = []
 
@@ -370,9 +368,7 @@ class ADMMCoordinator(Coordinator):
             prim, dual = var.get_residual(rho=self.penalty_parameter)
             primal_residuals.extend(prim)
             dual_residuals.extend(dual)
-            locs = var.flat_locals(sources=active_agents)
             muls = var.flat_multipliers(active_agents)
-            flat_locals.extend(locs)
             flat_multipliers.extend(muls)
             flat_means.extend(var.mean_trajectory)
 
@@ -380,9 +376,7 @@ class ADMMCoordinator(Coordinator):
             prim, dual = var.get_residual(rho=self.penalty_parameter)
             primal_residuals.extend(prim)
             dual_residuals.extend(dual)
-            locs = var.flat_locals(sources=active_agents)
             muls = var.multiplier
-            flat_locals.extend(locs)
             flat_multipliers.extend(muls)
             flat_means.extend(var.mean_trajectory)
 
@@ -410,25 +404,9 @@ class ADMMCoordinator(Coordinator):
         if iteration % self.config.save_iter_interval == 0:
             self._save_stats(iterations=iteration)
 
-        if self.config.use_relative_tolerances:
-            # scaling factors for relative criterion
-            primal_scaling = max(
-                np.linalg.norm(flat_locals),
-                np.linalg.norm(flat_means),  # Ax  # Bz
-            )
-            dual_scaling = np.linalg.norm(flat_multipliers)
-            # compute tolerances for this iteration
-            sqrt_p = math.sqrt(len(flat_multipliers))
-            sqrt_n = math.sqrt(len(flat_locals))  # not actually n, but best we can do
-            eps_pri = (
-                sqrt_p * self.config.abs_tol + self.config.rel_tol * primal_scaling
-            )
-            eps_dual = sqrt_n * self.config.abs_tol + self.config.rel_tol * dual_scaling
-            converged = prim_norm < eps_pri and dual_norm < eps_dual
-        else:
-            converged = (
-                prim_norm < self.config.primal_tol and dual_norm < self.config.dual_tol
-            )
+        converged = (
+            prim_norm < self.config.primal_tol and dual_norm < self.config.dual_tol
+        )
 
         if converged:
             return True
@@ -540,7 +518,7 @@ class ADMMCoordinator(Coordinator):
 
             # initialize Lagrange-Multipliers and local solution
             coup_var.multipliers[src] = [0] * len(traj)
-            coup_var.local_trajectories[src] = traj
+            coup_var.set_local_trajectory(src, traj)
             ag_dict_entry.coup_vars.append(alias)
 
         # loop over coupling variables of this agent
@@ -551,7 +529,7 @@ class ADMMCoordinator(Coordinator):
 
             # initialize Lagrange-Multipliers and local solution
             coup_var.multiplier = [0] * len(traj)
-            coup_var.local_trajectories[src] = traj
+            coup_var.set_local_trajectory(src, traj)
             ag_dict_entry.exchange_vars.append(alias)
 
         # set agent from pending to standby
@@ -573,10 +551,10 @@ class ADMMCoordinator(Coordinator):
         source = variable.source
         for alias, trajectory in local_result.local_trajectory.items():
             coup_var = self._coupling_variables[alias]
-            coup_var.local_trajectories[source] = trajectory
+            coup_var.set_local_trajectory(source, trajectory)
         for alias, trajectory in local_result.local_exchange_trajectory.items():
             coup_var = self._exchange_variables[alias]
-            coup_var.local_trajectories[source] = trajectory
+            coup_var.set_local_trajectory(source, trajectory)
 
         self.agent_dict[variable.source].status = cdt.AgentStatus.ready
         self.received_variable.set()

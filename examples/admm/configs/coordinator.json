@@ -10,9 +10,7 @@
       "penalty_factor": 10,
       "wait_time_on_start_iters": 0.2,
       "registration_period": 5,
-      "admm_iter_max": 30,
-      "abs_tol": 0.01,
-      "rel_tol": 0.01,
+      "admm_iter_max": 20,
       "save_solve_stats": true,
       "solve_stats_file": "results//residuals.csv"
     },
