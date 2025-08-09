@@ -235,12 +235,18 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">CouplingVariable</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Holds information about a phy&quot;&quot;&quot;</span>
 
-    <span class="n">local_trajectories</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">al</span><span class="o">.</span><span class="n">Source</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+    <span class="n">local_trajectories</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">al</span><span class="o">.</span><span class="n">Source</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span>
+    <span class="p">)</span>
     <span class="n">mean_trajectory</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">delta_mean</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]))</span>
     <span class="n">primal_residual</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span>
     <span class="p">)</span>
+
+<div class="viewcode-block" id="CouplingVariable.set_local_trajectory"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingVariable.set_local_trajectory">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_local_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">):</span>
+        <span class="n">trajectory</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_trajectories</span><span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="o">=</span> <span class="n">trajectory</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_relevant_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">al</span><span class="o">.</span><span class="n">Source</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">sources</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -254,23 +260,6 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">participants</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns all agent sources that are registered to this coupling.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">local_trajectories</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-
-<div class="viewcode-block" id="CouplingVariable.flat_locals"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingVariable.flat_locals">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">flat_locals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">al</span><span class="o">.</span><span class="n">Source</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns the flattened array of all local variables and their multipliers.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            sources: list of sources that should be included in the update.</span>
-<span class="sd">                By default, all are included.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            flat lists of local variables and multipliers (locals, multipliers)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_relevant_sources</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">sources</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[]</span>
-        <span class="n">local_vars</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">local_trajectories</span><span class="p">[</span><span class="n">ls</span><span class="p">]</span> <span class="k">for</span> <span class="n">ls</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">]))</span>
-        <span class="k">return</span> <span class="n">local_vars</span></div>
 
 <div class="viewcode-block" id="CouplingVariable.get_residual"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingVariable.get_residual">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rho</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

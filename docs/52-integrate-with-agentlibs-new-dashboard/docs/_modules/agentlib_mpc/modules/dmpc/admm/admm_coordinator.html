@@ -79,6 +79,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ast</span><span class="w"> </span><span class="kn">import</span> <span class="n">literal_eval</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
@@ -86,7 +87,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">asdict</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">Field</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -146,16 +146,6 @@
         <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Prediction horizon of participating agents.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">abs_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;abs_tol&quot;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Absolute stopping criterion.&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">rel_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;rel_tol&quot;</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Relative stopping criterion.&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
     <span class="n">primal_tol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Absolute primal stopping criterion.&quot;</span><span class="p">,</span>
@@ -189,6 +179,15 @@
     <span class="n">save_iter_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
     <span class="p">)</span>
+
+<div class="viewcode-block" id="ADMMCoordinatorConfig.deprecate_relative_tol"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinator.ADMMCoordinatorConfig.deprecate_relative_tol">[docs]</a>    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;use_relative_tolerances&quot;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">deprecate_relative_tol</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Field &#39;use_relative_tolerances&#39; is deprecated. Convergence &quot;</span>
+            <span class="s2">&quot;tolerance should always be provided as primal and dual &quot;</span>
+            <span class="s2">&quot;tolerance in absolute values.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="ADMMCoordinatorConfig.solve_stats_file_is_csv"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinator.ADMMCoordinatorConfig.solve_stats_file_is_csv">[docs]</a>    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;solve_stats_file&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
@@ -437,7 +436,6 @@
         <span class="n">primal_residuals</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">dual_residuals</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">active_agents</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agents_with_status</span><span class="p">(</span><span class="n">cdt</span><span class="o">.</span><span class="n">AgentStatus</span><span class="o">.</span><span class="n">ready</span><span class="p">)</span>
-        <span class="n">flat_locals</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">flat_means</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">flat_multipliers</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -445,9 +443,7 @@
             <span class="n">prim</span><span class="p">,</span> <span class="n">dual</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">get_residual</span><span class="p">(</span><span class="n">rho</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">penalty_parameter</span><span class="p">)</span>
             <span class="n">primal_residuals</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">prim</span><span class="p">)</span>
             <span class="n">dual_residuals</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">dual</span><span class="p">)</span>
-            <span class="n">locs</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">flat_locals</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="n">active_agents</span><span class="p">)</span>
             <span class="n">muls</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">flat_multipliers</span><span class="p">(</span><span class="n">active_agents</span><span class="p">)</span>
-            <span class="n">flat_locals</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">locs</span><span class="p">)</span>
             <span class="n">flat_multipliers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">muls</span><span class="p">)</span>
             <span class="n">flat_means</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">mean_trajectory</span><span class="p">)</span>
 
@@ -455,9 +451,7 @@
             <span class="n">prim</span><span class="p">,</span> <span class="n">dual</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">get_residual</span><span class="p">(</span><span class="n">rho</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">penalty_parameter</span><span class="p">)</span>
             <span class="n">primal_residuals</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">prim</span><span class="p">)</span>
             <span class="n">dual_residuals</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">dual</span><span class="p">)</span>
-            <span class="n">locs</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">flat_locals</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="n">active_agents</span><span class="p">)</span>
             <span class="n">muls</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">multiplier</span>
-            <span class="n">flat_locals</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">locs</span><span class="p">)</span>
             <span class="n">flat_multipliers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">muls</span><span class="p">)</span>
             <span class="n">flat_means</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">mean_trajectory</span><span class="p">)</span>
 
@@ -485,25 +479,9 @@
         <span class="k">if</span> <span class="n">iteration</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_iter_interval</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_save_stats</span><span class="p">(</span><span class="n">iterations</span><span class="o">=</span><span class="n">iteration</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">use_relative_tolerances</span><span class="p">:</span>
-            <span class="c1"># scaling factors for relative criterion</span>
-            <span class="n">primal_scaling</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">flat_locals</span><span class="p">),</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">flat_means</span><span class="p">),</span>  <span class="c1"># Ax  # Bz</span>
-            <span class="p">)</span>
-            <span class="n">dual_scaling</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">flat_multipliers</span><span class="p">)</span>
-            <span class="c1"># compute tolerances for this iteration</span>
-            <span class="n">sqrt_p</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">flat_multipliers</span><span class="p">))</span>
-            <span class="n">sqrt_n</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">flat_locals</span><span class="p">))</span>  <span class="c1"># not actually n, but best we can do</span>
-            <span class="n">eps_pri</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">sqrt_p</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">abs_tol</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">rel_tol</span> <span class="o">*</span> <span class="n">primal_scaling</span>
-            <span class="p">)</span>
-            <span class="n">eps_dual</span> <span class="o">=</span> <span class="n">sqrt_n</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">abs_tol</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">rel_tol</span> <span class="o">*</span> <span class="n">dual_scaling</span>
-            <span class="n">converged</span> <span class="o">=</span> <span class="n">prim_norm</span> <span class="o">&lt;</span> <span class="n">eps_pri</span> <span class="ow">and</span> <span class="n">dual_norm</span> <span class="o">&lt;</span> <span class="n">eps_dual</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">converged</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">prim_norm</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">primal_tol</span> <span class="ow">and</span> <span class="n">dual_norm</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dual_tol</span>
-            <span class="p">)</span>
+        <span class="n">converged</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">prim_norm</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">primal_tol</span> <span class="ow">and</span> <span class="n">dual_norm</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dual_tol</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">converged</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
@@ -615,7 +593,7 @@
 
             <span class="c1"># initialize Lagrange-Multipliers and local solution</span>
             <span class="n">coup_var</span><span class="o">.</span><span class="n">multipliers</span><span class="p">[</span><span class="n">src</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
-            <span class="n">coup_var</span><span class="o">.</span><span class="n">local_trajectories</span><span class="p">[</span><span class="n">src</span><span class="p">]</span> <span class="o">=</span> <span class="n">traj</span>
+            <span class="n">coup_var</span><span class="o">.</span><span class="n">set_local_trajectory</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">traj</span><span class="p">)</span>
             <span class="n">ag_dict_entry</span><span class="o">.</span><span class="n">coup_vars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alias</span><span class="p">)</span>
 
         <span class="c1"># loop over coupling variables of this agent</span>
@@ -626,7 +604,7 @@
 
             <span class="c1"># initialize Lagrange-Multipliers and local solution</span>
             <span class="n">coup_var</span><span class="o">.</span><span class="n">multiplier</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
-            <span class="n">coup_var</span><span class="o">.</span><span class="n">local_trajectories</span><span class="p">[</span><span class="n">src</span><span class="p">]</span> <span class="o">=</span> <span class="n">traj</span>
+            <span class="n">coup_var</span><span class="o">.</span><span class="n">set_local_trajectory</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">traj</span><span class="p">)</span>
             <span class="n">ag_dict_entry</span><span class="o">.</span><span class="n">exchange_vars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alias</span><span class="p">)</span>
 
         <span class="c1"># set agent from pending to standby</span>
@@ -648,10 +626,10 @@
         <span class="n">source</span> <span class="o">=</span> <span class="n">variable</span><span class="o">.</span><span class="n">source</span>
         <span class="k">for</span> <span class="n">alias</span><span class="p">,</span> <span class="n">trajectory</span> <span class="ow">in</span> <span class="n">local_result</span><span class="o">.</span><span class="n">local_trajectory</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">coup_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coupling_variables</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span>
-            <span class="n">coup_var</span><span class="o">.</span><span class="n">local_trajectories</span><span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="o">=</span> <span class="n">trajectory</span>
+            <span class="n">coup_var</span><span class="o">.</span><span class="n">set_local_trajectory</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">alias</span><span class="p">,</span> <span class="n">trajectory</span> <span class="ow">in</span> <span class="n">local_result</span><span class="o">.</span><span class="n">local_exchange_trajectory</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">coup_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exchange_variables</span><span class="p">[</span><span class="n">alias</span><span class="p">]</span>
-            <span class="n">coup_var</span><span class="o">.</span><span class="n">local_trajectories</span><span class="p">[</span><span class="n">source</span><span class="p">]</span> <span class="o">=</span> <span class="n">trajectory</span>
+            <span class="n">coup_var</span><span class="o">.</span><span class="n">set_local_trajectory</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">agent_dict</span><span class="p">[</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">cdt</span><span class="o">.</span><span class="n">AgentStatus</span><span class="o">.</span><span class="n">ready</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">received_variable</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
