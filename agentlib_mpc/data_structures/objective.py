@@ -36,6 +36,7 @@ class EqObjective:
 
     def _evaluate_expression(self, expr, df):
         """Evaluate a complex expression using dataframe values"""
+        # Handle simple named variables first
         if hasattr(expr, 'name') and not hasattr(expr, 'dep'):
             try:
                 if callable(expr.name):
@@ -52,43 +53,83 @@ class EqObjective:
 
         expr_str = str(expr)
 
+        # Extract all variable names
         var_names = re.findall(r'[a-zA-Z][a-zA-Z0-9_]*', expr_str)
 
-        if var_names:
-            values_found = {}
-            for var_name in var_names:
-                for col_type in ['variable', 'parameter']:
-                    if (col_type, var_name) in df.columns:
-                        values_found[var_name] = df.loc[:, (col_type, var_name)].values[:-1]
-                        break
+        if not var_names:
+            # No variables found, try to evaluate as constant
+            try:
+                const_val = float(expr_str.strip('()'))
+                return np.full(len(df.index) - 1, const_val)
+            except:
+                pass
 
-            if len(values_found) == len(var_names):
-                if '+' in expr_str:
-                    return sum(values_found.values())
-                elif '*' in expr_str:
-                    result = 1
-                    for val in values_found.values():
-                        result = result * val
-                    return result
-                elif '-' in expr_str and len(values_found) == 2:
-                    keys = list(values_found.keys())
-                    return values_found[keys[0]] - values_found[keys[1]]
-                elif '/' in expr_str and len(values_found) == 2:
-                    keys = list(values_found.keys())
-                    return values_found[keys[0]] / values_found[keys[1]]
+        # Get values for all found variables
+        values_found = {}
+        for var_name in var_names:
+            for col_type in ['variable', 'parameter']:
+                if (col_type, var_name) in df.columns:
+                    values_found[var_name] = df.loc[:, (col_type, var_name)].values[:-1]
+                    break
 
-            elif len(values_found) > 0:
-                return next(iter(values_found.values()))
+        if not values_found:
+            raise ValueError(f"No variables found in dataframe for expression: {expr}")
 
-        if isinstance(expr, (int, float)):
-            return np.full(len(df.index) - 1, expr)
+        # Try to evaluate the expression
         try:
-            const_val = float(expr)
-            return np.full(len(df.index) - 1, const_val)
-        except:
-            pass
+            # Create evaluation environment
+            safe_dict = values_found.copy()
 
-        raise ValueError(f"Unable to evaluate expression: {expr}")
+            # Handle common mathematical operations and numpy functions
+            safe_dict.update({
+                'abs': np.abs,
+                'sqrt': np.sqrt,
+                'sin': np.sin,
+                'cos': np.cos,
+                'exp': np.exp,
+                'log': np.log,
+                'max': np.maximum,
+                'min': np.minimum,
+            })
+
+            # Clean up expression string for evaluation
+            eval_str = expr_str
+            # Remove outer parentheses if they wrap the entire expression
+            if eval_str.startswith('(') and eval_str.endswith(')'):
+                # Check if these are the outermost parentheses
+                paren_count = 0
+                is_outermost = True
+                for i, char in enumerate(eval_str[1:-1], 1):
+                    if char == '(':
+                        paren_count += 1
+                    elif char == ')':
+                        paren_count -= 1
+                        if paren_count < 0:
+                            is_outermost = False
+                            break
+                if is_outermost and paren_count == 0:
+                    eval_str = eval_str[1:-1]
+
+            # Evaluate the expression
+            result = eval(eval_str, {"__builtins__": {}}, safe_dict)
+
+            if isinstance(result, np.ndarray):
+                return result
+            elif isinstance(result, (int, float)):
+                return np.full(len(df.index) - 1, result)
+            else:
+                return np.array(result)
+
+        except Exception as e:
+            # If evaluation fails, try simple pattern matching as fallback
+            if len(values_found) == 1:
+                var_name = list(values_found.keys())[0]
+                if expr_str.startswith('(-') or expr_str.startswith('-'):
+                    return -values_found[var_name]
+                else:
+                    return values_found[var_name]
+
+            raise ValueError(f"Unable to evaluate expression: {expr}. Error: {e}")
 
 
 class SqObjective(EqObjective):
