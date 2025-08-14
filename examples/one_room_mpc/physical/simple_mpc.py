@@ -14,17 +14,15 @@ from agentlib_mpc.models.casadi_model import (
     CasadiModelConfig,
 )
 from agentlib.utils.multi_agent_system import LocalMASAgency
-
-from agentlib_mpc.utils.analysis import load_mpc_stats
 from agentlib_mpc.utils.plotting.interactive import show_dashboard
-from agentlib_mpc.data_structures.objective import FullObjective, SubObjective, DeltaUObjective, SqObjective
+from agentlib_mpc.data_structures.objective import FullObjective, EqObjective, SqObjective
 
 
 logger = logging.getLogger(__name__)
 
 # script variables
 ub = 295.15
-
+prediction_horizon = 300*15
 
 class MyCasadiModelConfig(CasadiModelConfig):
     inputs: List[CasadiInput] = [
@@ -112,30 +110,19 @@ class MyCasadiModel(CasadiModel):
             (0, self.T + self.T_slack, self.T_upper),
         ]
 
-        obj1 = DeltaUObjective(
+        obj1 = EqObjective(
             expressions=self.mDot,
-            weight=50,
-            name="delta_m",
-        )
-
-        obj3 = SubObjective(
-            expressions=[self.mDot],
-            weight=20,
-            name="power_cost"
+            weight=self.r_mDot,
+            name="control_costs",
         )
 
         obj2 = SqObjective(
             expressions=self.T_slack,
-            weight=100,
+            weight=self.s_T,
             name="temp_slack"
         )
 
-        #todo:
-        #multiple shooting
-        #ml modelle
-
-
-        objective = FullObjective(obj1, obj2, obj3, normalization=43200)
+        objective = FullObjective(obj1, obj2, normalization=prediction_horizon)
         return objective
 
 
@@ -165,8 +152,8 @@ AGENT_MPC = {
             "time_step": 300,
             "prediction_horizon": 15,
             "parameters": [
-                {"name": "s_T", "value": 100},
-                {"name": "r_mDot", "value": 1},
+                {"name": "s_T", "value": 10},
+                {"name": "r_mDot", "value": 1}
             ],
             "inputs": [
                 {"name": "T_in", "value": 290.15},
@@ -225,17 +212,26 @@ def run_example(
         agent_configs=[AGENT_MPC, AGENT_SIM], env=ENV_CONFIG, variable_logging=False
     )
     mas.run(until=until)
-    try:
-        stats = load_mpc_stats("results/__mpc.csv")
-    except Exception:
-        stats = None
     results = mas.get_results(cleanup=False)
     mpc_results = results["myMPCAgent"]["myMPC"]
     sim_res = results["SimAgent"]["room"]
 
 
     if with_dashboard:
-        show_dashboard(mpc_results, stats)
+        from agentlib_mpc.utils.analysis import load_mpc_stats, load_mpc_obj_res
+
+        mpc_result_file = "results//mpc.csv"
+
+        try:
+            stats = load_mpc_stats(mpc_result_file)
+        except Exception:
+            stats = None
+        try:
+            obj_data = load_mpc_obj_res(mpc_result_file)
+        except Exception:
+            obj_data = None
+
+        show_dashboard(mpc_results, stats, obj_data)
 
     if with_plots:
         plot(mpc_results, sim_res, until)
@@ -286,5 +282,5 @@ def plot(mpc_results: pd.DataFrame, sim_res: pd.DataFrame, until: float):
 
 if __name__ == "__main__":
     run_example(
-        with_plots=True, with_dashboard=False, until=7200, log_level=logging.INFO
+        with_plots=True, with_dashboard=True, until=7200, log_level=logging.INFO
     )
