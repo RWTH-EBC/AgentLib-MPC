@@ -308,14 +308,18 @@ class CasadiModel(Model):
         objective_result = self.setup_system()
         self._assert_outputs_are_defined()
 
-        self.objective = objective_result
-
+        # Handle both new and old objective formats
         if hasattr(objective_result, "get_casadi_expression"):
+            # New objective system
+            self.objective = objective_result
             self.cost_func = objective_result.get_casadi_expression()
         else:
+            # Old objective system - backwards compatibility
             print(
-                "\033[93mWARNING:\033[0m Your model uses the deprecated objective formulation. "
-                "Backwards compartibility needs revision.\n")
+                "\033[93mWARNING:\033[0m Model uses the deprecated objective formulation. "
+                "Consider migrating to the new FullObjective formulation.\n")
+            self.cost_func = objective_result
+            self.objective = None
 
         # save system equations as a single casadi vector
         system = ca.vertcat(*[sta.ode for sta in self.differentials])

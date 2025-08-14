@@ -277,10 +277,11 @@ class CasADiBackend(OptimizationBackend):
 
         def get_objective_values(system, df, grid):
             objective_values = {}
-            if not hasattr(system, 'model') or not hasattr(system.model, 'objective'):
-                return objective_values
-
-            objective_values.update(system.model.objective.calculate_values(df, grid))
+            if (hasattr(system, 'model') and
+                    hasattr(system.model, 'objective') and
+                    system.model.objective is not None and
+                    hasattr(system.model.objective, 'calculate_values')):
+                objective_values.update(system.model.objective.calculate_values(df, grid))
             return objective_values
 
         grid = np.arange(0, self.config.discretization_options.prediction_horizon * (
@@ -288,10 +289,15 @@ class CasADiBackend(OptimizationBackend):
         objective_values = get_objective_values(system=system, df=df, grid=grid)
 
         obj_file = objective_path(res_file)
-        if hasattr(system, 'model') and hasattr(system.model, 'objective'):
+
+        # Handle objective names for both old and new systems
+        if (hasattr(system, 'model') and
+                hasattr(system.model, 'objective') and
+                system.model.objective is not None and
+                hasattr(system.model.objective, 'objectives')):
             objective_names = ['time'] + [obj.name for obj in system.model.objective.objectives] + ['total']
         else:
-            objective_names = ['time'] + list(objective_values.keys())
+            objective_names = ['time'] + list(objective_values.keys()) if objective_values else ['time']
 
         # Check if this is the first call and handle overwrite_result_file for objective file
         if not hasattr(self, '_obj_file_checked'):
@@ -307,10 +313,11 @@ class CasADiBackend(OptimizationBackend):
             with open(obj_file, 'w') as f:
                 f.write(','.join(objective_names) + '\n')
 
-        # Append the values
-        with open(obj_file, 'a') as f:
-            values = [str(now)] + [str(objective_values.get(name, '')) for name in objective_names[1:]]
-            f.write(','.join(values) + '\n')
+        # Append the values (only if we have objective values to write)
+        if objective_values or len(objective_names) > 1:
+            with open(obj_file, 'a') as f:
+                values = [str(now)] + [str(objective_values.get(name, '')) for name in objective_names[1:]]
+                f.write(','.join(values) + '\n')
 
         with open(stats_path(res_file), "a") as f:
             f.writelines(results.stats_line(str(now)))

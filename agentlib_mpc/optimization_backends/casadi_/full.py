@@ -68,10 +68,13 @@ class DirectCollocation(basic.DirectCollocation):
 
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
-        try:
-            delta_u_objectives = sys.model.objective.get_delta_u_objectives()
-        except (AttributeError, Exception) as e:
-            self.logger.warning(f"Failed to get delta_u_objectives: {str(e)}")
+
+        delta_u_objectives = []
+        if hasattr(sys, 'model') and hasattr(sys.model, 'objective') and sys.model.objective is not None:
+            try:
+                delta_u_objectives = sys.model.objective.get_delta_u_objectives()
+            except (AttributeError, Exception) as e:
+                self.logger.warning(f"Failed to get delta_u_objectives: {str(e)}")
 
         control_map = {}
         for i, control_name in enumerate(sys.controls.ref_names):
@@ -83,7 +86,8 @@ class DirectCollocation(basic.DirectCollocation):
             # New NLP variable for the control
             u_prev = uk
             uk = self.add_opt_var(sys.controls)
-            # penalty for control change between time steps
+
+            # penalty for control change between time steps (only for new objective system)
             for delta_obj in delta_u_objectives:
                 control_name = delta_obj.get_control_name()
                 if control_name in control_map:
@@ -156,10 +160,12 @@ class MultipleShooting(basic.MultipleShooting):
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
 
-        try:
-            delta_u_objectives = sys.model.objective.get_delta_u_objectives()
-        except (AttributeError, Exception) as e:
-            self.logger.warning(f"Failed to get delta_u_objectives: {str(e)}")
+        delta_u_objectives = []
+        if hasattr(sys, 'model') and hasattr(sys.model, 'objective') and sys.model.objective is not None:
+            try:
+                delta_u_objectives = sys.model.objective.get_delta_u_objectives()
+            except (AttributeError, Exception) as e:
+                self.logger.warning(f"Failed to get delta_u_objectives: {str(e)}")
 
         control_map = {}
         for i, control_name in enumerate(sys.controls.ref_names):
@@ -171,7 +177,8 @@ class MultipleShooting(basic.MultipleShooting):
         while self.k < n:
             u_prev = uk
             uk = self.add_opt_var(sys.controls)
-            # penalty for control change between time steps
+
+            # penalty for control change between time steps (only for new objective system)
             for delta_obj in delta_u_objectives:
                 control_name = delta_obj.get_control_name()
                 if control_name in control_map:
