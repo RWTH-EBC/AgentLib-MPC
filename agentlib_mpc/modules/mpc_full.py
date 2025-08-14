@@ -5,8 +5,7 @@ import pandas as pd
 from agentlib.core import AgentVariable
 
 from agentlib_mpc.data_structures import mpc_datamodels
-from pydantic import Field, field_validator, FieldValidationInfo
-from rapidfuzz import process, fuzz
+from pydantic import Field, field_validator, ValidationInfo
 
 from agentlib_mpc.modules.mpc import BaseMPCConfig, BaseMPC
 
@@ -15,21 +14,6 @@ class MPCConfig(BaseMPCConfig):
     """
     Pydantic data model for MPC configuration parser
     """
-
-    r_del_u: dict[str, float] = Field(
-        default={},
-        description="Weights that are applied to the change in control variables.",
-    )
-
-    @field_validator("r_del_u")
-    def check_r_del_u_in_controls(
-            cls, r_del_u: dict[str, float], info: FieldValidationInfo
-    ):
-        """Ensures r_del_u is only set for control variables."""
-        raise DeprecationWarning(
-            "The 'r_del_u' parameter is no longer supported. "
-            "Please use delta_u objectives in the new DeltaUObjective/FullObjective formulation instead. "
-        )
 
 
 class MPC(BaseMPC):

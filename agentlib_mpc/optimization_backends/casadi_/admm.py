@@ -417,6 +417,7 @@ class CasADiADMMBackend(CasADiBaseBackend, ADMMBackend):
 
     def save_result_df(
         self,
+        system,
         results: Results,
         now: float = 0,
     ):

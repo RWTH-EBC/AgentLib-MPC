@@ -94,13 +94,6 @@ class CasadiADMMNNSystem(CasadiADMMSystem, CasadiMLSystem):
             use_in_stage_function=False,
             assert_complete=True,
         )
-        self.r_del_u = OptimizationParameter.declare(
-            denotation="r_del_u",
-            variables=[CasadiParameter(name=r_del_u) for r_del_u in var_ref.r_del_u],
-            ref_list=var_ref.r_del_u,
-            use_in_stage_function=False,
-            assert_complete=True,
-        )
 
         self.cost_function = model.cost_func
         self.model_constraints = Constraint(

@@ -83,6 +83,23 @@ class BaseMPCConfig(BaseModuleConfig):
     )
     shared_variable_fields: list[str] = ["outputs", "controls"]
 
+    r_del_u: dict[str, float] = Field(
+        default={},
+        description="Weights that are applied to the change in control variables.",
+    )
+
+    @field_validator("r_del_u")
+    def check_r_del_u_in_controls(
+            cls, r_del_u: dict[str, float], info: FieldValidationInfo
+    ):
+        """Ensures r_del_u is only set for control variables."""
+        if r_del_u:  # Only raise error if r_del_u is not empty
+            raise DeprecationWarning(
+                "The 'r_del_u' parameter is no longer supported. "
+                "Please use delta_u objectives in the new DeltaUObjective/FullObjective formulation instead. "
+            )
+        return r_del_u
+
     @field_validator("sampling_time")
     @classmethod
     def default_sampling_time(cls, samp_time, info: FieldValidationInfo):

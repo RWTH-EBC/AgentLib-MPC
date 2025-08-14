@@ -59,7 +59,7 @@ class CasADiCIABackend(CasADiMINLPBackend):
         full_results_final = self.discretization.solve(mpc_inputs_new)
 
         self.save_rel_result_df(relaxed_results, now=now)
-        self.save_result_df(full_results_final, now=now)
+        self.save_result_df(self.system, full_results_final, now=now)
 
         return full_results_final
 

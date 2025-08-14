@@ -128,7 +128,7 @@ class CasADiBackend(OptimizationBackend):
         # collect and format inputs
         mpc_inputs = self._get_current_mpc_inputs(agent_variables=current_vars, now=now)
         full_results = self.discretization.solve(mpc_inputs)
-        self.save_result_df(self.system, full_results, now=now)
+        self.save_result_df(self.system, full_results, now)
 
         return full_results
 
