@@ -110,7 +110,6 @@ class ADMMCollocation(DirectCollocation):
         Perform a direct collocation discretization.
         # pylint: disable=invalid-name
         """
-
         # setup the polynomial base
         collocation_matrices = self._collocation_polynomial()
 
@@ -125,8 +124,21 @@ class ADMMCollocation(DirectCollocation):
 
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
-        du_weights = self.add_opt_par(sys.r_del_u)
         rho = self.add_opt_par(sys.penalty_factor)
+
+        # Handle delta_u objectives - only for new objective system
+        delta_u_objectives = []
+        if (hasattr(sys, 'model') and
+                hasattr(sys.model, 'objective') and
+                sys.model.objective is not None):
+            try:
+                delta_u_objectives = sys.model.objective.get_delta_u_objectives()
+            except (AttributeError, Exception) as e:
+                self.logger.warning(f"Failed to get delta_u_objectives: {str(e)}")
+
+        control_map = {}
+        for i, control_name in enumerate(sys.controls.ref_names):
+            control_map[control_name] = i
 
         # Formulate the NLP
         # loop over prediction horizon
@@ -134,10 +146,31 @@ class ADMMCollocation(DirectCollocation):
             # New NLP variable for the control
             u_prev = uk
             uk = self.add_opt_var(sys.controls)
-            # penalty for control change between time steps
-            self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
 
-            # perform inner collocation loop
+            # penalty for control change between time steps (only for new objective system)
+            for delta_obj in delta_u_objectives:
+                control_name = delta_obj.get_control_name()
+                if control_name in control_map:
+                    idx = control_map[control_name]
+                    control_prev = u_prev[idx]
+                    control_curr = uk[idx]
+                    delta = control_curr - control_prev
+
+                    if hasattr(delta_obj.weight, 'sym'):
+                        param_found = False
+                        for i, param_name in enumerate(sys.model_parameters.ref_names):
+                            if param_name == delta_obj.weight.name:
+                                weight_value = const_par[i]
+                                param_found = True
+                                break
+
+                        if not param_found:
+                            raise ValueError(f"Parameter {delta_obj.weight.name} not found in model parameters")
+                    else:
+                        weight_value = delta_obj.weight
+
+                    self.objective_function += weight_value ** 2 * delta ** 2
+
             # perform inner collocation loop
             opt_vars_inside_inner = [
                 sys.algebraics,
@@ -212,9 +245,22 @@ class ADMMMultipleShooting(MultipleShooting):
         previous_control = self.add_opt_par(sys.last_control)
 
         # Add time-invariant parameters
-        control_rate_weights = self.add_opt_par(sys.r_del_u)
         model_parameters = self.add_opt_par(sys.model_parameters)
         admm_penalty = self.add_opt_par(sys.penalty_factor)
+
+        # Handle delta_u objectives - only for new objective system
+        delta_u_objectives = []
+        if (hasattr(sys, 'model') and
+                hasattr(sys.model, 'objective') and
+                sys.model.objective is not None):
+            try:
+                delta_u_objectives = sys.model.objective.get_delta_u_objectives()
+            except (AttributeError, Exception) as e:
+                self.logger.warning(f"Failed to get delta_u_objectives: {str(e)}")
+
+        control_map = {}
+        for i, control_name in enumerate(sys.controls.ref_names):
+            control_map[control_name] = i
 
         # Create system integrator
         dynamics_integrator = self._create_ode(
@@ -225,10 +271,31 @@ class ADMMMultipleShooting(MultipleShooting):
         for k in range(prediction_horizon):
             # 1. Handle control inputs and their rate penalties
             current_control = self.add_opt_var(sys.controls)
-            control_rate_penalty = timestep * ca.dot(
-                control_rate_weights, (previous_control - current_control) ** 2
-            )
-            self.objective_function += control_rate_penalty
+
+            # penalty for control change between time steps (only for new objective system)
+            for delta_obj in delta_u_objectives:
+                control_name = delta_obj.get_control_name()
+                if control_name in control_map:
+                    idx = control_map[control_name]
+                    control_prev = previous_control[idx]
+                    control_curr = current_control[idx]
+                    delta = control_curr - control_prev
+
+                    if hasattr(delta_obj.weight, 'sym'):
+                        param_found = False
+                        for i, param_name in enumerate(sys.model_parameters.ref_names):
+                            if param_name == delta_obj.weight.name:
+                                weight_value = model_parameters[i]
+                                param_found = True
+                                break
+
+                        if not param_found:
+                            raise ValueError(f"Parameter {delta_obj.weight.name} not found in model parameters")
+                    else:
+                        weight_value = delta_obj.weight
+
+                    self.objective_function += weight_value ** 2 * delta ** 2
+
             previous_control = current_control
 
             # 2. Add optimization variables for current shooting interval
@@ -296,6 +363,7 @@ class ADMMMultipleShooting(MultipleShooting):
             current_state = next_state
 
     def _create_ode(
+
         self, sys: CasadiADMMSystem, opts: dict, integrator: Integrators
     ) -> ca.Function:
         # dummy function for empty ode, since ca.integrator would throw an error

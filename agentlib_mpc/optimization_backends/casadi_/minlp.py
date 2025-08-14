@@ -79,15 +79,60 @@ class DirectCollocation(basic.DirectCollocation):
         x0 = self.add_opt_par(sys.initial_state)
         xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)
 
+        # Initialize control tracking for delta_u objectives
+        uk = None
+        if hasattr(sys, 'last_control'):
+            uk = self.add_opt_par(sys.last_control)
+
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
+
+        # Handle delta_u objectives - only for new objective system
+        delta_u_objectives = []
+        if (hasattr(sys, 'model') and
+                hasattr(sys.model, 'objective') and
+                sys.model.objective is not None):
+            try:
+                delta_u_objectives = sys.model.objective.get_delta_u_objectives()
+            except (AttributeError, Exception) as e:
+                self.logger.warning(f"Failed to get delta_u_objectives: {str(e)}")
+
+        control_map = {}
+        for i, control_name in enumerate(sys.controls.ref_names):
+            control_map[control_name] = i
 
         # Formulate the NLP
         # loop over prediction horizon
         while self.k < n:
             # New NLP variable for the control
+            u_prev = uk
             uk = self.add_opt_var(sys.controls)
             wk = self.add_opt_var(sys.binary_controls)
+
+            # penalty for control change between time steps (only for new objective system)
+            if delta_u_objectives and u_prev is not None:
+                for delta_obj in delta_u_objectives:
+                    control_name = delta_obj.get_control_name()
+                    if control_name in control_map:
+                        idx = control_map[control_name]
+                        control_prev = u_prev[idx]
+                        control_curr = uk[idx]
+                        delta = control_curr - control_prev
+
+                        if hasattr(delta_obj.weight, 'sym'):
+                            param_found = False
+                            for i, param_name in enumerate(sys.model_parameters.ref_names):
+                                if param_name == delta_obj.weight.name:
+                                    weight_value = const_par[i]
+                                    param_found = True
+                                    break
+
+                            if not param_found:
+                                raise ValueError(f"Parameter {delta_obj.weight.name} not found in model parameters")
+                        else:
+                            weight_value = delta_obj.weight
+
+                        self.objective_function += weight_value ** 2 * delta ** 2
 
             # perform inner collocation loop
             opt_vars_inside_inner = [sys.algebraics, sys.outputs]

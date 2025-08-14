@@ -240,13 +240,27 @@ class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_ML):
     max_lag: int
 
     def _discretize(self, sys: CasadiADMMNNSystem):
+
         n = self.options.prediction_horizon
         ts = self.options.time_step
 
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
         rho = self.add_opt_par(sys.penalty_factor)
-        du_weights = self.add_opt_par(sys.r_del_u)
+
+        # Handle delta_u objectives - only for new objective system
+        delta_u_objectives = []
+        if (hasattr(sys, 'model') and
+                hasattr(sys.model, 'objective') and
+                sys.model.objective is not None):
+            try:
+                delta_u_objectives = sys.model.objective.get_delta_u_objectives()
+            except (AttributeError, Exception) as e:
+                self.logger.warning(f"Failed to get delta_u_objectives: {str(e)}")
+
+        control_map = {}
+        for i, control_name in enumerate(sys.controls.ref_names):
+            control_map[control_name] = i
 
         pre_grid_states = [ts * i for i in range(-sys.max_lag + 1, 1)]
         inputs_lag = min(-2, -sys.max_lag)  # at least -2, to consider last control
@@ -336,10 +350,32 @@ class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_ML):
         for time in prediction_grid:
             stage_mx = mx_dict[time]
 
-            # add penalty on control change between intervals
-            u_prev = mx_dict[time - ts][sys.controls.name]
-            uk = stage_mx[sys.controls.name]
-            self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
+            # add penalty on control change between intervals (new objective system only)
+            if delta_u_objectives:
+                u_prev = mx_dict[time - ts][sys.controls.name]
+                uk = stage_mx[sys.controls.name]
+                for delta_obj in delta_u_objectives:
+                    control_name = delta_obj.get_control_name()
+                    if control_name in control_map:
+                        idx = control_map[control_name]
+                        control_prev = u_prev[idx]
+                        control_curr = uk[idx]
+                        delta = control_curr - control_prev
+
+                        if hasattr(delta_obj.weight, 'sym'):
+                            param_found = False
+                            for i, param_name in enumerate(sys.model_parameters.ref_names):
+                                if param_name == delta_obj.weight.name:
+                                    weight_value = const_par[i]
+                                    param_found = True
+                                    break
+
+                            if not param_found:
+                                raise ValueError(f"Parameter {delta_obj.weight.name} not found in model parameters")
+                        else:
+                            weight_value = delta_obj.weight
+
+                        self.objective_function += weight_value ** 2 * delta ** 2
 
             # get stage arguments from current time step
             stage_arguments = {
