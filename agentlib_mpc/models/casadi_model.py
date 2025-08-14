@@ -298,8 +298,21 @@ class CasadiModel(Model):
     config: CasadiModelConfig
 
     def __init__(self, **kwargs):
+        # Temporarily disable __setattr__ checks during initialization as self.config does not exists at first
+        super().__setattr__("_is_initialized", False)
         # Initializes the config
         super().__init__(**kwargs)
+        self._is_initialized = True
+        # Check forbidden names
+        bad_variable_names = self._get_forbidden_variable_names().intersection(
+            self.config.get_variable_names()
+        )
+        if bad_variable_names:
+            raise NameError(
+                "The following variable names are not allowed as the intersect "
+                f"with internal names of {self.__class__.__name__}: "
+                f"{' ,'.join(bad_variable_names)}"
+            )
 
         self.constraints = []  # constraint functions
         self.time = ca.MX.sym("time", 1, 1)
@@ -328,6 +341,27 @@ class CasadiModel(Model):
         self.integrator = None  # set in intitialize
         self.initialize()
 
+    @staticmethod
+    def _get_forbidden_variable_names() -> set[str]:
+        """
+        Function gives all variable names which are forbidden
+        due to the fact that we override __setattr__ in order
+        to avoid users creating instance attributes for variable
+        names.
+        If a user names a variable, e.g. "constraints", the
+        error would not point to the variable name being a
+        bad choice.
+
+        Returns:
+            Set of forbidden names as str
+        """
+        return {
+            "constraints",
+            "cost_func",
+            "time",
+            "system",
+            "integrator",
+        }
 
     def _assert_outputs_are_defined(self):
         """Raises an Error, if the output variables are not defined with an equation"""
@@ -487,6 +521,14 @@ class CasadiModel(Model):
 
     def __setattr__(self, key, value):
         super().__setattr__(key, value)
+        if self._is_initialized and key in self.config.get_variable_names():
+            raise AttributeError(
+                f"You are trying to create an instance attribute with the name {key}, "
+                f"which is also in the variables of {self.__class__.__name__}. This can "
+                f"lead to unwanted behaviour. Assign variables or equations via .alg "
+                f"for CasadiOutputs and .ode for CasadiStates. To change other variable attributes, "
+                f"use .value, .lb or similar."
+            )
         # todo
 
 
