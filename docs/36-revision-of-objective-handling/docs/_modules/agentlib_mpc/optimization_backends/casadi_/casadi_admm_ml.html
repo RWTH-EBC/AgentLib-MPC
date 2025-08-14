@@ -168,13 +168,6 @@
             <span class="n">use_in_stage_function</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">assert_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">r_del_u</span> <span class="o">=</span> <span class="n">OptimizationParameter</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
-            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;r_del_u&quot;</span><span class="p">,</span>
-            <span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="n">CasadiParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">r_del_u</span><span class="p">)</span> <span class="k">for</span> <span class="n">r_del_u</span> <span class="ow">in</span> <span class="n">var_ref</span><span class="o">.</span><span class="n">r_del_u</span><span class="p">],</span>
-            <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">r_del_u</span><span class="p">,</span>
-            <span class="n">use_in_stage_function</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">assert_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cost_function</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">cost_func</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_constraints</span> <span class="o">=</span> <span class="n">Constraint</span><span class="p">(</span>

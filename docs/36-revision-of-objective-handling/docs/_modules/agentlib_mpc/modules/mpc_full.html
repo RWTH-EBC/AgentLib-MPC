@@ -79,8 +79,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentVariable</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures</span><span class="w"> </span><span class="kn">import</span> <span class="n">mpc_datamodels</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">FieldValidationInfo</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">rapidfuzz</span><span class="w"> </span><span class="kn">import</span> <span class="n">process</span><span class="p">,</span> <span class="n">fuzz</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">ValidationInfo</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.modules.mpc</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseMPCConfig</span><span class="p">,</span> <span class="n">BaseMPC</span>
 
@@ -88,22 +87,7 @@
 <div class="viewcode-block" id="MPCConfig"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.mpc_full.MPCConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MPCConfig</span><span class="p">(</span><span class="n">BaseMPCConfig</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pydantic data model for MPC configuration parser</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">r_del_u</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Weights that are applied to the change in control variables.&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-
-<div class="viewcode-block" id="MPCConfig.check_r_del_u_in_controls"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.mpc_full.MPCConfig.check_r_del_u_in_controls">[docs]</a>    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;r_del_u&quot;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">check_r_del_u_in_controls</span><span class="p">(</span>
-            <span class="bp">cls</span><span class="p">,</span> <span class="n">r_del_u</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensures r_del_u is only set for control variables.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
-            <span class="s2">&quot;The &#39;r_del_u&#39; parameter is no longer supported. &quot;</span>
-            <span class="s2">&quot;Please use delta_u objectives in the new DeltaUObjective/FullObjective formulation instead. &quot;</span>
-        <span class="p">)</span></div></div>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="MPC"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.mpc_full.MPC">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MPC</span><span class="p">(</span><span class="n">BaseMPC</span><span class="p">):</span>

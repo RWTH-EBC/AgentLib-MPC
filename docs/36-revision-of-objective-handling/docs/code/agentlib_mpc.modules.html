@@ -641,6 +641,7 @@ step to AgentVariables.</p>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.outputs" title="agentlib_mpc.modules.mpc.BaseMPCConfig.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outputs</span> <span class="pre">(List[agentlib_mpc.data_structures.mpc_datamodels.MPCVariable])</span></code></a></p></li>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.parameters" title="agentlib_mpc.modules.mpc.BaseMPCConfig.parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parameters</span> <span class="pre">(List[agentlib_mpc.data_structures.mpc_datamodels.MPCVariable])</span></code></a></p></li>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.prediction_horizon" title="agentlib_mpc.modules.mpc.BaseMPCConfig.prediction_horizon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prediction_horizon</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.r_del_u" title="agentlib_mpc.modules.mpc.BaseMPCConfig.r_del_u"><code class="xref py py-obj docutils literal notranslate"><span class="pre">r_del_u</span> <span class="pre">(dict[str,</span> <span class="pre">float])</span></code></a></p></li>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.sampling_time" title="agentlib_mpc.modules.mpc.BaseMPCConfig.sampling_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sampling_time</span> <span class="pre">(float</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.set_outputs" title="agentlib_mpc.modules.mpc.BaseMPCConfig.set_outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_outputs</span> <span class="pre">(bool)</span></code></a></p></li>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.shared_variable_fields" title="agentlib_mpc.modules.mpc.BaseMPCConfig.shared_variable_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_variable_fields</span> <span class="pre">(list[str])</span></code></a></p></li>
@@ -652,6 +653,7 @@ step to AgentVariables.</p>
 </dd>
 <dt class="field-odd">Validators<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.check_r_del_u_in_controls" title="agentlib_mpc.modules.mpc.BaseMPCConfig.check_r_del_u_in_controls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_r_del_u_in_controls</span></code></a> » <a class="reference internal" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.r_del_u" title="agentlib_mpc.modules.mpc.BaseMPCConfig.r_del_u"><code class="xref py py-obj docutils literal notranslate"><span class="pre">r_del_u</span></code></a></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_valid_fields</span></code> » <a class="reference internal" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.shared_variable_fields" title="agentlib_mpc.modules.mpc.BaseMPCConfig.shared_variable_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_variable_fields</span></code></a></p></li>
 <li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_valid_level</span></code> » <a class="reference internal" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.log_level" title="agentlib_mpc.modules.mpc.BaseMPCConfig.log_level"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_level</span></code></a></p></li>
 <li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.default_sampling_time" title="agentlib_mpc.modules.mpc.BaseMPCConfig.default_sampling_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default_sampling_time</span></code></a> » <a class="reference internal" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.sampling_time" title="agentlib_mpc.modules.mpc.BaseMPCConfig.sampling_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sampling_time</span></code></a></p></li>
@@ -720,6 +722,19 @@ step to AgentVariables.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.mpc.BaseMPCConfig.r_del_u">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">r_del_u</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.r_del_u" title="Permalink to this definition"></a></dt>
+<dd><p>Weights that are applied to the change in control variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Validated by<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.check_r_del_u_in_controls" title="agentlib_mpc.modules.mpc.BaseMPCConfig.check_r_del_u_in_controls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_r_del_u_in_controls</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.mpc.BaseMPCConfig.sampling_time">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sampling_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.sampling_time" title="Permalink to this definition"></a></dt>
 <dd><p>Sampling interval for control steps. If None, will be the same as time step. Does not affect the discretization of the MPC, only the interval with which there will be optimization steps.</p>
@@ -779,6 +794,12 @@ step to AgentVariables.</p>
 <dt class="sig sig-object py" id="agentlib_mpc.modules.mpc.BaseMPCConfig.validate_incoming_values">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_incoming_values</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.validate_incoming_values" title="Permalink to this definition"></a></dt>
 <dd><p>If true, the validator of the AgentVariable value is called when receiving a new value from the DataBroker.</p>
+</dd></dl>
+
+<dl class="py method pydantic_validator">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.mpc.BaseMPCConfig.check_r_del_u_in_controls">
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_r_del_u_in_controls</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><a class="reference internal" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.r_del_u" title="agentlib_mpc.modules.mpc.BaseMPCConfig.r_del_u"><em class="xref py py-obj"><span class="pre">r_del_u</span></em></a><a class="reference internal" href="../_modules/agentlib_mpc/modules/mpc.html#BaseMPCConfig.check_r_del_u_in_controls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.mpc.BaseMPCConfig.check_r_del_u_in_controls" title="Permalink to this definition"></a></dt>
+<dd><p>Ensures r_del_u is only set for control variables.</p>
 </dd></dl>
 
 <dl class="py method pydantic_validator">
@@ -857,35 +878,10 @@ optimization.</p>
 </ul>
 </dd>
 <dt class="field-even">Fields<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc_full.MPCConfig.r_del_u" title="agentlib_mpc.modules.mpc_full.MPCConfig.r_del_u"><code class="xref py py-obj docutils literal notranslate"><span class="pre">r_del_u</span> <span class="pre">(dict[str,</span> <span class="pre">float])</span></code></a></p></li>
-</ul>
-</dd>
+<dd class="field-even"><p></p></dd>
 <dt class="field-odd">Validators<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc_full.MPCConfig.check_r_del_u_in_controls" title="agentlib_mpc.modules.mpc_full.MPCConfig.check_r_del_u_in_controls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_r_del_u_in_controls</span></code></a> » <a class="reference internal" href="#agentlib_mpc.modules.mpc_full.MPCConfig.r_del_u" title="agentlib_mpc.modules.mpc_full.MPCConfig.r_del_u"><code class="xref py py-obj docutils literal notranslate"><span class="pre">r_del_u</span></code></a></p></li>
-</ul>
-</dd>
+<dd class="field-odd"><p></p></dd>
 </dl>
-<dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="agentlib_mpc.modules.mpc_full.MPCConfig.r_del_u">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">r_del_u</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#agentlib_mpc.modules.mpc_full.MPCConfig.r_del_u" title="Permalink to this definition"></a></dt>
-<dd><p>Weights that are applied to the change in control variables.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Validated by<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc_full.MPCConfig.check_r_del_u_in_controls" title="agentlib_mpc.modules.mpc_full.MPCConfig.check_r_del_u_in_controls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_r_del_u_in_controls</span></code></a></p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method pydantic_validator">
-<dt class="sig sig-object py" id="agentlib_mpc.modules.mpc_full.MPCConfig.check_r_del_u_in_controls">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_r_del_u_in_controls</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><a class="reference internal" href="#agentlib_mpc.modules.mpc_full.MPCConfig.r_del_u" title="agentlib_mpc.modules.mpc_full.MPCConfig.r_del_u"><em class="xref py py-obj"><span class="pre">r_del_u</span></em></a><a class="reference internal" href="../_modules/agentlib_mpc/modules/mpc_full.html#MPCConfig.check_r_del_u_in_controls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.mpc_full.MPCConfig.check_r_del_u_in_controls" title="Permalink to this definition"></a></dt>
-<dd><p>Ensures r_del_u is only set for control variables.</p>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.mpc_full.MPCConfig.model_post_init">
 <span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#agentlib_mpc.modules.mpc_full.MPCConfig.model_post_init" title="Permalink to this definition"></a></dt>

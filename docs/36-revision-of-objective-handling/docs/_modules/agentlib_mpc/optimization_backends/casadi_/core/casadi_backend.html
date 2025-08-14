@@ -202,7 +202,7 @@
         <span class="c1"># collect and format inputs</span>
         <span class="n">mpc_inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_current_mpc_inputs</span><span class="p">(</span><span class="n">agent_variables</span><span class="o">=</span><span class="n">current_vars</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="n">now</span><span class="p">)</span>
         <span class="n">full_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">discretization</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">mpc_inputs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">save_result_df</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="p">,</span> <span class="n">full_results</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="n">now</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_result_df</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="p">,</span> <span class="n">full_results</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">full_results</span></div>
 
