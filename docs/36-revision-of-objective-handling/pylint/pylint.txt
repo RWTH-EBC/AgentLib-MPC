@@ -142,6 +142,8 @@ tests/test_casadi_ml_model.py:9:0: C0115: Missing class docstring (missing-class
 tests/test_casadi_ml_model.py:14:0: C0115: Missing class docstring (missing-class-docstring)
 tests/test_casadi_ml_model.py:23:0: C0116: Missing function or method docstring (missing-function-docstring)
 ************* Module test_mpc
+tests/test_mpc.py:176:0: C0301: Line too long (108/100) (line-too-long)
+tests/test_mpc.py:187:0: C0301: Line too long (127/100) (line-too-long)
 tests/test_mpc.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 tests/test_mpc.py:18:0: C0103: Constant name "a" doesn't conform to UPPER_CASE naming style (invalid-name)
 tests/test_mpc.py:24:4: C0116: Missing function or method docstring (missing-function-docstring)
@@ -153,6 +155,8 @@ tests/test_mpc.py:105:4: C0116: Missing function or method docstring (missing-fu
 tests/test_mpc.py:152:4: C0103: Method name "test_CasadiMPC" doesn't conform to snake_case naming style (invalid-name)
 tests/test_mpc.py:158:14: W0212: Access to a protected member _modules of a client class (protected-access)
 tests/test_mpc.py:166:4: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_mpc.py:173:4: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_mpc.py:184:4: C0116: Missing function or method docstring (missing-function-docstring)
 tests/test_mpc.py:6:0: C0411: standard import "import pathlib" should be placed before "import numpy as np" (wrong-import-order)
 tests/test_mpc.py:13:0: W0611: Unused OptimizationBackend imported from agentlib_mpc.optimization_backends.backend (unused-import)
 ************* Module test_serialized_ann
@@ -177,5 +181,5 @@ tests/test_serialized_linreg.py:11:0: C0411: third party import "from fixtures.l
 tests/test_serialized_linreg.py:12:0: C0411: third party import "from fixtures.data_generator import DataGenerator" should be placed before "from agentlib_mpc.data_structures import ml_model_datatypes" (wrong-import-order)
 
 -----------------------------------
-Your code has been rated at 7.35/10
+Your code has been rated at 7.37/10
 
