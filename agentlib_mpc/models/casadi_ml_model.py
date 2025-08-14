@@ -185,7 +185,8 @@ class CasadiMLModel(CasadiModel):
 
     @staticmethod
     def _get_forbidden_variable_names() -> set[str]:
-        return super()._get_forbidden_variable_names().union({
+        from agentlib_mpc.models.casadi_model import CasadiModel
+        return CasadiModel._get_forbidden_variable_names().union({
             "sim_step",
             "past_value",
             "lags_mx_store",
