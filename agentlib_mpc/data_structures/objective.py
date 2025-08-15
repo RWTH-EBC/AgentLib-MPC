@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
-import casadi as ca
 import re
+import casadi as ca
 
 class EqObjective:
     def __init__(self, expressions, weight: float = 1.0, name: str = None):
@@ -53,18 +53,15 @@ class EqObjective:
 
         expr_str = str(expr)
 
-        # Extract all variable names
         var_names = re.findall(r'[a-zA-Z][a-zA-Z0-9_]*', expr_str)
 
         if not var_names:
-            # No variables found, try to evaluate as constant
             try:
                 const_val = float(expr_str.strip('()'))
                 return np.full(len(df.index) - 1, const_val)
             except:
                 pass
 
-        # Get values for all found variables
         values_found = {}
         for var_name in var_names:
             for col_type in ['variable', 'parameter']:
@@ -75,9 +72,7 @@ class EqObjective:
         if not values_found:
             raise ValueError(f"No variables found in dataframe for expression: {expr}")
 
-        # Try to evaluate the expression
         try:
-            # Create evaluation environment
             safe_dict = values_found.copy()
 
             # Handle common mathematical operations and numpy functions
@@ -92,11 +87,8 @@ class EqObjective:
                 'min': np.minimum,
             })
 
-            # Clean up expression string for evaluation
             eval_str = expr_str
-            # Remove outer parentheses if they wrap the entire expression
             if eval_str.startswith('(') and eval_str.endswith(')'):
-                # Check if these are the outermost parentheses
                 paren_count = 0
                 is_outermost = True
                 for i, char in enumerate(eval_str[1:-1], 1):
@@ -110,7 +102,6 @@ class EqObjective:
                 if is_outermost and paren_count == 0:
                     eval_str = eval_str[1:-1]
 
-            # Evaluate the expression
             result = eval(eval_str, {"__builtins__": {}}, safe_dict)
 
             if isinstance(result, np.ndarray):
@@ -164,14 +155,6 @@ class SqObjective(EqObjective):
         result = self._evaluate_expression(self.expression, data)
         return sum((weight ** 2) * (result ** 2) * ts)
 
-    # def get_expression_name(self):
-    #     """Returns a representative name for the expression"""
-    #     names = self._extract_variable_names(self.expression)
-    #     if len(names) == 1:
-    #         return names[0]
-    #     return f"expr_{'_'.join(names)}"
-
-
 
 class DeltaUObjective(EqObjective):
     def __init__(self, expressions, weight: float = 1.0, name: str = None):
@@ -206,7 +189,6 @@ class DeltaUObjective(EqObjective):
         Override parent method to provide a placeholder.
         The actual penalty calculation happens in the discretization step.
         """
-        # Include weight in expression to ensure it's properly registered
         if hasattr(self.weight, 'sym'):
             return 0 * self.weight.sym
         return 0
@@ -214,7 +196,7 @@ class DeltaUObjective(EqObjective):
     def calculate_value(self, series, weight):
         """Returns the final weighted result by multiplying all expressions"""
         diff_values = series.diff()
-        diff = diff_values.values[1:]  # Skip first NaN value
+        diff = diff_values.values[1:]
         ts = np.diff(series.index)
         results = weight ** 2 * diff ** 2 * ts
         if isinstance(results, pd.Series):
@@ -318,9 +300,7 @@ class FullObjective:
             The time value from the first element of tuple index
         """
         new_df = df.copy()
-        time_value = None
 
-        # Multiindex handling
         if len(df.index) > 0 and isinstance(df.index[0], str) and '(' in df.index[0]:
             new_indices = []
             for idx in df.index:
@@ -375,10 +355,6 @@ class FullObjective:
                 new_series.iloc[nan_idx] = mean_val
         df[col] = new_series
 
-
-import casadi as ca
-
-
 class ConditionalObjective:
     """Represents a conditional objective that switches between different objectives based on conditions"""
 
@@ -393,13 +369,11 @@ class ConditionalObjective:
         self.condition_objective_pairs = condition_objective_pairs
         self.default_objective = default_objective or FullObjective()
 
-        # Collect all objectives
         self.all_objectives = [self.default_objective]
         for _, objective in condition_objective_pairs:
             if objective not in self.all_objectives:
                 self.all_objectives.append(objective)
 
-        # Flatten all individual objective terms for reporting
         self._flattened_objectives = []
         for obj in self.all_objectives:
             if hasattr(obj, 'objectives'):
@@ -414,7 +388,6 @@ class ConditionalObjective:
         """Combine all objectives into a conditional CasADi expression"""
         result = self.default_objective.get_casadi_expression()
 
-        # Apply each condition in reverse order
         for condition, objective in reversed(self.condition_objective_pairs):
             result = ca.if_else(condition, objective.get_casadi_expression(), result)
 
@@ -446,13 +419,12 @@ class ConditionalObjective:
         all_values = {}
         total_value = 0
 
-        # Calculate values for all objectives
         for objective in self.all_objectives:
             values = objective.calculate_values(result_df, grid)
 
             for name, value in values.items():
                 if name == 'total':
-                    continue  # Skip total as we'll calculate it differently
+                    continue
 
                 all_values[name] = value
 

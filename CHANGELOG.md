@@ -3,6 +3,7 @@
 ## 0.6.8
 - New objective handling: Introduce subobjective classes for more intuitive parameterization of weights. As well as for reading out the solved subobjective functions.
 - Update Dashboard to visualize subobjectives
+- Original notation of the objective function still supported. “r_del_u” notation no longer supported.
 
 ## 0.6.7
 - #60: Forbid users from creating instance attributes which are also variables in CasadiModel
