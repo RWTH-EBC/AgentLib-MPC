@@ -12,7 +12,7 @@ from agentlib_mpc.optimization_backends.casadi_.core.casadi_backend import CasAD
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
     OptimizationParameter
 )
-
+from agentlib_mpc.optimization_backends.casadi_.core import delta_u
 
 class FullSystem(basic.BaseSystem):
     last_control: OptimizationParameter
@@ -69,16 +69,7 @@ class DirectCollocation(basic.DirectCollocation):
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
 
-        delta_u_objectives = []
-        if hasattr(sys, 'model') and hasattr(sys.model, 'objective') and sys.model.objective is not None:
-            try:
-                delta_u_objectives = sys.model.objective.get_delta_u_objectives()
-            except (AttributeError, Exception) as e:
-                self.logger.warning(f"Failed to get delta_u_objectives: {str(e)}")
-
-        control_map = {}
-        for i, control_name in enumerate(sys.controls.ref_names):
-            control_map[control_name] = i
+        delta_u_objectives = delta_u.get_delta_u_objectives(sys)
 
         # Formulate the NLP
         # loop over prediction horizon
@@ -87,28 +78,9 @@ class DirectCollocation(basic.DirectCollocation):
             u_prev = uk
             uk = self.add_opt_var(sys.controls)
 
-            # penalty for control change between time steps (only for new objective system)
             for delta_obj in delta_u_objectives:
-                control_name = delta_obj.get_control_name()
-                if control_name in control_map:
-                    idx = control_map[control_name]
-                    control_prev = u_prev[idx]
-                    control_curr = uk[idx]
-                    delta = control_curr - control_prev
-                    if hasattr(delta_obj.weight, 'sym'):
-                        param_found = False
-                        for i, param_name in enumerate(sys.model_parameters.ref_names):
-                            if param_name == delta_obj.weight.name:
-                                weight_value = const_par[i]
-                                param_found = True
-                                break
-
-                        if not param_found:
-                            raise ValueError(f"Parameter {delta_obj.weight.name} not found in model parameters")
-                    else:
-                        weight_value = delta_obj.weight
-
-                    self.objective_function += weight_value ** 2 * delta ** 2
+                self.objective_function += delta_u.get_objective(
+                    sys, delta_obj, u_prev, uk, const_par)
 
             # perform inner collocation loop
             opt_vars_inside_inner = [sys.algebraics, sys.outputs]
@@ -160,16 +132,7 @@ class MultipleShooting(basic.MultipleShooting):
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
 
-        delta_u_objectives = []
-        if hasattr(sys, 'model') and hasattr(sys.model, 'objective') and sys.model.objective is not None:
-            try:
-                delta_u_objectives = sys.model.objective.get_delta_u_objectives()
-            except (AttributeError, Exception) as e:
-                self.logger.warning(f"Failed to get delta_u_objectives: {str(e)}")
-
-        control_map = {}
-        for i, control_name in enumerate(sys.controls.ref_names):
-            control_map[control_name] = i
+        delta_u_objectives = delta_u.get_delta_u_objectives(sys)
 
         # ODE is used here because the algebraics can be calculated with the stage function
         opt_integrator = self._create_ode(sys, opts, self.options.integrator)
@@ -178,29 +141,9 @@ class MultipleShooting(basic.MultipleShooting):
             u_prev = uk
             uk = self.add_opt_var(sys.controls)
 
-            # penalty for control change between time steps (only for new objective system)
             for delta_obj in delta_u_objectives:
-                control_name = delta_obj.get_control_name()
-                if control_name in control_map:
-                    idx = control_map[control_name]
-                    control_prev = u_prev[idx]
-                    control_curr = uk[idx]
-                    delta = control_curr - control_prev
-
-                    if hasattr(delta_obj.weight, 'sym'):
-                        param_found = False
-                        for i, param_name in enumerate(sys.model_parameters.ref_names):
-                            if param_name == delta_obj.weight.name:
-                                weight_value = const_par[i]
-                                param_found = True
-                                break
-
-                        if not param_found:
-                            raise ValueError(f"Parameter {delta_obj.weight.name} not found in model parameters")
-                    else:
-                        weight_value = delta_obj.weight
-
-                    self.objective_function += weight_value ** 2 * delta ** 2
+                self.objective_function += delta_u.get_objective(
+                    sys, delta_obj, u_prev, uk, const_par)
 
             dk = self.add_opt_par(sys.non_controlled_inputs)
             zk = self.add_opt_var(sys.algebraics)
