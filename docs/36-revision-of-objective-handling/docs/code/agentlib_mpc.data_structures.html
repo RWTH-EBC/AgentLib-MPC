@@ -1571,13 +1571,7 @@ get from the config with get()</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.ConditionalObjective.get_regular_objectives">
 <span class="sig-name descname"><span class="pre">get_regular_objectives</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#ConditionalObjective.get_regular_objectives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.ConditionalObjective.get_regular_objectives" title="Permalink to this definition"></a></dt>
-<dd><p>Returns all regular EqObjective instances</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.ConditionalObjective.get_sq_objectives">
-<span class="sig-name descname"><span class="pre">get_sq_objectives</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#ConditionalObjective.get_sq_objectives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.ConditionalObjective.get_sq_objectives" title="Permalink to this definition"></a></dt>
-<dd><p>Returns all SqObjective instances</p>
+<dd><p>Returns all regular SubObjective instances</p>
 </dd></dl>
 
 <dl class="py property">
@@ -1591,7 +1585,7 @@ get from the config with get()</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.DeltaUObjective">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.objective.</span></span><span class="sig-name descname"><span class="pre">DeltaUObjective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expressions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#DeltaUObjective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.DeltaUObjective" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.data_structures.objective.EqObjective" title="agentlib_mpc.data_structures.objective.EqObjective"><code class="xref py py-class docutils literal notranslate"><span class="pre">EqObjective</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.data_structures.objective.SubObjective" title="agentlib_mpc.data_structures.objective.SubObjective"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubObjective</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.DeltaUObjective.calculate_value">
 <span class="sig-name descname"><span class="pre">calculate_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#DeltaUObjective.calculate_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.DeltaUObjective.calculate_value" title="Permalink to this definition"></a></dt>
@@ -1615,24 +1609,6 @@ get from the config with get()</p>
 <span class="sig-name descname"><span class="pre">get_weighted_expression</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#DeltaUObjective.get_weighted_expression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.DeltaUObjective.get_weighted_expression" title="Permalink to this definition"></a></dt>
 <dd><p>Override parent method to provide a placeholder.
 The actual penalty calculation happens in the discretization step.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.EqObjective">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.objective.</span></span><span class="sig-name descname"><span class="pre">EqObjective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expressions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#EqObjective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.EqObjective" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.EqObjective.calculate_value">
-<span class="sig-name descname"><span class="pre">calculate_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#EqObjective.calculate_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.EqObjective.calculate_value" title="Permalink to this definition"></a></dt>
-<dd><p>Calculate the objective value from data</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.EqObjective.get_weighted_expression">
-<span class="sig-name descname"><span class="pre">get_weighted_expression</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#EqObjective.get_weighted_expression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.EqObjective.get_weighted_expression" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the final weighted expression</p>
 </dd></dl>
 
 </dd></dl>
@@ -1663,32 +1639,25 @@ The actual penalty calculation happens in the discretization step.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.FullObjective.get_regular_objectives">
 <span class="sig-name descname"><span class="pre">get_regular_objectives</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#FullObjective.get_regular_objectives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.FullObjective.get_regular_objectives" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a list of all regular EqObjective instances</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.FullObjective.get_sq_objectives">
-<span class="sig-name descname"><span class="pre">get_sq_objectives</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#FullObjective.get_sq_objectives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.FullObjective.get_sq_objectives" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a list of all SqObjective instances</p>
+<dd><p>Returns a list of all regular SubObjective instances</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.SqObjective">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.objective.</span></span><span class="sig-name descname"><span class="pre">SqObjective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expressions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#SqObjective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.SqObjective" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.data_structures.objective.EqObjective" title="agentlib_mpc.data_structures.objective.EqObjective"><code class="xref py py-class docutils literal notranslate"><span class="pre">EqObjective</span></code></a></p>
-<p>Objective term that squares an expression</p>
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.SubObjective">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.objective.</span></span><span class="sig-name descname"><span class="pre">SubObjective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expressions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#SubObjective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.SubObjective" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.SqObjective.calculate_value">
-<span class="sig-name descname"><span class="pre">calculate_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#SqObjective.calculate_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.SqObjective.calculate_value" title="Permalink to this definition"></a></dt>
-<dd><p>Calculate value using the expression</p>
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.SubObjective.calculate_value">
+<span class="sig-name descname"><span class="pre">calculate_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#SubObjective.calculate_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.SubObjective.calculate_value" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the objective value from data</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.SqObjective.get_weighted_expression">
-<span class="sig-name descname"><span class="pre">get_weighted_expression</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#SqObjective.get_weighted_expression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.SqObjective.get_weighted_expression" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the squared expression with weight</p>
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.SubObjective.get_weighted_expression">
+<span class="sig-name descname"><span class="pre">get_weighted_expression</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#SubObjective.get_weighted_expression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.SubObjective.get_weighted_expression" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the final weighted expression</p>
 </dd></dl>
 
 </dd></dl>
