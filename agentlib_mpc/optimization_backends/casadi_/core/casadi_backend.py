@@ -128,7 +128,7 @@ class CasADiBackend(OptimizationBackend):
         # collect and format inputs
         mpc_inputs = self._get_current_mpc_inputs(agent_variables=current_vars, now=now)
         full_results = self.discretization.solve(mpc_inputs)
-        self.save_result_df(self.system, full_results, now)
+        self.save_result_df(self.system.model.objective, full_results, now)
 
         return full_results
 
@@ -256,12 +256,27 @@ class CasADiBackend(OptimizationBackend):
 
     def save_result_df(
             self,
-            system,
+            objective,
             results: Results,
             now: float = 0,
     ):
         """
-        Save the results of `solve` into a dataframe at each time step.
+         Save the results of `solve` into a dataframe at each time step.
+
+        Example results dataframe:
+
+        value_type               variable              ...     lower
+        variable                      T_0   T_0_slack  ... T_0_slack mDot_0
+        time_step                                      ...
+        2         0.000000     298.160000         NaN  ...       NaN    NaN
+                  101.431499   297.540944 -149.465942  ...      -inf    0.0
+                  450.000000   295.779780 -147.704779  ...      -inf    0.0
+                  798.568501   294.720770 -146.645769  ...      -inf    0.0
+        Args:
+            results:
+            now:
+
+        Returns:
         """
         if not self.config.save_results:
             return
@@ -275,31 +290,24 @@ class CasADiBackend(OptimizationBackend):
         df.index = list(map(lambda x: str((now, x)), df.index))
         df.to_csv(res_file, mode="a", header=False)
 
-        def get_objective_values(system, df, grid):
+        def get_objective_values(objective, df, grid):
             objective_values = {}
-            if (hasattr(system, 'model') and
-                    hasattr(system.model, 'objective') and
-                    system.model.objective is not None and
-                    hasattr(system.model.objective, 'calculate_values')):
-                objective_values.update(system.model.objective.calculate_values(df, grid))
+            if objective is not None:
+                objective_values.update(objective.calculate_values(df, grid))
             return objective_values
 
         grid = np.arange(0, self.config.discretization_options.prediction_horizon * (
                 self.config.discretization_options.time_step + 1), self.config.discretization_options.time_step)
-        objective_values = get_objective_values(system=system, df=df, grid=grid)
+        objective_values = get_objective_values(objective=objective, df=df, grid=grid)
 
         obj_file = objective_path(res_file)
 
-        # Handle objective names for both old and new systems
-        if (hasattr(system, 'model') and
-                hasattr(system.model, 'objective') and
-                system.model.objective is not None and
-                hasattr(system.model.objective, 'objectives')):
-            objective_names = ['time'] + [obj.name for obj in system.model.objective.objectives] + ['total']
+
+        if hasattr(objective, 'objectives'):
+            objective_names = ['time'] + [obj.name for obj in objective.objectives] + ['total']
         else:
             objective_names = ['time'] + list(objective_values.keys()) if objective_values else ['time']
 
-        # Check if this is the first call and handle overwrite_result_file for objective file
         if not hasattr(self, '_obj_file_checked'):
             self._obj_file_checked = True
             if self.config.overwrite_result_file and obj_file.exists():
@@ -308,12 +316,11 @@ class CasADiBackend(OptimizationBackend):
                 except FileNotFoundError:
                     pass
 
-        # Now handle the file normally: if it doesn't exist, create it with headers
+            # Now handle the file normally: if it doesn't exist, create it with headers
         if not obj_file.exists():
             with open(obj_file, 'w') as f:
                 f.write(','.join(objective_names) + '\n')
 
-        # Append the values (only if we have objective values to write)
         if objective_values or len(objective_names) > 1:
             with open(obj_file, 'a') as f:
                 values = [str(now)] + [str(objective_values.get(name, '')) for name in objective_names[1:]]

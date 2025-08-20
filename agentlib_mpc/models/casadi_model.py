@@ -20,6 +20,7 @@ from agentlib.core.datamodels import (
     Causality,
 )
 from agentlib_mpc.data_structures.casadi_utils import ModelConstraint
+import warnings
 
 CasadiTypes = Union[ca.MX, ca.SX, ca.DM, ca.Sparsity]
 
@@ -328,7 +329,7 @@ class CasadiModel(Model):
             self.cost_func = objective_result.get_casadi_expression()
         else:
             # Old objective system - backwards compatibility
-            print(
+            warnings.warn(
                 "\033[93mWARNING:\033[0m Model uses the deprecated objective formulation. "
                 "Consider migrating to the new FullObjective formulation.\n")
             self.cost_func = objective_result

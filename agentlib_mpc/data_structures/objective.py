@@ -2,9 +2,11 @@ import pandas as pd
 import numpy as np
 import re
 import casadi as ca
+from typing import Union
+from agentlib_mpc.models.casadi_model import CasadiParameter
 
 class SubObjective:
-    def __init__(self, expressions, weight: float = 1.0, name: str = None):
+    def __init__(self, expressions: ca.MX, weight: Union[float, int, CasadiParameter], name: str = None):
         """
         Create an objective term
 
@@ -16,7 +18,6 @@ class SubObjective:
         self.expression = expressions
         self.weight = weight
         self.name = name or f"obj_{id(self)}"
-        self.is_complex_expr = hasattr(expressions, 'dep')
 
     def get_weighted_expression(self):
         """Returns the final weighted expression"""
@@ -126,7 +127,7 @@ class SubObjective:
 
 
 class DeltaUObjective(SubObjective):
-    def __init__(self, expressions, weight: float = 1.0, name: str = None):
+    def __init__(self, expressions: ca.MX, weight: Union[float, int, CasadiParameter], name: str = None):
         """
         Args:
             expressions: Control variable to track changes
@@ -158,8 +159,6 @@ class DeltaUObjective(SubObjective):
         Override parent method to provide a placeholder.
         The actual penalty calculation happens in the discretization step.
         """
-        if hasattr(self.weight, 'sym'):
-            return 0 * self.weight.sym
         return 0
 
     def calculate_value(self, series, weight):
@@ -185,7 +184,7 @@ class DeltaUObjective(SubObjective):
 class FullObjective:
     """Container for multiple objective terms with normalization"""
 
-    def __init__(self, *objectives, normalization=1.0):
+    def __init__(self, *objectives, normalization: float = 1.0):
         """
         Args:
             *objectives: Variable number of objective terms

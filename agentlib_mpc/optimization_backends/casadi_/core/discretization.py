@@ -204,18 +204,6 @@ class Discretization(abc.ABC):
         return result
 
 
-    def _get_variable_values(self, var_name):
-        """Helper to extract variable values across time steps from optimization results"""
-        if var_name not in self.mpc_opt_vars:
-            return []
-
-        var_container = self.mpc_opt_vars[var_name]
-        if not hasattr(var_container, 'opt') or var_container.opt is None:
-            return []
-
-        return var_container.opt.toarray().flatten()
-
-
     def _determine_initial_guess(self, mpc_inputs: MPCInputs) -> MPCInputs:
         """
         Collects initial guesses for all mpc variables. If possible, uses result
@@ -261,8 +249,12 @@ class Discretization(abc.ABC):
 
     def _process_solution(self, inputs: dict, outputs: dict) -> Results:
         """
-        Collect all inputs and outputs of the optimization problem and format
-        them for return and optionally save them.
+        If self.result_file is not empty,
+        collect all inputs and outputs of the optimization problem and format
+        them as DataFrames and pass them to OptimizationBackend.save_df().
+        Args:
+            inputs: mpc_inputs dict returned from _get_current_mpc_inputs
+            outputs: mpc_output from self._nlp_outputs_to_mpc_outputs
         """
         # update the guess values at the variable positions with the outputs
         for key, value in inputs.items():
@@ -540,9 +532,6 @@ class Discretization(abc.ABC):
         var_list.ub.append(upper)
         var_list.guess.append(opt_var)
         var_list.grid.append(self.pred_time)
-
-        if not hasattr(var_list, 'ref_names') and hasattr(quantity, 'ref_names'):
-            var_list.ref_names = quantity.ref_names
 
         return opt_var
 
