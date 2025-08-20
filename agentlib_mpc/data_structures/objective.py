@@ -3,7 +3,7 @@ import numpy as np
 import re
 import casadi as ca
 
-class EqObjective:
+class SubObjective:
     def __init__(self, expressions, weight: float = 1.0, name: str = None):
         """
         Create an objective term
@@ -22,6 +22,8 @@ class EqObjective:
         """Returns the final weighted expression"""
         if hasattr(self.weight, 'sym'):
             weight_value = self.weight.sym
+            if hasattr(self.weight, 'dep'):
+                raise TypeError(f"Cannot call weight function in objective {self.name}")
         else:
             weight_value = self.weight
         return weight_value * self.expression
@@ -123,40 +125,7 @@ class EqObjective:
             raise ValueError(f"Unable to evaluate expression: {expr}. Error: {e}")
 
 
-class SqObjective(EqObjective):
-    """Objective term that squares an expression"""
-
-    def __init__(self, expressions, weight=1.0, name=None):
-        """
-        Create an objective term that squares an expression
-
-        Args:
-            expressions: Expression to be squared (can be a complex expression)
-            weight: Weight factor for this objective
-            name: Optional name for identification
-        """
-        super().__init__(expressions=expressions, weight=weight, name=name)
-
-    def get_weighted_expression(self):
-        """Returns the squared expression with weight"""
-        if hasattr(self.weight, 'sym'):
-            weight_value = self.weight.sym
-        else:
-            weight_value = self.weight
-        return (weight_value ** 2) * (self.expression ** 2)
-
-    def calculate_value(self, data, weight):
-        """Calculate value using the expression"""
-        ts = np.diff(data.index)
-        if isinstance(data, pd.Series):
-            result = data.values[:-1] ** 2
-            return sum((weight ** 2) * result * ts)
-
-        result = self._evaluate_expression(self.expression, data)
-        return sum((weight ** 2) * (result ** 2) * ts)
-
-
-class DeltaUObjective(EqObjective):
+class DeltaUObjective(SubObjective):
     def __init__(self, expressions, weight: float = 1.0, name: str = None):
         """
         Args:
@@ -230,13 +199,9 @@ class FullObjective:
         """Returns a list of all DeltaUObjective instances"""
         return [obj for obj in self.objectives if isinstance(obj, DeltaUObjective)]
 
-    def get_sq_objectives(self):
-        """Returns a list of all SqObjective instances"""
-        return [obj for obj in self.objectives if isinstance(obj, SqObjective)]
-
     def get_regular_objectives(self):
-        """Returns a list of all regular EqObjective instances"""
-        return [obj for obj in self.objectives if not isinstance(obj, (DeltaUObjective, SqObjective))]
+        """Returns a list of all regular SubObjective instances"""
+        return [obj for obj in self.objectives if not isinstance(obj, (DeltaUObjective))]
 
     def get_casadi_expression(self):
         """Combine all objectives into a single CasADi expression"""
@@ -270,10 +235,7 @@ class FullObjective:
                     control_series = df.loc[:, ('variable', control_name)]
                     value = obj.calculate_value(control_series, weight)
                     self._values[name] = value / self.normalization
-                elif isinstance(obj, SqObjective):
-                    value = obj.calculate_value(df, weight)
-                    self._values[name] = value / self.normalization
-                elif isinstance(obj, EqObjective):
+                elif isinstance(obj, SubObjective):
                     value = obj.calculate_value(df, weight)
                     self._values[name] = value / self.normalization
                 if self._values[name] is not None:
@@ -398,17 +360,10 @@ class ConditionalObjective:
         all_delta_u = []
         for objective in self.all_objectives:
             all_delta_u.extend(objective.get_delta_u_objectives())
-        return list(set(all_delta_u))  # Remove duplicates
-
-    def get_sq_objectives(self):
-        """Returns all SqObjective instances"""
-        all_sq = []
-        for objective in self.all_objectives:
-            all_sq.extend(objective.get_sq_objectives())
-        return list(set(all_sq))
+        return list(set(all_delta_u))
 
     def get_regular_objectives(self):
-        """Returns all regular EqObjective instances"""
+        """Returns all regular SubObjective instances"""
         all_regular = []
         for objective in self.all_objectives:
             all_regular.extend(objective.get_regular_objectives())
