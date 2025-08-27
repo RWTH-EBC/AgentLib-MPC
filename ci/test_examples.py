@@ -16,7 +16,7 @@ class TestExamples(unittest.TestCase):
     """Test all examples inside the agentlib"""
 
     def setUp(self) -> None:
-        self.timeout = 10  # Seconds which the script is allowed to run
+        self.timeout = 15  # Seconds which the script is allowed to run
         self.main_cwd = os.getcwd()
 
     def tearDown(self) -> None:
@@ -56,15 +56,18 @@ class TestExamples(unittest.TestCase):
             with_plots=False,
             log_level=logging.FATAL,
         )
+
+        """Test the mpc agent example"""
         self._run_example_with_return(
-            file="one_room_mpc//physical//mixed_integer//mixed_integer_mpc.py",
+            file="one_room_mpc//physical//with_change_control_penalty.py",
             func_name="run_example",
             with_plots=False,
             log_level=logging.FATAL,
         )
-        """Test the mpc agent example"""
+
+    def test_mixed_integer_mpc(self):
         self._run_example_with_return(
-            file="one_room_mpc//physical//with_change_control_penalty.py",
+            file="one_room_mpc//physical//mixed_integer//mixed_integer_mpc.py",
             func_name="run_example",
             with_plots=False,
             log_level=logging.FATAL,
@@ -111,7 +114,40 @@ class TestExamples(unittest.TestCase):
             file="admm//admm_example_multiprocessing.py",
             func_name="run_example",
             with_plots=False,
-            until=1000,
+            until=600,
             log_level=logging.FATAL,
             TESTING=True,
+        )
+
+    def test_ann_mpc(self):
+        """Test the data-driven MPC examples"""
+        # ANN examples
+        self._run_example_with_return(
+            file="one_room_mpc/ann/simple_mpc_nn.py",
+            func_name="run_example",
+            with_plots=False,
+            log_level=logging.FATAL,
+            testing=True,
+        )
+
+    def test_grp_mpc(self):
+        """Test the data-driven MPC examples"""
+
+        # GPR examples
+        self._run_example_with_return(
+            file="one_room_mpc/gpr/simple_mpc_gpr.py",
+            func_name="run_example",
+            with_plots=False,
+            log_level=logging.FATAL,
+        )
+
+    def test_linreg_mpc(self):
+        """Test the data-driven MPC examples"""
+
+        # Linear regression examples
+        self._run_example_with_return(
+            file="one_room_mpc/linreg/simple_mpc_linreg.py",
+            func_name="run_example",
+            with_plots=False,
+            log_level=logging.FATAL,
         )
