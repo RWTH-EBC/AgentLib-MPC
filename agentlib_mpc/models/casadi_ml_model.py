@@ -182,6 +182,24 @@ class CasadiMLModel(CasadiModel):
         # construct a stage function for optimization and simulation
         self.sim_step = self._make_unified_predict_function()
 
+    @staticmethod
+    def _get_forbidden_variable_names() -> set[str]:
+        return (
+            super()
+            ._get_forbidden_variable_names()
+            .union(
+                {
+                    "sim_step",
+                    "past_value",
+                    "lags_mx_store",
+                    "max_lag",
+                    "lags_dict",
+                    "ml_model_dict",
+                    "casadi_ml_model_dict",
+                }
+            )
+        )
+
     def setup_system(self):
         return 0
 
@@ -281,7 +299,7 @@ class CasadiMLModel(CasadiModel):
             bb_results: The results of the evaluation of the blackbox functions
         """
         all_inputs = self._all_inputs()
-        exclude = [v.name for v in self.differentials + self.outputs + self.algebraics]
+        exclude = [v.name for v in self.differentials + self.outputs]
         # take the mean of start/finish values of variables that have already been
         # integrated by a discrete blackbox function
         if bb_results:
@@ -307,19 +325,15 @@ class CasadiMLModel(CasadiModel):
         # the ml_model outputs cannot be changed during integration, so they are a
         # parameter here
         integration_params = self._fixed_during_integration()
-        par = ca.vertcat(*integration_params.values())
+        par = ca.vertcat(*integration_params.values(), self.time)
 
         # if we have no differentials and no algebraics, this function should do nothing
-        if (not self.differentials) and (
-            ignore_algebraics or not self.outputs + self.algebraics
-        ):
+        if (not self.differentials) and (ignore_algebraics or not self.outputs):
             return ca.Function("empty", [[], par], [[], []], ["x0", "p"], ["xf", "zf"])
 
         x = ca.vertcat(*[sta.sym for sta in self.differentials])
         # if we have a pure ode, we can use an ode solver which is more efficient
-        if self.differentials and (
-            ignore_algebraics or not self.outputs + self.algebraics
-        ):
+        if self.differentials and (ignore_algebraics or not self.outputs):
             ode = {
                 "x": x,
                 "p": par,
@@ -332,8 +346,8 @@ class CasadiMLModel(CasadiModel):
             "x": x,
             "p": par,
             "ode": self.system,
-            "z": ca.vertcat(*[var.sym for var in self.outputs + self.algebraics]),
-            "alg": ca.vertcat(*self.algebraic_equations),
+            "z": ca.vertcat(*[var.sym for var in self.outputs]),
+            "alg": ca.vertcat(*self.output_equations),
         }
         # if there are no differential values, we create a dummy to make integrator
         # callable
@@ -510,7 +524,7 @@ class CasadiMLModel(CasadiModel):
         # with keywords names
         differentials_dict = {var.name: var.sym for var in self.differentials}
         if not ignore_algebraics:
-            alg_dict = {var.name: var.sym for var in self.outputs + self.algebraics}
+            alg_dict = {var.name: var.sym for var in self.outputs}
         else:
             alg_dict = {}
         stacked_alg = ca.vertcat(*[mx for mx in alg_dict.values()])
@@ -545,7 +559,7 @@ class CasadiMLModel(CasadiModel):
             # CasADi will return a dict instead of an MX if the input is empty.
             int_x0_in = ca.DM([])
 
-        int_p_in = ca.vertcat(*wb_inputs.values())
+        int_p_in = ca.vertcat(*wb_inputs.values(), self.time)
         integrator = self._make_integrator(ignore_algebraics=ignore_algebraics)
         int_result = integrator(x0=int_x0_in, p=int_p_in)
         x_names = stacked_x_to_names(x0=int_result["xf"])
@@ -554,11 +568,11 @@ class CasadiMLModel(CasadiModel):
         opts = {"allow_duplicate_io_names": True} if CASADI_VERSION >= 3.6 else {}
         return ca.Function(
             "full_step",
-            list(all_variables.values()),
+            list(all_variables.values()) + [self.time],
             list(x_names.values())
             + list(z_names.values())
             + list(bb_result_mx.values()),
-            list(all_variables),
+            list(all_variables) + ["__time"],
             list(x_names) + list(z_names) + list(bb_result_mx),
             opts,
         )

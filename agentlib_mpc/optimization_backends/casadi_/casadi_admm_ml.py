@@ -59,7 +59,7 @@ class CasadiADMMNNSystem(CasadiADMMSystem, CasadiMLSystem):
         )
         self.algebraics = OptimizationVariable.declare(
             denotation="z",
-            variables=model.auxiliaries + model.algebraics,
+            variables=model.auxiliaries,
             ref_list=[],
         )
         self.outputs = OptimizationVariable.declare(
@@ -288,11 +288,11 @@ class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_ML):
             past_exch = self.add_opt_par(sys.past_exchange)
             mx_dict[time][sys.local_couplings.name] = past_coup
             mx_dict[time][sys.local_exchange.name] = past_exch
-            mx_dict[time][sys.local_exchange.name] = self.add_opt_var(
-                sys.local_exchange, lb=past_exch, ub=past_exch, guess=past_exch
-            )
             mx_dict[time][sys.local_couplings.name] = self.add_opt_var(
                 sys.local_couplings, lb=past_coup, ub=past_coup, guess=past_coup
+            )
+            mx_dict[time][sys.local_exchange.name] = self.add_opt_var(
+                sys.local_exchange, lb=past_exch, ub=past_exch, guess=past_exch
             )
 
         # add all variables over future grid
