@@ -15,7 +15,6 @@ from agentlib_mpc.models.casadi_model import (
 )
 from agentlib.utils.multi_agent_system import LocalMASAgency
 from agentlib_mpc.utils.plotting.interactive import show_dashboard
-from agentlib_mpc.data_structures.objective import FullObjective, EqObjective, SqObjective
 
 
 logger = logging.getLogger(__name__)
@@ -110,19 +109,19 @@ class MyCasadiModel(CasadiModel):
             (0, self.T + self.T_slack, self.T_upper),
         ]
 
-        obj1 = EqObjective(
+        obj1 = self.create_sub_objective(
             expressions=self.mDot,
             weight=self.r_mDot,
             name="control_costs",
         )
 
-        obj2 = SqObjective(
-            expressions=self.T_slack,
+        obj2 = self.create_sub_objective(
+            expressions=self.T_slack**2,
             weight=self.s_T,
             name="temp_slack"
         )
 
-        objective = FullObjective(obj1, obj2, normalization=prediction_horizon)
+        objective = self.create_full_objective(obj1, obj2, normalization=prediction_horizon)
         return objective
 
 

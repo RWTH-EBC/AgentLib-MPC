@@ -505,6 +505,26 @@ class CasadiModel(Model):
     def get_differential_values(self):
         return ca.vertcat(*[sta.value for sta in self.differentials])
 
+    def create_sub_objective(self, expressions, weight, name=None):
+        """Create a SubObjective without requiring imports"""
+        from agentlib_mpc.data_structures.objective import SubObjective
+        return SubObjective(expressions=expressions, weight=weight, name=name)
+
+    def create_delta_u_objective(self, expressions, weight, name=None):
+        """Create a DeltaUObjective without requiring imports"""
+        from agentlib_mpc.data_structures.objective import DeltaUObjective
+        return DeltaUObjective(expressions=expressions, weight=weight, name=name)
+
+    def create_full_objective(self, *objectives, normalization=1.0):
+        """Create a FullObjective without requiring imports"""
+        from agentlib_mpc.data_structures.objective import FullObjective
+        return FullObjective(*objectives, normalization=normalization)
+
+    def create_conditional_objective(self, *condition_objective_pairs, default_objective=None):
+        """Create a ConditionalObjective without requiring imports"""
+        from agentlib_mpc.data_structures.objective import ConditionalObjective
+        return ConditionalObjective(*condition_objective_pairs, default_objective=default_objective)
+
     def set_differential_values(self, values: Union[List, np.ndarray]):
         """Sets the values for all differential variables. Provided values list MUST
         match the order in which differentials are saved, there is no check."""

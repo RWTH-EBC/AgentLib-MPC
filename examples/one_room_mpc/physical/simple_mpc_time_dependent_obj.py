@@ -15,11 +15,7 @@ from agentlib_mpc.models.casadi_model import (
     CasadiModelConfig,
 )
 from agentlib.utils.multi_agent_system import LocalMASAgency
-
-from agentlib_mpc.utils.analysis import load_mpc_stats
 from agentlib_mpc.utils.plotting.interactive import show_dashboard
-from agentlib_mpc.utils.plotting.interactive import show_dashboard
-from agentlib_mpc.data_structures.objective import FullObjective, EqObjective, SqObjective, ConditionalObjective
 
 logger = logging.getLogger(__name__)
 
@@ -135,34 +131,34 @@ class MyCasadiModel(CasadiModel):
 
         # Objective function
         # Objective1 when time<switch
-        obj1_mDot = EqObjective(
+        obj1_mDot = self.create_sub_objective(
             expressions=self.mDot,
             weight=self.r_mDot,
             name="mDot_cost_normal"
         )
-        obj1_slack = SqObjective(
-            expressions=self.T_slack,
+        obj1_slack = self.create_sub_objective(
+            expressions=self.T_slack**2,
             weight=self.s_T,
             name="temperature_slack"
         )
-        objective1 = FullObjective(obj1_mDot, obj1_slack, normalization=normalization_obj1)
+        objective1 = self.create_full_objective(obj1_mDot, obj1_slack, normalization=normalization_obj1)
 
         # Objective 2 (when time >= switch)
-        obj2_mDot = EqObjective(
+        obj2_mDot = self.system(
             expressions=self.mDot,
             weight= self.r_mDot2,
             name="mDot_cost_doubled"
         )
-        obj2_slack = SqObjective(
-            expressions=self.T_slack,
+        obj2_slack = self.create_sub_objective(
+            expressions=self.T_slack**2,
             weight=self.s_T,
             name="temperature_slack_2"
         )
-        objective2 = FullObjective(obj2_mDot, obj2_slack, normalization=normalization_obj2)
+        objective2 = self.create_full_objective(obj2_mDot, obj2_slack, normalization=normalization_obj2)
 
         # Conditional objective based on time
         condition = self.time < self.switch.sym
-        objective = ConditionalObjective(
+        objective = self.create_conditional_objective(
             (condition, objective1),
             default_objective=objective2
         )
