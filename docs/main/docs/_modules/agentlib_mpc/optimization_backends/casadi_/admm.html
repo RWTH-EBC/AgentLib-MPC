@@ -212,7 +212,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">ts</span> <span class="o">*</span> <span class="n">ca</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">du_weights</span><span class="p">,</span> <span class="p">(</span><span class="n">u_prev</span> <span class="o">-</span> <span class="n">uk</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
 
             <span class="c1"># perform inner collocation loop</span>
-            <span class="c1"># perform inner collocation loop</span>
             <span class="n">opt_vars_inside_inner</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">algebraics</span><span class="p">,</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span>
@@ -224,7 +223,7 @@
                 <span class="n">sys</span><span class="o">.</span><span class="n">multipliers</span><span class="p">,</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">exchange_multipliers</span><span class="p">,</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">exchange_diff</span><span class="p">,</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="p">,</span>
             <span class="p">]</span>
             <span class="n">constant_over_inner</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span> <span class="n">uk</span><span class="p">,</span>

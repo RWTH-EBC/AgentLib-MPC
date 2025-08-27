@@ -221,6 +221,7 @@
         <span class="p">)</span>
         <span class="n">opti_back</span><span class="o">.</span><span class="n">register_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
         <span class="n">disc_opts</span> <span class="o">=</span> <span class="n">opti_back</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span>
+        <span class="n">disc_opts</span><span class="o">.</span><span class="n">prediction_horizon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">horizon</span>
         <span class="n">disc_opts</span><span class="o">.</span><span class="n">time_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">time_step</span>
         <span class="k">return</span> <span class="n">opti_back</span>
 

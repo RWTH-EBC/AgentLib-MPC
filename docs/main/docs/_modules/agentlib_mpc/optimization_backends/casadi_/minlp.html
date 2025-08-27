@@ -122,7 +122,6 @@
         <span class="n">constraints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_constraints</span><span class="o">.</span><span class="n">function</span>
         <span class="n">outputs</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="n">ode</span><span class="p">,</span> <span class="n">constraints</span><span class="p">)</span>
         <span class="n">jac</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">jac</span><span class="p">)</span>
         <span class="n">test_input</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">inputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">jac_func</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span>
             <span class="s2">&quot;jac_func&quot;</span><span class="p">,</span>
@@ -196,13 +195,73 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span><span class="o">*</span><span class="n">constraint</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="MultipleShooting"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.minlp.MultipleShooting">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MultipleShooting</span><span class="p">(</span><span class="n">basic</span><span class="o">.</span><span class="n">MultipleShooting</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_discretize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="n">CasadiMINLPSystem</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Defines a multiple shooting discretization</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">vars_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{}}</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">prediction_horizon</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">time_step</span>
+        <span class="n">opts</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;t0&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;tf&quot;</span><span class="p">:</span> <span class="n">ts</span><span class="p">}</span>
+        <span class="c1"># Initial State</span>
+        <span class="n">x0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">initial_state</span><span class="p">)</span>
+        <span class="n">xk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="p">,</span> <span class="n">lb</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span> <span class="n">ub</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">x0</span><span class="p">)</span>
+        <span class="n">vars_dict</span><span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">xk</span>
+        <span class="n">const_par</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">)</span>
+        <span class="c1"># ODE is used here because the algebraics can be calculated with the stage function</span>
+        <span class="n">opt_integrator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_ode</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="n">integrator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">integrator</span><span class="p">)</span>
+        <span class="c1"># initiate states</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+            <span class="n">uk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="p">)</span>
+            <span class="n">wk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">binary_controls</span><span class="p">)</span>
+            <span class="n">dk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="p">)</span>
+            <span class="n">zk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">algebraics</span><span class="p">)</span>
+            <span class="n">yk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span>
+            <span class="c1"># get stage</span>
+            <span class="n">stage_arguments</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="c1"># variables</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">xk</span><span class="p">,</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">algebraics</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">zk</span><span class="p">,</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">yk</span><span class="p">,</span>
+                <span class="c1"># parameters</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">uk</span><span class="p">,</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">binary_controls</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">wk</span><span class="p">,</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">dk</span><span class="p">,</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">const_par</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="c1"># get stage</span>
+            <span class="n">stage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stage_function</span><span class="p">(</span><span class="o">**</span><span class="n">stage_arguments</span><span class="p">)</span>
+
+            <span class="n">fk</span> <span class="o">=</span> <span class="n">opt_integrator</span><span class="p">(</span>
+                <span class="n">x0</span><span class="o">=</span><span class="n">xk</span><span class="p">,</span>
+                <span class="n">p</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="n">uk</span><span class="p">,</span> <span class="n">dk</span><span class="p">,</span> <span class="n">const_par</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="n">xk_end</span> <span class="o">=</span> <span class="n">fk</span><span class="p">[</span><span class="s2">&quot;xf&quot;</span><span class="p">]</span>
+            <span class="c1"># calculate model constraint</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span> <span class="o">=</span> <span class="n">ts</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span>
+            <span class="n">xk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="p">)</span>
+            <span class="n">vars_dict</span><span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">xk</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span><span class="n">xk</span> <span class="o">-</span> <span class="n">xk_end</span><span class="p">,</span> <span class="n">gap_closing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span>
+                <span class="n">stage</span><span class="p">[</span><span class="s2">&quot;model_constraints&quot;</span><span class="p">],</span>
+                <span class="n">lb</span><span class="o">=</span><span class="n">stage</span><span class="p">[</span><span class="s2">&quot;lb_model_constraints&quot;</span><span class="p">],</span>
+                <span class="n">ub</span><span class="o">=</span><span class="n">stage</span><span class="p">[</span><span class="s2">&quot;ub_model_constraints&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">stage</span><span class="p">[</span><span class="s2">&quot;cost_function&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ts</span></div>
+
+
 <div class="viewcode-block" id="CasADiMINLPBackend"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.minlp.CasADiMINLPBackend">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CasADiMINLPBackend</span><span class="p">(</span><span class="n">CasADiBackend</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class doing optimization of ADMM subproblems with CasADi.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">system_type</span> <span class="o">=</span> <span class="n">CasadiMINLPSystem</span>
-    <span class="n">discretization_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">DiscretizationMethod</span><span class="o">.</span><span class="n">collocation</span><span class="p">:</span> <span class="n">DirectCollocation</span><span class="p">}</span>
+    <span class="n">discretization_types</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">DiscretizationMethod</span><span class="o">.</span><span class="n">collocation</span><span class="p">:</span> <span class="n">DirectCollocation</span><span class="p">,</span>
+        <span class="n">DiscretizationMethod</span><span class="o">.</span><span class="n">multiple_shooting</span><span class="p">:</span> <span class="n">MultipleShooting</span><span class="p">,</span>
+    <span class="p">}</span>
     <span class="n">system</span><span class="p">:</span> <span class="n">CasadiMINLPSystem</span></div>
 </pre></div>
 

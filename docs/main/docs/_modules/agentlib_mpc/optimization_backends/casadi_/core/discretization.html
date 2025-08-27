@@ -128,7 +128,7 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">variable_grid_indices</span><span class="p">[</span><span class="n">item</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable_name_to_index</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
-        <span class="p">]</span><span class="o">.</span><span class="n">toarray</span><span class="p">(</span><span class="n">simplify</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">toarray</span><span class="p">(</span><span class="n">simplify</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Results.variable_lookup"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.variable_lookup">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">variable_lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a mapping from variable names to the column index in the Matrix&quot;&quot;&quot;</span>
@@ -258,15 +258,6 @@
 
         <span class="c1"># format and return solution</span>
         <span class="n">mpc_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nlp_outputs_to_mpc_outputs</span><span class="p">(</span><span class="n">vars_at_optimum</span><span class="o">=</span><span class="n">nlp_output</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">])</span>
-        <span class="c1"># clip binary values within tolerance</span>
-        <span class="k">if</span> <span class="s2">&quot;w&quot;</span> <span class="ow">in</span> <span class="n">mpc_output</span><span class="p">:</span>
-            <span class="n">tolerance</span> <span class="o">=</span> <span class="mf">1e-5</span>
-            <span class="n">bin_array</span> <span class="o">=</span> <span class="n">mpc_output</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">full</span><span class="p">()</span>
-            <span class="n">bin_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="o">-</span><span class="n">tolerance</span> <span class="o">&lt;</span> <span class="n">bin_array</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">bin_array</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span>
-                                 <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="mi">1</span> <span class="o">&lt;</span> <span class="n">bin_array</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">bin_array</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">tolerance</span><span class="p">),</span>
-                                          <span class="mi">1</span><span class="p">,</span> <span class="n">bin_array</span><span class="p">))</span>
-            <span class="n">mpc_output</span><span class="p">[</span><span class="s2">&quot;w&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bin_array</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_remember_solution</span><span class="p">(</span><span class="n">mpc_output</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_solution</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">mpc_inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">mpc_output</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
@@ -301,9 +292,7 @@
                             <span class="o">+</span> <span class="n">mpc_inputs</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ub_</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
-                    <span class="n">guess</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span>
-                        <span class="n">guess</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=-</span><span class="mi">0</span>
-                    <span class="p">)</span>
+                    <span class="n">guess</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">guess</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=-</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">guesses</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">GUESS_PREFIX</span> <span class="o">+</span> <span class="n">denotation</span><span class="p">:</span> <span class="n">guess</span><span class="p">})</span>
 
         <span class="k">return</span> <span class="n">guesses</span>
@@ -327,7 +316,7 @@
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>
             <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">GUESS_PREFIX</span><span class="p">):</span>
-                <span class="n">out_key</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">GUESS_PREFIX</span><span class="p">):]</span>
+                <span class="n">out_key</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">GUESS_PREFIX</span><span class="p">)</span> <span class="p">:]</span>
                 <span class="n">inputs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">outputs</span><span class="p">[</span><span class="n">out_key</span><span class="p">]</span>
 
         <span class="n">result_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_map</span><span class="p">(</span><span class="o">**</span><span class="n">inputs</span><span class="p">)[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
