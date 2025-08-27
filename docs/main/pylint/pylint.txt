@@ -73,11 +73,12 @@ pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pyli
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'eq-without-hash' (unknown-option-value)
 ************* Module ci.test_examples
 ci/test_examples.py:9:0: E0401: Unable to import 'pytest' (import-error)
-ci/test_examples.py:65:8: W0105: String statement has no effect (pointless-string-statement)
-ci/test_examples.py:73:4: C0116: Missing function or method docstring (missing-function-docstring)
-ci/test_examples.py:83:4: C0116: Missing function or method docstring (missing-function-docstring)
-ci/test_examples.py:93:4: C0116: Missing function or method docstring (missing-function-docstring)
-ci/test_examples.py:109:4: C0116: Missing function or method docstring (missing-function-docstring)
+ci/test_examples.py:60:8: W0105: String statement has no effect (pointless-string-statement)
+ci/test_examples.py:68:4: C0116: Missing function or method docstring (missing-function-docstring)
+ci/test_examples.py:76:4: C0116: Missing function or method docstring (missing-function-docstring)
+ci/test_examples.py:86:4: C0116: Missing function or method docstring (missing-function-docstring)
+ci/test_examples.py:96:4: C0116: Missing function or method docstring (missing-function-docstring)
+ci/test_examples.py:112:4: C0116: Missing function or method docstring (missing-function-docstring)
 ci/test_examples.py:5:0: W0611: Unused import subprocess (unused-import)
 ************* Module conftest
 tests/conftest.py:1:0: C0114: Missing module docstring (missing-module-docstring)
@@ -181,5 +182,5 @@ tests/test_serialized_linreg.py:11:0: C0411: third party import "from fixtures.l
 tests/test_serialized_linreg.py:12:0: C0411: third party import "from fixtures.data_generator import DataGenerator" should be placed before "from agentlib_mpc.data_structures import ml_model_datatypes" (wrong-import-order)
 
 -----------------------------------
-Your code has been rated at 7.37/10
+Your code has been rated at 7.39/10
 
