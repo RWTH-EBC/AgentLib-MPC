@@ -2,7 +2,6 @@ import dataclasses
 from pathlib import Path
 from typing import Literal
 
-import keras.callbacks
 import pandas as pd
 import pydantic
 from enum import Enum
@@ -136,17 +135,3 @@ def name_with_lag(name: str, lag: int) -> str:
     if lag == 0:
         return name
     return f"{name}_{lag}"
-
-
-class EarlyStoppingCallback(pydantic.BaseModel):
-    patience: int = (1000,)
-    verbose: Literal[0, 1] = 0
-    restore_best_weights: bool = True
-    activate: bool = False
-
-    def callback(self):
-        return keras.callbacks.EarlyStopping(
-            patience=self.patience,
-            verbose=self.verbose,
-            restore_best_weights=self.restore_best_weights,
-        )

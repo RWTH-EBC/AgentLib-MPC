@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.0
+- separate ml model types so not all are required in installation and import
+- make stats in mpc dashboard more robust
+
+
 ## 0.6.7
 - #60: Forbid users from creating instance attributes which are also variables in CasadiModel
 

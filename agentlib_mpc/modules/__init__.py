@@ -44,19 +44,19 @@ MODULE_TYPES = {
         class_name="ADMMCoordinator",
     ),
     "ann_trainer": ModuleImport(
-        module_path="agentlib_mpc.modules.ml_model_training.ml_model_trainer",
+        module_path="agentlib_mpc.modules.ml_model_training.ann_trainer",
         class_name="ANNTrainer",
     ),
     "gpr_trainer": ModuleImport(
-        module_path="agentlib_mpc.modules.ml_model_training.ml_model_trainer",
+        module_path="agentlib_mpc.modules.ml_model_training.gpr_trainer",
         class_name="GPRTrainer",
     ),
     "linreg_trainer": ModuleImport(
-        module_path="agentlib_mpc.modules.ml_model_training.ml_model_trainer",
+        module_path="agentlib_mpc.modules.ml_model_training.linreg_trainer",
         class_name="LinRegTrainer",
     ),
-    "ann_simulator": ModuleImport(
-        module_path="agentlib_mpc.modules.ann_simulator",
+    "ml_model_simulator": ModuleImport(
+        module_path="agentlib_mpc.modules.ml_model_simulator",
         class_name="MLModelSimulator",
     ),
     "set_point_generator": ModuleImport(

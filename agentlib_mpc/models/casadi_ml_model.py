@@ -21,13 +21,12 @@ from pydantic import (
 from agentlib_mpc.data_structures import ml_model_datatypes
 from agentlib_mpc.data_structures.ml_model_datatypes import OutputType, name_with_lag
 
-from agentlib_mpc.models.casadi_predictor import CasadiPredictor
+from agentlib_mpc.models.casadi_predictor.casadi_predictor import CasadiPredictor
 from agentlib_mpc.models.casadi_model import (
     CasadiModel,
     CasadiModelConfig,
     CasadiState,
     CasadiOutput,
-    CasadiTypes,
 )
 from agentlib_mpc.models.serialized_ml_model import (
     SerializedMLModel,
@@ -185,15 +184,21 @@ class CasadiMLModel(CasadiModel):
 
     @staticmethod
     def _get_forbidden_variable_names() -> set[str]:
-        return super()._get_forbidden_variable_names().union({
-            "sim_step",
-            "past_value",
-            "lags_mx_store",
-            "max_lag",
-            "lags_dict",
-            "ml_model_dict",
-            "casadi_ml_model_dict",
-        })
+        return (
+            super()
+            ._get_forbidden_variable_names()
+            .union(
+                {
+                    "sim_step",
+                    "past_value",
+                    "lags_mx_store",
+                    "max_lag",
+                    "lags_dict",
+                    "ml_model_dict",
+                    "casadi_ml_model_dict",
+                }
+            )
+        )
 
     def setup_system(self):
         return 0
@@ -587,7 +592,6 @@ class CasadiMLModel(CasadiModel):
             var.name: var.value for var in self.variables if var.value is not None
         }
         full_input.update(ml_model_input)
-
 
         result = self.sim_step(**full_input)
         end_time = t_start + self.dt

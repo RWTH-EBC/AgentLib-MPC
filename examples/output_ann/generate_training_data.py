@@ -13,7 +13,7 @@ from agentlib_mpc.models.casadi_model import (
 )
 from agentlib_mpc.models.casadi_ml_model import CasadiMLModelConfig, CasadiMLModel
 from agentlib_mpc.models.serialized_ml_model import SerializedANN
-from agentlib_mpc.modules.ml_model_training.ml_model_trainer import ANNTrainer
+from agentlib_mpc.modules.ml_model_training.ann_trainer import ANNTrainer
 
 
 def generate_test_data() -> pd.DataFrame:
