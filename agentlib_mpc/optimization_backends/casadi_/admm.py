@@ -141,7 +141,6 @@ class ADMMCollocation(DirectCollocation):
             dk = self.add_opt_par(sys.non_controlled_inputs)
 
             # perform inner collocation loop
-            # perform inner collocation loop
             opt_vars_inside_inner = [
                 sys.algebraics,
                 sys.outputs,
@@ -153,13 +152,8 @@ class ADMMCollocation(DirectCollocation):
                 sys.multipliers,
                 sys.exchange_multipliers,
                 sys.exchange_diff,
+                sys.non_controlled_inputs,
             ]
-            constant_over_inner = {
-                sys.controls: uk,
-                sys.non_controlled_inputs: dk,
-                sys.model_parameters: const_par,
-                sys.penalty_factor: rho,
-            }
             xk_end, constraints = self._collocation_inner_loop(
                 collocation=collocation_matrices,
                 state_at_beginning=xk,
