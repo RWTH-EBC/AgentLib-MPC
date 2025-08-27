@@ -1,4 +1,5 @@
 import logging
+import sys
 from pathlib import Path
 import matplotlib.pyplot as plt
 import os
@@ -35,6 +36,7 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                         "method": "multiple_shooting",
                     },
                     "results_file": "results//opt.csv",
+                    "overwrite_result_file": True,
                     "solver": {"name": "qpoases"},
                 },
                 "time_step": 300,
@@ -83,8 +85,14 @@ def agent_configs(ml_model_path: str) -> list[dict]:
 
 
 def run_example(with_plots=True, log_level=logging.INFO, until=8000):
-    # Change the working directly so that relative paths work
-    os.chdir(os.path.abspath(os.path.dirname(__file__)))
+    # Change the working directory so that relative paths work
+    script_dir = os.path.abspath(os.path.dirname(__file__))
+    os.chdir(script_dir)
+
+    # Add the script directory to Python path for imports
+    if script_dir not in sys.path:
+        sys.path.insert(0, script_dir)
+
     logging.basicConfig(level=log_level)
 
     # gets the subdirectory of anns with the highest number, i.e. the longest training

@@ -328,8 +328,7 @@ class CasadiModel(Model):
         self.integrator = None  # set in intitialize
         self.initialize()
 
-    @staticmethod
-    def _get_forbidden_variable_names() -> set[str]:
+    def _get_forbidden_variable_names(self) -> set[str]:
         """
         Function gives all variable names which are forbidden
         due to the fact that we override __setattr__ in order
@@ -383,7 +382,8 @@ class CasadiModel(Model):
         algebraic values at the end of the interval."""
         opts = {"t0": 0, "tf": self.dt}
         par = ca.vertcat(
-            *[inp.sym for inp in chain.from_iterable([self.inputs, self.parameters])], self.time
+            *[inp.sym for inp in chain.from_iterable([self.inputs, self.parameters])],
+            self.time,
         )
         x = ca.vertcat(*[sta.sym for sta in self.differentials])
         z = ca.vertcat(*[var.sym for var in self.outputs])
@@ -485,7 +485,8 @@ class CasadiModel(Model):
 
     def get_input_values(self, t_start):
         return ca.vertcat(
-            *[inp.value for inp in chain.from_iterable([self.inputs, self.parameters])],t_start
+            *[inp.value for inp in chain.from_iterable([self.inputs, self.parameters])],
+            t_start,
         )
 
     def get_differential_values(self):

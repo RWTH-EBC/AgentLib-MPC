@@ -252,6 +252,7 @@ agent_mpc = {
                 "model": {"type": {"file": __file__, "class_name": "MyCasadiModel"}},
                 "discretization_options": {},
                 "results_file": "results//trajectories_mpc.csv",
+                "overwrite_result_file": True,
                 "build_batch_bat": "solver_lib/compile_nlp.bat",
                 "do_jit": False,
             },
@@ -271,7 +272,12 @@ agent_mpc = {
             "controls": [{"name": "mDot", "value": 0.02, "ub": 1, "lb": 0}],
             "states": [{"name": "T", "value": 298.16, "ub": 303.15, "lb": 288.15}],
         },
-        {"type": "AgentLogger", "t_sample": 3600, "values_only": False},
+        {
+            "type": "AgentLogger",
+            "t_sample": 3600,
+            "values_only": False,
+            "overwrite_log": True,
+        },
     ],
 }
 
