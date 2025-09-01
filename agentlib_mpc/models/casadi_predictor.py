@@ -1,11 +1,11 @@
 import abc
-
+from abc import abstractmethod
 import casadi as ca
 import numpy as np
 
 from enum import Enum
 from keras import layers
-
+from keras.src import Functional
 from typing import Union, TYPE_CHECKING
 
 from agentlib_mpc.models.serialized_ml_model import (
@@ -13,7 +13,7 @@ from agentlib_mpc.models.serialized_ml_model import (
     SerializedLinReg,
     SerializedGPR,
     SerializedANN,
-    MLModels,
+    MLModels, SerializedKerasANN,
 )
 
 if TYPE_CHECKING:
@@ -40,7 +40,7 @@ class CasadiPredictor(abc.ABC):
     def __init__(self, serialized_model: SerializedMLModel) -> None:
         """Initialize Predictor class."""
         self.serialized_model: SerializedMLModel = serialized_model
-        self.predictor_model: Union[Sequential, CustomGPR, LinearRegression] = (
+        self.predictor_model: Union[Sequential, CustomGPR, LinearRegression, Functional] = (
             serialized_model.deserialize()
         )
         self.sym_input: ca.MX = self._get_sym_input()
@@ -198,11 +198,15 @@ class ANNLayerTypes(str, Enum):
     DENSE = "dense"
     FLATTEN = "flatten"
     BATCHNORMALIZATION = "batch_normalization"
-    LSTM = "lstm"
+    NORMALIZATION = "normalization"
+    CROPPING1D = "cropping1d"
+    CONCATENATE = "concatenate"
+    RESHAPE = "reshape"
+    ADD = "add"
     RESCALING = "rescaling"
 
 
-class Layer:
+class Layer(abc.ABC):
     """
     Single layer of an artificial neural network.
     """
@@ -214,71 +218,49 @@ class Layer:
         if "name" in self.config:
             self.name = self.config["name"]
 
-        # units
-        if "units" in self.config:
-            self.units = self.config["units"]
-
         # activation function
-        if "activation" in self.config:
-            self.activation = self.get_activation(layer.get_config()["activation"])
+
 
         # input / output shape
-        self.input_shape = layer.input.shape[1:]
-        self.output_shape = layer.output.shape[1:]
+        # TODO: Check if more detailed translation is needed
+        if isinstance(layer.input, list):
+            self.input_shape = None
+        else:
+            self.input_shape = layer.input.shape[1:]
 
         # update the dimensions to two dimensions
         self.update_dimensions()
 
-        # symbolic input layer
-        self.input_layer = ca.MX.sym(
-            "input_layer", self.input_shape[0], self.input_shape[1]
-        )
-
-    def __str__(self):
-        ret = ""
-
-        if hasattr(self, "units"):
-            ret += f"\tunits:\t\t\t\t{self.units}\n"
-        if hasattr(self, "activation"):
-            ret += f"\tactivation:\t\t\t{self.activation.__str__()}\n"
-        if hasattr(self, "recurrent_activation"):
-            ret += f"\trec_activation:\t\t{self.recurrent_activation.__str__()}\n"
-        ret += f"\tinput_shape:\t\t{self.input_shape}\n"
-        ret += f"\toutput_shape:\t\t{self.output_shape}\n"
-
-        return ret
 
     def update_dimensions(self):
         """
         CasADi does only work with two dimensional arrays. So the dimensions must be updated.
         """
 
-        if len(self.input_shape) == 1:
+        if self.input_shape is None:
+            pass
+        elif len(self.input_shape) == 1:
             self.input_shape = (1, self.input_shape[0])
         elif len(self.input_shape) == 2:
             self.input_shape = (self.input_shape[0], self.input_shape[1])
         else:
             raise ValueError("Please check input dimensions.")
 
-        if len(self.output_shape) == 1:
-            self.output_shape = (1, self.output_shape[0])
-        elif len(self.output_shape) == 2:
-            self.output_shape = (self.output_shape[0], self.output_shape[1])
-        else:
-            raise ValueError("Please check output dimensions.")
-
     @staticmethod
-    def get_activation(function: str):
+    def get_activation(function: str) -> ca.Function:
         blank = ca.MX.sym("blank")
 
         if function == "sigmoid":
             return ca.Function(function, [blank], [1 / (1 + ca.exp(-blank))])
 
-        if function == "tanh":
+        elif function == "tanh":
             return ca.Function(function, [blank], [ca.tanh(blank)])
 
         elif function == "relu":
             return ca.Function(function, [blank], [ca.fmax(0, blank)])
+
+        elif function == 'exponential':
+            return ca.Function(function, [blank], [ca.exp(blank)])
 
         elif function == "softplus":
             return ca.Function(function, [blank], [ca.log(1 + ca.exp(blank))])
@@ -289,8 +271,31 @@ class Layer:
         elif function == "linear":
             return ca.Function(function, [blank], [blank])
 
-        else:
-            ValueError(f"Unknown activation function:{function}")
+        elif isinstance(function, dict):
+            if 'class_name' in function:
+                if 'registered_name' in function:
+                    if function['registered_name'] == 'custom_activation>ConcaveActivation':
+                        return ca.Function(function['class_name'], [blank],
+                                        [-Layer.get_activation(function['config']['activation'])(-blank)])
+                    elif function['registered_name'] == 'custom_activation>SaturatedActivation':
+                        if function['config']['activation'] == 'relu':
+                            return ca.Function(function['class_name'], [blank], [ca.fmin(1, ca.fmax(-1, blank))])
+                        elif function['config']['activation'] == 'softplus':
+                            casadi_function = ca.if_else(
+                                blank >= 0,
+                                ca.log((1 + ca.exp(1)) / (1 + ca.exp(1 - blank))),
+                                ca.log((1 + ca.exp(1 + blank)) / (1 + ca.exp(1)))
+                            )
+                            return ca.Function(function['class_name'], [blank], [casadi_function])
+                        else:
+                            raise NotImplementedError('Keras Model: Saturated activation function for activions other '
+                                                      'than relu or softplus are not implemented yet.')
+
+        raise ValueError(f"Unknown activation function:{function}")
+
+    @abstractmethod
+    def forward(self, input):
+        pass
 
 
 class Dense(Layer):
@@ -301,11 +306,21 @@ class Dense(Layer):
     def __init__(self, layer: layers.Dense):
         super().__init__(layer)
 
+        self.activation = self.get_activation(layer.get_config()["activation"])
+
         # weights and biases
-        self.weights, self.biases = layer.get_weights()
+        try:
+            self.weights, self.biases = layer.get_weights()
+        except ValueError as e:
+            if e.__str__() == "not enough values to unpack (expected 2, got 1)":
+                self.weights = layer.get_weights()
+                self.biases = np.zeros(1)
+            else:
+                raise e
         self.biases = self.biases.reshape(1, self.biases.shape[0])
 
         # check input dimension
+        # TODO: Check if needed
         if self.input_shape[1] != self.weights.shape[0]:
             raise ValueError(
                 f"Please check the input dimensions of this layer. Layer with error: {self.name}"
@@ -313,6 +328,7 @@ class Dense(Layer):
 
     def forward(self, input):
         # return forward pass
+        # TODO: Check if np.repeat is needed
         return self.activation(input @ self.weights + self.biases)
 
 
@@ -346,10 +362,6 @@ class BatchNormalization(Layer):
             axis = self.config["axis"][0]
             raise ValueError(f"Dimension mismatch. Normalized axis: {axis}")
 
-        # symbolic input layer
-        self.input_layer = ca.MX.sym(
-            "input_layer", self.input_shape[0], self.input_shape[1]
-        )
 
     def forward(self, input):
         # forward pass
@@ -360,81 +372,81 @@ class BatchNormalization(Layer):
         return f
 
 
-class LSTM(Layer):
-    """
-    Long Short Term Memory cell.
-    """
+class Normalization(Layer):
 
-    def __init__(self, layer: layers.LSTM):
-        super(LSTM, self).__init__(layer)
-
-        # recurrent activation
-        self.recurrent_activation = self.get_activation(
-            layer.get_config()["recurrent_activation"]
-        )
-
-        # load weights and biases
-        W = layer.get_weights()[0]
-        U = layer.get_weights()[1]
-        b = layer.get_weights()[2]
-
-        # weights (kernel)
-        self.W_i = W[:, : self.units]
-        self.W_f = W[:, self.units : self.units * 2]
-        self.W_c = W[:, self.units * 2 : self.units * 3]
-        self.W_o = W[:, self.units * 3 :]
-
-        # weights (recurrent kernel)
-        self.U_i = U[:, : self.units]
-        self.U_f = U[:, self.units : self.units * 2]
-        self.U_c = U[:, self.units * 2 : self.units * 3]
-        self.U_o = U[:, self.units * 3 :]
-
-        # biases
-        self.b_i = ca.np.expand_dims(b[: self.units], axis=0)
-        self.b_f = ca.np.expand_dims(b[self.units : self.units * 2], axis=0)
-        self.b_c = ca.np.expand_dims(b[self.units * 2 : self.units * 3], axis=0)
-        self.b_o = ca.np.expand_dims(b[self.units * 3 :], axis=0)
-
-        # initial memory and output
-        self.h_0 = ca.np.zeros((1, self.units))
-        self.c_0 = ca.np.zeros((1, self.units))
+    def __init__(self, layer: layers.Normalization):
+        super(Normalization, self).__init__(layer)
+        if len(layer.mean.numpy().shape) == 3:
+            self.mean = layer.mean.numpy()[-1]
+            self.var = layer.variance.numpy()[-1]
+        elif len(layer.mean.numpy().shape) == 2:
+            self.mean = layer.mean.numpy()
+            self.var = layer.variance.numpy()
+        else:
+            raise Exception(
+                f'Normalization layer: Expecting dimension to be 2 or 3, was {len(layer.mean.numpy().shape)}')
 
     def forward(self, input):
-        # check input shape
-        if input.shape != self.input_shape:
-            raise ValueError("Dimension mismatch!")
+        return (input - np.repeat(self.mean, input.shape[0], axis=0)) / \
+            np.repeat(np.sqrt(self.var), input.shape[0], axis=0)
 
-        # initial
-        c = self.c_0
-        h = self.h_0
 
-        # number of time steps
-        steps = self.input_shape[0]
+class Cropping1D(Layer):
 
-        # forward pass
-        for i in range(steps):
-            # input for the current step
-            x = input[i, :]
+    def __init__(self, layer: layers.Cropping1D):
+        super(Cropping1D, self).__init__(layer)
+        self.cropping = layer.cropping
 
-            # calculate memory(c) and output(h)
-            c, h = self.step(x, c, h)
+    def forward(self, input):
+        return input[self.cropping[0]:input.shape[0] - self.cropping[1], :]
 
-        # here the output has to be transposed, because of the dense layer implementation
-        return h
 
-    def step(self, x_t, c_prev, h_prev):
-        # gates
-        i_t = self.recurrent_activation(x_t @ self.W_i + h_prev @ self.U_i + self.b_i)
-        f_t = self.recurrent_activation(x_t @ self.W_f + h_prev @ self.U_f + self.b_f)
-        o_t = self.recurrent_activation(x_t @ self.W_o + h_prev @ self.U_o + self.b_o)
-        c_t = self.activation(x_t @ self.W_c + h_prev @ self.U_c + self.b_c)
+class Concatenate(Layer):
 
-        # memory and output
-        c_next = f_t * c_prev + i_t * c_t
-        h_next = o_t * self.activation(c_next)
+    def __init__(self, layer: layers.Concatenate):
+        super(Concatenate, self).__init__(layer)
+        self.axis = layer.axis
 
-        return c_next, h_next
+    def forward(self, *input):
+        if self.axis == -1 or self.axis == 2:
+            return ca.horzcat(*input)
+        elif self.axis == 1:
+            return ca.vertcat(*input)
+        else:
+            raise NotImplementedError(f'Concatenate layer with axis={self.axis} not implemented yet.')
+
+
+class Reshape(Layer):
+
+    def __init__(self, layer: layers.Reshape):
+        super(Reshape, self).__init__(layer)
+        self.shape = layer.target_shape
+
+    def forward(self, input):
+        return ca.reshape(input, self.shape[0], self.shape[1])
+
+
+class Add(Layer):
+    def __init__(self, layer: layers.Add):
+        super(Add, self).__init__(layer)
+
+    def forward(self, *input):
+        init = 0
+        for inp in input:
+            init += inp
+        return init
+
+
+class Rescaling(Layer):
+
+    def __init__(self, layer: layers.Rescaling):
+        super(Rescaling, self).__init__(layer)
+        self.offset = layer.offset
+        self.scale = layer.scale
+
+    def forward(self, input):
+        f = input * self.scale + self.offset
+        return f
 
 
 class CasadiANN(CasadiPredictor):
@@ -442,49 +454,168 @@ class CasadiANN(CasadiPredictor):
     Generic implementations of sequential Keras models in CasADi.
     """
 
-    def __init__(self, serialized_model: SerializedANN):
+    def __init__(self, serialized_model: SerializedANN or SerializedKerasANN):
         """
         Supported layers:
             - Dense (Fully connected layer)
             - Flatten (Reduces the input dimension to 1)
-            - BatchNormalizing (Normalization)
-            - LSTM (Recurrent Cell)
+            - BatchNormalizing
+            - Normalizing
+            - Cropping1D
+            - Concatenate
+            - Reshape
+            - Add
             - Rescaling
         Args:
-            serialized_model: SerializedANN Model.
+            serialized_model: SerializedANN or SerializedKerasANN Model.
         """
         super().__init__(serialized_model)
 
     @property
     def input_shape(self) -> tuple[int, int]:
         """Input shape of Predictor."""
+        assert len(self.predictor_model.input_shape) == 2, (f"Error: Current version only supports Keras Models with "
+                                                            f"input_shape length 2, but was "
+                                                            f"{len(self.predictor_model.input_shape)}")
+        assert isinstance(self.predictor_model.input_shape[1], int), (f"Error: Current version only supports "
+                                                                      f"Keras Models with 1 input layer, but was "
+                                                                      f"{len(self.predictor_model.input_shape)}")
         return 1, self.predictor_model.input_shape[1]
 
     def _build_prediction_function(self) -> ca.Function:
         """Build the prediction function with casadi and a symbolic input."""
+        if isinstance(self.predictor_model, Functional):
+            return self._build_prediction_function_functionalAPI()
+        # elif not isinstance(self.predictor_model, Sequential):
+        #     raise NotImplementedError(f"Error: Keras Model type {type(self.predictor_model)} not supported")
         keras_layers = [layer for layer in self.predictor_model.layers]
         casadi_layers = []
         for keras_layer in keras_layers:
             name = keras_layer.get_config()["name"]
             for layer_type in ANNLayerTypes:
                 if layer_type.value in name:
-                    casadi_layers.append(ann_layer_types[layer_type.value](keras_layer))
-                    continue
+                    casadi_layers.append(ann_layer_types[layer_type](keras_layer))
+                    break
+            else:
+                raise NotImplementedError(f'Keras Layer with type "{name}" is not supported yet.')
         function = self.sym_input
         for casadi_layer in casadi_layers:
             function = casadi_layer.forward(function)
         return ca.Function("forward", [self.sym_input], [function])
 
+    def _build_prediction_function_functionalAPI(self) -> ca.Function:
+
+        fmx = {}
+        fnodes = {}
+        flayers = {}
+
+        # Add Layers
+        for layer in self.predictor_model.layers:
+
+            # get the name of the layer
+            name = layer.get_config()['name']
+
+            # recreate the matching layer
+            if 'input' in name:
+                if len(layer.batch_shape) > 2:
+                    if layer.batch_shape[1] is None:
+                        fmx[name, 0] = ca.MX.sym('input_layer', 1, layer.batch_shape[2])
+                    else:
+                        fmx[name, 0] = ca.MX.sym('input_layer', layer.batch_shape[1], layer.batch_shape[2])
+                else:
+                    fmx[name, 0] = ca.MX.sym('input_layer', 1, layer.batch_shape[1])
+            else:
+                for layer_type in ANNLayerTypes:
+                    if layer_type.value in name:
+                        ca_layer = ann_layer_types[layer_type](layer)
+                        flayers[name] = ca_layer
+                        break
+                else:
+                    raise NotImplementedError(f'Keras Layer with type "{name}" is not supported yet.')
+
+        # Create Nodes
+        for layer in self.predictor_model.layers:
+            connections = []
+            for node in layer._inbound_nodes:
+                connection = []
+                for it in node.input_tensors:
+                    keras_history = it._keras_history
+                    inbound_layer = keras_history.operation
+                    node_index = keras_history.node_index
+                    tensor_index = keras_history.tensor_index
+                    connection.append([inbound_layer.name, node_index, tensor_index])
+                connections.append(connection)
+            fnodes[layer.get_config()['name']] = connections
+
+        # Order Nodes
+        outputs = self.predictor_model.output_names
+        assert len(outputs) == 1, f"Error: Current version only supports Keras Models with one output"
+        ordering = []
+        visited_notes = []
+
+        def recursive_search(name, depth):
+            input_nodes = fnodes[name][depth]
+            if len(input_nodes) > 0:
+                for input_node in input_nodes:
+                    if (input_node[0], input_node[1]) not in visited_notes:
+                        recursive_search(input_node[0], input_node[1])
+            visited_notes.append((name, depth))
+            ordering.append((name, depth))
+
+        for output in outputs:
+            recursive_search(output, len(fnodes[output]) - 1)
+
+        # Update Forward
+        for name, depth in ordering:
+            if 'input' in name:
+                continue
+            else:
+                input_nodes = fnodes[name][depth]
+                input = []
+                if len(input_nodes) > 1:
+                    for input_node in input_nodes:
+                        i = fmx[input_node[0], input_node[1]]
+                        if isinstance(i, tuple):
+                            input.append(i[input_node[2]])
+                        else:
+                            input.append(i)
+                    output = flayers[name].forward(*input)
+                else:
+                    input = fmx[input_nodes[0][0], input_nodes[0][1]]
+                    if isinstance(input, tuple):
+                        input = input[input_nodes[0][2]]
+                    output = flayers[name].forward(input)
+                fmx[name, depth] = output
+
+        _input = [fmx[inp.name, 0] for inp in self.predictor_model.inputs]
+        prediction = []
+        for it in self.predictor_model.outputs:
+            keras_history = it._keras_history
+            inbound_layer = keras_history.operation
+            node_index = keras_history.node_index
+            tensor_index = keras_history.tensor_index
+            mx_var = fmx[inbound_layer.name, node_index]
+            if isinstance(mx_var, tuple):
+                mx_var = mx_var[tensor_index]
+            prediction.append(mx_var)
+
+        return ca.Function("forward", _input, prediction)
 
 ann_layer_types = {
     ANNLayerTypes.DENSE: Dense,
     ANNLayerTypes.FLATTEN: Flatten,
     ANNLayerTypes.BATCHNORMALIZATION: BatchNormalization,
-    ANNLayerTypes.LSTM: LSTM,
+    ANNLayerTypes.NORMALIZATION: Normalization,
+    ANNLayerTypes.CROPPING1D: Cropping1D,
+    ANNLayerTypes.CONCATENATE: Concatenate,
+    ANNLayerTypes.RESHAPE: Reshape,
+    ANNLayerTypes.ADD: Add,
+    ANNLayerTypes.RESCALING: Rescaling,
 }
 
 casadi_predictors = {
     MLModels.ANN: CasadiANN,
     MLModels.GPR: CasadiGPR,
     MLModels.LINREG: CasadiLinReg,
+    MLModels.KerasANN: CasadiANN,
 }
