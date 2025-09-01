@@ -296,10 +296,11 @@ class CasadiModel(Model):
     parameters and override the setup_system() method."""
 
     config: CasadiModelConfig
+    _is_initialized = False
 
     def __init__(self, **kwargs):
         # Temporarily disable __setattr__ checks during initialization as self.config does not exists at first
-        super().__setattr__("_is_initialized", False)
+        # super().__setattr__("_is_initialized", False)
         # Initializes the config
         super().__init__(**kwargs)
         self._is_initialized = True
