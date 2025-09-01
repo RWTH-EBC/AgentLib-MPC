@@ -8,7 +8,7 @@ from agentlib_mpc.data_structures.mpc_datamodels import (
     MINLPVariableReference,
     cia_relaxed_results_path,
 )
-from agentlib_mpc.modules.mpc import BaseMPCConfig, BaseMPC
+from agentlib_mpc.modules.mpc.mpc import BaseMPCConfig, BaseMPC
 from agentlib_mpc.optimization_backends.casadi_.minlp_cia import CasADiCIABackend
 
 logger = logging.getLogger(__name__)

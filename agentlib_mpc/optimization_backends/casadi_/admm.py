@@ -153,7 +153,6 @@ class ADMMCollocation(DirectCollocation):
             ]
             constant_over_inner = {
                 sys.controls: uk,
-                sys.non_controlled_inputs: dk,
                 sys.model_parameters: const_par,
                 sys.penalty_factor: rho,
             }
