@@ -6,6 +6,9 @@
 - Fix bugs that occur with newer numpy versions in ADMM.
 - Remove relative tolerance from ADMM, must provide tolerance for primal and dual residual in absolute values.
 
+## 0.6.8
+- #55 improved numerics of casadi model simulation by adding initial guess for outputs
+
 ## 0.6.7
 - Add option to skip MPC calculation in given time intervals, e.g. during summer period
 - Add a fallback pid module that listens to the same deactivation module and switches on
@@ -13,7 +16,6 @@
 
 ## 0.6.6
 - self.time available in mpc and ml mpc (not yet available for admm, minlp, etc)
-
 
 ## 0.6.5
 - Fix faulty warning about boundaries of binary controls
