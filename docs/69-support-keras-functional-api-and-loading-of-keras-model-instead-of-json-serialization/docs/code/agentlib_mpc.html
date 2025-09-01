@@ -514,11 +514,19 @@ and data-driven modeling.</p>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.models.html#module-agentlib_mpc.models.casadi_predictor">agentlib_mpc.models.casadi_predictor module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ANNLayerTypes"><code class="docutils literal notranslate"><span class="pre">ANNLayerTypes</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.ADD"><code class="docutils literal notranslate"><span class="pre">ANNLayerTypes.ADD</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.BATCHNORMALIZATION"><code class="docutils literal notranslate"><span class="pre">ANNLayerTypes.BATCHNORMALIZATION</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.CONCATENATE"><code class="docutils literal notranslate"><span class="pre">ANNLayerTypes.CONCATENATE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.CROPPING1D"><code class="docutils literal notranslate"><span class="pre">ANNLayerTypes.CROPPING1D</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.DENSE"><code class="docutils literal notranslate"><span class="pre">ANNLayerTypes.DENSE</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.FLATTEN"><code class="docutils literal notranslate"><span class="pre">ANNLayerTypes.FLATTEN</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.LSTM"><code class="docutils literal notranslate"><span class="pre">ANNLayerTypes.LSTM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.NORMALIZATION"><code class="docutils literal notranslate"><span class="pre">ANNLayerTypes.NORMALIZATION</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.RESCALING"><code class="docutils literal notranslate"><span class="pre">ANNLayerTypes.RESCALING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.RESHAPE"><code class="docutils literal notranslate"><span class="pre">ANNLayerTypes.RESHAPE</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Add"><code class="docutils literal notranslate"><span class="pre">Add</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Add.forward"><code class="docutils literal notranslate"><span class="pre">Add.forward()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.BatchNormalization"><code class="docutils literal notranslate"><span class="pre">BatchNormalization</span></code></a><ul>
@@ -549,6 +557,14 @@ and data-driven modeling.</p>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiPredictor.predict"><code class="docutils literal notranslate"><span class="pre">CasadiPredictor.predict()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Concatenate"><code class="docutils literal notranslate"><span class="pre">Concatenate</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Concatenate.forward"><code class="docutils literal notranslate"><span class="pre">Concatenate.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Cropping1D"><code class="docutils literal notranslate"><span class="pre">Cropping1D</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Cropping1D.forward"><code class="docutils literal notranslate"><span class="pre">Cropping1D.forward()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Dense"><code class="docutils literal notranslate"><span class="pre">Dense</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Dense.forward"><code class="docutils literal notranslate"><span class="pre">Dense.forward()</span></code></a></li>
 </ul>
@@ -557,14 +573,22 @@ and data-driven modeling.</p>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Flatten.forward"><code class="docutils literal notranslate"><span class="pre">Flatten.forward()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.LSTM"><code class="docutils literal notranslate"><span class="pre">LSTM</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.LSTM.forward"><code class="docutils literal notranslate"><span class="pre">LSTM.forward()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.LSTM.step"><code class="docutils literal notranslate"><span class="pre">LSTM.step()</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Layer"><code class="docutils literal notranslate"><span class="pre">Layer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Layer.forward"><code class="docutils literal notranslate"><span class="pre">Layer.forward()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Layer.get_activation"><code class="docutils literal notranslate"><span class="pre">Layer.get_activation()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Layer.update_dimensions"><code class="docutils literal notranslate"><span class="pre">Layer.update_dimensions()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Normalization"><code class="docutils literal notranslate"><span class="pre">Normalization</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Normalization.forward"><code class="docutils literal notranslate"><span class="pre">Normalization.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Rescaling"><code class="docutils literal notranslate"><span class="pre">Rescaling</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Rescaling.forward"><code class="docutils literal notranslate"><span class="pre">Rescaling.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Reshape"><code class="docutils literal notranslate"><span class="pre">Reshape</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Reshape.forward"><code class="docutils literal notranslate"><span class="pre">Reshape.forward()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -615,6 +639,7 @@ and data-driven modeling.</p>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.MLModels"><code class="docutils literal notranslate"><span class="pre">MLModels</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.MLModels.ANN"><code class="docutils literal notranslate"><span class="pre">MLModels.ANN</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.MLModels.GPR"><code class="docutils literal notranslate"><span class="pre">MLModels.GPR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.MLModels.KerasANN"><code class="docutils literal notranslate"><span class="pre">MLModels.KerasANN</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.MLModels.LINREG"><code class="docutils literal notranslate"><span class="pre">MLModels.LINREG</span></code></a></li>
 </ul>
 </li>
@@ -636,6 +661,14 @@ and data-driven modeling.</p>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedGPR.model_type"><code class="docutils literal notranslate"><span class="pre">SerializedGPR.model_type</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedGPR.deserialize"><code class="docutils literal notranslate"><span class="pre">SerializedGPR.deserialize()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedGPR.serialize"><code class="docutils literal notranslate"><span class="pre">SerializedGPR.serialize()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasANN"><code class="docutils literal notranslate"><span class="pre">SerializedKerasANN</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasANN.model_path"><code class="docutils literal notranslate"><span class="pre">SerializedKerasANN.model_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#id2"><code class="docutils literal notranslate"><span class="pre">SerializedKerasANN.model_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasANN.model_type"><code class="docutils literal notranslate"><span class="pre">SerializedKerasANN.model_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasANN.deserialize"><code class="docutils literal notranslate"><span class="pre">SerializedKerasANN.deserialize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasANN.serialize"><code class="docutils literal notranslate"><span class="pre">SerializedKerasANN.serialize()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedLinReg"><code class="docutils literal notranslate"><span class="pre">SerializedLinReg</span></code></a><ul>
