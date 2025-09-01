@@ -1,0 +1,175 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>agentlib_mpc.optimization_backends &mdash; agentlib_mpc 0.7.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../_static/jquery.js"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+      <script src="../../_static/doctools.js"></script>
+      <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            agentlib_mpc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../PackageReference.html">Package Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">agentlib_mpc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">agentlib_mpc.optimization_backends</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for agentlib_mpc.optimization_backends</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+
+
+<div class="viewcode-block" id="BackendImport"><a class="viewcode-back" href="../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.BackendImport">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BackendImport</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Data-Class to import a given python file</span>
+<span class="sd">    from ``import_path`` and load the given</span>
+<span class="sd">    ``class_name``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">import_path</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Import the Module with class_name from the import path&quot;&quot;&quot;</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">import_path</span><span class="p">)</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="n">backend_types</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;casadi_basic&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.basic&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CasADiBaseBackend&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;casadi&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.full&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CasADiFullBackend&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;casadi_admm&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.admm&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CasADiADMMBackend&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;casadi_minlp&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.minlp&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CasADiMINLPBackend&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;casadi_cia&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.minlp_cia&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CasADiCIABackend&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;casadi_ml&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.casadi_ml&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CasADiBBBackend&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;casadi_admm_ml&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CasADiADMMBackend_NN&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;casadi_nn&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.casadi_ml&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CasADiBBBackend&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;casadi_admm_nn&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CasADiADMMBackend_NN&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;casadi_mhe&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.mhe&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;MHEBackend&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">}</span>
+
+
+<span class="n">uninstalled_backend_types</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">pass</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">uninstalled_backend_types</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, AGENT-Project Associates.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
