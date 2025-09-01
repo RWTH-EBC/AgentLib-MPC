@@ -10,7 +10,7 @@ from agentlib_mpc.data_structures.mpc_datamodels import (
 from agentlib_mpc.models.casadi_model import CasadiModel, CasadiParameter
 from agentlib_mpc.optimization_backends.casadi_.core.casadi_backend import CasADiBackend
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
-    OptimizationParameter
+    OptimizationParameter,
 )
 
 
@@ -71,25 +71,18 @@ class DirectCollocation(basic.DirectCollocation):
             # penalty for control change between time steps
             self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
 
-            # New parameter for inputs
-            dk = self.add_opt_par(sys.non_controlled_inputs)
-
             # perform inner collocation loop
             opt_vars_inside_inner = [sys.algebraics, sys.outputs]
-            opt_pars_inside_inner = []
+            opt_pars_inside_inner = [sys.non_controlled_inputs]
 
-            constant_over_inner = {
-                sys.controls: uk,
-                sys.non_controlled_inputs: dk,
-                sys.model_parameters: const_par
-            }
+            constant_over_inner = {sys.controls: uk, sys.model_parameters: const_par}
             xk_end, constraints = self._collocation_inner_loop(
                 collocation=collocation_matrices,
                 state_at_beginning=xk,
                 states=sys.states,
                 opt_vars=opt_vars_inside_inner,
                 opt_pars=opt_pars_inside_inner,
-                const=constant_over_inner
+                const=constant_over_inner,
             )
 
             # increment loop counter and time

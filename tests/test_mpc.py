@@ -170,6 +170,28 @@ class TestCasadiMPC(unittest.TestCase):
         with self.assertRaises(ConfigurationError):
             _ = Agent(config=_agent_config, env=env)
 
+    def test_bad_names(self):
+        env = Environment(config=env_config)
+        _agent_config = self.agent_config
+        _agent_config["modules"][0]["optimization_backend"]["model"]["type"]["class_name"] = "BadNamesModel"
+        _agent_config["modules"][0]["states"] = []
+        _agent_config["modules"][0]["inputs"] = []
+        _agent_config["modules"][0]["controls"] = []
+
+        with self.assertRaises(NameError):
+            _ = Agent(config=_agent_config, env=env)
+
+    def test_instance_setter(self):
+        env = Environment(config=env_config)
+        _agent_config = self.agent_config
+        _agent_config["modules"][0]["optimization_backend"]["model"]["type"]["class_name"] = "InstanceAttributeSetterTestModel"
+        _agent_config["modules"][0]["states"] = []
+        _agent_config["modules"][0]["inputs"] = []
+        _agent_config["modules"][0]["controls"] = []
+
+        with self.assertRaises(AttributeError):
+            _ = Agent(config=_agent_config, env=env)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -159,6 +159,7 @@ AGENT_MPC = {
                     # "name": "gurobi",
                 },
                 "results_file": "results//mpc.csv",
+                "overwrite_result_file": True,
                 "save_results": True,
             },
             "time_step": 300,

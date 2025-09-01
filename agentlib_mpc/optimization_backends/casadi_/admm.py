@@ -137,10 +137,6 @@ class ADMMCollocation(DirectCollocation):
             # penalty for control change between time steps
             self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
 
-            # New parameter for inputs
-            dk = self.add_opt_par(sys.non_controlled_inputs)
-
-            # perform inner collocation loop
             # perform inner collocation loop
             opt_vars_inside_inner = [
                 sys.algebraics,
@@ -153,6 +149,7 @@ class ADMMCollocation(DirectCollocation):
                 sys.multipliers,
                 sys.exchange_multipliers,
                 sys.exchange_diff,
+                sys.non_controlled_inputs,
             ]
             constant_over_inner = {
                 sys.controls: uk,

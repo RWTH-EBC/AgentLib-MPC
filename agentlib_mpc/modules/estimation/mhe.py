@@ -150,6 +150,7 @@ class MHE(SkippableMixin):
         )
         opti_back.register_logger(self.logger)
         disc_opts = opti_back.config.discretization_options
+        disc_opts.prediction_horizon = self.config.horizon
         disc_opts.time_step = self.config.time_step
         return opti_back
 
