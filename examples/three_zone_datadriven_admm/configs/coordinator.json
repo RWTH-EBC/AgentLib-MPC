@@ -10,11 +10,8 @@
       "wait_time_on_start_iters": 0.15,
       "admm_iter_max": 50,
       "registration_period": 5,
-      "abs_tol": 0.05,
-      "rel_tol": 0.05,
       "primal_tol": 0.04,
       "dual_tol": 0.04,
-      "use_relative_tolerances": false,
       "save_solve_stats": true,
       "solve_stats_file": "results//residuals.csv"
     },

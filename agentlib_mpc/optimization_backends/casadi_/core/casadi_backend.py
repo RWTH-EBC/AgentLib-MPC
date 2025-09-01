@@ -50,6 +50,13 @@ class CasadiBackendConfig(BackendConfig):
         description="Boolean to turn JIT of the optimization problems on or off.",
         validate_default=True,
     )
+    save_only_stats: bool = pydantic.Field(
+        default=False,
+        description="If results should be saved, setting this to True will only save"
+                    "the optimization statistics. May be useful for longer timespans,"
+                    "if the results with all predictions gets too large."
+    )
+
 
     @pydantic.field_validator("do_jit")
     @classmethod
@@ -281,13 +288,24 @@ class CasADiBackend(OptimizationBackend):
             return
 
         res_file = self.config.results_file
-        if not self.results_file_exists():
+        stats_file = stats_path(res_file)
+
+        first_entry = False
+        # Handle stats
+        if not self.results_folder_exists():
+            results.write_stats_columns(stats_file)
+            first_entry = True
+
+        with open(stats_file, "a") as f:
+            f.writelines(results.stats_line(str(now)))
+
+        if self.config.save_only_stats:
+            return
+
+        # Handle all results, including predictions
+        if first_entry:
             results.write_columns(res_file)
-            results.write_stats_columns(stats_path(res_file))
 
         df = results.df
         df.index = list(map(lambda x: str((now, x)), df.index))
         df.to_csv(res_file, mode="a", header=False)
-
-        with open(stats_path(res_file), "a") as f:
-            f.writelines(results.stats_line(str(now)))

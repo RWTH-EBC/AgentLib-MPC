@@ -331,7 +331,7 @@ class BaseMPC(BaseModule):
             ub = self.get(control).ub
             lb = self.get(control).lb
             # take the first entry of the control trajectory
-            actuation = solution[control][0]
+            actuation = float(solution[control][0])
             # if variables only slightly breach boundaries, clip
             if ub < actuation < ub + tolerance:
                 actuation = ub

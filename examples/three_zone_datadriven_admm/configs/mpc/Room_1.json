@@ -25,6 +25,7 @@
           "method":"multiple_shooting"
         },
         "results_file": "results//room_1.csv",
+        "overwrite_result_file": true,
         "save_results": true,
         "build_batch_bat": "solver_lib//compile_nlp.bat",
         "do_jit": false
