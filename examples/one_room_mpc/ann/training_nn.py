@@ -72,7 +72,10 @@ def plot(results):
 
 
 def configs(
-    training_time: float = 1000, plot_results: bool = False, step_size: float = 60
+    training_time: float = 1000,
+    plot_results: bool = False,
+    step_size: float = 60,
+    epochs: int = 1000,
 ):
     trainer_config = {
         "id": "Trainer",
@@ -81,7 +84,7 @@ def configs(
                 "step_size": 300,
                 "module_id": "trainer",
                 "type": "agentlib_mpc.ann_trainer",
-                "epochs": 1000,
+                "epochs": epochs,
                 "batch_size": 64,
                 "inputs": [
                     {"name": "mDot", "value": 0.0225, "source": "PID"},
@@ -176,14 +179,24 @@ def configs(
                 "interval": 60 * 10,
                 "target_variable": {"name": "T_set", "alias": "T_set"},
             },
-            {"type": "AgentLogger", "values_only": True, "t_sample": 3600},
+            {
+                "type": "AgentLogger",
+                "values_only": True,
+                "t_sample": 3600,
+                "overwrite_log": True,
+            },
             {"type": "local", "subscriptions": ["Simulator"]},
         ],
     }
     return [simulator_config, trainer_config, pid_controller]
 
 
-def main(training_time: float = 1000, plot_results=False, step_size: float = 300):
+def main(
+    training_time: float = 3600 * 24 * 0.2,
+    plot_results=False,
+    step_size: float = 300,
+    epochs: int = 1000,  # Add epochs parameter
+):
     env_config = {"rt": False, "t_sample": 3600}
     logging.basicConfig(level=logging.INFO)
     mas = LocalMASAgency(
@@ -191,6 +204,7 @@ def main(training_time: float = 1000, plot_results=False, step_size: float = 300
             training_time=training_time,
             plot_results=plot_results,
             step_size=step_size,
+            epochs=epochs,  # Pass epochs through
         ),
         env=env_config,
         variable_logging=False,
@@ -202,4 +216,4 @@ def main(training_time: float = 1000, plot_results=False, step_size: float = 300
 
 
 if __name__ == "__main__":
-    main(training_time=3600 * 24 * 1, plot_results=True, step_size=300)
+    main(training_time=3600 * 24 * 1, plot_results=True, step_size=300, epochs=10)

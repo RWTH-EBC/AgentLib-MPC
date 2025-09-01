@@ -1,8 +1,10 @@
 # Changelog
 
+## 0.6.7
+- #60: Forbid users from creating instance attributes which are also variables in CasadiModel
+
 ## 0.6.6
 - self.time available in mpc and ml mpc (not yet available for admm, minlp, etc)
-
 
 ## 0.6.5
 - Fix faulty warning about boundaries of binary controls

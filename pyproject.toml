@@ -39,11 +39,10 @@ dependencies = [
 dynamic = ["version"]
 
 [project.optional-dependencies]
-
-
 fmu = ['FMPy>=0.3.6']
 ml = ["keras>=2.6.0", "tensorflow>=2.6.0", "scikit-learn"]
 interactive = ['plotly>=5.20.0', 'dash>=2.16.1', 'dash_daq']
+cia = ["pycombina @ git+https://github.com/adbuerger/pycombina.git"]
 full = ['agentlib_mpc[fmu,ml,interactive]', 'agentlib[full]']
 
 [package.urls]

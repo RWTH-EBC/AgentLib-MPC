@@ -42,6 +42,11 @@ class DataSourceConfig(BaseModuleConfig):
         description="Interpolation method used for resampling of data."
         "Only 'linear' and 'previous' are allowed.",
     )
+    shared: Optional[bool] = Field(
+        title="shared",
+        default=True,
+        description="Indicates if the variable is going to be shared with other agents.",
+    )
 
     @field_validator("data")
     @classmethod
@@ -78,16 +83,27 @@ class DataSource(BaseModule):
         data = self.config.data
         data = self.transform_index(data)
 
+        # Instead of reassignment, modify in place
+        self.config.data.iloc[:] = self.transform_index(self.config.data)
+
         # Filter columns if specified
         if self.config.columns:
             columns_to_keep = [
-                col for col in self.config.columns if col in data.columns
+                col for col in self.config.columns if col in self.config.data.columns
             ]
             if not columns_to_keep:
                 raise ValueError("None of the specified columns exist in the dataframe")
-            data = data[columns_to_keep]
+            # Drop unwanted columns in place
+            self.config.data.drop(
+                columns=[
+                    col
+                    for col in self.config.data.columns
+                    if col not in columns_to_keep
+                ],
+                inplace=True,
+            )
 
-        if data.empty:
+        if self.config.data.empty:
             raise ValueError("Resulting dataframe is empty after processing")
 
     def transform_index(self, data: pd.DataFrame) -> pd.DataFrame:
@@ -103,9 +119,9 @@ class DataSource(BaseModule):
             # Try to convert to numeric if it's a string
             try:
                 data.index = pd.to_numeric(data.index)
-                data.index = data.index - data.index[0]
+                #data.index = data.index - data.index[0]  # Don't reset index starting at 0 because it breaks when environment itself has an offset
             except ValueError:
-                # If conversion to numeric fails, try to convert to datetune
+                # If conversion to numeric fails, try to convert to datetime
                 try:
                     data.index = pd.to_datetime(data.index)
                     data.index = (data.index - data.index[0]).total_seconds()
@@ -161,7 +177,7 @@ class DataSource(BaseModule):
                 self.logger.debug(
                     f"At {self.env.now}: Sending variable {index} with value {value} to data broker."
                 )
-                variable = AgentVariable(name=index, value=value, shared=True)
+                variable = AgentVariable(name=index, value=value, shared=self.config.shared, timestamp=self.env.now)
                 self.agent.data_broker.send_variable(variable, copy=False)
             yield self.env.timeout(self.config.t_sample)
 
