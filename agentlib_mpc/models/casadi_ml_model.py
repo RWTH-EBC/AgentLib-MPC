@@ -183,18 +183,22 @@ class CasadiMLModel(CasadiModel):
         # construct a stage function for optimization and simulation
         self.sim_step = self._make_unified_predict_function()
 
-    @staticmethod
-    def _get_forbidden_variable_names() -> set[str]:
-        from agentlib_mpc.models.casadi_model import CasadiModel
-        return CasadiModel._get_forbidden_variable_names().union({
-            "sim_step",
-            "past_value",
-            "lags_mx_store",
-            "max_lag",
-            "lags_dict",
-            "ml_model_dict",
-            "casadi_ml_model_dict",
-        })
+    def _get_forbidden_variable_names(self) -> set[str]:
+        return (
+            super()
+            ._get_forbidden_variable_names()
+            .union(
+                {
+                    "sim_step",
+                    "past_value",
+                    "lags_mx_store",
+                    "max_lag",
+                    "lags_dict",
+                    "ml_model_dict",
+                    "casadi_ml_model_dict",
+                }
+            )
+        )
 
     def setup_system(self):
         return 0

@@ -32,6 +32,8 @@ class CasadiMINLPSystem(basic.BaseSystem):
         )
         super().initialize(model=model, var_ref=var_ref)
         self.is_linear = self._is_minlp()
+        self.objective = model.objective
+
 
     def _is_minlp(self) -> bool:
         inputs = ca.vertcat(*(v.full_symbolic for v in self.variables))
@@ -80,14 +82,12 @@ class DirectCollocation(basic.DirectCollocation):
         x0 = self.add_opt_par(sys.initial_state)
         xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)
 
-        # Initialize control tracking for delta_u objectives
-        uk = None
-        uk = self.add_opt_par(sys.last_control)
+        uk = self.add_opt_var(sys.controls)
 
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
 
-        delta_u_objectives = delta_u.get_delta_u_objectives(sym)
+        delta_u_objectives = delta_u.get_delta_u_objectives(sys)
 
         # Formulate the NLP
         # loop over prediction horizon

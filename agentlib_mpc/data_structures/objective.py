@@ -40,7 +40,7 @@ class SubObjective:
     def _evaluate_expression(self, expr, df):
         """Evaluate a complex expression using dataframe values"""
         # Handle simple named variables first
-        if hasattr(expr, 'name') and not hasattr(expr, 'dep'):
+        if not hasattr(expr, 'dep'):
             try:
                 if callable(expr.name):
                     var_name = expr.name()
@@ -56,7 +56,32 @@ class SubObjective:
 
         expr_str = str(expr)
 
+        # Handle common CasADi functions with simple replacements
+        casadi_replacements = {
+            'sq(': '(',  # sq(x) becomes (x), then we'll square it
+            'fabs(': 'abs(',  # fabs(x) becomes abs(x)
+            'sqrt(': 'sqrt(',  # already handled in safe_dict
+            'sin(': 'sin(',
+            'cos(': 'cos(',
+            'exp(': 'exp(',
+            'log(': 'log(',
+        }
+
+        # Apply replacements
+        eval_str = expr_str
+        is_square = False
+        if 'sq(' in eval_str:
+            is_square = True
+            eval_str = eval_str.replace('sq(', '(')
+
+        for casadi_func, replacement in casadi_replacements.items():
+            if casadi_func != 'sq(':  # already handled above
+                eval_str = eval_str.replace(casadi_func, replacement)
+
+        # Extract variable names, filtering out CasADi function names
+        casadi_functions = ['sq', 'fabs', 'sqrt', 'sin', 'cos', 'exp', 'log', 'abs', 'max', 'min']
         var_names = re.findall(r'[a-zA-Z][a-zA-Z0-9_]*', expr_str)
+        var_names = [name for name in var_names if name not in casadi_functions]
 
         if not var_names:
             try:
@@ -90,7 +115,7 @@ class SubObjective:
                 'min': np.minimum,
             })
 
-            eval_str = expr_str
+            # Remove outer parentheses if they wrap the entire expression
             if eval_str.startswith('(') and eval_str.endswith(')'):
                 paren_count = 0
                 is_outermost = True
@@ -107,6 +132,10 @@ class SubObjective:
 
             result = eval(eval_str, {"__builtins__": {}}, safe_dict)
 
+            # Apply square if it was sq() function
+            if is_square:
+                result = result ** 2
+
             if isinstance(result, np.ndarray):
                 return result
             elif isinstance(result, (int, float)):
@@ -120,6 +149,8 @@ class SubObjective:
                 var_name = list(values_found.keys())[0]
                 if expr_str.startswith('(-') or expr_str.startswith('-'):
                     return -values_found[var_name]
+                elif is_square:
+                    return values_found[var_name] ** 2
                 else:
                     return values_found[var_name]
 

@@ -127,7 +127,7 @@ class ADMMCollocation(DirectCollocation):
         const_par = self.add_opt_par(sys.model_parameters)
         rho = self.add_opt_par(sys.penalty_factor)
 
-        delta_u_objectives = delta_u.get_delta_u_objectives(sym)
+        delta_u_objectives = delta_u.get_delta_u_objectives(sys)
 
         # Formulate the NLP
         # loop over prediction horizon

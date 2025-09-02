@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from agentlib.utils.multi_agent_system import LocalMASAgency
 
 
-import model
+from examples.one_room_mpc.ann import model
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +81,7 @@ def configs(
                 "step_size": 300,
                 "module_id": "trainer",
                 "type": "agentlib_mpc.ann_trainer",
-                "epochs": 1000,
+                "epochs": 100,
                 "batch_size": 64,
                 "inputs": [
                     {"name": "mDot", "value": 0.0225, "source": "PID"},

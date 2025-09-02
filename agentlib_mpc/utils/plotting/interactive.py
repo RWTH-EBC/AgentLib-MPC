@@ -26,12 +26,38 @@ except ImportError as e:
         used_object="interactive",
     ) from e
 
+
 def plot_obj_data_stacked(
         data: pd.DataFrame,
         convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds"
 ) -> dcc.Graph:
     """Create a stacked area chart for objective data components."""
     fig = go.Figure()
+
+    if data is None or data.empty:
+        # Create an empty figure with a note
+        fig.add_annotation(
+            text="No objective component data available",
+            xref="paper", yref="paper",
+            x=0.5, y=0.5,
+            showarrow=False,
+            font=dict(size=16)
+        )
+        fig.update_layout(
+            title="Approximate Objective Values",
+            xaxis_title=f"Time in {convert_to}",
+            yaxis_title="Objective Value",
+        )
+        return dcc.Graph(
+            id="plot-obj-stacked",
+            figure=fig,
+            style={
+                "min-width": "600px",
+                "min-height": "400px",
+                "max-width": "900px",
+                "max-height": "450px",
+            },
+        )
 
     index = data.index.values / TIME_CONVERSION[convert_to]
 
@@ -44,6 +70,10 @@ def plot_obj_data_stacked(
 
     # Create a stacked area chart
     for column in plot_data.columns:
+        # Skip columns with all NaN or zero values
+        if plot_data[column].isna().all() or (plot_data[column] == 0).all():
+            continue
+
         fig.add_trace(
             go.Scatter(
                 x=index,
@@ -57,7 +87,7 @@ def plot_obj_data_stacked(
         )
 
     fig.update_layout(
-        title="Objective Components (Stacked)",
+        title="Approximate Objective Values",
         xaxis_title=f"Time in {convert_to}",
         yaxis_title="Objective Value",
         showlegend=True,
@@ -270,7 +300,6 @@ def plot_admm_plotly(
 def show_dashboard(
         data: pd.DataFrame,
         stats: Optional[pd.DataFrame] = None,
-        obj_data: Optional[pd.DataFrame] = None,
         scale: Literal["seconds", "minutes", "hours", "days"] = "seconds",
 ):
     app = dash.Dash(__name__, title="MPC Results")
@@ -288,6 +317,11 @@ def show_dashboard(
             columns_okay.append(column)
         except Exception:
             pass
+
+    # Extract objective data from stats if available
+    obj_data = None
+    if stats is not None:
+        obj_data = extract_objective_data_from_stats(stats)
 
     # Store initial figures
     initial_figures = {}
@@ -357,6 +391,26 @@ def show_dashboard(
     app.run(debug=False, port=port)
 
 
+def extract_objective_data_from_stats(stats: pd.DataFrame) -> Optional[pd.DataFrame]:
+    """Extract objective component data from the combined stats dataframe using column prefixes."""
+    if stats is None or stats.empty:
+        return None
+
+    # Find columns that start with "obj_"
+    objective_columns = [col for col in stats.columns if col.startswith('obj_')]
+
+    if not objective_columns:
+        return None
+
+    # Create dataframe with objective columns, removing the "obj_" prefix
+    obj_data = stats[objective_columns].copy()
+    obj_data.columns = [col.replace('obj_', '') for col in obj_data.columns]
+
+    # Remove rows where all objective values are NaN or empty
+    obj_data = obj_data.dropna(how='all')
+
+    return obj_data if not obj_data.empty else None
+
 def make_components(
         columns, data, convert_to, stats: Optional[pd.DataFrame] = None, obj_data: Optional[pd.DataFrame] = None
 ) -> [html.Div]:
@@ -365,8 +419,7 @@ def make_components(
     # First add stats plots if available
     if stats is not None:
         components.append(html.Div([solver_return(stats, convert_to)]))
-        # Only add the obj_plot if 'obj' column exists in stats
-        if 'obj' in stats.columns:
+        if 'stats_obj' in stats.columns:
             components.append(html.Div([obj_plot(stats, convert_to)]))
 
     # Then add objective data stacked plot if available
@@ -418,7 +471,7 @@ def obj_plot(
     index = df.index.values / TIME_CONVERSION[convert_to]
 
     # Check if 'obj' column exists
-    if 'obj' not in df.columns:
+    if 'stats_obj' not in df.columns:
         # Create an empty figure with a note
         fig = go.Figure()
         fig.add_annotation(
@@ -431,7 +484,7 @@ def obj_plot(
     else:
         trace = go.Scatter(
             x=index,
-            y=df["obj"],
+            y=df["stats_obj"],
             mode="lines",
             name="Objective Value",
         )
@@ -457,7 +510,7 @@ def obj_plot(
 
 
 def solver_return(
-        data, convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds"
+    data, convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds"
 ) -> dcc.Graph:
     solver_data = []
     indices = []
@@ -471,67 +524,35 @@ def solver_return(
     df = pd.DataFrame(solver_data)
     df = df.iloc[::-1]
 
-    # Determine what type of solver data we have
-    has_success_status = 'success' in df.columns
-    has_detailed_status = 'return_status' in df.columns
-
-    # Create appropriate return status mapping based on the data type
     return_status = {}
-
-    if not has_success_status and has_detailed_status:
-        # For solvers with detailed status information
-        for idx, row in df.iterrows():
-            if row.success:
-                return_status[idx] = row.return_status
-            else:
-                return_status[idx] = "Solve_Not_Succeeded"
-
-        # Define colors and legend names for detailed status
-        colors = {
-            "Solve_Succeeded": "green",
-            "Solved_To_Acceptable_Level": "orange",
-            "Solve_Not_Succeeded": "red",
-        }
-        legend_names = {
-            "Solved_To_Acceptable_Level": "Acceptable",
-            "Solve_Succeeded": "Optimal",
-            "Solve_Not_Succeeded": "Failure",
-        }
-    elif has_success_status:
-        # For solvers with only success/failure information
-        for idx, success in df.success.items():
-            return_status[idx] = "Success" if success else "Failure"
-
-        # Define simpler colors and legend names for boolean status
-        colors = {
-            "Success": "green",
-            "Failure": "red",
-        }
-        legend_names = {
-            "Success": "Success",
-            "Failure": "Failure",
-        }
+    for idx, success in df.stats_success.items():
+        if success:
+            solver_return = df.stats_return_status[idx]
+        else:
+            solver_return = "Solve_Not_Succeeded"
+        return_status[idx] = solver_return
 
     solver_returns = pd.Series(return_status)
     index = solver_returns.index.values / TIME_CONVERSION[convert_to]
 
-    # Create traces for each status type
+    colors = {
+        "Solve_Succeeded": "green",
+        "Solved_To_Acceptable_Level": "orange",
+        "Solve_Not_Succeeded": "red",
+    }
+    legend_names = {
+        "Solved_To_Acceptable_Level": "Acceptable",
+        "Solve_Succeeded": "Optimal",
+        "Solve_Not_Succeeded": "Failure",
+    }
+
     traces = []
     for status in colors:
         mask = solver_returns.values == status
         if mask.any():
-            # Check if 'iter_count' exists, otherwise use a constant value
-            if 'iter_count' in df.columns:
-                y_values = df.loc[solver_returns.index[mask], "iter_count"]
-            else:
-                # Use fixed values for the y-axis if iter_count is not available
-                y_values = [1 if status in ["Solve_Succeeded", "Success"] else
-                            0.5 if status == "Solved_To_Acceptable_Level" else
-                            0 for _ in range(sum(mask))]
-
             trace = go.Scatter(
                 x=index[mask],
-                y=y_values,
+                y=df.loc[solver_returns.index[mask], "stats_iter_count"],
                 mode="markers",
                 marker=dict(
                     color=colors[status],
@@ -540,7 +561,6 @@ def solver_return(
                 name=legend_names[status],
             )
         else:
-            # Add empty trace for the legend
             trace = go.Scatter(
                 x=[None],
                 y=[None],
@@ -553,13 +573,10 @@ def solver_return(
             )
         traces.append(trace)
 
-    # Determine the y-axis label based on available data
-    y_axis_label = "Iterations" if 'iter_count' in df.columns else "Status"
-
     layout = go.Layout(
         title="Solver Return Status",
         xaxis_title=f"Time in {convert_to}",
-        yaxis_title=y_axis_label,
+        yaxis_title="Iterations",
         showlegend=True,
     )
 

@@ -29,20 +29,8 @@ def load_mpc_stats(results_file: Union[str, Path]) -> Optional[pd.DataFrame]:
     stats_file = mpc_datamodels.stats_path(results_file)
     try:
         df = pd.read_csv(stats_file, index_col=0)
-    except Exception:
-        return None
-    if is_float_dtype(df.index):
-        return df
-    new_ind = [literal_eval(i) for i in df.index]
-    df.index = pd.MultiIndex.from_tuples(new_ind)
-    return df
-
-def load_mpc_obj_res(results_file: Union[str, Path]) -> Optional[pd.DataFrame]:
-    """Load the objective function results from the corresponding obj_mpc.csv file."""
-    obj_file = mpc_datamodels.objective_path(results_file)
-    try:
-        df = pd.read_csv(obj_file, index_col=0)
-    except Exception:
+    except Exception as e:
+        print(f"Error loading stats file: {e}")
         return None
     if is_float_dtype(df.index):
         return df

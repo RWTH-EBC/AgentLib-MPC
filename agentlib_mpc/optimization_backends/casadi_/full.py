@@ -7,7 +7,7 @@ from agentlib_mpc.data_structures.casadi_utils import (
 from agentlib_mpc.data_structures.mpc_datamodels import (
     VariableReference,
 )
-from agentlib_mpc.models.casadi_model import CasadiModel, CasadiParameter
+from agentlib_mpc.models.casadi_model import CasadiModel
 from agentlib_mpc.optimization_backends.casadi_.core.casadi_backend import CasADiBackend
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
     OptimizationParameter
@@ -19,7 +19,6 @@ class FullSystem(basic.BaseSystem):
 
     def __init__(self):
         super().__init__()
-        self._model = None
 
     def initialize(self, model: CasadiModel, var_ref: VariableReference):
         super().initialize(model=model, var_ref=var_ref)
@@ -35,16 +34,8 @@ class FullSystem(basic.BaseSystem):
         )
 
         self.time = model.time
-
-    @property
-    def model(self):
-        if not hasattr(self, '_model') or self._model is None:
-            raise AttributeError("Model reference not initialized yet")
-        return self._model
-
-    @model.setter
-    def model(self, value):
-        self._model = value
+        self.objective = model.objective
+        self.cost_func = model.cost_func
 
 
 class DirectCollocation(basic.DirectCollocation):

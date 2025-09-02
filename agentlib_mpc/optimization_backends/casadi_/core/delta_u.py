@@ -1,11 +1,12 @@
-
+import logging
+logger = logging.getLogger(__name__)
 
 
 def get_delta_u_objectives(sys):
     delta_u_objectives = []
-    if hasattr(sys.model, 'objective') and sys.model.objective is not None:
+    if hasattr(sys, 'objective') and sys.objective is not None:
         try:
-            delta_u_objectives = sys.model.objective.get_delta_u_objectives()
+            delta_u_objectives = sys.objective.get_delta_u_objectives()
         except (AttributeError, Exception) as e:
             logger.warning(f"Failed to get delta_u_objectives: {str(e)}")
     return delta_u_objectives

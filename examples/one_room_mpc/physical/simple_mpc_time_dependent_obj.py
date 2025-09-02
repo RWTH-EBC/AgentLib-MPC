@@ -264,7 +264,7 @@ def run_example(
 
     if with_dashboard:
         if with_dashboard:
-            from agentlib_mpc.utils.analysis import load_mpc_stats, load_mpc_obj_res
+            from agentlib_mpc.utils.analysis import load_mpc_stats
 
             mpc_result_file = "results//mpc.csv"
 
@@ -272,12 +272,8 @@ def run_example(
                 stats = load_mpc_stats(mpc_result_file)
             except Exception:
                 stats = None
-            try:
-                obj_data = load_mpc_obj_res(mpc_result_file)
-            except Exception:
-                obj_data = None
 
-            show_dashboard(mpc_results, stats, obj_data)
+            show_dashboard(mpc_results, stats)
 
     if with_plots:
         plot(mpc_results, sim_res, until)

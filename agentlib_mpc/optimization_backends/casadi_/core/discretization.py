@@ -74,6 +74,24 @@ class Results:
         df = pd.DataFrame(columns=self.columns)
         df.to_csv(file)
 
+    def write_combined_stats_columns(self, file: Path, objective_names: list[str]):
+        """Write headers for combined stats and objective data with prefixes"""
+        # Add prefixes to distinguish objective from stats columns
+        tagged_obj_names = [f"obj_{name}" for name in objective_names]
+        tagged_stats_names = [f"stats_{name}" for name in self.stats.keys()]
+        combined_names = ['time'] + tagged_obj_names + tagged_stats_names
+        line = f""",{",".join(combined_names[1:])}\n"""
+        with open(file, "w") as f:
+            f.write(line)
+
+    def combined_stats_line(self, index: str, objective_values: dict, objective_names: list[str]) -> str:
+        """Generate a line with both objective and stats values"""
+        # Use the same order as in the headers
+        obj_values = [str(objective_values.get(name, '')) for name in objective_names]
+        stats_values = [str(val) for val in self.stats.values()]
+        combined_values = obj_values + stats_values
+        return f'"{index}",{",".join(combined_values)}\n'
+
     def write_stats_columns(self, file: Path):
         line = f""",{",".join(self.stats)}\n"""
         with open(file, "w") as f:

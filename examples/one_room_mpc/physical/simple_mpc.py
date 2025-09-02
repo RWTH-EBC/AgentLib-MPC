@@ -108,7 +108,7 @@ class MyCasadiModel(CasadiModel):
             # soft constraints
             (0, self.T + self.T_slack, self.T_upper),
         ]
-
+        import casadi
         obj1 = self.create_sub_objective(
             expressions=self.mDot,
             weight=self.r_mDot,
@@ -121,7 +121,8 @@ class MyCasadiModel(CasadiModel):
             name="temp_slack"
         )
 
-        objective = self.create_full_objective(obj1, obj2, normalization=prediction_horizon)
+        objective = self.create_full_objective(obj1, obj2, normalization=1)
+
         return objective
 
 
@@ -151,7 +152,7 @@ AGENT_MPC = {
             "time_step": 300,
             "prediction_horizon": 15,
             "parameters": [
-                {"name": "s_T", "value": 10},
+                {"name": "s_T", "value": 1000},
                 {"name": "r_mDot", "value": 1}
             ],
             "inputs": [
@@ -217,7 +218,7 @@ def run_example(
 
 
     if with_dashboard:
-        from agentlib_mpc.utils.analysis import load_mpc_stats, load_mpc_obj_res
+        from agentlib_mpc.utils.analysis import load_mpc_stats
 
         mpc_result_file = "results//mpc.csv"
 
@@ -225,12 +226,8 @@ def run_example(
             stats = load_mpc_stats(mpc_result_file)
         except Exception:
             stats = None
-        try:
-            obj_data = load_mpc_obj_res(mpc_result_file)
-        except Exception:
-            obj_data = None
 
-        show_dashboard(mpc_results, stats, obj_data)
+        show_dashboard(mpc_results, stats)
 
     if with_plots:
         plot(mpc_results, sim_res, until)

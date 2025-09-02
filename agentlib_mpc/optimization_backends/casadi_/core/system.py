@@ -50,9 +50,6 @@ class System(abc.ABC):
         )
     """
 
-    def __init__(self):
-        self._model = None
-
     @abc.abstractmethod
     def initialize(self, model: CasadiModel, var_ref: VariableReference): ...
 

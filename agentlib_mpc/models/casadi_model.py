@@ -324,7 +324,6 @@ class CasadiModel(Model):
 
         # Handle both new and old objective formats
         if hasattr(objective_result, "get_casadi_expression"):
-            # New objective system
             self.objective = objective_result
             self.cost_func = objective_result.get_casadi_expression()
         else:

@@ -128,7 +128,7 @@ class CasADiBackend(OptimizationBackend):
         # collect and format inputs
         mpc_inputs = self._get_current_mpc_inputs(agent_variables=current_vars, now=now)
         full_results = self.discretization.solve(mpc_inputs)
-        self.save_result_df(self.system.model.objective, full_results, now)
+        self.save_result_df(self.system.objective, full_results, now)
 
         return full_results
 
@@ -282,49 +282,30 @@ class CasADiBackend(OptimizationBackend):
             return
 
         res_file = self.config.results_file
-        if not self.results_file_exists():
-            results.write_columns(res_file)
-            results.write_stats_columns(stats_path(res_file))
 
-        df = results.df
-        df.index = list(map(lambda x: str((now, x)), df.index))
-        df.to_csv(res_file, mode="a", header=False)
-
+        # Calculate objective values
         def get_objective_values(objective, df, grid):
             objective_values = {}
             if objective is not None:
                 objective_values.update(objective.calculate_values(df, grid))
             return objective_values
 
+        df = results.df
         grid = np.arange(0, self.config.discretization_options.prediction_horizon * (
                 self.config.discretization_options.time_step + 1), self.config.discretization_options.time_step)
         objective_values = get_objective_values(objective=objective, df=df, grid=grid)
 
-        obj_file = objective_path(res_file)
-
-
-        if hasattr(objective, 'objectives'):
-            objective_names = ['time'] + [obj.name for obj in objective.objectives] + ['total']
+        if objective_values:
+            objective_names = [obj.name for obj in objective.objectives] + ['total']
         else:
-            objective_names = ['time'] + list(objective_values.keys()) if objective_values else ['time']
+            objective_names = []
 
-        if not hasattr(self, '_obj_file_checked'):
-            self._obj_file_checked = True
-            if self.config.overwrite_result_file and obj_file.exists():
-                try:
-                    os.remove(obj_file)
-                except FileNotFoundError:
-                    pass
+        if not self.results_file_exists():
+            results.write_columns(res_file)
+            results.write_combined_stats_columns(stats_path(res_file), objective_names)
 
-            # Now handle the file normally: if it doesn't exist, create it with headers
-        if not obj_file.exists():
-            with open(obj_file, 'w') as f:
-                f.write(','.join(objective_names) + '\n')
-
-        if objective_values or len(objective_names) > 1:
-            with open(obj_file, 'a') as f:
-                values = [str(now)] + [str(objective_values.get(name, '')) for name in objective_names[1:]]
-                f.write(','.join(values) + '\n')
+        df.index = list(map(lambda x: str((now, x)), df.index))
+        df.to_csv(res_file, mode="a", header=False)
 
         with open(stats_path(res_file), "a") as f:
-            f.writelines(results.stats_line(str(now)))
+            f.writelines(results.combined_stats_line(str(now), objective_values, objective_names))

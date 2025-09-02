@@ -93,9 +93,9 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000):
         ann_path = list(Path.cwd().glob("linregs/*/ml_model.json"))[-1]
     except IndexError:
         # if there is none, we have to perform the training first
-        import training_linreg
+        import examples.one_room_mpc.linreg.training_linreg as training
 
-        training_linreg.main(
+        training.main(
             training_time=3600 * 24 * 1, plot_results=False, step_size=300
         )
         ann_path = list(Path.cwd().glob("linregs/*/ml_model.json"))[-1]

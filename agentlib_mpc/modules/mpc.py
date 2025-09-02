@@ -93,12 +93,11 @@ class BaseMPCConfig(BaseModuleConfig):
             cls, r_del_u: dict[str, float], info: FieldValidationInfo
     ):
         """Ensures r_del_u is only set for control variables."""
-        if r_del_u:  # Only raise error if r_del_u is not empty
+        if r_del_u:
             raise DeprecationWarning(
                 "The 'r_del_u' parameter is no longer supported. "
                 "Please use delta_u objectives in the new DeltaUObjective/FullObjective formulation instead. "
             )
-        return r_del_u
 
     @field_validator("sampling_time")
     @classmethod
@@ -395,9 +394,9 @@ class BaseMPC(BaseModule):
         """
         if stats is None:
             return
-        if stats["success"].all():
+        if stats["stats_success"].all():
             return
-        failures = ~stats["success"]
+        failures = ~stats["stats_success"]
         failure_indices = failures[failures].index.tolist()
         self.logger.warning(
             f"Warning: There were failed optimizations at the following times: "
