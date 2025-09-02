@@ -1,0 +1,172 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>agentlib_mpc.modules &mdash; agentlib_mpc 0.6.8 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../_static/jquery.js"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+      <script src="../../_static/doctools.js"></script>
+      <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            agentlib_mpc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../PackageReference.html">Package Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">agentlib_mpc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">agentlib_mpc.modules</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for agentlib_mpc.modules</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This package contains all modules for the</span>
+<span class="sd">distributed model predictive control using multi agent systems.</span>
+
+<span class="sd">It contains classes for local optimization and global coordination.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+
+
+<div class="viewcode-block" id="ModuleImport"><a class="viewcode-back" href="../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.ModuleImport">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ModuleImport</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_path</span> <span class="o">=</span> <span class="n">module_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_name</span> <span class="o">=</span> <span class="n">class_name</span>
+
+<div class="viewcode-block" id="ModuleImport.import_class"><a class="viewcode-back" href="../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.ModuleImport.import_class">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">import_class</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">module_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_name</span><span class="p">)</span></div></div>
+
+
+<span class="n">MODULE_TYPES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;data_source&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
+        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.data_source&quot;</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;DataSource&quot;</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;mpc_basic&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
+        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.mpc&quot;</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;BaseMPC&quot;</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;mpc&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span><span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.mpc_full&quot;</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;MPC&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;minlp_mpc&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
+        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.minlp_mpc&quot;</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;MINLPMPC&quot;</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;admm&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
+        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.dmpc.admm.admm&quot;</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;ADMM&quot;</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;admm_local&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
+        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.dmpc.admm.admm&quot;</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;LocalADMM&quot;</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;admm_coordinated&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
+        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.dmpc.admm.admm_coordinated&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CoordinatedADMM&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;admm_coordinator&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
+        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.dmpc.admm.admm_coordinator&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;ADMMCoordinator&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;ann_trainer&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
+        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.ml_model_training.ml_model_trainer&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;ANNTrainer&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;gpr_trainer&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
+        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.ml_model_training.ml_model_trainer&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;GPRTrainer&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;linreg_trainer&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
+        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.ml_model_training.ml_model_trainer&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;LinRegTrainer&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;ann_simulator&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
+        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.ann_simulator&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;MLModelSimulator&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;set_point_generator&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
+        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.ml_model_training.setpoint_generator&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;SetPointGenerator&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;mhe&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
+        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.estimation.mhe&quot;</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;MHE&quot;</span>
+    <span class="p">),</span>
+<span class="p">}</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, AGENT-Project Associates.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
