@@ -363,17 +363,18 @@ class CasadiModel(Model):
         if t_sample is None:
             t_sample = self.dt
         pars = self.get_input_values(t_start)
+        z0 = self.get_initial_guess_outputs()
         t_sim = 0
         if self.differentials:
             x0 = self.get_differential_values()
             curr_x = x0
             while t_sim < t_sample:
-                result = self.integrator(x0=curr_x, p=pars)
+                result = self.integrator(x0=curr_x, p=pars, z0=z0)
                 t_sim += self.dt
                 curr_x = result["xf"]
             self.set_differential_values(np.array(result["xf"]).flatten())
         else:
-            result = self.integrator(p=pars)
+            result = self.integrator(p=pars, z0=z0)
         if self.outputs:
             self.set_output_values(np.array(result["zf"]).flatten())
 
@@ -416,7 +417,11 @@ class CasadiModel(Model):
             }
             integrator_ = ca.integrator("system", "idas", dae, opts)
             integrator = ca.Function(
-                "system", [par], [integrator_(x0=0, p=par)["zf"]], ["p"], ["zf"]
+                "system",
+                [par, z],
+                [integrator_(x0=0, p=par, z0=z)["zf"]],
+                ["p", "z0"],
+                ["zf"],
             )
         return integrator
 
@@ -489,6 +494,13 @@ class CasadiModel(Model):
             *[inp.value for inp in chain.from_iterable([self.inputs, self.parameters])],
             t_start,
         )
+
+    def get_initial_guess_outputs(self):
+        values = [
+            var.value if var.value is not None else 0
+            for var in chain.from_iterable([self.outputs])
+        ]
+        return ca.vertcat(*values)
 
     def get_differential_values(self):
         return ca.vertcat(*[sta.value for sta in self.differentials])
