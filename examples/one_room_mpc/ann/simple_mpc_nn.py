@@ -1,4 +1,5 @@
 import logging
+import sys
 from pathlib import Path
 import os
 
@@ -82,13 +83,27 @@ def agent_configs(ml_model_path: str) -> list[dict]:
     return [agent_mpc, agent_sim]
 
 
-def run_example(with_plots=True, log_level=logging.INFO, until=8000):
-    # Change the working directly so that relative paths work
-    os.chdir(os.path.abspath(os.path.dirname(__file__)))
+def run_example(with_plots=True, log_level=logging.INFO, until=8000, testing=False):
+    # Change the working directory so that relative paths work
+    script_dir = os.path.abspath(os.path.dirname(__file__))
+    os.chdir(script_dir)
+
+    if script_dir not in sys.path:
+        sys.path.insert(0, script_dir)
+
     logging.basicConfig(level=log_level)
 
-    # gets the subdirectory of anns with the highest number, i.e. the longest training
-    # time
+    if testing:
+        import training_nn
+
+        training_nn.main(
+            training_time=3600 * 2,  # Much shorter training time
+            plot_results=False,
+            step_size=300,
+            epochs=10,  # Very few epochs for testing
+        )
+
+    # gets the subdirectory of anns with the highest number, i.e. the longest training time
     try:
         ann_path = list(Path.cwd().glob("anns/*/ml_model.json"))[-1]
     except IndexError:

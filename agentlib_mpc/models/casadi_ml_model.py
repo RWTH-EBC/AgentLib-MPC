@@ -593,7 +593,6 @@ class CasadiMLModel(CasadiModel):
         }
         full_input.update(ml_model_input)
 
-
         result = self.sim_step(**full_input)
         end_time = t_start + self.dt
         for var_name, value in result.items():

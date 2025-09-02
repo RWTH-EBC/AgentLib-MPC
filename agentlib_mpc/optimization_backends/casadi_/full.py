@@ -10,7 +10,7 @@ from agentlib_mpc.data_structures.mpc_datamodels import (
 from agentlib_mpc.models.casadi_model import CasadiModel
 from agentlib_mpc.optimization_backends.casadi_.core.casadi_backend import CasADiBackend
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
-    OptimizationParameter
+    OptimizationParameter,
 )
 from agentlib_mpc.optimization_backends.casadi_.core import delta_u
 
@@ -77,17 +77,14 @@ class DirectCollocation(basic.DirectCollocation):
             opt_vars_inside_inner = [sys.algebraics, sys.outputs]
             opt_pars_inside_inner = [sys.non_controlled_inputs]
 
-            constant_over_inner = {
-                sys.controls: uk,
-                sys.model_parameters: const_par
-            }
+            constant_over_inner = {sys.controls: uk, sys.model_parameters: const_par}
             xk_end, constraints = self._collocation_inner_loop(
                 collocation=collocation_matrices,
                 state_at_beginning=xk,
                 states=sys.states,
                 opt_vars=opt_vars_inside_inner,
                 opt_pars=opt_pars_inside_inner,
-                const=constant_over_inner
+                const=constant_over_inner,
             )
 
             # increment loop counter and time

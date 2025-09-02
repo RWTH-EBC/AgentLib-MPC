@@ -157,6 +157,7 @@ AGENT_MPC = {
                     },
                 },
                 "results_file": "results//mpc.csv",
+                "overwrite_result_file": True,
                 "save_results": True,
                 "overwrite_result_file": True,
             },

@@ -55,7 +55,7 @@ class Results:
     def __getitem__(self, item: str) -> np.ndarray:
         return self.matrix[
             self.variable_grid_indices[item], self._variable_name_to_index[item]
-        ].toarray(simplify=True)
+        ].toarray(simplify=False)
 
     def variable_lookup(self) -> dict[str, int]:
         """Creates a mapping from variable names to the column index in the Matrix"""
@@ -204,15 +204,6 @@ class Discretization(abc.ABC):
 
         # format and return solution
         mpc_output = self._nlp_outputs_to_mpc_outputs(vars_at_optimum=nlp_output["x"])
-        # clip binary values within tolerance
-        if "w" in mpc_output:
-            tolerance = 1e-5
-            bin_array = mpc_output["w"].full()
-            bin_array = np.where((-tolerance < bin_array) & (bin_array < 0), 0,
-                                 np.where((1 < bin_array) & (bin_array < 1 + tolerance),
-                                          1, bin_array))
-            mpc_output["w"] = bin_array
-
         self._remember_solution(mpc_output)
 
         result = self._process_solution(
@@ -252,9 +243,7 @@ class Discretization(abc.ABC):
                             + mpc_inputs[f"ub_{denotation}"]
                         )
                     )
-                    guess = np.nan_to_num(
-                        guess, posinf=0, neginf=-0
-                    )
+                    guess = np.nan_to_num(guess, posinf=0, neginf=-0)
             guesses.update({GUESS_PREFIX + denotation: guess})
 
         return guesses
@@ -278,7 +267,7 @@ class Discretization(abc.ABC):
         for key, value in inputs.items():
             key: str
             if key.startswith(GUESS_PREFIX):
-                out_key = key[len(GUESS_PREFIX):]
+                out_key = key[len(GUESS_PREFIX) :]
                 inputs[key] = outputs[out_key]
 
         result_matrix = self._result_map(**inputs)["result"]

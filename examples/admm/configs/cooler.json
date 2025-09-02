@@ -22,7 +22,8 @@
             "ipopt.print_level": 0
           }
         },
-        "results_file": "results//cooler_res.csv"
+        "results_file": "results//cooler_res.csv",
+        "overwrite_result_file": true
       },
       "time_step": 240,
       "prediction_horizon": 10,
