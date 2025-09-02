@@ -15,14 +15,17 @@ from agentlib_mpc.models.casadi_model import (
     CasadiModelConfig,
 )
 from agentlib.utils.multi_agent_system import LocalMASAgency
-
-from agentlib_mpc.utils.analysis import load_mpc_stats
 from agentlib_mpc.utils.plotting.interactive import show_dashboard
 
 logger = logging.getLogger(__name__)
 
 # script variables
 ub = 295.15
+prediction_horizon = 300*15
+switch_time = 600
+normalization_obj1 = switch_time
+normalization_obj2 = prediction_horizon-switch_time
+
 
 
 class MyCasadiModelConfig(CasadiModelConfig):
@@ -88,6 +91,12 @@ class MyCasadiModelConfig(CasadiModelConfig):
             description="Weight for mDot in objective function",
         ),
         CasadiParameter(
+            name="r_mDot2",
+            value=1,
+            unit="-",
+            description="Weight for mDot in objective function",
+        ),
+        CasadiParameter(
             name="switch",
             value=600,
             unit="s",
@@ -121,20 +130,39 @@ class MyCasadiModel(CasadiModel):
         ]
 
         # Objective function
-        obj1 = sum(
-            [
-                self.r_mDot * self.mDot,
-                self.s_T * self.T_slack**2,
-            ]
+        # Objective1 when time<switch
+        obj1_mDot = self.create_sub_objective(
+            expressions=self.mDot,
+            weight=self.r_mDot,
+            name="mDot_cost_normal"
         )
-        obj2 = sum(
-            [
-                self.r_mDot * self.mDot * 2,
-                self.s_T * self.T_slack ** 2,
-            ]
+        obj1_slack = self.create_sub_objective(
+            expressions=self.T_slack**2,
+            weight=self.s_T,
+            name="temperature_slack"
+        )
+        objective1 = self.create_full_objective(obj1_mDot, obj1_slack, normalization=normalization_obj1)
+
+        # Objective 2 (when time >= switch)
+        obj2_mDot = self.system(
+            expressions=self.mDot,
+            weight= self.r_mDot2,
+            name="mDot_cost_doubled"
+        )
+        obj2_slack = self.create_sub_objective(
+            expressions=self.T_slack**2,
+            weight=self.s_T,
+            name="temperature_slack_2"
+        )
+        objective2 = self.create_full_objective(obj2_mDot, obj2_slack, normalization=normalization_obj2)
+
+        # Conditional objective based on time
+        condition = self.time < self.switch.sym
+        objective = self.create_conditional_objective(
+            (condition, objective1),
+            default_objective=objective2
         )
 
-        objective = ca.if_else(self.time < self.switch.sym, obj1, obj2)
         self.switch_test.alg = ca.if_else(self.time < self.switch.sym, 1, 2)
 
         return objective
@@ -163,10 +191,11 @@ AGENT_MPC = {
                 "overwrite_result_file": True,
             },
             "time_step": 300,
-            "prediction_horizon": 5,
+            "prediction_horizon": 15,
             "parameters": [
                 {"name": "s_T", "value": 3},
                 {"name": "r_mDot", "value": 1},
+                {"name": "r_mDot2", "value": 5},
                 {"name": "switch", "value": 600},
             ],
             "inputs": [
@@ -229,16 +258,22 @@ def run_example(
         agent_configs=[AGENT_MPC, AGENT_SIM], env=ENV_CONFIG, variable_logging=False
     )
     mas.run(until=until)
-    try:
-        stats = load_mpc_stats("results/__mpc.csv")
-    except Exception:
-        stats = None
     results = mas.get_results(cleanup=False)
     mpc_results = results["myMPCAgent"]["myMPC"]
     sim_res = results["SimAgent"]["room"]
 
     if with_dashboard:
-        show_dashboard(mpc_results, stats)
+        if with_dashboard:
+            from agentlib_mpc.utils.analysis import load_mpc_stats
+
+            mpc_result_file = "results//mpc.csv"
+
+            try:
+                stats = load_mpc_stats(mpc_result_file)
+            except Exception:
+                stats = None
+
+            show_dashboard(mpc_results, stats)
 
     if with_plots:
         plot(mpc_results, sim_res, until)

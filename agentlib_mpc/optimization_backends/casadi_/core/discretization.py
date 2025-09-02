@@ -2,8 +2,9 @@
 
 import abc
 import dataclasses
+import traceback
 from pathlib import Path
-from typing import TypeVar, Union, Callable, Optional
+from typing import TypeVar, Union, Callable, Optional, Dict
 
 import casadi as ca
 import numpy as np
@@ -25,7 +26,6 @@ from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
 )
 from agentlib_mpc.optimization_backends.casadi_.core.system import System
 
-
 CasadiVariableList = Union[list[ca.MX], ca.MX]
 
 
@@ -37,6 +37,7 @@ class Results:
     stats: dict
     variable_grid_indices: dict[str, list[int]]
     _variable_name_to_index: dict[str, int] = None
+    objective_values: dict = dataclasses.field(default_factory=dict)
 
     def __post_init__(self):
         self._variable_name_to_index = self.variable_lookup()
@@ -64,6 +65,7 @@ class Results:
                 lookup[label[1]] = index
         return lookup
 
+
     @property
     def df(self) -> pd.DataFrame:
         return pd.DataFrame(self.matrix, index=self.grid, columns=self.columns)
@@ -71,6 +73,24 @@ class Results:
     def write_columns(self, file: Path):
         df = pd.DataFrame(columns=self.columns)
         df.to_csv(file)
+
+    def write_combined_stats_columns(self, file: Path, objective_names: list[str]):
+        """Write headers for combined stats and objective data with prefixes"""
+        # Add prefixes to distinguish objective from stats columns
+        tagged_obj_names = [f"obj_{name}" for name in objective_names]
+        tagged_stats_names = [f"stats_{name}" for name in self.stats.keys()]
+        combined_names = ['time'] + tagged_obj_names + tagged_stats_names
+        line = f""",{",".join(combined_names[1:])}\n"""
+        with open(file, "w") as f:
+            f.write(line)
+
+    def combined_stats_line(self, index: str, objective_values: dict, objective_names: list[str]) -> str:
+        """Generate a line with both objective and stats values"""
+        # Use the same order as in the headers
+        obj_values = [str(objective_values.get(name, '')) for name in objective_names]
+        stats_values = [str(val) for val in self.stats.values()]
+        combined_values = obj_values + stats_values
+        return f'"{index}",{",".join(combined_values)}\n'
 
     def write_stats_columns(self, file: Path):
         line = f""",{",".join(self.stats)}\n"""
@@ -185,8 +205,13 @@ class Discretization(abc.ABC):
         # format and return solution
         mpc_output = self._nlp_outputs_to_mpc_outputs(vars_at_optimum=nlp_output["x"])
         self._remember_solution(mpc_output)
-        result = self._process_solution(inputs=mpc_inputs, outputs=mpc_output)
+
+        result = self._process_solution(
+            inputs=mpc_inputs,
+            outputs=mpc_output
+        )
         return result
+
 
     def _determine_initial_guess(self, mpc_inputs: MPCInputs) -> MPCInputs:
         """
@@ -247,7 +272,11 @@ class Discretization(abc.ABC):
 
         result_matrix = self._result_map(**inputs)["result"]
 
-        return self._create_results(result_matrix, self._optimizer.stats())
+        result = self._create_results(
+            result_matrix,
+            self._optimizer.stats(),
+        )
+        return result
 
     def create_nlp_in_out_mapping(self, system: System):
         """
@@ -337,7 +366,10 @@ class Discretization(abc.ABC):
             "result_map", mpc_inputs, [matrix], mpc_input_denotations, ["result"]
         )
 
-        def make_results_view(result_matrix: ca.DM, stats: dict) -> Results:
+        def make_results_view(
+                result_matrix: ca.DM,
+                stats: dict,
+        ) -> Results:
             return Results(
                 matrix=result_matrix,
                 columns=col_index,

@@ -5,8 +5,7 @@ import pandas as pd
 from agentlib.core import AgentVariable
 
 from agentlib_mpc.data_structures import mpc_datamodels
-from pydantic import Field, field_validator, FieldValidationInfo
-from rapidfuzz import process, fuzz
+from pydantic import Field, field_validator, ValidationInfo
 
 from agentlib_mpc.modules.mpc import BaseMPCConfig, BaseMPC
 
@@ -15,32 +14,6 @@ class MPCConfig(BaseMPCConfig):
     """
     Pydantic data model for MPC configuration parser
     """
-
-    r_del_u: dict[str, float] = Field(
-        default={},
-        description="Weights that are applied to the change in control variables.",
-    )
-
-    @field_validator("r_del_u")
-    def check_r_del_u_in_controls(
-        cls, r_del_u: dict[str, float], info: FieldValidationInfo
-    ):
-        """Ensures r_del_u is only set for control variables."""
-        controls = {ctrl.name for ctrl in info.data["controls"]}
-        for name in r_del_u:
-            if name in controls:
-                # everything is fine
-                continue
-
-            # raise error
-            matches = process.extract(query=name, choices=controls, scorer=fuzz.WRatio)
-            matches = [m[0] for m in matches]
-            raise ValueError(
-                f"Tried to specify control change weight for {name}. However, "
-                f"{name} is not in the set of control variables. Did you mean one "
-                f"of these? {', '.join(matches)}"
-            )
-        return r_del_u
 
 
 class MPC(BaseMPC):
@@ -96,6 +69,7 @@ class MPC(BaseMPC):
                 if timestamp < (self.env.time - lag_in_seconds):
                     var_history.pop(timestamp)
 
+
     def _callback_hist_vars(self, variable: AgentVariable, name: str):
         """Adds received measured inputs to the past trajectory."""
         # if variables are intentionally sent as series, we don't need to store them
@@ -119,11 +93,13 @@ class MPC(BaseMPC):
             )
 
     def _after_config_update(self):
-        self._internal_variables = self._create_internal_variables()
+        # self._internal_variables = self._create_internal_variables()
+        self._internal_variables = {}
         super()._after_config_update()
 
+
     def _setup_var_ref(self) -> mpc_datamodels.VariableReferenceT:
-        return mpc_datamodels.FullVariableReference.from_config(self.config)
+        return mpc_datamodels.VariableReference.from_config(self.config)
 
     def collect_variables_for_optimization(
         self, var_ref: mpc_datamodels.VariableReference = None
@@ -150,7 +126,8 @@ class MPC(BaseMPC):
             )
             variables[hist_var] = updated_var
 
-        return {**variables, **self._internal_variables}
+        # return {**variables, **self._internal_variables}
+        return {**variables}
 
         # class AgVarDropin:
         #     ub: float
@@ -158,21 +135,3 @@ class MPC(BaseMPC):
         #     value: Union[float, list, pd.Series]
         #     interpolation_method: InterpolationMethod
 
-    def _create_internal_variables(self) -> dict[str, AgentVariable]:
-        """Creates a reference of all internal variables that are used for the MPC,
-        but not shared as AgentVariables.
-
-        Currently, this includes:
-           - Weights for control change (r_del_u)
-        """
-        r_del_u: dict[str, mpc_datamodels.MPCVariable] = {}
-        for control in self.config.controls:
-            r_del_u_name = mpc_datamodels.r_del_u_convention(control.name)
-            var = mpc_datamodels.MPCVariable(name=r_del_u_name)
-            r_del_u[r_del_u_name] = var
-            if control.name in self.config.r_del_u:
-                var.value = self.config.r_del_u[control.name]
-            else:
-                var.value = 0
-
-        return r_del_u

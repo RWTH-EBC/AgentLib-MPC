@@ -78,7 +78,7 @@ class ExchangeEntry:
 
 
 @dataclasses.dataclass
-class VariableReference(mpc_datamodels.FullVariableReference):
+class VariableReference(mpc_datamodels.VariableReference):
     """Holds info about all variables of an MPC and their role in the optimization
     problem."""
 

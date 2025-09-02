@@ -2,12 +2,13 @@ import logging
 import platform
 from pathlib import Path
 from typing import Type, Optional
-
+import numpy as np
+import os
 import casadi as ca
 import pydantic
 from agentlib.core.errors import ConfigurationError
 
-from agentlib_mpc.data_structures.mpc_datamodels import MPCVariable, stats_path
+from agentlib_mpc.data_structures.mpc_datamodels import MPCVariable, stats_path,objective_path
 from agentlib_mpc.optimization_backends.casadi_.core import system
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
     OptimizationVariable,
@@ -127,7 +128,7 @@ class CasADiBackend(OptimizationBackend):
         # collect and format inputs
         mpc_inputs = self._get_current_mpc_inputs(agent_variables=current_vars, now=now)
         full_results = self.discretization.solve(mpc_inputs)
-        self.save_result_df(full_results, now=now)
+        self.save_result_df(self.system.objective, full_results, now)
 
         return full_results
 
@@ -254,12 +255,13 @@ class CasADiBackend(OptimizationBackend):
         self.discretization.logger = self.logger
 
     def save_result_df(
-        self,
-        results: Results,
-        now: float = 0,
+            self,
+            objective,
+            results: Results,
+            now: float = 0,
     ):
         """
-        Save the results of `solve` into a dataframe at each time step.
+         Save the results of `solve` into a dataframe at each time step.
 
         Example results dataframe:
 
@@ -275,19 +277,35 @@ class CasADiBackend(OptimizationBackend):
             now:
 
         Returns:
-
         """
         if not self.config.save_results:
             return
 
         res_file = self.config.results_file
-        if not self.results_file_exists():
-            results.write_columns(res_file)
-            results.write_stats_columns(stats_path(res_file))
+
+        # Calculate objective values
+        def get_objective_values(objective, df, grid):
+            objective_values = {}
+            if objective is not None:
+                objective_values.update(objective.calculate_values(df, grid))
+            return objective_values
 
         df = results.df
+        grid = np.arange(0, self.config.discretization_options.prediction_horizon * (
+                self.config.discretization_options.time_step + 1), self.config.discretization_options.time_step)
+        objective_values = get_objective_values(objective=objective, df=df, grid=grid)
+
+        if objective_values:
+            objective_names = [obj.name for obj in objective.objectives] + ['total']
+        else:
+            objective_names = []
+
+        if not self.results_file_exists():
+            results.write_columns(res_file)
+            results.write_combined_stats_columns(stats_path(res_file), objective_names)
+
         df.index = list(map(lambda x: str((now, x)), df.index))
         df.to_csv(res_file, mode="a", header=False)
 
         with open(stats_path(res_file), "a") as f:
-            f.writelines(results.stats_line(str(now)))
+            f.writelines(results.combined_stats_line(str(now), objective_values, objective_names))

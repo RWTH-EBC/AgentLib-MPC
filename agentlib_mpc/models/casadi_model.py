@@ -20,6 +20,7 @@ from agentlib.core.datamodels import (
     Causality,
 )
 from agentlib_mpc.data_structures.casadi_utils import ModelConstraint
+import warnings
 
 CasadiTypes = Union[ca.MX, ca.SX, ca.DM, ca.Sparsity]
 
@@ -318,8 +319,20 @@ class CasadiModel(Model):
         self.time = ca.MX.sym("time", 1, 1)
 
         # read constraints, assign ode's and return cost function
-        self.cost_func = self.setup_system()
+        objective_result = self.setup_system()
         self._assert_outputs_are_defined()
+
+        # Handle both new and old objective formats
+        if hasattr(objective_result, "get_casadi_expression"):
+            self.objective = objective_result
+            self.cost_func = objective_result.get_casadi_expression()
+        else:
+            # Old objective system - backwards compatibility
+            warnings.warn(
+                "\033[93mWARNING:\033[0m Model uses the deprecated objective formulation. "
+                "Consider migrating to the new FullObjective formulation.\n")
+            self.cost_func = objective_result
+            self.objective = None
 
         # save system equations as a single casadi vector
         system = ca.vertcat(*[sta.ode for sta in self.differentials])
@@ -503,6 +516,26 @@ class CasadiModel(Model):
 
     def get_differential_values(self):
         return ca.vertcat(*[sta.value for sta in self.differentials])
+
+    def create_sub_objective(self, expressions, weight, name=None):
+        """Create a SubObjective without requiring imports"""
+        from agentlib_mpc.data_structures.objective import SubObjective
+        return SubObjective(expressions=expressions, weight=weight, name=name)
+
+    def create_delta_u_objective(self, expressions, weight, name=None):
+        """Create a DeltaUObjective without requiring imports"""
+        from agentlib_mpc.data_structures.objective import DeltaUObjective
+        return DeltaUObjective(expressions=expressions, weight=weight, name=name)
+
+    def create_full_objective(self, *objectives, normalization=1.0):
+        """Create a FullObjective without requiring imports"""
+        from agentlib_mpc.data_structures.objective import FullObjective
+        return FullObjective(*objectives, normalization=normalization)
+
+    def create_conditional_objective(self, *condition_objective_pairs, default_objective=None):
+        """Create a ConditionalObjective without requiring imports"""
+        from agentlib_mpc.data_structures.objective import ConditionalObjective
+        return ConditionalObjective(*condition_objective_pairs, default_objective=default_objective)
 
     def set_differential_values(self, values: Union[List, np.ndarray]):
         """Sets the values for all differential variables. Provided values list MUST

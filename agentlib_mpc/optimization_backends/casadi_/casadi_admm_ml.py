@@ -27,6 +27,7 @@ from agentlib_mpc.optimization_backends.casadi_.admm import (
     CasadiADMMSystem,
     CasADiADMMBackend,
 )
+from agentlib_mpc.optimization_backends.casadi_.core import delta_u
 
 logger = logging.getLogger(__name__)
 
@@ -91,13 +92,6 @@ class CasadiADMMNNSystem(CasadiADMMSystem, CasadiMLSystem):
             denotation="initial_control",  # append the 0 as a convention to get initial guess
             variables=model.get_inputs(var_ref.controls),
             ref_list=var_ref.controls,
-            use_in_stage_function=False,
-            assert_complete=True,
-        )
-        self.r_del_u = OptimizationParameter.declare(
-            denotation="r_del_u",
-            variables=[CasadiParameter(name=r_del_u) for r_del_u in var_ref.r_del_u],
-            ref_list=var_ref.r_del_u,
             use_in_stage_function=False,
             assert_complete=True,
         )
@@ -240,13 +234,15 @@ class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_ML):
     max_lag: int
 
     def _discretize(self, sys: CasadiADMMNNSystem):
+
         n = self.options.prediction_horizon
         ts = self.options.time_step
 
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
         rho = self.add_opt_par(sys.penalty_factor)
-        du_weights = self.add_opt_par(sys.r_del_u)
+
+        delta_u_objectives = delta_u.get_delta_u_objectives(sym)
 
         pre_grid_states = [ts * i for i in range(-sys.max_lag + 1, 1)]
         inputs_lag = min(-2, -sys.max_lag)  # at least -2, to consider last control
@@ -336,10 +332,12 @@ class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_ML):
         for time in prediction_grid:
             stage_mx = mx_dict[time]
 
-            # add penalty on control change between intervals
-            u_prev = mx_dict[time - ts][sys.controls.name]
-            uk = stage_mx[sys.controls.name]
-            self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
+            if delta_u_objectives:
+                u_prev = mx_dict[time - ts][sys.controls.name]
+                uk = stage_mx[sys.controls.name]
+                for delta_obj in delta_u_objectives:
+                    self.objective_function += delta_u.get_objective(
+                        sys, delta_obj, u_prev, uk, const_par)
 
             # get stage arguments from current time step
             stage_arguments = {

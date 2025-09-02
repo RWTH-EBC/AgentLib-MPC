@@ -17,6 +17,7 @@ from agentlib_mpc.optimization_backends.casadi_.basic import (
 from agentlib_mpc.optimization_backends.backend import ADMMBackend
 from agentlib_mpc.optimization_backends.casadi_.core.discretization import Results
 from agentlib_mpc.optimization_backends.casadi_.full import FullSystem
+from agentlib_mpc.optimization_backends.casadi_.core import delta_u
 
 
 class CasadiADMMSystem(FullSystem):
@@ -110,7 +111,6 @@ class ADMMCollocation(DirectCollocation):
         Perform a direct collocation discretization.
         # pylint: disable=invalid-name
         """
-
         # setup the polynomial base
         collocation_matrices = self._collocation_polynomial()
 
@@ -125,8 +125,9 @@ class ADMMCollocation(DirectCollocation):
 
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
-        du_weights = self.add_opt_par(sys.r_del_u)
         rho = self.add_opt_par(sys.penalty_factor)
+
+        delta_u_objectives = delta_u.get_delta_u_objectives(sys)
 
         # Formulate the NLP
         # loop over prediction horizon
@@ -134,8 +135,10 @@ class ADMMCollocation(DirectCollocation):
             # New NLP variable for the control
             u_prev = uk
             uk = self.add_opt_var(sys.controls)
-            # penalty for control change between time steps
-            self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
+
+            for delta_obj in delta_u_objectives:
+                self.objective_function += delta_u.get_objective(
+                    sys, delta_obj, u_prev, uk, const_par)
 
             # perform inner collocation loop
             opt_vars_inside_inner = [
@@ -149,7 +152,7 @@ class ADMMCollocation(DirectCollocation):
                 sys.multipliers,
                 sys.exchange_multipliers,
                 sys.exchange_diff,
-                sys.non_controlled_inputs,
+                sys.non_controlled_inputs
             ]
             constant_over_inner = {
                 sys.controls: uk,
@@ -211,24 +214,24 @@ class ADMMMultipleShooting(MultipleShooting):
         previous_control = self.add_opt_par(sys.last_control)
 
         # Add time-invariant parameters
-        control_rate_weights = self.add_opt_par(sys.r_del_u)
         model_parameters = self.add_opt_par(sys.model_parameters)
         admm_penalty = self.add_opt_par(sys.penalty_factor)
+
+        delta_u_objectives = delta_u.get_delta_u_objectives(sym)
 
         # Create system integrator
         dynamics_integrator = self._create_ode(
             sys, integration_options, self.options.integrator
         )
 
-        # Perform multiple shooting discretization
         for k in range(prediction_horizon):
-            # 1. Handle control inputs and their rate penalties
-            current_control = self.add_opt_var(sys.controls)
-            control_rate_penalty = timestep * ca.dot(
-                control_rate_weights, (previous_control - current_control) ** 2
-            )
-            self.objective_function += control_rate_penalty
             previous_control = current_control
+            current_control = self.add_opt_var(sys.controls)
+
+            for delta_obj in delta_u_objectives:
+                self.objective_function += delta_u.get_objective(
+                    sys, delta_obj, previous_control, current_control, const_par)
+
 
             # 2. Add optimization variables for current shooting interval
             disturbance = self.add_opt_par(sys.non_controlled_inputs)
@@ -295,6 +298,7 @@ class ADMMMultipleShooting(MultipleShooting):
             current_state = next_state
 
     def _create_ode(
+
         self, sys: CasadiADMMSystem, opts: dict, integrator: Integrators
     ) -> ca.Function:
         # dummy function for empty ode, since ca.integrator would throw an error
@@ -348,6 +352,7 @@ class CasADiADMMBackend(CasADiBaseBackend, ADMMBackend):
 
     def save_result_df(
         self,
+        system,
         results: Results,
         now: float = 0,
     ):
