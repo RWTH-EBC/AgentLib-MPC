@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc package &mdash; agentlib_mpc 0.6.8 documentation</title>
+  <title>agentlib_mpc package &mdash; agentlib_mpc 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
@@ -494,6 +494,7 @@ and data-driven modeling.</p>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.get"><code class="docutils literal notranslate"><span class="pre">CasadiModel.get()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.get_constraints"><code class="docutils literal notranslate"><span class="pre">CasadiModel.get_constraints()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.get_differential_values"><code class="docutils literal notranslate"><span class="pre">CasadiModel.get_differential_values()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.get_initial_guess_outputs"><code class="docutils literal notranslate"><span class="pre">CasadiModel.get_initial_guess_outputs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.get_input_values"><code class="docutils literal notranslate"><span class="pre">CasadiModel.get_input_values()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.initialize"><code class="docutils literal notranslate"><span class="pre">CasadiModel.initialize()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.inputs"><code class="docutils literal notranslate"><span class="pre">CasadiModel.inputs</span></code></a></li>
@@ -743,6 +744,7 @@ and data-driven modeling.</p>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.data_source.DataSourceConfig.data"><code class="docutils literal notranslate"><span class="pre">DataSourceConfig.data</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.data_source.DataSourceConfig.data_offset"><code class="docutils literal notranslate"><span class="pre">DataSourceConfig.data_offset</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.data_source.DataSourceConfig.interpolation_method"><code class="docutils literal notranslate"><span class="pre">DataSourceConfig.interpolation_method</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.data_source.DataSourceConfig.shared"><code class="docutils literal notranslate"><span class="pre">DataSourceConfig.shared</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.data_source.DataSourceConfig.t_sample"><code class="docutils literal notranslate"><span class="pre">DataSourceConfig.t_sample</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.data_source.DataSourceConfig.check_data"><code class="docutils literal notranslate"><span class="pre">DataSourceConfig.check_data</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.data_source.DataSourceConfig.check_interpolation_method"><code class="docutils literal notranslate"><span class="pre">DataSourceConfig.check_interpolation_method</span></code></a></li>
@@ -751,20 +753,7 @@ and data-driven modeling.</p>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.modules.html#module-agentlib_mpc.modules.minlp_mpc">agentlib_mpc.modules.minlp_mpc module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.minlp_mpc.MINLPMPC"><code class="docutils literal notranslate"><span class="pre">MINLPMPC</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.minlp_mpc.MINLPMPC.assert_mpc_variables_are_in_model"><code class="docutils literal notranslate"><span class="pre">MINLPMPC.assert_mpc_variables_are_in_model()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.minlp_mpc.MINLPMPC.set_actuation"><code class="docutils literal notranslate"><span class="pre">MINLPMPC.set_actuation()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.minlp_mpc.MINLPMPCConfig"><code class="docutils literal notranslate"><span class="pre">MINLPMPCConfig</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.minlp_mpc.MINLPMPCConfig.binary_controls"><code class="docutils literal notranslate"><span class="pre">MINLPMPCConfig.binary_controls</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.minlp_mpc.MINLPMPCConfig.model_post_init"><code class="docutils literal notranslate"><span class="pre">MINLPMPCConfig.model_post_init()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.minlp_mpc.MINLPMPCConfig.validate_binary_bounds"><code class="docutils literal notranslate"><span class="pre">MINLPMPCConfig.validate_binary_bounds</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib-mpc-modules-minlp-mpc-module">agentlib_mpc.modules.minlp_mpc module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib-mpc-modules-ml-model-simulator-module">agentlib_mpc.modules.ml_model_simulator module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.modules.html#module-agentlib_mpc.modules.mpc">agentlib_mpc.modules.mpc module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.modules.html#agentlib_mpc.modules.mpc.BaseMPC"><code class="docutils literal notranslate"><span class="pre">BaseMPC</span></code></a><ul>
@@ -891,11 +880,11 @@ and data-driven modeling.</p>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#module-agentlib_mpc.utils.plotting.admm_animation">agentlib_mpc.utils.plotting.admm_animation module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#module-agentlib_mpc.utils.plotting.admm_consensus_shades">agentlib_mpc.utils.plotting.admm_consensus_shades module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#module-agentlib_mpc.utils.plotting.admm_dashboard">agentlib_mpc.utils.plotting.admm_dashboard module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib-mpc-utils-plotting-admm-dashboard-module">agentlib_mpc.utils.plotting.admm_dashboard module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#module-agentlib_mpc.utils.plotting.admm_residuals">agentlib_mpc.utils.plotting.admm_residuals module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#module-agentlib_mpc.utils.plotting.basic">agentlib_mpc.utils.plotting.basic module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#module-agentlib_mpc.utils.plotting.discretization_structure">agentlib_mpc.utils.plotting.discretization_structure module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#module-agentlib_mpc.utils.plotting.interactive">agentlib_mpc.utils.plotting.interactive module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib-mpc-utils-plotting-interactive-module">agentlib_mpc.utils.plotting.interactive module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#module-agentlib_mpc.utils.plotting.ml_model_test">agentlib_mpc.utils.plotting.ml_model_test module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#module-agentlib_mpc.utils.plotting.mpc">agentlib_mpc.utils.plotting.mpc module</a></li>
 </ul>

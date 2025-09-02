@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules.estimation.mhe &mdash; agentlib_mpc 0.6.8 documentation</title>
+  <title>agentlib_mpc.modules.estimation.mhe &mdash; agentlib_mpc 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -221,6 +221,7 @@
         <span class="p">)</span>
         <span class="n">opti_back</span><span class="o">.</span><span class="n">register_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
         <span class="n">disc_opts</span> <span class="o">=</span> <span class="n">opti_back</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span>
+        <span class="n">disc_opts</span><span class="o">.</span><span class="n">prediction_horizon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">horizon</span>
         <span class="n">disc_opts</span><span class="o">.</span><span class="n">time_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">time_step</span>
         <span class="k">return</span> <span class="n">opti_back</span>
 
