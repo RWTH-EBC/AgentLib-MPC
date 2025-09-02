@@ -256,18 +256,22 @@
         <span class="c1"># construct a stage function for optimization and simulation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sim_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_unified_predict_function</span><span class="p">()</span>
 
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_forbidden_variable_names</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiModel</span>
-        <span class="k">return</span> <span class="n">CasadiModel</span><span class="o">.</span><span class="n">_get_forbidden_variable_names</span><span class="p">()</span><span class="o">.</span><span class="n">union</span><span class="p">({</span>
-            <span class="s2">&quot;sim_step&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;past_value&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;lags_mx_store&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;max_lag&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;lags_dict&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;ml_model_dict&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;casadi_ml_model_dict&quot;</span><span class="p">,</span>
-        <span class="p">})</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_forbidden_variable_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">super</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">_get_forbidden_variable_names</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">union</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;sim_step&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;past_value&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;lags_mx_store&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;max_lag&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;lags_dict&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;ml_model_dict&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;casadi_ml_model_dict&quot;</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="CasadiMLModel.setup_system"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.setup_system">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup_system</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="mi">0</span></div>

@@ -202,7 +202,7 @@
         <span class="c1"># collect and format inputs</span>
         <span class="n">mpc_inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_current_mpc_inputs</span><span class="p">(</span><span class="n">agent_variables</span><span class="o">=</span><span class="n">current_vars</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="n">now</span><span class="p">)</span>
         <span class="n">full_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">discretization</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">mpc_inputs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">save_result_df</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="p">,</span> <span class="n">full_results</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_result_df</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">objective</span><span class="p">,</span> <span class="n">full_results</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">full_results</span></div>
 
@@ -330,71 +330,59 @@
 
 <div class="viewcode-block" id="CasADiBackend.save_result_df"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.save_result_df">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_result_df</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">system</span><span class="p">,</span>
+            <span class="n">objective</span><span class="p">,</span>
             <span class="n">results</span><span class="p">:</span> <span class="n">Results</span><span class="p">,</span>
             <span class="n">now</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Save the results of `solve` into a dataframe at each time step.</span>
+<span class="sd">         Save the results of `solve` into a dataframe at each time step.</span>
+
+<span class="sd">        Example results dataframe:</span>
+
+<span class="sd">        value_type               variable              ...     lower</span>
+<span class="sd">        variable                      T_0   T_0_slack  ... T_0_slack mDot_0</span>
+<span class="sd">        time_step                                      ...</span>
+<span class="sd">        2         0.000000     298.160000         NaN  ...       NaN    NaN</span>
+<span class="sd">                  101.431499   297.540944 -149.465942  ...      -inf    0.0</span>
+<span class="sd">                  450.000000   295.779780 -147.704779  ...      -inf    0.0</span>
+<span class="sd">                  798.568501   294.720770 -146.645769  ...      -inf    0.0</span>
+<span class="sd">        Args:</span>
+<span class="sd">            results:</span>
+<span class="sd">            now:</span>
+
+<span class="sd">        Returns:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_results</span><span class="p">:</span>
             <span class="k">return</span>
 
         <span class="n">res_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">results_file</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">results_file_exists</span><span class="p">():</span>
-            <span class="n">results</span><span class="o">.</span><span class="n">write_columns</span><span class="p">(</span><span class="n">res_file</span><span class="p">)</span>
-            <span class="n">results</span><span class="o">.</span><span class="n">write_stats_columns</span><span class="p">(</span><span class="n">stats_path</span><span class="p">(</span><span class="n">res_file</span><span class="p">))</span>
+
+        <span class="c1"># Calculate objective values</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_objective_values</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
+            <span class="n">objective_values</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="n">objective</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">objective_values</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">objective</span><span class="o">.</span><span class="n">calculate_values</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">grid</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">objective_values</span>
 
         <span class="n">df</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">df</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span><span class="o">.</span><span class="n">prediction_horizon</span> <span class="o">*</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span><span class="o">.</span><span class="n">time_step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span><span class="o">.</span><span class="n">time_step</span><span class="p">)</span>
+        <span class="n">objective_values</span> <span class="o">=</span> <span class="n">get_objective_values</span><span class="p">(</span><span class="n">objective</span><span class="o">=</span><span class="n">objective</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">objective_values</span><span class="p">:</span>
+            <span class="n">objective_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objective</span><span class="o">.</span><span class="n">objectives</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">objective_names</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">results_file_exists</span><span class="p">():</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">write_columns</span><span class="p">(</span><span class="n">res_file</span><span class="p">)</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">write_combined_stats_columns</span><span class="p">(</span><span class="n">stats_path</span><span class="p">(</span><span class="n">res_file</span><span class="p">),</span> <span class="n">objective_names</span><span class="p">)</span>
+
         <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">((</span><span class="n">now</span><span class="p">,</span> <span class="n">x</span><span class="p">)),</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
         <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">res_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="k">def</span><span class="w"> </span><span class="nf">get_objective_values</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
-            <span class="n">objective_values</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="s1">&#39;model&#39;</span><span class="p">)</span> <span class="ow">and</span>
-                    <span class="nb">hasattr</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;objective&#39;</span><span class="p">)</span> <span class="ow">and</span>
-                    <span class="n">system</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objective</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span>
-                    <span class="nb">hasattr</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objective</span><span class="p">,</span> <span class="s1">&#39;calculate_values&#39;</span><span class="p">)):</span>
-                <span class="n">objective_values</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objective</span><span class="o">.</span><span class="n">calculate_values</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">grid</span><span class="p">))</span>
-            <span class="k">return</span> <span class="n">objective_values</span>
-
-        <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span><span class="o">.</span><span class="n">prediction_horizon</span> <span class="o">*</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span><span class="o">.</span><span class="n">time_step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span><span class="o">.</span><span class="n">time_step</span><span class="p">)</span>
-        <span class="n">objective_values</span> <span class="o">=</span> <span class="n">get_objective_values</span><span class="p">(</span><span class="n">system</span><span class="o">=</span><span class="n">system</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">)</span>
-
-        <span class="n">obj_file</span> <span class="o">=</span> <span class="n">objective_path</span><span class="p">(</span><span class="n">res_file</span><span class="p">)</span>
-
-        <span class="c1"># Handle objective names for both old and new systems</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="s1">&#39;model&#39;</span><span class="p">)</span> <span class="ow">and</span>
-                <span class="nb">hasattr</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;objective&#39;</span><span class="p">)</span> <span class="ow">and</span>
-                <span class="n">system</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objective</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span>
-                <span class="nb">hasattr</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objective</span><span class="p">,</span> <span class="s1">&#39;objectives&#39;</span><span class="p">)):</span>
-            <span class="n">objective_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">system</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objective</span><span class="o">.</span><span class="n">objectives</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">objective_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">objective_values</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">if</span> <span class="n">objective_values</span> <span class="k">else</span> <span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span>
-
-        <span class="c1"># Check if this is the first call and handle overwrite_result_file for objective file</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_obj_file_checked&#39;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_obj_file_checked</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">overwrite_result_file</span> <span class="ow">and</span> <span class="n">obj_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj_file</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
-                    <span class="k">pass</span>
-
-        <span class="c1"># Now handle the file normally: if it doesn&#39;t exist, create it with headers</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">obj_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">obj_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">objective_names</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-
-        <span class="c1"># Append the values (only if we have objective values to write)</span>
-        <span class="k">if</span> <span class="n">objective_values</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">objective_names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">obj_file</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">now</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">objective_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">objective_names</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">stats_path</span><span class="p">(</span><span class="n">res_file</span><span class="p">),</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">stats_line</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">now</span><span class="p">)))</span></div></div>
+            <span class="n">f</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">combined_stats_line</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">now</span><span class="p">),</span> <span class="n">objective_values</span><span class="p">,</span> <span class="n">objective_names</span><span class="p">))</span></div></div>
 </pre></div>
 
            </div>

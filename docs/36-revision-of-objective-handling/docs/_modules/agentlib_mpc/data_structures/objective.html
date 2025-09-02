@@ -75,9 +75,11 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">casadi</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ca</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiParameter</span>
 
 <div class="viewcode-block" id="SubObjective"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.SubObjective">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SubObjective</span><span class="p">:</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expressions</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expressions</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create an objective term</span>
 
@@ -89,7 +91,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">expression</span> <span class="o">=</span> <span class="n">expressions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;obj_</span><span class="si">{</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_complex_expr</span> <span class="o">=</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">expressions</span><span class="p">,</span> <span class="s1">&#39;dep&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SubObjective.get_weighted_expression"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.SubObjective.get_weighted_expression">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_weighted_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the final weighted expression&quot;&quot;&quot;</span>
@@ -112,7 +113,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_evaluate_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate a complex expression using dataframe values&quot;&quot;&quot;</span>
         <span class="c1"># Handle simple named variables first</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="s1">&#39;dep&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="s1">&#39;dep&#39;</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">expr</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
                     <span class="n">var_name</span> <span class="o">=</span> <span class="n">expr</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
@@ -128,7 +129,32 @@
 
         <span class="n">expr_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
 
+        <span class="c1"># Handle common CasADi functions with simple replacements</span>
+        <span class="n">casadi_replacements</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;sq(&#39;</span><span class="p">:</span> <span class="s1">&#39;(&#39;</span><span class="p">,</span>  <span class="c1"># sq(x) becomes (x), then we&#39;ll square it</span>
+            <span class="s1">&#39;fabs(&#39;</span><span class="p">:</span> <span class="s1">&#39;abs(&#39;</span><span class="p">,</span>  <span class="c1"># fabs(x) becomes abs(x)</span>
+            <span class="s1">&#39;sqrt(&#39;</span><span class="p">:</span> <span class="s1">&#39;sqrt(&#39;</span><span class="p">,</span>  <span class="c1"># already handled in safe_dict</span>
+            <span class="s1">&#39;sin(&#39;</span><span class="p">:</span> <span class="s1">&#39;sin(&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;cos(&#39;</span><span class="p">:</span> <span class="s1">&#39;cos(&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;exp(&#39;</span><span class="p">:</span> <span class="s1">&#39;exp(&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;log(&#39;</span><span class="p">:</span> <span class="s1">&#39;log(&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Apply replacements</span>
+        <span class="n">eval_str</span> <span class="o">=</span> <span class="n">expr_str</span>
+        <span class="n">is_square</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="s1">&#39;sq(&#39;</span> <span class="ow">in</span> <span class="n">eval_str</span><span class="p">:</span>
+            <span class="n">is_square</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">eval_str</span> <span class="o">=</span> <span class="n">eval_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;sq(&#39;</span><span class="p">,</span> <span class="s1">&#39;(&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">casadi_func</span><span class="p">,</span> <span class="n">replacement</span> <span class="ow">in</span> <span class="n">casadi_replacements</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">casadi_func</span> <span class="o">!=</span> <span class="s1">&#39;sq(&#39;</span><span class="p">:</span>  <span class="c1"># already handled above</span>
+                <span class="n">eval_str</span> <span class="o">=</span> <span class="n">eval_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">casadi_func</span><span class="p">,</span> <span class="n">replacement</span><span class="p">)</span>
+
+        <span class="c1"># Extract variable names, filtering out CasADi function names</span>
+        <span class="n">casadi_functions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sq&#39;</span><span class="p">,</span> <span class="s1">&#39;fabs&#39;</span><span class="p">,</span> <span class="s1">&#39;sqrt&#39;</span><span class="p">,</span> <span class="s1">&#39;sin&#39;</span><span class="p">,</span> <span class="s1">&#39;cos&#39;</span><span class="p">,</span> <span class="s1">&#39;exp&#39;</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="s1">&#39;abs&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">]</span>
         <span class="n">var_names</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[a-zA-Z][a-zA-Z0-9_]*&#39;</span><span class="p">,</span> <span class="n">expr_str</span><span class="p">)</span>
+        <span class="n">var_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">var_names</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">casadi_functions</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">var_names</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -162,7 +188,7 @@
                 <span class="s1">&#39;min&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span>
             <span class="p">})</span>
 
-            <span class="n">eval_str</span> <span class="o">=</span> <span class="n">expr_str</span>
+            <span class="c1"># Remove outer parentheses if they wrap the entire expression</span>
             <span class="k">if</span> <span class="n">eval_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">eval_str</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;)&#39;</span><span class="p">):</span>
                 <span class="n">paren_count</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">is_outermost</span> <span class="o">=</span> <span class="kc">True</span>
@@ -179,6 +205,10 @@
 
             <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">eval_str</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;__builtins__&quot;</span><span class="p">:</span> <span class="p">{}},</span> <span class="n">safe_dict</span><span class="p">)</span>
 
+            <span class="c1"># Apply square if it was sq() function</span>
+            <span class="k">if</span> <span class="n">is_square</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">**</span> <span class="mi">2</span>
+
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">result</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
@@ -192,6 +222,8 @@
                 <span class="n">var_name</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">values_found</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">expr_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;(-&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">expr_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">):</span>
                     <span class="k">return</span> <span class="o">-</span><span class="n">values_found</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">is_square</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">values_found</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">return</span> <span class="n">values_found</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span>
 
@@ -199,7 +231,7 @@
 
 
 <div class="viewcode-block" id="DeltaUObjective"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.DeltaUObjective">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DeltaUObjective</span><span class="p">(</span><span class="n">SubObjective</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expressions</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expressions</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            expressions: Control variable to track changes</span>
@@ -231,8 +263,6 @@
 <span class="sd">        Override parent method to provide a placeholder.</span>
 <span class="sd">        The actual penalty calculation happens in the discretization step.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="s1">&#39;sym&#39;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="mi">0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">sym</span>
         <span class="k">return</span> <span class="mi">0</span></div>
 
 <div class="viewcode-block" id="DeltaUObjective.calculate_value"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.DeltaUObjective.calculate_value">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
@@ -258,7 +288,7 @@
 <div class="viewcode-block" id="FullObjective"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.FullObjective">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">FullObjective</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Container for multiple objective terms with normalization&quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">objectives</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">objectives</span><span class="p">,</span> <span class="n">normalization</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            *objectives: Variable number of objective terms</span>

@@ -93,6 +93,7 @@
     <span class="n">Causality</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.casadi_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelConstraint</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 <span class="n">CasadiTypes</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">SX</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">Sparsity</span><span class="p">]</span>
 
@@ -396,12 +397,11 @@
 
         <span class="c1"># Handle both new and old objective formats</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">objective_result</span><span class="p">,</span> <span class="s2">&quot;get_casadi_expression&quot;</span><span class="p">):</span>
-            <span class="c1"># New objective system</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">objective_result</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cost_func</span> <span class="o">=</span> <span class="n">objective_result</span><span class="o">.</span><span class="n">get_casadi_expression</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Old objective system - backwards compatibility</span>
-            <span class="nb">print</span><span class="p">(</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[93mWARNING:</span><span class="se">\033</span><span class="s2">[0m Model uses the deprecated objective formulation. &quot;</span>
                 <span class="s2">&quot;Consider migrating to the new FullObjective formulation.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cost_func</span> <span class="o">=</span> <span class="n">objective_result</span>
@@ -576,6 +576,26 @@
 
 <div class="viewcode-block" id="CasadiModel.get_differential_values"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.get_differential_values">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_differential_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">sta</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">sta</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">differentials</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="CasadiModel.create_sub_objective"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.create_sub_objective">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_sub_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expressions</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a SubObjective without requiring imports&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.objective</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubObjective</span>
+        <span class="k">return</span> <span class="n">SubObjective</span><span class="p">(</span><span class="n">expressions</span><span class="o">=</span><span class="n">expressions</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CasadiModel.create_delta_u_objective"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.create_delta_u_objective">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_delta_u_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expressions</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a DeltaUObjective without requiring imports&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.objective</span><span class="w"> </span><span class="kn">import</span> <span class="n">DeltaUObjective</span>
+        <span class="k">return</span> <span class="n">DeltaUObjective</span><span class="p">(</span><span class="n">expressions</span><span class="o">=</span><span class="n">expressions</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CasadiModel.create_full_objective"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.create_full_objective">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_full_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">objectives</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a FullObjective without requiring imports&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.objective</span><span class="w"> </span><span class="kn">import</span> <span class="n">FullObjective</span>
+        <span class="k">return</span> <span class="n">FullObjective</span><span class="p">(</span><span class="o">*</span><span class="n">objectives</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="n">normalization</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CasadiModel.create_conditional_objective"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.create_conditional_objective">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_conditional_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">condition_objective_pairs</span><span class="p">,</span> <span class="n">default_objective</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a ConditionalObjective without requiring imports&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.objective</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConditionalObjective</span>
+        <span class="k">return</span> <span class="n">ConditionalObjective</span><span class="p">(</span><span class="o">*</span><span class="n">condition_objective_pairs</span><span class="p">,</span> <span class="n">default_objective</span><span class="o">=</span><span class="n">default_objective</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CasadiModel.set_differential_values"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.set_differential_values">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_differential_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the values for all differential variables. Provided values list MUST</span>

@@ -252,8 +252,29 @@ Requires the model to be a CasADi model.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.save_result_df">
-<span class="sig-name descname"><span class="pre">save_result_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results" title="agentlib_mpc.optimization_backends.casadi_.core.discretization.Results"><span class="pre">Results</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">now</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.html#CasADiBackend.save_result_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.save_result_df" title="Permalink to this definition"></a></dt>
-<dd><p>Save the results of <cite>solve</cite> into a dataframe at each time step.</p>
+<span class="sig-name descname"><span class="pre">save_result_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objective</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results" title="agentlib_mpc.optimization_backends.casadi_.core.discretization.Results"><span class="pre">Results</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">now</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.html#CasADiBackend.save_result_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.save_result_df" title="Permalink to this definition"></a></dt>
+<dd><blockquote>
+<div><p>Save the results of <cite>solve</cite> into a dataframe at each time step.</p>
+</div></blockquote>
+<p>Example results dataframe:</p>
+<p>value_type               variable              …     lower
+variable                      T_0   T_0_slack  … T_0_slack mDot_0
+time_step                                      …
+2         0.000000     298.160000         NaN  …       NaN    NaN</p>
+<blockquote>
+<div><p>101.431499   297.540944 -149.465942  …      -inf    0.0
+450.000000   295.779780 -147.704779  …      -inf    0.0
+798.568501   294.720770 -146.645769  …      -inf    0.0</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>results</strong> – </p></li>
+<li><p><strong>now</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
 </dd></dl>
 
 <dl class="py method">
@@ -517,6 +538,12 @@ statistics.</p>
 <span class="sig-name descname"><span class="pre">columns</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MultiIndex</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.columns" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.combined_stats_line">
+<span class="sig-name descname"><span class="pre">combined_stats_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objective_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objective_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/agentlib_mpc/optimization_backends/casadi_/core/discretization.html#Results.combined_stats_line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.combined_stats_line" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a line with both objective and stats values</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.df">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">df</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.df" title="Permalink to this definition"></a></dt>
@@ -562,6 +589,12 @@ statistics.</p>
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.write_columns">
 <span class="sig-name descname"><span class="pre">write_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/optimization_backends/casadi_/core/discretization.html#Results.write_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.write_columns" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.write_combined_stats_columns">
+<span class="sig-name descname"><span class="pre">write_combined_stats_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objective_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/optimization_backends/casadi_/core/discretization.html#Results.write_combined_stats_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.write_combined_stats_columns" title="Permalink to this definition"></a></dt>
+<dd><p>Write headers for combined stats and objective data with prefixes</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.write_stats_columns">

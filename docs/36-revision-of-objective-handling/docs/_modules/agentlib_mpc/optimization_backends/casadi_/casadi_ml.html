@@ -76,8 +76,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiParameter</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.casadi_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">LB_PREFIX</span><span class="p">,</span>
     <span class="n">UB_PREFIX</span><span class="p">,</span>
@@ -100,6 +98,7 @@
     <span class="n">CasADiBaseBackend</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.full</span><span class="w"> </span><span class="kn">import</span> <span class="n">FullSystem</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">delta_u</span>
 
 
 <div class="viewcode-block" id="CasadiMLSystem"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CasadiMLSystem</span><span class="p">(</span><span class="n">FullSystem</span><span class="p">):</span>
@@ -169,6 +168,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sim_step</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">make_predict_function_for_mpc</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lags_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lags_dict</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lags_mx_store</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lags_mx_store</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">objective</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cost_func</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">cost_func</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">time</span></div>
 
     <span class="nd">@property</span>
@@ -190,19 +192,8 @@
         <span class="n">ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">time_step</span>
         <span class="n">const_par</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">)</span>
 
-        <span class="c1"># Handle delta_u objectives - only for new objective system</span>
-        <span class="n">delta_u_objectives</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s1">&#39;model&#39;</span><span class="p">)</span> <span class="ow">and</span>
-                <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;objective&#39;</span><span class="p">)</span> <span class="ow">and</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objective</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">delta_u_objectives</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objective</span><span class="o">.</span><span class="n">get_delta_u_objectives</span><span class="p">()</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to get delta_u_objectives: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="n">control_map</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">control_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">ref_names</span><span class="p">):</span>
-            <span class="n">control_map</span><span class="p">[</span><span class="n">control_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="n">delta_u_objectives</span> <span class="o">=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_delta_u_objectives</span><span class="p">(</span><span class="n">sys</span><span class="p">)</span>
 
         <span class="n">pre_grid_states</span> <span class="o">=</span> <span class="p">[</span><span class="n">ts</span> <span class="o">*</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">sys</span><span class="o">.</span><span class="n">max_lag</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
         <span class="n">inputs_lag</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="n">sys</span><span class="o">.</span><span class="n">max_lag</span><span class="p">)</span>  <span class="c1"># at least -2, to consider last control</span>
@@ -264,32 +255,12 @@
         <span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">prediction_grid</span><span class="p">:</span>
             <span class="n">stage_mx</span> <span class="o">=</span> <span class="n">mx_dict</span><span class="p">[</span><span class="n">time</span><span class="p">]</span>
 
-            <span class="c1"># add penalty on control change between intervals (only for new objective system)</span>
             <span class="k">if</span> <span class="n">delta_u_objectives</span><span class="p">:</span>
                 <span class="n">u_prev</span> <span class="o">=</span> <span class="n">mx_dict</span><span class="p">[</span><span class="n">time</span> <span class="o">-</span> <span class="n">ts</span><span class="p">][</span><span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
                 <span class="n">uk</span> <span class="o">=</span> <span class="n">stage_mx</span><span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">delta_obj</span> <span class="ow">in</span> <span class="n">delta_u_objectives</span><span class="p">:</span>
-                    <span class="n">control_name</span> <span class="o">=</span> <span class="n">delta_obj</span><span class="o">.</span><span class="n">get_control_name</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="n">control_name</span> <span class="ow">in</span> <span class="n">control_map</span><span class="p">:</span>
-                        <span class="n">idx</span> <span class="o">=</span> <span class="n">control_map</span><span class="p">[</span><span class="n">control_name</span><span class="p">]</span>
-                        <span class="n">control_prev</span> <span class="o">=</span> <span class="n">u_prev</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-                        <span class="n">control_curr</span> <span class="o">=</span> <span class="n">uk</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-                        <span class="n">delta</span> <span class="o">=</span> <span class="n">control_curr</span> <span class="o">-</span> <span class="n">control_prev</span>
-
-                        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">delta_obj</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="s1">&#39;sym&#39;</span><span class="p">):</span>
-                            <span class="n">param_found</span> <span class="o">=</span> <span class="kc">False</span>
-                            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="o">.</span><span class="n">ref_names</span><span class="p">):</span>
-                                <span class="k">if</span> <span class="n">param_name</span> <span class="o">==</span> <span class="n">delta_obj</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                                    <span class="n">weight_value</span> <span class="o">=</span> <span class="n">const_par</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                                    <span class="n">param_found</span> <span class="o">=</span> <span class="kc">True</span>
-                                    <span class="k">break</span>
-
-                            <span class="k">if</span> <span class="ow">not</span> <span class="n">param_found</span><span class="p">:</span>
-                                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameter </span><span class="si">{</span><span class="n">delta_obj</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> not found in model parameters&quot;</span><span class="p">)</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">weight_value</span> <span class="o">=</span> <span class="n">delta_obj</span><span class="o">.</span><span class="n">weight</span>
-
-                        <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">weight_value</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">delta</span> <span class="o">**</span> <span class="mi">2</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_objective</span><span class="p">(</span>
+                        <span class="n">sys</span><span class="p">,</span> <span class="n">delta_obj</span><span class="p">,</span> <span class="n">u_prev</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">const_par</span><span class="p">)</span>
 
             <span class="c1"># get stage arguments from current time step</span>
             <span class="n">stage_arguments</span> <span class="o">=</span> <span class="p">{</span>
@@ -394,7 +365,7 @@
                 <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">lag</span><span class="p">):</span>
                     <span class="c1"># create an MX variable for this lag</span>
                     <span class="n">l_name</span> <span class="o">=</span> <span class="n">name_with_lag</span><span class="p">(</span><span class="n">v_name</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
-                    <span class="n">new_lag_var</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">lags_mx_store</span><span class="p">[</span><span class="n">l_name</span><span class="p">]</span>
+                    <span class="n">new_lag_var</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">lags_mx_store</span><span class="p">[</span><span class="n">l_name</span><span class="p">]</span>
                     <span class="n">all_input_variables</span><span class="p">[</span><span class="n">l_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_lag_var</span>
 
                     <span class="c1"># add the mx variable to its lag time and denotation</span>

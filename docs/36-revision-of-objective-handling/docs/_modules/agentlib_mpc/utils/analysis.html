@@ -102,20 +102,8 @@
     <span class="n">stats_file</span> <span class="o">=</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">stats_path</span><span class="p">(</span><span class="n">results_file</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">stats_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">is_float_dtype</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">df</span>
-    <span class="n">new_ind</span> <span class="o">=</span> <span class="p">[</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">(</span><span class="n">new_ind</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">df</span></div>
-
-<div class="viewcode-block" id="load_mpc_obj_res"><a class="viewcode-back" href="../../../code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.load_mpc_obj_res">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">load_mpc_obj_res</span><span class="p">(</span><span class="n">results_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load the objective function results from the corresponding obj_mpc.csv file.&quot;&quot;&quot;</span>
-    <span class="n">obj_file</span> <span class="o">=</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">objective_path</span><span class="p">(</span><span class="n">results_file</span><span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">obj_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading stats file: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">is_float_dtype</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">df</span>

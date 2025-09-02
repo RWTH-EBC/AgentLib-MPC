@@ -81,19 +81,18 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">VariableReference</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiModel</span><span class="p">,</span> <span class="n">CasadiParameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.casadi_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasADiBackend</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.VariableGroup</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">OptimizationParameter</span>
 <span class="p">)</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">delta_u</span>
 
 <div class="viewcode-block" id="FullSystem"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.full.FullSystem">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">FullSystem</span><span class="p">(</span><span class="n">basic</span><span class="o">.</span><span class="n">BaseSystem</span><span class="p">):</span>
     <span class="n">last_control</span><span class="p">:</span> <span class="n">OptimizationParameter</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="FullSystem.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.full.FullSystem.initialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">CasadiModel</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">VariableReference</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">var_ref</span><span class="o">=</span><span class="n">var_ref</span><span class="p">)</span>
@@ -108,17 +107,9 @@
             <span class="n">assert_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">time</span></div>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_model&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Model reference not initialized yet&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
-
-    <span class="nd">@model</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">value</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">objective</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cost_func</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">cost_func</span></div></div>
 
 
 <div class="viewcode-block" id="DirectCollocation"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.full.DirectCollocation">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DirectCollocation</span><span class="p">(</span><span class="n">basic</span><span class="o">.</span><span class="n">DirectCollocation</span><span class="p">):</span>
@@ -143,16 +134,7 @@
         <span class="c1"># Parameters that are constant over the horizon</span>
         <span class="n">const_par</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">)</span>
 
-        <span class="n">delta_u_objectives</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s1">&#39;model&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;objective&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objective</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">delta_u_objectives</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objective</span><span class="o">.</span><span class="n">get_delta_u_objectives</span><span class="p">()</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to get delta_u_objectives: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-        <span class="n">control_map</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">control_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">ref_names</span><span class="p">):</span>
-            <span class="n">control_map</span><span class="p">[</span><span class="n">control_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="n">delta_u_objectives</span> <span class="o">=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_delta_u_objectives</span><span class="p">(</span><span class="n">sys</span><span class="p">)</span>
 
         <span class="c1"># Formulate the NLP</span>
         <span class="c1"># loop over prediction horizon</span>
@@ -161,28 +143,9 @@
             <span class="n">u_prev</span> <span class="o">=</span> <span class="n">uk</span>
             <span class="n">uk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="p">)</span>
 
-            <span class="c1"># penalty for control change between time steps (only for new objective system)</span>
             <span class="k">for</span> <span class="n">delta_obj</span> <span class="ow">in</span> <span class="n">delta_u_objectives</span><span class="p">:</span>
-                <span class="n">control_name</span> <span class="o">=</span> <span class="n">delta_obj</span><span class="o">.</span><span class="n">get_control_name</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">control_name</span> <span class="ow">in</span> <span class="n">control_map</span><span class="p">:</span>
-                    <span class="n">idx</span> <span class="o">=</span> <span class="n">control_map</span><span class="p">[</span><span class="n">control_name</span><span class="p">]</span>
-                    <span class="n">control_prev</span> <span class="o">=</span> <span class="n">u_prev</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-                    <span class="n">control_curr</span> <span class="o">=</span> <span class="n">uk</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-                    <span class="n">delta</span> <span class="o">=</span> <span class="n">control_curr</span> <span class="o">-</span> <span class="n">control_prev</span>
-                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">delta_obj</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="s1">&#39;sym&#39;</span><span class="p">):</span>
-                        <span class="n">param_found</span> <span class="o">=</span> <span class="kc">False</span>
-                        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="o">.</span><span class="n">ref_names</span><span class="p">):</span>
-                            <span class="k">if</span> <span class="n">param_name</span> <span class="o">==</span> <span class="n">delta_obj</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                                <span class="n">weight_value</span> <span class="o">=</span> <span class="n">const_par</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                                <span class="n">param_found</span> <span class="o">=</span> <span class="kc">True</span>
-                                <span class="k">break</span>
-
-                        <span class="k">if</span> <span class="ow">not</span> <span class="n">param_found</span><span class="p">:</span>
-                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameter </span><span class="si">{</span><span class="n">delta_obj</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> not found in model parameters&quot;</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">weight_value</span> <span class="o">=</span> <span class="n">delta_obj</span><span class="o">.</span><span class="n">weight</span>
-
-                    <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">weight_value</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">delta</span> <span class="o">**</span> <span class="mi">2</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_objective</span><span class="p">(</span>
+                    <span class="n">sys</span><span class="p">,</span> <span class="n">delta_obj</span><span class="p">,</span> <span class="n">u_prev</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">const_par</span><span class="p">)</span>
 
             <span class="c1"># perform inner collocation loop</span>
             <span class="n">opt_vars_inside_inner</span> <span class="o">=</span> <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">algebraics</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span>
@@ -234,16 +197,7 @@
         <span class="c1"># Parameters that are constant over the horizon</span>
         <span class="n">const_par</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">)</span>
 
-        <span class="n">delta_u_objectives</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s1">&#39;model&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="s1">&#39;objective&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objective</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">delta_u_objectives</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objective</span><span class="o">.</span><span class="n">get_delta_u_objectives</span><span class="p">()</span>
-            <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to get delta_u_objectives: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-        <span class="n">control_map</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">control_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">ref_names</span><span class="p">):</span>
-            <span class="n">control_map</span><span class="p">[</span><span class="n">control_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="n">delta_u_objectives</span> <span class="o">=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_delta_u_objectives</span><span class="p">(</span><span class="n">sys</span><span class="p">)</span>
 
         <span class="c1"># ODE is used here because the algebraics can be calculated with the stage function</span>
         <span class="n">opt_integrator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_ode</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">integrator</span><span class="p">)</span>
@@ -252,29 +206,9 @@
             <span class="n">u_prev</span> <span class="o">=</span> <span class="n">uk</span>
             <span class="n">uk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="p">)</span>
 
-            <span class="c1"># penalty for control change between time steps (only for new objective system)</span>
             <span class="k">for</span> <span class="n">delta_obj</span> <span class="ow">in</span> <span class="n">delta_u_objectives</span><span class="p">:</span>
-                <span class="n">control_name</span> <span class="o">=</span> <span class="n">delta_obj</span><span class="o">.</span><span class="n">get_control_name</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">control_name</span> <span class="ow">in</span> <span class="n">control_map</span><span class="p">:</span>
-                    <span class="n">idx</span> <span class="o">=</span> <span class="n">control_map</span><span class="p">[</span><span class="n">control_name</span><span class="p">]</span>
-                    <span class="n">control_prev</span> <span class="o">=</span> <span class="n">u_prev</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-                    <span class="n">control_curr</span> <span class="o">=</span> <span class="n">uk</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-                    <span class="n">delta</span> <span class="o">=</span> <span class="n">control_curr</span> <span class="o">-</span> <span class="n">control_prev</span>
-
-                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">delta_obj</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="s1">&#39;sym&#39;</span><span class="p">):</span>
-                        <span class="n">param_found</span> <span class="o">=</span> <span class="kc">False</span>
-                        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="o">.</span><span class="n">ref_names</span><span class="p">):</span>
-                            <span class="k">if</span> <span class="n">param_name</span> <span class="o">==</span> <span class="n">delta_obj</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                                <span class="n">weight_value</span> <span class="o">=</span> <span class="n">const_par</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                                <span class="n">param_found</span> <span class="o">=</span> <span class="kc">True</span>
-                                <span class="k">break</span>
-
-                        <span class="k">if</span> <span class="ow">not</span> <span class="n">param_found</span><span class="p">:</span>
-                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameter </span><span class="si">{</span><span class="n">delta_obj</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> not found in model parameters&quot;</span><span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">weight_value</span> <span class="o">=</span> <span class="n">delta_obj</span><span class="o">.</span><span class="n">weight</span>
-
-                    <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">weight_value</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">delta</span> <span class="o">**</span> <span class="mi">2</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_objective</span><span class="p">(</span>
+                    <span class="n">sys</span><span class="p">,</span> <span class="n">delta_obj</span><span class="p">,</span> <span class="n">u_prev</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">const_par</span><span class="p">)</span>
 
             <span class="n">dk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="p">)</span>
             <span class="n">zk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">algebraics</span><span class="p">)</span>

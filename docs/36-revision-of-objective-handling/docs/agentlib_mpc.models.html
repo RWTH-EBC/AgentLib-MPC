@@ -112,6 +112,30 @@ uses for this are slack variables that appear in cost functions and
 constraints of optimization models.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_model.CasadiModel.create_conditional_objective">
+<span class="sig-name descname"><span class="pre">create_conditional_objective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">condition_objective_pairs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_objective</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/models/casadi_model.html#CasadiModel.create_conditional_objective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_model.CasadiModel.create_conditional_objective" title="Permalink to this definition"></a></dt>
+<dd><p>Create a ConditionalObjective without requiring imports</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_model.CasadiModel.create_delta_u_objective">
+<span class="sig-name descname"><span class="pre">create_delta_u_objective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expressions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/models/casadi_model.html#CasadiModel.create_delta_u_objective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_model.CasadiModel.create_delta_u_objective" title="Permalink to this definition"></a></dt>
+<dd><p>Create a DeltaUObjective without requiring imports</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_model.CasadiModel.create_full_objective">
+<span class="sig-name descname"><span class="pre">create_full_objective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">objectives</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/models/casadi_model.html#CasadiModel.create_full_objective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_model.CasadiModel.create_full_objective" title="Permalink to this definition"></a></dt>
+<dd><p>Create a FullObjective without requiring imports</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_model.CasadiModel.create_sub_objective">
+<span class="sig-name descname"><span class="pre">create_sub_objective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expressions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/models/casadi_model.html#CasadiModel.create_sub_objective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_model.CasadiModel.create_sub_objective" title="Permalink to this definition"></a></dt>
+<dd><p>Create a SubObjective without requiring imports</p>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="agentlib_mpc.models.casadi_model.CasadiModel.differentials">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">differentials</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiState" title="agentlib_mpc.models.casadi_model.CasadiState"><span class="pre">CasadiState</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_model.CasadiModel.differentials" title="Permalink to this definition"></a></dt>

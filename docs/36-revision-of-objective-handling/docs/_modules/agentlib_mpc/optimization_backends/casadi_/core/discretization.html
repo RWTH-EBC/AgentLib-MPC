@@ -148,6 +148,24 @@
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
         <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="Results.write_combined_stats_columns"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.write_combined_stats_columns">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_combined_stats_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">objective_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write headers for combined stats and objective data with prefixes&quot;&quot;&quot;</span>
+        <span class="c1"># Add prefixes to distinguish objective from stats columns</span>
+        <span class="n">tagged_obj_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;obj_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">objective_names</span><span class="p">]</span>
+        <span class="n">tagged_stats_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;stats_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+        <span class="n">combined_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">tagged_obj_names</span> <span class="o">+</span> <span class="n">tagged_stats_names</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;,</span><span class="si">{</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">combined_names</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Results.combined_stats_line"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.combined_stats_line">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">combined_stats_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">objective_values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">objective_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a line with both objective and stats values&quot;&quot;&quot;</span>
+        <span class="c1"># Use the same order as in the headers</span>
+        <span class="n">obj_values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">objective_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">objective_names</span><span class="p">]</span>
+        <span class="n">stats_values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="n">combined_values</span> <span class="o">=</span> <span class="n">obj_values</span> <span class="o">+</span> <span class="n">stats_values</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">&quot;,</span><span class="si">{</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">combined_values</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span></div>
+
 <div class="viewcode-block" id="Results.write_stats_columns"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.write_stats_columns">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_stats_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
         <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;,</span><span class="si">{</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -278,18 +296,6 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_variable_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper to extract variable values across time steps from optimization results&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">var_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpc_opt_vars</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[]</span>
-
-        <span class="n">var_container</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpc_opt_vars</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">var_container</span><span class="p">,</span> <span class="s1">&#39;opt&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">var_container</span><span class="o">.</span><span class="n">opt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[]</span>
-
-        <span class="k">return</span> <span class="n">var_container</span><span class="o">.</span><span class="n">opt</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_determine_initial_guess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mpc_inputs</span><span class="p">:</span> <span class="n">MPCInputs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MPCInputs</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Collects initial guesses for all mpc variables. If possible, uses result</span>
@@ -335,8 +341,12 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_process_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Results</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Collect all inputs and outputs of the optimization problem and format</span>
-<span class="sd">        them for return and optionally save them.</span>
+<span class="sd">        If self.result_file is not empty,</span>
+<span class="sd">        collect all inputs and outputs of the optimization problem and format</span>
+<span class="sd">        them as DataFrames and pass them to OptimizationBackend.save_df().</span>
+<span class="sd">        Args:</span>
+<span class="sd">            inputs: mpc_inputs dict returned from _get_current_mpc_inputs</span>
+<span class="sd">            outputs: mpc_output from self._nlp_outputs_to_mpc_outputs</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># update the guess values at the variable positions with the outputs</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -614,9 +624,6 @@
         <span class="n">var_list</span><span class="o">.</span><span class="n">ub</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">upper</span><span class="p">)</span>
         <span class="n">var_list</span><span class="o">.</span><span class="n">guess</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">opt_var</span><span class="p">)</span>
         <span class="n">var_list</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">var_list</span><span class="p">,</span> <span class="s1">&#39;ref_names&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">quantity</span><span class="p">,</span> <span class="s1">&#39;ref_names&#39;</span><span class="p">):</span>
-            <span class="n">var_list</span><span class="o">.</span><span class="n">ref_names</span> <span class="o">=</span> <span class="n">quantity</span><span class="o">.</span><span class="n">ref_names</span>
 
         <span class="k">return</span> <span class="n">opt_var</span></div>
 
