@@ -284,14 +284,13 @@
             <span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="p">,</span> <span class="n">lb</span><span class="o">=</span><span class="n">initial_state</span><span class="p">,</span> <span class="n">ub</span><span class="o">=</span><span class="n">initial_state</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">initial_state</span>
         <span class="p">)</span>
 
-        <span class="c1"># Initialize control input</span>
-        <span class="n">previous_control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">last_control</span><span class="p">)</span>
+        <span class="n">const_par</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">)</span>
 
         <span class="c1"># Add time-invariant parameters</span>
         <span class="n">model_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">)</span>
         <span class="n">admm_penalty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">penalty_factor</span><span class="p">)</span>
 
-        <span class="n">delta_u_objectives</span> <span class="o">=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_delta_u_objectives</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+        <span class="n">delta_u_objectives</span> <span class="o">=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_delta_u_objectives</span><span class="p">(</span><span class="n">sys</span><span class="p">)</span>
 
         <span class="c1"># Create system integrator</span>
         <span class="n">dynamics_integrator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_ode</span><span class="p">(</span>

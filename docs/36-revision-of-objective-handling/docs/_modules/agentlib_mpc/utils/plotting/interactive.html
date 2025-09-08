@@ -222,7 +222,10 @@
 
 
 <div class="viewcode-block" id="plot_mpc_plotly"><a class="viewcode-back" href="../../../../code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.interactive.plot_mpc_plotly">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">plot_mpc_plotly</span><span class="p">(</span>
-    <span class="n">y_axis_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">series</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
+    <span class="n">step</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">convert_to</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;minutes&quot;</span><span class="p">,</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span> <span class="s2">&quot;days&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;seconds&quot;</span><span class="p">,</span>
+    <span class="n">y_axis_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
