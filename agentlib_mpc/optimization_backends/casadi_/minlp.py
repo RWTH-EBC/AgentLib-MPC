@@ -13,8 +13,6 @@ from agentlib_mpc.optimization_backends.casadi_.core.casadi_backend import CasAD
 from agentlib_mpc.optimization_backends.casadi_.core import delta_u
 
 
-
-
 class CasadiMINLPSystem(basic.BaseSystem):
     binary_controls: OptimizationVariable
 

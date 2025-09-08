@@ -210,14 +210,13 @@ class ADMMMultipleShooting(MultipleShooting):
             sys.states, lb=initial_state, ub=initial_state, guess=initial_state
         )
 
-        # Initialize control input
-        previous_control = self.add_opt_par(sys.last_control)
+        const_par = self.add_opt_par(sys.model_parameters)
 
         # Add time-invariant parameters
         model_parameters = self.add_opt_par(sys.model_parameters)
         admm_penalty = self.add_opt_par(sys.penalty_factor)
 
-        delta_u_objectives = delta_u.get_delta_u_objectives(sym)
+        delta_u_objectives = delta_u.get_delta_u_objectives(sys)
 
         # Create system integrator
         dynamics_integrator = self._create_ode(

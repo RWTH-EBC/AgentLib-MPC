@@ -13,7 +13,6 @@ def get_delta_u_objectives(sys):
 
 
 def get_objective(sys, delta_obj, u_prev, uk, const_par):
-    control_name = delta_obj.get_control_name()
     for idx, name in enumerate(sys.controls.ref_names):
         control_prev = u_prev[idx]
         control_curr = uk[idx]
