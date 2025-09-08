@@ -149,7 +149,10 @@ def make_figure_plotly() -> go.Figure:
 
 
 def plot_mpc_plotly(
-    y_axis_label: str = "",
+    series: pd.Series,
+    step: bool = False,
+    convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds",
+    y_axis_label: str = ""
 ) -> go.Figure:
     """
     Args:
