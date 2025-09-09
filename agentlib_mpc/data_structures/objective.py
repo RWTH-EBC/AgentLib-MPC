@@ -3,10 +3,21 @@ import numpy as np
 import re
 import casadi as ca
 from typing import Union
-from agentlib_mpc.models.casadi_model import CasadiParameter
+from agentlib_mpc.models.casadi_model import CasadiParameter, CasadiInput
+
+
+def is_casadi_expression(obj) -> bool:
+    """Checks if the object is specifically a CasADi expression (not a pure, symbolic casadi variable)"""
+    return isinstance(obj, (ca.MX, ca.SX)) and not obj.is_symbolic()
+
 
 class SubObjective:
-    def __init__(self, expressions: ca.MX, weight: Union[float, int, CasadiParameter], name: str = None):
+    def __init__(
+        self,
+        expressions: ca.MX,
+        weight: Union[float, int, CasadiParameter],
+        name: str = None,
+    ):
         """
         Create an objective term
 
@@ -21,78 +32,80 @@ class SubObjective:
 
     def get_weighted_expression(self):
         """Returns the final weighted expression"""
-        if hasattr(self.weight, 'sym'):
-            weight_value = self.weight.sym
-            if hasattr(self.weight, 'dep'):
-                raise TypeError(f"Cannot call weight function in objective {self.name}")
-        else:
-            weight_value = self.weight
-        return weight_value * self.expression
+        if is_casadi_expression(self.weight):
+            raise ValueError(
+                f"Objective {self.name} contains expression {self.weight} in weight but only "
+                f"original variables are allowed."
+            )
+        return self.weight * self.expression
 
     def calculate_value(self, data, weight):
         """Calculate the objective value from data"""
         ts = np.diff(data.index)
-        if isinstance(data, pd.Series):
-            return sum(weight * data.values[:-1] * ts)
         result = self._evaluate_expression(self.expression, data)
         return sum(weight * result * ts)
 
     def _evaluate_expression(self, expr, df):
-        """Evaluate a complex expression using dataframe values"""
+        """Evaluate a complex expression using dataframe values. This function
+        recreates the computation for the objective values from the string
+        representation of the casadi expression. In future versions we might use the
+        direct expression with a casadi function and map from the available variables"""
         # Handle simple named variables first
-        if not hasattr(expr, 'dep'):
-            try:
-                if callable(expr.name):
-                    var_name = expr.name()
-                else:
-                    var_name = expr.name
-                for col_type in ['variable', 'parameter']:
-                    if (col_type, var_name) in df.columns:
-                        return df.loc[:, (col_type, var_name)].values[:-1]
-                if var_name in df.columns:
-                    return df.loc[:, var_name].values[:-1]
-            except Exception as e:
-                print(f"Name access error: {e}")
+        var_name = expr.name
+        for col_type in ["variable", "parameter"]:
+            if (col_type, var_name) in df.columns:
+                return df.loc[:, (col_type, var_name)].values[:-1]
 
         expr_str = str(expr)
 
         # Handle common CasADi functions with simple replacements
         casadi_replacements = {
-            'sq(': '(',  # sq(x) becomes (x), then we'll square it
-            'fabs(': 'abs(',  # fabs(x) becomes abs(x)
-            'sqrt(': 'sqrt(',  # already handled in safe_dict
-            'sin(': 'sin(',
-            'cos(': 'cos(',
-            'exp(': 'exp(',
-            'log(': 'log(',
+            "sq(": "(",  # sq(x) becomes (x), then we'll square it
+            "fabs(": "abs(",  # fabs(x) becomes abs(x)
+            "sqrt(": "sqrt(",  # already handled in safe_dict
+            "sin(": "sin(",
+            "cos(": "cos(",
+            "exp(": "exp(",
+            "log(": "log(",
         }
 
         # Apply replacements
         eval_str = expr_str
         is_square = False
-        if 'sq(' in eval_str:
+        if "sq(" in eval_str:
             is_square = True
-            eval_str = eval_str.replace('sq(', '(')
+            eval_str = eval_str.replace("sq(", "(")
 
         for casadi_func, replacement in casadi_replacements.items():
-            if casadi_func != 'sq(':  # already handled above
+            if casadi_func != "sq(":  # already handled above
                 eval_str = eval_str.replace(casadi_func, replacement)
 
         # Extract variable names, filtering out CasADi function names
-        casadi_functions = ['sq', 'fabs', 'sqrt', 'sin', 'cos', 'exp', 'log', 'abs', 'max', 'min']
-        var_names = re.findall(r'[a-zA-Z][a-zA-Z0-9_]*', expr_str)
+        casadi_functions = [
+            "sq",
+            "fabs",
+            "sqrt",
+            "sin",
+            "cos",
+            "exp",
+            "log",
+            "abs",
+            "max",
+            "min",
+        ]
+        var_names = re.findall(r"[a-zA-Z][a-zA-Z0-9_]*", expr_str)
         var_names = [name for name in var_names if name not in casadi_functions]
 
         if not var_names:
             try:
-                const_val = float(expr_str.strip('()'))
+                const_val = float(expr_str.strip("()"))
                 return np.full(len(df.index) - 1, const_val)
             except:
                 pass
 
         values_found = {}
         for var_name in var_names:
-            for col_type in ['variable', 'parameter']:
+            for col_type in ["variable", "parameter"]:
                 if (col_type, var_name) in df.columns:
                     values_found[var_name] = df.loc[:, (col_type, var_name)].values[:-1]
                     break
@@ -104,25 +117,27 @@ class SubObjective:
             safe_dict = values_found.copy()
 
             # Handle common mathematical operations and numpy functions
-            safe_dict.update({
-                'abs': np.abs,
-                'sqrt': np.sqrt,
-                'sin': np.sin,
-                'cos': np.cos,
-                'exp': np.exp,
-                'log': np.log,
-                'max': np.maximum,
-                'min': np.minimum,
-            })
+            safe_dict.update(
+                {
+                    "abs": np.abs,
+                    "sqrt": np.sqrt,
+                    "sin": np.sin,
+                    "cos": np.cos,
+                    "exp": np.exp,
+                    "log": np.log,
+                    "max": np.maximum,
+                    "min": np.minimum,
+                }
+            )
 
             # Remove outer parentheses if they wrap the entire expression
-            if eval_str.startswith('(') and eval_str.endswith(')'):
+            if eval_str.startswith("(") and eval_str.endswith(")"):
                 paren_count = 0
                 is_outermost = True
                 for i, char in enumerate(eval_str[1:-1], 1):
-                    if char == '(':
+                    if char == "(":
                         paren_count += 1
-                    elif char == ')':
+                    elif char == ")":
                         paren_count -= 1
                         if paren_count < 0:
                             is_outermost = False
@@ -134,7 +149,7 @@ class SubObjective:
 
             # Apply square if it was sq() function
             if is_square:
-                result = result ** 2
+                result = result**2
 
             if isinstance(result, np.ndarray):
                 return result
@@ -147,7 +162,7 @@ class SubObjective:
             # If evaluation fails, try simple pattern matching as fallback
             if len(values_found) == 1:
                 var_name = list(values_found.keys())[0]
-                if expr_str.startswith('(-') or expr_str.startswith('-'):
+                if expr_str.startswith("(-") or expr_str.startswith("-"):
                     return -values_found[var_name]
                 elif is_square:
                     return values_found[var_name] ** 2
@@ -158,32 +173,34 @@ class SubObjective:
 
 
 class DeltaUObjective(SubObjective):
-    def __init__(self, expressions: ca.MX, weight: Union[float, int, CasadiParameter], name: str = None):
+    def __init__(
+        self,
+        expressions: CasadiInput,
+        weight: Union[float, int, CasadiParameter],
+        name: str = None,
+    ):
         """
         Args:
             expressions: Control variable to track changes
             weight: Weight factor for this objective
             name: Optional name for identification/reporting
         """
-        self.control = expressions
-        super().__init__(expressions=expressions, weight=weight,
-                         name=name or f"delta_{self._get_control_name(expressions)}")
-
-    def _get_control_name(self, control):
-        """Get the name of the control variable safely"""
-        if hasattr(control, 'name'):
-            if callable(control.name):
-                try:
-                    return control.name()
-                except Exception:
-                    pass
-            else:
-                return control.name
-        return str(control)
+        self.control: CasadiInput = expressions
+        if not isinstance(expressions, CasadiInput):
+            raise TypeError(
+                "Tried to create a control change objective with an "
+                "expression or different type of CasadiVariable. "
+                "Currently, only raw CasadiInputs are supported."
+            )
+        super().__init__(
+            expressions=expressions,
+            weight=weight,
+            name=name or f"delta_{self.get_control_name()}",
+        )
 
     def get_control_name(self):
         """Return the name of the associated control variable"""
-        return self._get_control_name(self.control)
+        return self.control.name
 
     def get_weighted_expression(self):
         """
@@ -197,19 +214,8 @@ class DeltaUObjective(SubObjective):
         diff_values = series.diff()
         diff = diff_values.values[1:]
         ts = np.diff(series.index)
-        results = weight ** 2 * diff ** 2 * ts
-        if isinstance(results, pd.Series):
-            return sum(results.dropna())
-        elif isinstance(results, np.ndarray):
-            return np.nansum(results)
-        else:
-            return sum(results)
-
-    def get_weight(self):
-        """Return the weight in a way that ensures proper symbolic handling"""
-        if hasattr(self.weight, 'sym'):
-            return self.weight.sym
-        return self.weight
+        results = weight**2 * diff**2 * ts
+        return sum(results.dropna())
 
 
 class FullObjective:
@@ -229,10 +235,6 @@ class FullObjective:
         """Returns a list of all DeltaUObjective instances"""
         return [obj for obj in self.objectives if isinstance(obj, DeltaUObjective)]
 
-    def get_regular_objectives(self):
-        """Returns a list of all regular SubObjective instances"""
-        return [obj for obj in self.objectives if not isinstance(obj, (DeltaUObjective))]
-
     def get_casadi_expression(self):
         """Combine all objectives into a single CasADi expression"""
         terms = []
@@ -251,32 +253,26 @@ class FullObjective:
         for obj in self.objectives:
             name = obj.name
             # Handle symbolic or numeric weights
-            if hasattr(obj.weight, 'sym'):
+            if hasattr(obj.weight, "sym"):
                 weight_name = obj.weight.name
-                if ('parameter', weight_name) in df.columns:
-                    weight = df.loc[:, ('parameter', weight_name)].iloc[:-1]
+                if ("parameter", weight_name) in df.columns:
+                    weight = df.loc[:, ("parameter", weight_name)].iloc[:-1]
                 else:
                     weight = obj.weight
             else:
                 weight = obj.weight
-            try:
-                if isinstance(obj, DeltaUObjective):
-                    control_name = obj.get_control_name()
-                    control_series = df.loc[:, ('variable', control_name)]
-                    value = obj.calculate_value(control_series, weight)
-                    self._values[name] = value / self.normalization
-                elif isinstance(obj, SubObjective):
-                    value = obj.calculate_value(df, weight)
-                    self._values[name] = value / self.normalization
-                if self._values[name] is not None:
-                    total_value += self._values[name]
-            except Exception as e:
-                self._values[name] = None
-                print(f"Error calculating {name}: {e}")
-                import traceback
-                traceback.print_exc()
+            if isinstance(obj, DeltaUObjective):
+                control_name = obj.get_control_name()
+                control_series = df.loc[:, ("variable", control_name)]
+                value = obj.calculate_value(control_series, weight)
+                self._values[name] = value / self.normalization
+            elif isinstance(obj, SubObjective):
+                value = obj.calculate_value(df, weight)
+                self._values[name] = value / self.normalization
+            if self._values[name] is not None:
+                total_value += self._values[name]
 
-        self._values['total'] = total_value
+        self._values["total"] = total_value
         return self._values
 
     def _prepare_dataframe(self, df, grid=None):
@@ -293,22 +289,22 @@ class FullObjective:
         """
         new_df = df.copy()
 
-        if len(df.index) > 0 and isinstance(df.index[0], str) and '(' in df.index[0]:
+        if len(df.index) > 0 and isinstance(df.index[0], str) and "(" in df.index[0]:
             new_indices = []
             for idx in df.index:
                 try:
-                    parts = idx.strip('()').split(',', 1)
+                    parts = idx.strip("()").split(",", 1)
                     new_indices.append(float(parts[1].strip()))
                 except (ValueError, IndexError):
                     new_indices.append(idx)
             new_df.index = new_indices
 
         for col in new_df.columns:
-            if col[0] in ['upper', 'lower']:
+            if col[0] in ["upper", "lower"]:
                 continue
-            if col[0] == 'parameter':
+            if col[0] == "parameter":
                 new_df[col] = new_df[col].ffill()
-            elif col[0] == 'variable':
+            elif col[0] == "variable":
                 self._handle_nan_values(new_df, col, grid)
 
         if grid is not None and len(grid) > 0:
@@ -347,6 +343,7 @@ class FullObjective:
                 new_series.iloc[nan_idx] = mean_val
         df[col] = new_series
 
+
 class ConditionalObjective:
     """Represents a conditional objective that switches between different objectives based on conditions"""
 
@@ -368,7 +365,7 @@ class ConditionalObjective:
 
         self._flattened_objectives = []
         for obj in self.all_objectives:
-            if hasattr(obj, 'objectives'):
+            if hasattr(obj, "objectives"):
                 self._flattened_objectives.extend(obj.objectives)
 
     @property
@@ -392,13 +389,6 @@ class ConditionalObjective:
             all_delta_u.extend(objective.get_delta_u_objectives())
         return list(set(all_delta_u))
 
-    def get_regular_objectives(self):
-        """Returns all regular SubObjective instances"""
-        all_regular = []
-        for objective in self.all_objectives:
-            all_regular.extend(objective.get_regular_objectives())
-        return list(set(all_regular))
-
     def calculate_values(self, result_df, grid):
         """Calculate values for each objective component."""
         all_values = {}
@@ -408,7 +398,7 @@ class ConditionalObjective:
             values = objective.calculate_values(result_df, grid)
 
             for name, value in values.items():
-                if name == 'total':
+                if name == "total":
                     continue
 
                 all_values[name] = value
@@ -416,5 +406,5 @@ class ConditionalObjective:
                 if value is not None:
                     total_value += value
 
-        all_values['total'] = total_value
+        all_values["total"] = total_value
         return all_values

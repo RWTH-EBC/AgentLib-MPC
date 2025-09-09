@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 # script variables
 ub = 295.15
-prediction_horizon = 300*15
+prediction_horizon = 300 * 15
 
 
 class MyCasadiModelConfig(CasadiModelConfig):
@@ -117,9 +117,7 @@ class MyCasadiModel(CasadiModel):
         )
 
         obj2 = self.create_sub_objective(
-            expressions=self.T_slack**2,
-            weight=self.s_T,
-            name="temp_slack"
+            expressions=self.T_slack**2, weight=self.s_T, name="temp_slack"
         )
 
         obj3 = self.create_delta_u_objective(
@@ -128,8 +126,9 @@ class MyCasadiModel(CasadiModel):
             name="delta_control_penalty",
         )
 
-        objective = self.create_full_objective(obj1, obj2, obj3, normalization=prediction_horizon)
-
+        objective = self.create_full_objective(
+            obj1, obj2, obj3, normalization=prediction_horizon
+        )
 
         return objective
 
@@ -166,7 +165,7 @@ AGENT_MPC = {
             "parameters": [
                 {"name": "s_T", "value": 10},
                 {"name": "r_mDot", "value": 1},
-                {"name": "r_delta_mDot", "value": 1},
+                {"name": "r_delta_mDot", "value": 0.0001},
             ],
             "inputs": [
                 {"name": "load", "value": 150},
@@ -202,7 +201,9 @@ AGENT_SIM = {
 }
 
 
-def run_example(with_plots=True, with_dashboard=True, log_level=logging.INFO, until=10000):
+def run_example(
+    with_plots=True, with_dashboard=True, log_level=logging.INFO, until=10000
+):
     # Change the working directly so that relative paths work
     os.chdir(Path(__file__).parent)
 
@@ -258,4 +259,4 @@ def run_example(with_plots=True, with_dashboard=True, log_level=logging.INFO, un
 
 
 if __name__ == "__main__":
-    run_example(with_plots=True,with_dashboard=True, until=3600)
+    run_example(with_plots=True, with_dashboard=False, until=3600)
