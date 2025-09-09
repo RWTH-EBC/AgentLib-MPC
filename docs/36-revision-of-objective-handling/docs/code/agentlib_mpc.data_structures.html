@@ -1568,12 +1568,6 @@ get from the config with get()</p>
 <dd><p>Returns all DeltaUObjective instances from all contained objectives</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.ConditionalObjective.get_regular_objectives">
-<span class="sig-name descname"><span class="pre">get_regular_objectives</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#ConditionalObjective.get_regular_objectives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.ConditionalObjective.get_regular_objectives" title="Permalink to this definition"></a></dt>
-<dd><p>Returns all regular SubObjective instances</p>
-</dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.ConditionalObjective.objectives">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">objectives</span></span><a class="headerlink" href="#agentlib_mpc.data_structures.objective.ConditionalObjective.objectives" title="Permalink to this definition"></a></dt>
@@ -1584,7 +1578,7 @@ get from the config with get()</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.DeltaUObjective">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.objective.</span></span><span class="sig-name descname"><span class="pre">DeltaUObjective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expressions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MX</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiParameter" title="agentlib_mpc.models.casadi_model.CasadiParameter"><span class="pre">CasadiParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#DeltaUObjective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.DeltaUObjective" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.objective.</span></span><span class="sig-name descname"><span class="pre">DeltaUObjective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expressions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiInput" title="agentlib_mpc.models.casadi_model.CasadiInput"><span class="pre">CasadiInput</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiParameter" title="agentlib_mpc.models.casadi_model.CasadiParameter"><span class="pre">CasadiParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#DeltaUObjective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.DeltaUObjective" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.data_structures.objective.SubObjective" title="agentlib_mpc.data_structures.objective.SubObjective"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubObjective</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.DeltaUObjective.calculate_value">
@@ -1596,12 +1590,6 @@ get from the config with get()</p>
 <dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.DeltaUObjective.get_control_name">
 <span class="sig-name descname"><span class="pre">get_control_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#DeltaUObjective.get_control_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.DeltaUObjective.get_control_name" title="Permalink to this definition"></a></dt>
 <dd><p>Return the name of the associated control variable</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.DeltaUObjective.get_weight">
-<span class="sig-name descname"><span class="pre">get_weight</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#DeltaUObjective.get_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.DeltaUObjective.get_weight" title="Permalink to this definition"></a></dt>
-<dd><p>Return the weight in a way that ensures proper symbolic handling</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1636,12 +1624,6 @@ The actual penalty calculation happens in the discretization step.</p>
 <dd><p>Returns a list of all DeltaUObjective instances</p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.FullObjective.get_regular_objectives">
-<span class="sig-name descname"><span class="pre">get_regular_objectives</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#FullObjective.get_regular_objectives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.FullObjective.get_regular_objectives" title="Permalink to this definition"></a></dt>
-<dd><p>Returns a list of all regular SubObjective instances</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -1660,6 +1642,12 @@ The actual penalty calculation happens in the discretization step.</p>
 <dd><p>Returns the final weighted expression</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.is_casadi_expression">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.objective.</span></span><span class="sig-name descname"><span class="pre">is_casadi_expression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#is_casadi_expression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.is_casadi_expression" title="Permalink to this definition"></a></dt>
+<dd><p>Checks if the object is specifically a CasADi expression (not a pure, symbolic casadi variable)</p>
 </dd></dl>
 
 </section>
