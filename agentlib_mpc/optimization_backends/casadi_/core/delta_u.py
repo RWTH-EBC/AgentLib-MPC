@@ -1,3 +1,4 @@
+import casadi as ca
 import logging
 logger = logging.getLogger(__name__)
 
@@ -19,15 +20,11 @@ def get_objective(sys, delta_obj, u_prev, uk, const_par):
         delta = control_curr - control_prev
 
         if hasattr(delta_obj.weight, 'sym'):
-            param_found = False
-            for i, param_name in enumerate(sys.model_parameters.ref_names):
-                if param_name == delta_obj.weight.name:
-                    weight_value = const_par[i]
-                    param_found = True
-                    break
-
-            if not param_found:
-                raise ValueError(f"Parameter {delta_obj.weight.name} not found in model parameters")
+            weight_value = ca.substitute(
+                delta_obj.weight.sym,
+                sys.model_parameters.full_symbolic,
+                const_par
+            )
         else:
             weight_value = delta_obj.weight
 

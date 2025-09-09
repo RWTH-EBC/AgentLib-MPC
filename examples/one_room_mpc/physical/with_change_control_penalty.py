@@ -165,7 +165,7 @@ AGENT_MPC = {
             "parameters": [
                 {"name": "s_T", "value": 10},
                 {"name": "r_mDot", "value": 1},
-                {"name": "r_delta_mDot", "value": 0.0001},
+                {"name": "r_delta_mDot", "value": 1},
             ],
             "inputs": [
                 {"name": "load", "value": 150},
