@@ -58,25 +58,25 @@ class MPC(BaseMPC):
         history = {}
         # create a dict to keep track of all values for lagged variables timestamped
         for v in self._lags_dict_seconds:
-            var = self.get(v)
+            # var = self.get(v)
             history[v] = {}
-            # store scalar values as initial if they exist
-            if isinstance(var.value, (float, int)):
-                timestamp = var.timestamp or self.env.time
-                value = var.value
-            elif var.value is None:
-                self.logger.info(
-                    "Initializing history for variable %s, but no value was available."
-                    " Interpolating between bounds or setting to zero."
-                )
-                timestamp = self.env.time
-                value = var.value or np.nan_to_num(
-                    (var.ub + var.lb) / 2, posinf=1000, neginf=1000
-                )
-            else:
-                # in this case it should probably be a series, which we can take as is
-                continue
-            history[v][timestamp] = value
+            # # store scalar values as initial if they exist
+            # if isinstance(var.value, (float, int)):
+            #     timestamp = var.timestamp or self.env.time
+            #     value = var.value
+            # elif var.value is None:
+            #     self.logger.info(
+            #         "Initializing history for variable %s, but no value was available."
+            #         " Interpolating between bounds or setting to zero."
+            #     )
+            #     timestamp = self.env.time
+            #     value = var.value or np.nan_to_num(
+            #         (var.ub + var.lb) / 2, posinf=1000, neginf=1000
+            #     )
+            # else:
+            #     # in this case it should probably be a series, which we can take as is
+            #     continue
+            # history[v][timestamp] = value
         self.history: dict[str, dict[float, float]] = history
         self.register_callbacks_for_lagged_variables()
 
@@ -103,6 +103,10 @@ class MPC(BaseMPC):
         # only store scalar values
         if isinstance(variable.value, (float, int)):
             self.history[name][variable.timestamp] = variable.value
+        elif isinstance(variable.value, pd.Series):
+            for index, value in variable.value.items():
+                self.history[name][index] = value
+
 
     def register_callbacks_for_lagged_variables(self):
         """Registers callbacks which listen to the variables which have to be saved as
@@ -146,7 +150,7 @@ class MPC(BaseMPC):
             # create copy to not mess up scalar value of original variable in case
             # fallback is needed
             updated_var = variables[hist_var].copy(
-                update={"value": pd.Series(past_values)}
+                update={"value": pd.Series(past_values).sort_index()}
             )
             variables[hist_var] = updated_var
 
