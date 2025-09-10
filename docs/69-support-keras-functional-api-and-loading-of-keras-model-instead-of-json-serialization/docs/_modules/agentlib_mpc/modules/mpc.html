@@ -405,7 +405,7 @@
             <span class="n">ub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">control</span><span class="p">)</span><span class="o">.</span><span class="n">ub</span>
             <span class="n">lb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">control</span><span class="p">)</span><span class="o">.</span><span class="n">lb</span>
             <span class="c1"># take the first entry of the control trajectory</span>
-            <span class="n">actuation</span> <span class="o">=</span> <span class="n">solution</span><span class="p">[</span><span class="n">control</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">actuation</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">solution</span><span class="p">[</span><span class="n">control</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
             <span class="c1"># if variables only slightly breach boundaries, clip</span>
             <span class="k">if</span> <span class="n">ub</span> <span class="o">&lt;</span> <span class="n">actuation</span> <span class="o">&lt;</span> <span class="n">ub</span> <span class="o">+</span> <span class="n">tolerance</span><span class="p">:</span>
                 <span class="n">actuation</span> <span class="o">=</span> <span class="n">ub</span>
