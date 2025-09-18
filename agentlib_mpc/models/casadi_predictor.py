@@ -204,6 +204,7 @@ class ANNLayerTypes(str, Enum):
     RESHAPE = "reshape"
     ADD = "add"
     RESCALING = "rescaling"
+    RBF = 'rbf'
 
 
 class Layer(abc.ABC):
@@ -449,6 +450,32 @@ class Rescaling(Layer):
         return f
 
 
+class RBF(Layer):
+
+    def __init__(self, layer):
+        super().__init__(layer)
+        self.centers = ca.DM(layer.centers.numpy())
+        self.log_gamma = ca.DM(layer.log_gamma.numpy())
+        self.gamma = ca.exp(self.log_gamma)
+        self.units = layer.units
+
+    def forward(self, input):
+        input_repm = ca.repmat(input, self.units, 1)
+        diff = input_repm - self.centers
+        distance_sq = ca.sum2(diff**2)
+        phi = ca.exp(-self.gamma * distance_sq)
+        return phi.T
+
+
+class FunctionalWrapper:
+
+    def __init__(self, functional: Functional):
+        self.functional = CasadiANN.build_prediction_function_functionalAPI(functional)
+
+    def forward(self, input):
+        return self.functional(input)
+
+
 class CasadiANN(CasadiPredictor):
     """
     Generic implementations of sequential Keras models in CasADi.
@@ -485,7 +512,7 @@ class CasadiANN(CasadiPredictor):
     def _build_prediction_function(self) -> ca.Function:
         """Build the prediction function with casadi and a symbolic input."""
         if isinstance(self.predictor_model, Functional):
-            return self._build_prediction_function_functionalAPI()
+            return self.build_prediction_function_functionalAPI(self.predictor_model)
         # elif not isinstance(self.predictor_model, Sequential):
         #     raise NotImplementedError(f"Error: Keras Model type {type(self.predictor_model)} not supported")
         keras_layers = [layer for layer in self.predictor_model.layers]
@@ -503,14 +530,15 @@ class CasadiANN(CasadiPredictor):
             function = casadi_layer.forward(function)
         return ca.Function("forward", [self.sym_input], [function])
 
-    def _build_prediction_function_functionalAPI(self) -> ca.Function:
+    @staticmethod
+    def build_prediction_function_functionalAPI(predictor_model) -> ca.Function:
 
         fmx = {}
         fnodes = {}
         flayers = {}
 
         # Add Layers
-        for layer in self.predictor_model.layers:
+        for layer in predictor_model.layers:
 
             # get the name of the layer
             name = layer.get_config()['name']
@@ -531,10 +559,13 @@ class CasadiANN(CasadiPredictor):
                         flayers[name] = ca_layer
                         break
                 else:
-                    raise NotImplementedError(f'Keras Layer with type "{name}" is not supported yet.')
+                    if isinstance(layer, Functional):
+                        flayers[name] = FunctionalWrapper(layer)
+                    else:
+                        raise NotImplementedError(f'Keras Layer with type "{name}" is not supported yet.')
 
         # Create Nodes
-        for layer in self.predictor_model.layers:
+        for layer in predictor_model.layers:
             connections = []
             for node in layer._inbound_nodes:
                 connection = []
@@ -548,7 +579,7 @@ class CasadiANN(CasadiPredictor):
             fnodes[layer.get_config()['name']] = connections
 
         # Order Nodes
-        outputs = self.predictor_model.output_names
+        outputs = predictor_model.output_names
         assert len(outputs) == 1, f"Error: Current version only supports Keras Models with one output"
         ordering = []
         visited_notes = []
@@ -587,9 +618,9 @@ class CasadiANN(CasadiPredictor):
                     output = flayers[name].forward(input)
                 fmx[name, depth] = output
 
-        _input = [fmx[inp.name, 0] for inp in self.predictor_model.inputs]
+        _input = [fmx[inp.name, 0] for inp in predictor_model.inputs]
         prediction = []
-        for it in self.predictor_model.outputs:
+        for it in predictor_model.outputs:
             keras_history = it._keras_history
             inbound_layer = keras_history.operation
             node_index = keras_history.node_index
@@ -611,6 +642,7 @@ ann_layer_types = {
     ANNLayerTypes.RESHAPE: Reshape,
     ANNLayerTypes.ADD: Add,
     ANNLayerTypes.RESCALING: Rescaling,
+    ANNLayerTypes.RBF: RBF,
 }
 
 casadi_predictors = {
