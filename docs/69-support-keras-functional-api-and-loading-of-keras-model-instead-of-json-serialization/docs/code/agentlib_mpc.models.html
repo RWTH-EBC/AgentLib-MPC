@@ -682,6 +682,11 @@ instance, and that its dimensions are consistent.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.ANNLayerTypes.RBF">
+<span class="sig-name descname"><span class="pre">RBF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rbf'</span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.RBF" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.ANNLayerTypes.RESCALING">
 <span class="sig-name descname"><span class="pre">RESCALING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rescaling'</span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.RESCALING" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -721,6 +726,11 @@ instance, and that its dimensions are consistent.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_predictor.</span></span><span class="sig-name descname"><span class="pre">CasadiANN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serialized_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#agentlib_mpc.models.serialized_ml_model.SerializedANN" title="agentlib_mpc.models.serialized_ml_model.SerializedANN"><span class="pre">SerializedANN</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#CasadiANN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.CasadiANN" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.models.casadi_predictor.CasadiPredictor" title="agentlib_mpc.models.casadi_predictor.CasadiPredictor"><code class="xref py py-class docutils literal notranslate"><span class="pre">CasadiPredictor</span></code></a></p>
 <p>Generic implementations of sequential Keras models in CasADi.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.CasadiANN.build_prediction_function_functionalAPI">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_prediction_function_functionalAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictor_model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Function</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#CasadiANN.build_prediction_function_functionalAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.CasadiANN.build_prediction_function_functionalAPI" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.CasadiANN.input_shape">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">input_shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.CasadiANN.input_shape" title="Permalink to this definition"></a></dt>
@@ -878,6 +888,17 @@ instance, and that its dimensions are consistent.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.FunctionalWrapper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_predictor.</span></span><span class="sig-name descname"><span class="pre">FunctionalWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">functional</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Functional</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#FunctionalWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.FunctionalWrapper" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.FunctionalWrapper.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#FunctionalWrapper.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.FunctionalWrapper.forward" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.Layer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_predictor.</span></span><span class="sig-name descname"><span class="pre">Layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Layer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#Layer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.Layer" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
@@ -907,6 +928,17 @@ instance, and that its dimensions are consistent.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.Normalization.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#Normalization.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.Normalization.forward" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.RBF">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_predictor.</span></span><span class="sig-name descname"><span class="pre">RBF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#RBF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.RBF" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.models.casadi_predictor.Layer" title="agentlib_mpc.models.casadi_predictor.Layer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Layer</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.RBF.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#RBF.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.RBF.forward" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

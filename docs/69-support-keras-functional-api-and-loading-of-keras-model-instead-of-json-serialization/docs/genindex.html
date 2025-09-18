@@ -685,10 +685,10 @@
 </li>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.bb_states">bb_states (agentlib_mpc.models.casadi_ml_model.CasadiMLModel property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable.binary">binary (agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable attribute)</a>, <a href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable.binary">[1]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MINLPVariableReference.binary_controls">binary_controls (agentlib_mpc.data_structures.mpc_datamodels.MINLPVariableReference attribute)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MINLPVariableReference.binary_controls">[1]</a>
 
       <ul>
@@ -713,6 +713,8 @@
         <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.build_ml_model">(agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer method)</a>
 </li>
       </ul></li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiANN.build_prediction_function_functionalAPI">build_prediction_function_functionalAPI() (agentlib_mpc.models.casadi_predictor.CasadiANN static method)</a>
+</li>
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.AgentStatus.busy">busy (agentlib_mpc.data_structures.coordinator_datatypes.AgentStatus attribute)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.AgentStatus.busy">[1]</a>
 </li>
   </ul></td>
@@ -1320,9 +1322,13 @@
 </li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Flatten.forward">(agentlib_mpc.models.casadi_predictor.Flatten method)</a>
 </li>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.FunctionalWrapper.forward">(agentlib_mpc.models.casadi_predictor.FunctionalWrapper method)</a>
+</li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Layer.forward">(agentlib_mpc.models.casadi_predictor.Layer method)</a>
 </li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Normalization.forward">(agentlib_mpc.models.casadi_predictor.Normalization method)</a>
+</li>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.RBF.forward">(agentlib_mpc.models.casadi_predictor.RBF method)</a>
 </li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Rescaling.forward">(agentlib_mpc.models.casadi_predictor.Rescaling method)</a>
 </li>
@@ -1377,6 +1383,8 @@
         <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.ModelConstraint.function">(agentlib_mpc.data_structures.casadi_utils.ModelConstraint attribute)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.ModelConstraint.function">[1]</a>
 </li>
       </ul></li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.FunctionalWrapper">FunctionalWrapper (class in agentlib_mpc.models.casadi_predictor)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -2692,6 +2700,12 @@
 </li>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.LinRegParameters.rank">rank (agentlib_mpc.models.serialized_ml_model.LinRegParameters attribute)</a>
 </li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.RBF">RBF (agentlib_mpc.models.casadi_predictor.ANNLayerTypes attribute)</a>
+
+      <ul>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.RBF">(class in agentlib_mpc.models.casadi_predictor)</a>
+</li>
+      </ul></li>
       <li><a href="agentlib_mpc.modules.html#agentlib_mpc.modules.mpc.BaseMPC.re_init_optimization">re_init_optimization() (agentlib_mpc.modules.mpc.BaseMPC method)</a>, <a href="code/agentlib_mpc.modules.html#agentlib_mpc.modules.mpc.BaseMPC.re_init_optimization">[1]</a>
 </li>
       <li><a href="code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHE.read_results_file">read_results_file() (agentlib_mpc.modules.estimation.mhe.MHE static method)</a>
@@ -2754,10 +2768,10 @@
 </li>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.register_ml_models">register_ml_models() (agentlib_mpc.models.casadi_ml_model.CasadiMLModel method)</a>
 </li>
-      <li><a href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.registered_participants">registered_participants (agentlib_mpc.modules.dmpc.admm.admm.ADMM property)</a>, <a href="code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.registered_participants">[1]</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.registered_participants">registered_participants (agentlib_mpc.modules.dmpc.admm.admm.ADMM property)</a>, <a href="code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.registered_participants">[1]</a>
+</li>
       <li><a href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM.registration_callback">registration_callback() (agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM method)</a>, <a href="code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM.registration_callback">[1]</a>
 
       <ul>
