@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.8
+- #55 improved numerics of casadi model simulation by adding initial guess for outputs
+
 ## 0.6.7
 - #60: Forbid users from creating instance attributes which are also variables in CasadiModel
 
