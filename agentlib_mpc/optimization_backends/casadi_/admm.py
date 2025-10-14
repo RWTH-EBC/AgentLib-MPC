@@ -270,6 +270,7 @@ class ADMMMultipleShooting(MultipleShooting):
                 p=ca.vertcat(
                     current_control,
                     local_coupling,
+                    local_exchange,
                     disturbance,
                     model_parameters,
                     algebraic_vars,
@@ -307,6 +308,7 @@ class ADMMMultipleShooting(MultipleShooting):
         p = ca.vertcat(
             sys.controls.full_symbolic,
             sys.local_couplings.full_symbolic,
+            sys.local_exchange.full_symbolic,
             sys.non_controlled_inputs.full_symbolic,
             sys.model_parameters.full_symbolic,
             sys.algebraics.full_symbolic,
@@ -375,7 +377,7 @@ class CasADiADMMBackend(CasADiBaseBackend, ADMMBackend):
 
         res_file = self.config.results_file
 
-        if self.results_file_exists():
+        if self.results_folder_exists():
             self.it += 1
             if now != self.now:  # means we advanced to next step
                 self.it = 0

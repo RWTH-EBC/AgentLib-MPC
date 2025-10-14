@@ -1,6 +1,6 @@
 import dataclasses
 from pathlib import Path
-from typing import List, Union, TypeVar, Protocol, Sequence, Iterable
+from typing import List, Union, TypeVar, Protocol, Sequence, Iterable, Optional
 from itertools import chain
 
 import attrs
@@ -13,6 +13,9 @@ from agentlib.core.module import BaseModuleConfigClass
 
 from agentlib_mpc.data_structures.interpolation import InterpolationMethods
 from pydantic import ConfigDict
+
+
+MPC_FLAG_ACTIVE = "MPC_FLAG_ACTIVE"
 
 
 class InitStatus(str, Enum):
@@ -44,7 +47,8 @@ class DiscretizationOptions(pydantic.BaseModel):
 class Results(Protocol):
     df: pd.DataFrame
 
-    def __getitem__(self, item: str) -> Sequence[float]: ...
+    def __getitem__(self, item: str) -> Sequence[float]:
+        ...
 
 
 @dataclasses.dataclass
@@ -70,6 +74,7 @@ class BaseVariableReference:
     def __contains__(self, item):
         all_variables = set(chain.from_iterable(self.__dict__.values()))
         return item in all_variables
+
 
 VariableReferenceT = TypeVar("VariableReferenceT", bound=BaseVariableReference)
 

@@ -31,7 +31,7 @@ def load_mpc_stats(results_file: Union[str, Path]) -> Optional[pd.DataFrame]:
         df = pd.read_csv(stats_file, index_col=0)
     except Exception:
         return None
-    if is_float_dtype(df.index):
+    if pd.api.types.is_any_real_numeric_dtype(df.index):
         return df
     new_ind = [literal_eval(i) for i in df.index]
     df.index = pd.MultiIndex.from_tuples(new_ind)

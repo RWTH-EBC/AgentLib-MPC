@@ -162,12 +162,18 @@ class ADMMParticipation:
 class CouplingVariable:
     """Holds information about a phy"""
 
-    local_trajectories: Dict[al.Source, list] = dataclasses.field(default_factory=dict)
+    local_trajectories: Dict[al.Source, np.ndarray] = dataclasses.field(
+        default_factory=dict
+    )
     mean_trajectory: list = dataclasses.field(default_factory=lambda: [0])
     delta_mean: np.ndarray = dataclasses.field(default_factory=lambda: np.array([0]))
     primal_residual: np.ndarray = dataclasses.field(
         default_factory=lambda: np.array([0])
     )
+
+    def set_local_trajectory(self, source, trajectory):
+        trajectory = np.array(trajectory).squeeze()
+        self.local_trajectories[source] = trajectory
 
     def _relevant_sources(self, sources: Iterable[al.Source]) -> set:
         if sources is None:
@@ -181,23 +187,6 @@ class CouplingVariable:
     def participants(self):
         """Returns all agent sources that are registered to this coupling."""
         return list(self.local_trajectories.keys())
-
-    def flat_locals(self, sources: Iterable[al.Source] = None) -> list[float]:
-        """
-        Returns the flattened array of all local variables and their multipliers.
-
-        Args:
-            sources: list of sources that should be included in the update.
-                By default, all are included.
-
-        Returns:
-            flat lists of local variables and multipliers (locals, multipliers)
-        """
-        sources = self._relevant_sources(sources)
-        if not sources:
-            return []
-        local_vars = list(chain([self.local_trajectories[ls] for ls in sources]))
-        return local_vars
 
     def get_residual(self, rho: float) -> Tuple[np.ndarray, np.ndarray]:
         """
