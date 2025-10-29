@@ -209,6 +209,7 @@ class ANNLayerTypes(str, Enum):
     MULTIPLY = "multiply"
     TRUEDIVIDE = "divide"
     POWER = "power"
+    AVERAGE = "average"
     RESCALING = "rescaling"
     RBF = 'rbf'
 
@@ -435,8 +436,8 @@ class Add(Layer):
         super(Add, self).__init__(layer)
 
     def forward(self, *input):
-        init = 0
-        for inp in input:
+        init = input[0]
+        for inp in input[1:]:
             init += inp
         return init
 
@@ -474,6 +475,17 @@ class Power(Layer):
 
     def forward(self, *input):
         return input[0] ** input[1]
+    
+
+class Average(Layer):
+    def __init__(self, layer):
+        super(Average, self).__init__(layer)
+
+    def forward(self, *input):
+        init = input[0]
+        for inp in input[1:]:
+            init += inp
+        return init / len(input)
 
 
 class Rescaling(Layer):
@@ -486,6 +498,7 @@ class Rescaling(Layer):
     def forward(self, input):
         f = input * self.scale + self.offset
         return f
+    
     
 class InputSliceLayer(Layer):
 
