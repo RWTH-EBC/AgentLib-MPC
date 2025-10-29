@@ -282,6 +282,7 @@
     <span class="n">MULTIPLY</span> <span class="o">=</span> <span class="s2">&quot;multiply&quot;</span>
     <span class="n">TRUEDIVIDE</span> <span class="o">=</span> <span class="s2">&quot;divide&quot;</span>
     <span class="n">POWER</span> <span class="o">=</span> <span class="s2">&quot;power&quot;</span>
+    <span class="n">AVERAGE</span> <span class="o">=</span> <span class="s2">&quot;average&quot;</span>
     <span class="n">RESCALING</span> <span class="o">=</span> <span class="s2">&quot;rescaling&quot;</span>
     <span class="n">RBF</span> <span class="o">=</span> <span class="s1">&#39;rbf&#39;</span></div>
 
@@ -508,8 +509,8 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">Add</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Add.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Add.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="nb">input</span><span class="p">):</span>
-        <span class="n">init</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="nb">input</span><span class="p">:</span>
+        <span class="n">init</span> <span class="o">=</span> <span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="nb">input</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
             <span class="n">init</span> <span class="o">+=</span> <span class="n">inp</span>
         <span class="k">return</span> <span class="n">init</span></div></div>
 
@@ -547,6 +548,17 @@
 
 <div class="viewcode-block" id="Power.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Power.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="nb">input</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="nb">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div></div>
+    
+
+<div class="viewcode-block" id="Average"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Average">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Average</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Average</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Average.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Average.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="nb">input</span><span class="p">):</span>
+        <span class="n">init</span> <span class="o">=</span> <span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="nb">input</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">init</span> <span class="o">+=</span> <span class="n">inp</span>
+        <span class="k">return</span> <span class="n">init</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="Rescaling"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Rescaling">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Rescaling</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
@@ -559,6 +571,7 @@
 <div class="viewcode-block" id="Rescaling.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Rescaling.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
         <span class="n">f</span> <span class="o">=</span> <span class="nb">input</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span>
         <span class="k">return</span> <span class="n">f</span></div></div>
+    
     
 <div class="viewcode-block" id="InputSliceLayer"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.InputSliceLayer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">InputSliceLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
 
