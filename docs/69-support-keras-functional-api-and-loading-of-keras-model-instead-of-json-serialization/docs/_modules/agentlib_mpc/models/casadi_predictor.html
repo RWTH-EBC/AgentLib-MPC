@@ -79,6 +79,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">layers</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">keras.src</span><span class="w"> </span><span class="kn">import</span> <span class="n">Functional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequential</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.serialized_ml_model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -90,7 +91,6 @@
 <span class="p">)</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequential</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.serialized_ml_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomGPR</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
 
@@ -275,7 +275,13 @@
     <span class="n">CROPPING1D</span> <span class="o">=</span> <span class="s2">&quot;cropping1d&quot;</span>
     <span class="n">CONCATENATE</span> <span class="o">=</span> <span class="s2">&quot;concatenate&quot;</span>
     <span class="n">RESHAPE</span> <span class="o">=</span> <span class="s2">&quot;reshape&quot;</span>
+    <span class="n">INPUTSLICE</span> <span class="o">=</span> <span class="s2">&quot;input_slice&quot;</span>
+    <span class="n">CONSTANT</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span>
     <span class="n">ADD</span> <span class="o">=</span> <span class="s2">&quot;add&quot;</span>
+    <span class="n">SUBTRACT</span> <span class="o">=</span> <span class="s2">&quot;subtract&quot;</span>
+    <span class="n">MULTIPLY</span> <span class="o">=</span> <span class="s2">&quot;multiply&quot;</span>
+    <span class="n">TRUEDIVIDE</span> <span class="o">=</span> <span class="s2">&quot;divide&quot;</span>
+    <span class="n">POWER</span> <span class="o">=</span> <span class="s2">&quot;power&quot;</span>
     <span class="n">RESCALING</span> <span class="o">=</span> <span class="s2">&quot;rescaling&quot;</span>
     <span class="n">RBF</span> <span class="o">=</span> <span class="s1">&#39;rbf&#39;</span></div>
 
@@ -291,9 +297,6 @@
         <span class="c1"># name</span>
         <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
-
-        <span class="c1"># activation function</span>
-
 
         <span class="c1"># input / output shape</span>
         <span class="c1"># TODO: Check if more detailed translation is needed</span>
@@ -511,6 +514,41 @@
         <span class="k">return</span> <span class="n">init</span></div></div>
 
 
+<div class="viewcode-block" id="Subtract"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Subtract">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Subtract</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">layers</span><span class="o">.</span><span class="n">Subtract</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Subtract</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Subtract.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Subtract.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="nb">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div></div>
+    
+
+<div class="viewcode-block" id="Multiply"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Multiply">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Multiply</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">layers</span><span class="o">.</span><span class="n">Multiply</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Multiply</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Multiply.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Multiply.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="nb">input</span><span class="p">):</span>
+        <span class="n">init</span> <span class="o">=</span> <span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="nb">input</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">init</span> <span class="o">*=</span> <span class="n">inp</span>
+        <span class="k">return</span> <span class="n">init</span></div></div>
+    
+
+<div class="viewcode-block" id="TrueDivide"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.TrueDivide">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TrueDivide</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TrueDivide</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TrueDivide.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.TrueDivide.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="nb">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="Power"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Power">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Power</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Power</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Power.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Power.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="nb">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div></div>
+
+
 <div class="viewcode-block" id="Rescaling"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Rescaling">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Rescaling</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">layers</span><span class="o">.</span><span class="n">Rescaling</span><span class="p">):</span>
@@ -521,6 +559,25 @@
 <div class="viewcode-block" id="Rescaling.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Rescaling.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
         <span class="n">f</span> <span class="o">=</span> <span class="nb">input</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span>
         <span class="k">return</span> <span class="n">f</span></div></div>
+    
+<div class="viewcode-block" id="InputSliceLayer"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.InputSliceLayer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">InputSliceLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feature_indices</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">feature_indices</span>
+
+<div class="viewcode-block" id="InputSliceLayer.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.InputSliceLayer.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">input</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_indices</span><span class="p">]</span></div></div>
+    
+
+<div class="viewcode-block" id="ConstantLayer"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ConstantLayer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ConstantLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constant</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">constant</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+
+<div class="viewcode-block" id="ConstantLayer.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ConstantLayer.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">constant</span></div></div>
 
 
 <div class="viewcode-block" id="RBF"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.RBF">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RBF</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
@@ -547,6 +604,15 @@
 
 <div class="viewcode-block" id="FunctionalWrapper.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.FunctionalWrapper.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">functional</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span></div></div>
+    
+
+<div class="viewcode-block" id="SequentialWrapper"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.SequentialWrapper">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SequentialWrapper</span><span class="p">:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequential</span><span class="p">:</span> <span class="n">Sequential</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">functional</span> <span class="o">=</span> <span class="n">CasadiANN</span><span class="o">.</span><span class="n">build_prediction_function_sequential</span><span class="p">(</span><span class="n">sequential</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SequentialWrapper.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.SequentialWrapper.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">functional</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CasadiANN"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiANN">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CasadiANN</span><span class="p">(</span><span class="n">CasadiPredictor</span><span class="p">):</span>
@@ -554,7 +620,7 @@
 <span class="sd">    Generic implementations of sequential Keras models in CasADi.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serialized_model</span><span class="p">:</span> <span class="n">SerializedANN</span> <span class="ow">or</span> <span class="n">SerializedKerasANN</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serialized_model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">SerializedANN</span><span class="p">,</span> <span class="n">SerializedKerasANN</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Supported layers:</span>
 <span class="sd">            - Dense (Fully connected layer)</span>
@@ -586,9 +652,14 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the prediction function with casadi and a symbolic input.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="p">,</span> <span class="n">Functional</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_prediction_function_functionalAPI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="p">)</span>
-        <span class="c1"># elif not isinstance(self.predictor_model, Sequential):</span>
-        <span class="c1">#     raise NotImplementedError(f&quot;Error: Keras Model type {type(self.predictor_model)} not supported&quot;)</span>
-        <span class="n">keras_layers</span> <span class="o">=</span> <span class="p">[</span><span class="n">layer</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="o">.</span><span class="n">layers</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="p">,</span> <span class="n">Sequential</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: Keras Model type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="p">)</span><span class="si">}</span><span class="s2"> not supported&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_prediction_function_sequential</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="CasadiANN.build_prediction_function_sequential"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiANN.build_prediction_function_sequential">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_prediction_function_sequential</span><span class="p">(</span><span class="n">predictor_model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">:</span>
+        <span class="n">keras_layers</span> <span class="o">=</span> <span class="p">[</span><span class="n">layer</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">predictor_model</span><span class="o">.</span><span class="n">layers</span><span class="p">]</span>
         <span class="n">casadi_layers</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">keras_layer</span> <span class="ow">in</span> <span class="n">keras_layers</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">keras_layer</span><span class="o">.</span><span class="n">get_config</span><span class="p">()[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
@@ -598,10 +669,11 @@
                     <span class="k">break</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Keras Layer with type &quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot; is not supported yet.&#39;</span><span class="p">)</span>
-        <span class="n">function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sym_input</span>
+        <span class="n">sym_input</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">predictor_model</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">function</span> <span class="o">=</span> <span class="n">sym_input</span>
         <span class="k">for</span> <span class="n">casadi_layer</span> <span class="ow">in</span> <span class="n">casadi_layers</span><span class="p">:</span>
             <span class="n">function</span> <span class="o">=</span> <span class="n">casadi_layer</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_input</span><span class="p">],</span> <span class="p">[</span><span class="n">function</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">sym_input</span><span class="p">],</span> <span class="p">[</span><span class="n">function</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="CasadiANN.build_prediction_function_functionalAPI"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiANN.build_prediction_function_functionalAPI">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">build_prediction_function_functionalAPI</span><span class="p">(</span><span class="n">predictor_model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">:</span>
@@ -617,7 +689,7 @@
             <span class="n">name</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">get_config</span><span class="p">()[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
 
             <span class="c1"># recreate the matching layer</span>
-            <span class="k">if</span> <span class="s1">&#39;input&#39;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;input&#39;</span> <span class="ow">in</span> <span class="n">name</span> <span class="ow">and</span> <span class="s1">&#39;slice&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">batch_shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">layer</span><span class="o">.</span><span class="n">batch_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">fmx</span><span class="p">[</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="s1">&#39;input_layer&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">layer</span><span class="o">.</span><span class="n">batch_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
@@ -634,6 +706,8 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">Functional</span><span class="p">):</span>
                         <span class="n">flayers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">FunctionalWrapper</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">Sequential</span><span class="p">):</span>
+                        <span class="n">flayers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">SequentialWrapper</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Keras Layer with type &quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot; is not supported yet.&#39;</span><span class="p">)</span>
 
@@ -671,7 +745,7 @@
 
         <span class="c1"># Update Forward</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">depth</span> <span class="ow">in</span> <span class="n">ordering</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s1">&#39;input&#39;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;input&#39;</span> <span class="ow">in</span> <span class="n">name</span> <span class="ow">and</span> <span class="s1">&#39;slice&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">input_nodes</span> <span class="o">=</span> <span class="n">fnodes</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">depth</span><span class="p">]</span>
@@ -705,6 +779,7 @@
 
         <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="n">_input</span><span class="p">,</span> <span class="n">prediction</span><span class="p">)</span></div></div>
 
+
 <span class="n">ann_layer_types</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">DENSE</span><span class="p">:</span> <span class="n">Dense</span><span class="p">,</span>
     <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">FLATTEN</span><span class="p">:</span> <span class="n">Flatten</span><span class="p">,</span>
@@ -713,7 +788,13 @@
     <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">CROPPING1D</span><span class="p">:</span> <span class="n">Cropping1D</span><span class="p">,</span>
     <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">CONCATENATE</span><span class="p">:</span> <span class="n">Concatenate</span><span class="p">,</span>
     <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">RESHAPE</span><span class="p">:</span> <span class="n">Reshape</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">INPUTSLICE</span><span class="p">:</span> <span class="n">InputSliceLayer</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">CONSTANT</span><span class="p">:</span> <span class="n">ConstantLayer</span><span class="p">,</span>
     <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">ADD</span><span class="p">:</span> <span class="n">Add</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">SUBTRACT</span><span class="p">:</span> <span class="n">Subtract</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">MULTIPLY</span><span class="p">:</span> <span class="n">Multiply</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">TRUEDIVIDE</span><span class="p">:</span> <span class="n">TrueDivide</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">POWER</span><span class="p">:</span> <span class="n">Power</span><span class="p">,</span>
     <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">RESCALING</span><span class="p">:</span> <span class="n">Rescaling</span><span class="p">,</span>
     <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">RBF</span><span class="p">:</span> <span class="n">RBF</span><span class="p">,</span>
 <span class="p">}</span>
