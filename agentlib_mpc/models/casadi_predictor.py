@@ -737,6 +737,7 @@ ann_layer_types = {
     ANNLayerTypes.POWER: Power,
     ANNLayerTypes.RESCALING: Rescaling,
     ANNLayerTypes.RBF: RBF,
+    ANNLayerTypes.AVERAGE: Average,
 }
 
 casadi_predictors = {
