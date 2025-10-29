@@ -1,7 +1,6 @@
 import re
 from collections import defaultdict
 import joblib
-from physXAI.models import AbstractModel # Imports important functions for model translation
 
 
 output_type_pattern = r"Change\((.*)\)"

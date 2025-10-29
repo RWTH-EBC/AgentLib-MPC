@@ -6,6 +6,7 @@ import numpy as np
 from enum import Enum
 from keras import layers
 from keras.src import Functional
+from keras import Sequential
 from typing import Union, TYPE_CHECKING
 
 from agentlib_mpc.models.serialized_ml_model import (
@@ -17,7 +18,6 @@ from agentlib_mpc.models.serialized_ml_model import (
 )
 
 if TYPE_CHECKING:
-    from keras import Sequential
     from agentlib_mpc.models.serialized_ml_model import CustomGPR
     from sklearn.linear_model import LinearRegression
 
@@ -202,7 +202,13 @@ class ANNLayerTypes(str, Enum):
     CROPPING1D = "cropping1d"
     CONCATENATE = "concatenate"
     RESHAPE = "reshape"
+    INPUTSLICE = "input_slice"
+    CONSTANT = "constant"
     ADD = "add"
+    SUBTRACT = "subtract"
+    MULTIPLY = "multiply"
+    TRUEDIVIDE = "divide"
+    POWER = "power"
     RESCALING = "rescaling"
     RBF = 'rbf'
 
@@ -218,9 +224,6 @@ class Layer(abc.ABC):
         # name
         if "name" in self.config:
             self.name = self.config["name"]
-
-        # activation function
-
 
         # input / output shape
         # TODO: Check if more detailed translation is needed
@@ -438,6 +441,41 @@ class Add(Layer):
         return init
 
 
+class Subtract(Layer):
+    def __init__(self, layer: layers.Subtract):
+        super(Subtract, self).__init__(layer)
+
+    def forward(self, *input):
+        return input[0] - input[1]
+    
+
+class Multiply(Layer):
+    def __init__(self, layer: layers.Multiply):
+        super(Multiply, self).__init__(layer)
+
+    def forward(self, *input):
+        init = input[0]
+        for inp in input[1:]:
+            init *= inp
+        return init
+    
+
+class TrueDivide(Layer):
+    def __init__(self, layer):
+        super(TrueDivide, self).__init__(layer)
+
+    def forward(self, *input):
+        return input[0] / input[1]
+
+
+class Power(Layer):
+    def __init__(self, layer):
+        super(Power, self).__init__(layer)
+
+    def forward(self, *input):
+        return input[0] ** input[1]
+
+
 class Rescaling(Layer):
 
     def __init__(self, layer: layers.Rescaling):
@@ -448,6 +486,25 @@ class Rescaling(Layer):
     def forward(self, input):
         f = input * self.scale + self.offset
         return f
+    
+class InputSliceLayer(Layer):
+
+    def __init__(self, layer):
+        super().__init__(layer)
+        self.feature_indices = layer.feature_indices
+
+    def forward(self, input):
+        return input[:, self.feature_indices]
+    
+
+class ConstantLayer(Layer):
+
+    def __init__(self, layer):
+        super().__init__(layer)
+        self.constant = ca.DM(layer.constant.numpy())
+
+    def forward(self, input):
+        return self.constant
 
 
 class RBF(Layer):
@@ -474,6 +531,15 @@ class FunctionalWrapper:
 
     def forward(self, input):
         return self.functional(input)
+    
+
+class SequentialWrapper:
+
+    def __init__(self, sequential: Sequential):
+        self.functional = CasadiANN.build_prediction_function_sequential(sequential)
+
+    def forward(self, input):
+        return self.functional(input)
 
 
 class CasadiANN(CasadiPredictor):
@@ -481,7 +547,7 @@ class CasadiANN(CasadiPredictor):
     Generic implementations of sequential Keras models in CasADi.
     """
 
-    def __init__(self, serialized_model: SerializedANN or SerializedKerasANN):
+    def __init__(self, serialized_model: Union[SerializedANN, SerializedKerasANN]):
         """
         Supported layers:
             - Dense (Fully connected layer)
@@ -513,9 +579,14 @@ class CasadiANN(CasadiPredictor):
         """Build the prediction function with casadi and a symbolic input."""
         if isinstance(self.predictor_model, Functional):
             return self.build_prediction_function_functionalAPI(self.predictor_model)
-        # elif not isinstance(self.predictor_model, Sequential):
-        #     raise NotImplementedError(f"Error: Keras Model type {type(self.predictor_model)} not supported")
-        keras_layers = [layer for layer in self.predictor_model.layers]
+        elif not isinstance(self.predictor_model, Sequential):
+            raise NotImplementedError(f"Error: Keras Model type {type(self.predictor_model)} not supported")
+        else:
+            return self.build_prediction_function_sequential(self.predictor_model)
+    
+    @staticmethod
+    def build_prediction_function_sequential(predictor_model) -> ca.Function:
+        keras_layers = [layer for layer in predictor_model.layers]
         casadi_layers = []
         for keras_layer in keras_layers:
             name = keras_layer.get_config()["name"]
@@ -525,10 +596,11 @@ class CasadiANN(CasadiPredictor):
                     break
             else:
                 raise NotImplementedError(f'Keras Layer with type "{name}" is not supported yet.')
-        function = self.sym_input
+        sym_input = ca.MX.sym("input", 1, predictor_model.input_shape[1])
+        function = sym_input
         for casadi_layer in casadi_layers:
             function = casadi_layer.forward(function)
-        return ca.Function("forward", [self.sym_input], [function])
+        return ca.Function("forward", [sym_input], [function])
 
     @staticmethod
     def build_prediction_function_functionalAPI(predictor_model) -> ca.Function:
@@ -544,7 +616,7 @@ class CasadiANN(CasadiPredictor):
             name = layer.get_config()['name']
 
             # recreate the matching layer
-            if 'input' in name:
+            if 'input' in name and 'slice' not in name:
                 if len(layer.batch_shape) > 2:
                     if layer.batch_shape[1] is None:
                         fmx[name, 0] = ca.MX.sym('input_layer', 1, layer.batch_shape[2])
@@ -561,6 +633,8 @@ class CasadiANN(CasadiPredictor):
                 else:
                     if isinstance(layer, Functional):
                         flayers[name] = FunctionalWrapper(layer)
+                    elif isinstance(layer, Sequential):
+                        flayers[name] = SequentialWrapper(layer)
                     else:
                         raise NotImplementedError(f'Keras Layer with type "{name}" is not supported yet.')
 
@@ -598,7 +672,7 @@ class CasadiANN(CasadiPredictor):
 
         # Update Forward
         for name, depth in ordering:
-            if 'input' in name:
+            if 'input' in name and 'slice' not in name:
                 continue
             else:
                 input_nodes = fnodes[name][depth]
@@ -632,6 +706,7 @@ class CasadiANN(CasadiPredictor):
 
         return ca.Function("forward", _input, prediction)
 
+
 ann_layer_types = {
     ANNLayerTypes.DENSE: Dense,
     ANNLayerTypes.FLATTEN: Flatten,
@@ -640,7 +715,13 @@ ann_layer_types = {
     ANNLayerTypes.CROPPING1D: Cropping1D,
     ANNLayerTypes.CONCATENATE: Concatenate,
     ANNLayerTypes.RESHAPE: Reshape,
+    ANNLayerTypes.INPUTSLICE: InputSliceLayer,
+    ANNLayerTypes.CONSTANT: ConstantLayer,
     ANNLayerTypes.ADD: Add,
+    ANNLayerTypes.SUBTRACT: Subtract,
+    ANNLayerTypes.MULTIPLY: Multiply,
+    ANNLayerTypes.TRUEDIVIDE: TrueDivide,
+    ANNLayerTypes.POWER: Power,
     ANNLayerTypes.RESCALING: Rescaling,
     ANNLayerTypes.RBF: RBF,
 }
