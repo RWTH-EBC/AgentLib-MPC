@@ -6,12 +6,11 @@
 
 ### Key Information
 - **Language**: Python (3.9-3.12)
-- **License**: BSD-3-Clause (see `LICENSE`)
+- **License**: BSD-3-Clause
 - **Testing**: pytest (unit tests live in `tests/`)
 - **Code Quality**: pylint (project contains `pylintrc`; aim: high score)
 - **Dependencies**: Core (numpy, casadi, pydantic>=2.0, scipy, pandas), Optional (FMU support, machine-learning backends)
 - **CI/CD**: GitHub Actions (runs pytest, coverage, pylint) and Sphinx documentation under `docs/`
-- **Package layout**: The main package is `agentlib_mpc` with subpackages for data structures, models, modules and optimization backends.
 
 ## Project Structure
 
@@ -67,8 +66,8 @@ Most public configuration/data models use Pydantic v2 models or clear typed data
 
 #### 2. Code Quality & Standards
 - **Pydantic usage**: Ensure v2 syntax (e.g., `Field()`, `field_validator`, not v1 `validator`)
-- **Docstrings**: Check for docstrings on new public classes/methods (Google style)
 - **Type hints**: Ensure type hints are added for new functions/methods
+- **Docstrings**: Check for docstrings on new public classes/methods (Google style)
 - **Pylint compliance**: Flag obvious issues (unused imports, naming violations, etc.)
 
 #### 3. Testing Requirements
@@ -104,7 +103,7 @@ Provide structured, concise feedback (max 10 bullet points total):
 **Brevity is essential. Skip sections with nothing critical to report.**
 
 ### What NOT to Flag
-- Minor style issues (handled by pylint)
+- Minor style issues
 - Personal preference on implementation approach
 - Overly detailed nitpicking on internal/private methods
 - Changes to examples or test code (unless broken)
