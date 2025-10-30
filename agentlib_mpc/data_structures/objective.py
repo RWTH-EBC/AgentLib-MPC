@@ -60,9 +60,9 @@ class SubObjective:
 
         # Handle common CasADi functions with simple replacements
         casadi_replacements = {
-            "sq(": "(",  # sq(x) becomes (x), then we'll square it
-            "fabs(": "abs(",  # fabs(x) becomes abs(x)
-            "sqrt(": "sqrt(",  # already handled in safe_dict
+            "sq(": "(",
+            "fabs(": "abs(",
+            "sqrt(": "sqrt(",
             "sin(": "sin(",
             "cos(": "cos(",
             "exp(": "exp(",
@@ -390,21 +390,127 @@ class ConditionalObjective:
         return list(set(all_delta_u))
 
     def calculate_values(self, result_df, grid):
-        """Calculate values for each objective component."""
+        """
+        Calculate values for each objective component based on when conditions are active.
+        """
         all_values = {}
         total_value = 0
 
-        for objective in self.all_objectives:
-            values = objective.calculate_values(result_df, grid)
+        df = self.default_objective._prepare_dataframe(result_df.copy(), grid)
+        active_objectives = self._determine_active_objectives(df)
 
-            for name, value in values.items():
-                if name == "total":
-                    continue
-
-                all_values[name] = value
-
-                if value is not None:
-                    total_value += value
+        for objective, active_mask in active_objectives.items():
+            if not np.any(active_mask):
+                continue
+                
+            active_df = df.loc[active_mask].copy()
+            if len(active_df) > 0:
+                obj_values = objective.calculate_values(active_df, None)
+                for name, value in obj_values.items():
+                    if name == "total":
+                        continue
+                    if name not in all_values:
+                        all_values[name] = 0
+                    all_values[name] += value
+                    if value is not None:
+                        total_value += value
 
         all_values["total"] = total_value
         return all_values
+
+    def _determine_active_objectives(self, df):
+        """
+        Determine which objective is active at each time step.
+
+        Args:
+            df: DataFrame with results
+
+        Returns:
+            Dict mapping objectives to boolean masks
+        """
+        active_objectives = {}
+
+        active_objectives[self.default_objective] = pd.Series(True, index=df.index)
+
+        for _, objective in self.condition_objective_pairs:
+            active_objectives[objective] = pd.Series(False, index=df.index)
+
+        for condition, objective in self.condition_objective_pairs:
+            condition_mask = self._evaluate_condition(condition, df)
+
+            active_objectives[objective] = condition_mask
+
+            active_objectives[self.default_objective] = active_objectives[self.default_objective] & ~condition_mask
+
+        return active_objectives
+
+    def _evaluate_condition(self, condition, df):
+        """
+        Evaluate a condition for all rows in the dataframe.
+
+        Args:
+            condition: CasADi expression representing the condition
+            df: DataFrame with results
+
+        Returns:
+            Boolean Series with True where condition is true
+        """
+        condition_str = str(condition)
+
+        identifier_pattern = r'[a-zA-Z_][a-zA-Z0-9_]*'
+        potential_vars = re.findall(identifier_pattern, condition_str)
+
+        operators_keywords = {'and', 'or', 'not', 'in', 'is', 'if', 'else', 'elif', 'for', 'while', 'def', 'class'}
+        var_names = [var for var in potential_vars if var not in operators_keywords]
+
+        var_names = list(dict.fromkeys(var_names))
+
+        values_dict = {}
+
+        for var_name in var_names:
+            if var_name == "time":
+                values_dict["time"] = df.index.to_numpy()
+                continue
+
+            found = False
+            for col_type in ["variable", "parameter"]:
+                if (col_type, var_name) in df.columns:
+                    values_dict[var_name] = df.loc[:, (col_type, var_name)].values
+                    found = True
+                    break
+
+            if not found:
+                try:
+                    float(var_name)
+                except ValueError:
+                    print(f"Warning: Variable '{var_name}' not found in DataFrame")
+                    values_dict[var_name] = np.zeros(len(df))
+
+        n_rows = len(df)
+        mask = np.zeros(n_rows, dtype=bool)
+
+        for i in range(n_rows):
+            local_vars = {}
+            for var_name, values in values_dict.items():
+                if isinstance(values, np.ndarray):
+                    local_vars[var_name] = values[i]
+                else:
+                    local_vars[var_name] = values
+
+            try:
+                eval_str = condition_str
+
+                replacements = {
+                }
+
+                for casadi_op, python_op in replacements.items():
+                    eval_str = eval_str.replace(casadi_op, python_op)
+
+                result = eval(eval_str, {"__builtins__": {}, "abs": abs, "min": min, "max": max}, local_vars)
+                mask[i] = bool(result)
+
+            except Exception as e:
+                print(f"Error evaluating condition at row {i}: {e}")
+                mask[i] = False
+
+        return pd.Series(mask, index=df.index)

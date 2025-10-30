@@ -23,10 +23,6 @@ logger = logging.getLogger(__name__)
 ub = 295.15
 prediction_horizon = 300*15
 switch_time = 600
-normalization_obj1 = switch_time
-normalization_obj2 = prediction_horizon-switch_time
-
-
 
 class MyCasadiModelConfig(CasadiModelConfig):
     inputs: List[CasadiInput] = [
@@ -115,7 +111,6 @@ class MyCasadiModel(CasadiModel):
     def setup_system(self):
         # Define ode
 
-
         self.T.ode = (
             self.cp * self.mDot / self.C * (self.T_in - self.T) + self.load / self.C
         )
@@ -141,10 +136,10 @@ class MyCasadiModel(CasadiModel):
             weight=self.s_T,
             name="temperature_slack"
         )
-        objective1 = self.create_full_objective(obj1_mDot, obj1_slack, normalization=normalization_obj1)
+        objective1 = self.create_full_objective(obj1_mDot, obj1_slack, normalization=10)
 
         # Objective 2 (when time >= switch)
-        obj2_mDot = self.system(
+        obj2_mDot = self.create_sub_objective(
             expressions=self.mDot,
             weight= self.r_mDot2,
             name="mDot_cost_doubled"
@@ -154,7 +149,7 @@ class MyCasadiModel(CasadiModel):
             weight=self.s_T,
             name="temperature_slack_2"
         )
-        objective2 = self.create_full_objective(obj2_mDot, obj2_slack, normalization=normalization_obj2)
+        objective2 = self.create_full_objective(obj2_mDot, obj2_slack, normalization=1)
 
         # Conditional objective based on time
         condition = self.time < self.switch.sym
@@ -184,7 +179,7 @@ AGENT_MPC = {
                     "method": "multiple_shooting"
                 },
                 "solver": {
-                    "name": "fatrop",  # use fatrop with casadi 3.6.6 for speedup
+                    "name": "ipopt",  # use fatrop with casadi 3.6.6 for speedup
                 },
                 "results_file": "results//mpc.csv",
                 "save_results": True,
