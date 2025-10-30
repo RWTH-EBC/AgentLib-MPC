@@ -127,7 +127,7 @@ class MyCasadiModel(CasadiModel):
         )
 
         objective = self.create_full_objective(
-            obj1, obj2, obj3, normalization=prediction_horizon
+            obj1, obj2, obj3, normalization=1
         )
 
         return objective
@@ -147,13 +147,7 @@ AGENT_MPC = {
                 "model": {"type": {"file": __file__, "class_name": "MyCasadiModel"}},
                 "discretization_options": {"method": "multiple_shooting"},
                 "solver": {
-                    "name": "sqpmethod",
-                    "options": {
-                        "print_header": False,
-                        "print_iteration": False,
-                        "qpsol": "qpoases",
-                        "qpsol_options": {"printLevel": "low"},
-                    },
+                    "name": "ipopt",
                 },
                 "results_file": "results//mpc.csv",
                 "overwrite_result_file": True,
@@ -259,4 +253,4 @@ def run_example(
 
 
 if __name__ == "__main__":
-    run_example(with_plots=True, with_dashboard=False, until=3600)
+    run_example(with_plots=True, with_dashboard=True, until=3600)

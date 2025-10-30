@@ -131,12 +131,6 @@ def stats_path(path: Union[Path, str]) -> Path:
     res_file = Path(path)
     return Path(res_file.parent, "stats_" + res_file.name)
 
-def objective_path(path: Union[Path, str]) -> Path:
-    """Given the results file path, returns the path for the objective values file."""
-    res_file = Path(path)
-    return Path(res_file.parent, "obj_" + res_file.name)
-
-
 def cia_relaxed_results_path(path: Union[Path, str]) -> Path:
     res_file = Path(path)
     return Path(res_file.parent, "relaxed_" + res_file.name)
