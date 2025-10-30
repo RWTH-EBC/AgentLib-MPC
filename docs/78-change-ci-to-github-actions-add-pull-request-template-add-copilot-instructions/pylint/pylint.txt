@@ -72,13 +72,13 @@ pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pyli
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'non-ascii-bytes-literal' (unknown-option-value)
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'eq-without-hash' (unknown-option-value)
 ************* Module agentlib_mpc.utils.plotting.basic
-agentlib_mpc/utils/plotting/basic.py:1:0: F0002: agentlib_mpc/utils/plotting/basic.py: Fatal error while checking 'agentlib_mpc/utils/plotting/basic.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-28.txt'. (astroid-error)
+agentlib_mpc/utils/plotting/basic.py:1:0: F0002: agentlib_mpc/utils/plotting/basic.py: Fatal error while checking 'agentlib_mpc/utils/plotting/basic.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-32.txt'. (astroid-error)
 ************* Module agentlib_mpc.data_structures.mpc_datamodels
-agentlib_mpc/data_structures/mpc_datamodels.py:1:0: F0002: agentlib_mpc/data_structures/mpc_datamodels.py: Fatal error while checking 'agentlib_mpc/data_structures/mpc_datamodels.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-28.txt'. (astroid-error)
+agentlib_mpc/data_structures/mpc_datamodels.py:1:0: F0002: agentlib_mpc/data_structures/mpc_datamodels.py: Fatal error while checking 'agentlib_mpc/data_structures/mpc_datamodels.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-33.txt'. (astroid-error)
 ************* Module agentlib_mpc.data_structures.admm_datatypes
-agentlib_mpc/data_structures/admm_datatypes.py:1:0: F0002: agentlib_mpc/data_structures/admm_datatypes.py: Fatal error while checking 'agentlib_mpc/data_structures/admm_datatypes.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-29.txt'. (astroid-error)
+agentlib_mpc/data_structures/admm_datatypes.py:1:0: F0002: agentlib_mpc/data_structures/admm_datatypes.py: Fatal error while checking 'agentlib_mpc/data_structures/admm_datatypes.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-33.txt'. (astroid-error)
 ************* Module agentlib_mpc.data_structures.casadi_utils
-agentlib_mpc/data_structures/casadi_utils.py:1:0: F0002: agentlib_mpc/data_structures/casadi_utils.py: Fatal error while checking 'agentlib_mpc/data_structures/casadi_utils.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-29.txt'. (astroid-error)
+agentlib_mpc/data_structures/casadi_utils.py:1:0: F0002: agentlib_mpc/data_structures/casadi_utils.py: Fatal error while checking 'agentlib_mpc/data_structures/casadi_utils.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-33.txt'. (astroid-error)
 ************* Module admm_4rooms_main_coord
 examples/exchange_admm/admm_4rooms_main_coord.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/exchange_admm/admm_4rooms_main_coord.py:4:0: E0401: Unable to import 'agentlib.utils.multi_agent_system' (import-error)
@@ -125,7 +125,7 @@ examples/exchange_admm/models/room_model.py:106:0: C0115: Missing class docstrin
 examples/exchange_admm/models/room_model.py:120:0: C0115: Missing class docstring (missing-class-docstring)
 ************* Module generate_training_data
 examples/output_ann/generate_training_data.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-examples/output_ann/generate_training_data.py:1:0: F0002: examples/output_ann/generate_training_data.py: Fatal error while checking 'examples/output_ann/generate_training_data.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-30.txt'. (astroid-error)
+examples/output_ann/generate_training_data.py:1:0: F0002: examples/output_ann/generate_training_data.py: Fatal error while checking 'examples/output_ann/generate_training_data.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-34.txt'. (astroid-error)
 ************* Module animate
 examples/4_Room_ADMM_Coordinator/animate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/4_Room_ADMM_Coordinator/animate.py:3:0: E0401: Unable to import 'matplotlib.pyplot' (import-error)
@@ -159,13 +159,13 @@ examples/4_Room_ADMM_Coordinator/admm_4rooms_coord_main.py:60:8: W0612: Unused v
 examples/4_Room_ADMM_Coordinator/models/rlt_model.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/4_Room_ADMM_Coordinator/models/rlt_model.py:1:0: W0401: Wildcard import agentlib_mpc.models.casadi_model (wildcard-import)
 examples/4_Room_ADMM_Coordinator/models/rlt_model.py:26:0: C0115: Missing class docstring (missing-class-docstring)
-examples/4_Room_ADMM_Coordinator/models/rlt_model.py:1:0: F0002: examples/4_Room_ADMM_Coordinator/models/rlt_model.py: Fatal error while checking 'examples/4_Room_ADMM_Coordinator/models/rlt_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-31.txt'. (astroid-error)
+examples/4_Room_ADMM_Coordinator/models/rlt_model.py:1:0: F0002: examples/4_Room_ADMM_Coordinator/models/rlt_model.py: Fatal error while checking 'examples/4_Room_ADMM_Coordinator/models/rlt_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-35.txt'. (astroid-error)
 ************* Module room_model
 examples/4_Room_ADMM_Coordinator/models/room_model.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/4_Room_ADMM_Coordinator/models/room_model.py:1:0: W0401: Wildcard import agentlib_mpc.models.casadi_model (wildcard-import)
 examples/4_Room_ADMM_Coordinator/models/room_model.py:1:0: C0413: Import "from agentlib_mpc.models.casadi_model import *" should be placed at the top of the module (wrong-import-position)
 examples/4_Room_ADMM_Coordinator/models/room_model.py:4:0: C0115: Missing class docstring (missing-class-docstring)
-examples/4_Room_ADMM_Coordinator/models/room_model.py:1:0: F0002: examples/4_Room_ADMM_Coordinator/models/room_model.py: Fatal error while checking 'examples/4_Room_ADMM_Coordinator/models/room_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-31.txt'. (astroid-error)
+examples/4_Room_ADMM_Coordinator/models/room_model.py:1:0: F0002: examples/4_Room_ADMM_Coordinator/models/room_model.py: Fatal error while checking 'examples/4_Room_ADMM_Coordinator/models/room_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-35.txt'. (astroid-error)
 ************* Module simple_mpc_time_dependent_obj
 examples/one_room_mpc/physical/simple_mpc_time_dependent_obj.py:99:0: C0301: Line too long (116/100) (line-too-long)
 examples/one_room_mpc/physical/simple_mpc_time_dependent_obj.py:283:23: W1401: Anomalous backslash in string: '\d'. String constant might be missing an r prefix. (anomalous-backslash-in-string)
@@ -173,14 +173,14 @@ examples/one_room_mpc/physical/simple_mpc_time_dependent_obj.py:1:0: C0114: Miss
 examples/one_room_mpc/physical/simple_mpc_time_dependent_obj.py:1:0: C0413: Import "import logging" should be placed at the top of the module (wrong-import-position)
 examples/one_room_mpc/physical/simple_mpc_time_dependent_obj.py:2:0: C0413: Import "import os" should be placed at the top of the module (wrong-import-position)
 examples/one_room_mpc/physical/simple_mpc_time_dependent_obj.py:3:0: C0413: Import "from pathlib import Path" should be placed at the top of the module (wrong-import-position)
-examples/one_room_mpc/physical/simple_mpc_time_dependent_obj.py:1:0: F0002: examples/one_room_mpc/physical/simple_mpc_time_dependent_obj.py: Fatal error while checking 'examples/one_room_mpc/physical/simple_mpc_time_dependent_obj.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-31.txt'. (astroid-error)
+examples/one_room_mpc/physical/simple_mpc_time_dependent_obj.py:1:0: F0002: examples/one_room_mpc/physical/simple_mpc_time_dependent_obj.py: Fatal error while checking 'examples/one_room_mpc/physical/simple_mpc_time_dependent_obj.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-35.txt'. (astroid-error)
 ************* Module simple_mpc_multiple_shooting
 examples/one_room_mpc/physical/simple_mpc_multiple_shooting.py:261:23: W1401: Anomalous backslash in string: '\d'. String constant might be missing an r prefix. (anomalous-backslash-in-string)
 examples/one_room_mpc/physical/simple_mpc_multiple_shooting.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/one_room_mpc/physical/simple_mpc_multiple_shooting.py:1:0: C0413: Import "import logging" should be placed at the top of the module (wrong-import-position)
 examples/one_room_mpc/physical/simple_mpc_multiple_shooting.py:2:0: C0413: Import "import os" should be placed at the top of the module (wrong-import-position)
 examples/one_room_mpc/physical/simple_mpc_multiple_shooting.py:3:0: C0413: Import "from pathlib import Path" should be placed at the top of the module (wrong-import-position)
-examples/one_room_mpc/physical/simple_mpc_multiple_shooting.py:1:0: F0002: examples/one_room_mpc/physical/simple_mpc_multiple_shooting.py: Fatal error while checking 'examples/one_room_mpc/physical/simple_mpc_multiple_shooting.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-31.txt'. (astroid-error)
+examples/one_room_mpc/physical/simple_mpc_multiple_shooting.py:1:0: F0002: examples/one_room_mpc/physical/simple_mpc_multiple_shooting.py: Fatal error while checking 'examples/one_room_mpc/physical/simple_mpc_multiple_shooting.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-35.txt'. (astroid-error)
 ************* Module simple_mpc_with_clonemap
 examples/one_room_mpc/physical/simple_mpc_with_clonemap.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/one_room_mpc/physical/simple_mpc_with_clonemap.py:1:0: C0413: Import "import logging" should be placed at the top of the module (wrong-import-position)
@@ -211,24 +211,24 @@ examples/one_room_mpc/physical/simple_mpc_with_clonemap.py:2:0: C0412: Imports f
 ************* Module simple_mpc
 examples/one_room_mpc/physical/simple_mpc.py:261:23: W1401: Anomalous backslash in string: '\d'. String constant might be missing an r prefix. (anomalous-backslash-in-string)
 examples/one_room_mpc/physical/simple_mpc.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-examples/one_room_mpc/physical/simple_mpc.py:1:0: F0002: examples/one_room_mpc/physical/simple_mpc.py: Fatal error while checking 'examples/one_room_mpc/physical/simple_mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-31.txt'. (astroid-error)
+examples/one_room_mpc/physical/simple_mpc.py:1:0: F0002: examples/one_room_mpc/physical/simple_mpc.py: Fatal error while checking 'examples/one_room_mpc/physical/simple_mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-35.txt'. (astroid-error)
 ************* Module simple_mpc_with_time_variant_inputs
 examples/one_room_mpc/physical/simple_mpc_with_time_variant_inputs.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-examples/one_room_mpc/physical/simple_mpc_with_time_variant_inputs.py:1:0: F0002: examples/one_room_mpc/physical/simple_mpc_with_time_variant_inputs.py: Fatal error while checking 'examples/one_room_mpc/physical/simple_mpc_with_time_variant_inputs.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-31.txt'. (astroid-error)
+examples/one_room_mpc/physical/simple_mpc_with_time_variant_inputs.py:1:0: F0002: examples/one_room_mpc/physical/simple_mpc_with_time_variant_inputs.py: Fatal error while checking 'examples/one_room_mpc/physical/simple_mpc_with_time_variant_inputs.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-35.txt'. (astroid-error)
 ************* Module with_change_control_penalty
 examples/one_room_mpc/physical/with_change_control_penalty.py:217:27: W1401: Anomalous backslash in string: '\d'. String constant might be missing an r prefix. (anomalous-backslash-in-string)
 examples/one_room_mpc/physical/with_change_control_penalty.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-examples/one_room_mpc/physical/with_change_control_penalty.py:1:0: F0002: examples/one_room_mpc/physical/with_change_control_penalty.py: Fatal error while checking 'examples/one_room_mpc/physical/with_change_control_penalty.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-31.txt'. (astroid-error)
+examples/one_room_mpc/physical/with_change_control_penalty.py:1:0: F0002: examples/one_room_mpc/physical/with_change_control_penalty.py: Fatal error while checking 'examples/one_room_mpc/physical/with_change_control_penalty.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-35.txt'. (astroid-error)
 ************* Module mixed_integer.mixed_integer_mpc
 examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc.py:261:0: C0301: Line too long (129/100) (line-too-long)
 examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc.py:256:27: W1401: Anomalous backslash in string: '\d'. String constant might be missing an r prefix. (anomalous-backslash-in-string)
 examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc.py:1:0: F0002: examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc.py: Fatal error while checking 'examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-31.txt'. (astroid-error)
+examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc.py:1:0: F0002: examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc.py: Fatal error while checking 'examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-35.txt'. (astroid-error)
 ************* Module mixed_integer.mixed_integer_mpc_cia
 examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc_cia.py:261:0: C0301: Line too long (129/100) (line-too-long)
 examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc_cia.py:256:27: W1401: Anomalous backslash in string: '\d'. String constant might be missing an r prefix. (anomalous-backslash-in-string)
 examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc_cia.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc_cia.py:1:0: F0002: examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc_cia.py: Fatal error while checking 'examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc_cia.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-31.txt'. (astroid-error)
+examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc_cia.py:1:0: F0002: examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc_cia.py: Fatal error while checking 'examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc_cia.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-35.txt'. (astroid-error)
 ************* Module training_linreg
 examples/one_room_mpc/linreg/training_linreg.py:68:25: W1401: Anomalous backslash in string: '\d'. String constant might be missing an r prefix. (anomalous-backslash-in-string)
 examples/one_room_mpc/linreg/training_linreg.py:1:0: C0114: Missing module docstring (missing-module-docstring)
@@ -259,7 +259,7 @@ examples/one_room_mpc/physical/mixed_integer/mixed_integer_mpc_cia.py:3:0: C0412
 examples/one_room_mpc/linreg/training_linreg.py:1:0: C0412: Imports from package logging are not grouped (ungrouped-imports)
 ************* Module model
 examples/one_room_mpc/linreg/model.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-examples/one_room_mpc/linreg/model.py:1:0: F0002: examples/one_room_mpc/linreg/model.py: Fatal error while checking 'examples/one_room_mpc/linreg/model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-32.txt'. (astroid-error)
+examples/one_room_mpc/linreg/model.py:1:0: F0002: examples/one_room_mpc/linreg/model.py: Fatal error while checking 'examples/one_room_mpc/linreg/model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-36.txt'. (astroid-error)
 ************* Module simple_mpc_linreg
 examples/one_room_mpc/linreg/simple_mpc_linreg.py:152:27: W1401: Anomalous backslash in string: '\d'. String constant might be missing an r prefix. (anomalous-backslash-in-string)
 examples/one_room_mpc/linreg/simple_mpc_linreg.py:1:0: C0114: Missing module docstring (missing-module-docstring)
@@ -305,7 +305,7 @@ examples/one_room_mpc/gpr/training_gpr.py:60:4: W0612: Unused variable 'fig' (un
 examples/one_room_mpc/gpr/training_gpr.py:73:0: C0116: Missing function or method docstring (missing-function-docstring)
 examples/one_room_mpc/gpr/training_gpr.py:188:0: C0116: Missing function or method docstring (missing-function-docstring)
 examples/one_room_mpc/gpr/model.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-examples/one_room_mpc/gpr/model.py:1:0: F0002: examples/one_room_mpc/gpr/model.py: Fatal error while checking 'examples/one_room_mpc/gpr/model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-32.txt'. (astroid-error)
+examples/one_room_mpc/gpr/model.py:1:0: F0002: examples/one_room_mpc/gpr/model.py: Fatal error while checking 'examples/one_room_mpc/gpr/model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-36.txt'. (astroid-error)
 ************* Module training_nn
 examples/one_room_mpc/ann/training_nn.py:68:25: W1401: Anomalous backslash in string: '\d'. String constant might be missing an r prefix. (anomalous-backslash-in-string)
 examples/one_room_mpc/ann/training_nn.py:1:0: C0114: Missing module docstring (missing-module-docstring)
@@ -340,8 +340,7 @@ examples/one_room_mpc/ann/simple_mpc_nn.py:133:8: C0103: Variable name "energy_c
 examples/one_room_mpc/ann/simple_mpc_nn.py:142:13: C0103: Variable name "ax" doesn't conform to snake_case naming style (invalid-name)
 examples/one_room_mpc/ann/simple_mpc_nn.py:142:8: W0612: Unused variable 'fig' (unused-variable)
 examples/one_room_mpc/ann/model.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-examples/one_room_mpc/ann/model.py:1:0: F0002: examples/one_room_mpc/ann/model.py: Fatal error while checking 'examples/one_room_mpc/ann/model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-32.txt'. (astroid-error)
-************* Module with_learned_cost.training_nn
+examples/one_room_mpc/ann/model.py:1:0: F0002: examples/one_room_mpc/ann/model.py: Fatal error while checking 'examples/one_room_mpc/ann/model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-36.txt'. (astroid-error)
 examples/one_room_mpc/ann/with_learned_cost/training_nn.py:68:25: W1401: Anomalous backslash in string: '\d'. String constant might be missing an r prefix. (anomalous-backslash-in-string)
 examples/one_room_mpc/ann/with_learned_cost/training_nn.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/one_room_mpc/ann/with_learned_cost/training_nn.py:4:0: E0401: Unable to import 'agentlib' (import-error)
@@ -359,7 +358,6 @@ examples/one_room_mpc/ann/with_learned_cost/training_nn.py:61:20: C0103: Variabl
 examples/one_room_mpc/ann/with_learned_cost/training_nn.py:61:4: W0612: Unused variable 'fig' (unused-variable)
 examples/one_room_mpc/ann/with_learned_cost/training_nn.py:74:0: C0116: Missing function or method docstring (missing-function-docstring)
 examples/one_room_mpc/ann/with_learned_cost/training_nn.py:191:0: C0116: Missing function or method docstring (missing-function-docstring)
-************* Module with_learned_cost.simple_mpc_nn
 examples/one_room_mpc/ann/with_learned_cost/simple_mpc_nn.py:134:27: W1401: Anomalous backslash in string: '\d'. String constant might be missing an r prefix. (anomalous-backslash-in-string)
 examples/one_room_mpc/ann/with_learned_cost/simple_mpc_nn.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/one_room_mpc/ann/with_learned_cost/simple_mpc_nn.py:3:0: E0401: Unable to import 'matplotlib.pyplot' (import-error)
@@ -372,7 +370,7 @@ examples/one_room_mpc/ann/with_learned_cost/simple_mpc_nn.py:100:8: C0415: Impor
 examples/one_room_mpc/ann/with_learned_cost/simple_mpc_nn.py:115:13: C0103: Variable name "ax" doesn't conform to snake_case naming style (invalid-name)
 examples/one_room_mpc/ann/with_learned_cost/simple_mpc_nn.py:115:8: W0612: Unused variable 'fig' (unused-variable)
 examples/one_room_mpc/ann/with_learned_cost/simple_mpc_nn.py:4:0: C0411: standard import "import os" should be placed before "import matplotlib.pyplot as plt" (wrong-import-order)
-************* Module with_learned_cost.plot_ann
+************* Module plot_ann
 examples/one_room_mpc/ann/with_learned_cost/plot_ann.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/one_room_mpc/ann/with_learned_cost/plot_ann.py:3:0: E0401: Unable to import 'matplotlib.pyplot' (import-error)
 examples/one_room_mpc/ann/with_learned_cost/plot_ann.py:4:0: E0401: Unable to import 'numpy' (import-error)
@@ -390,9 +388,8 @@ examples/one_room_mpc/ann/with_learned_cost/plot_ann.py:43:4: C0103: Variable na
 examples/one_room_mpc/ann/with_learned_cost/plot_ann.py:63:9: C0103: Variable name "ax" doesn't conform to snake_case naming style (invalid-name)
 examples/one_room_mpc/ann/with_learned_cost/plot_ann.py:13:9: W0613: Unused argument 'sim_results_file' (unused-argument)
 examples/one_room_mpc/ann/with_learned_cost/plot_ann.py:41:4: W0612: Unused variable 'fig' (unused-variable)
-************* Module with_learned_cost.model
 examples/one_room_mpc/ann/with_learned_cost/model.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-examples/one_room_mpc/ann/with_learned_cost/model.py:1:0: F0002: examples/one_room_mpc/ann/with_learned_cost/model.py: Fatal error while checking 'examples/one_room_mpc/ann/with_learned_cost/model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-32.txt'. (astroid-error)
+examples/one_room_mpc/ann/with_learned_cost/model.py:1:0: F0002: examples/one_room_mpc/ann/with_learned_cost/model.py: Fatal error while checking 'examples/one_room_mpc/ann/with_learned_cost/model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-37.txt'. (astroid-error)
 ************* Module admm_example_multiprocessing
 examples/admm/admm_example_multiprocessing.py:28:0: E0401: Unable to import 'agentlib.utils' (import-error)
 examples/admm/admm_example_multiprocessing.py:29:0: E0401: Unable to import 'agentlib.utils.multi_agent_system' (import-error)
@@ -465,17 +462,17 @@ examples/admm/admm_example_coordinator_multiprocessing.py:80:27: C0103: Variable
 examples/admm/admm_example_coordinator_multiprocessing.py:85:21: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
 examples/admm/admm_example_coordinator_multiprocessing.py:85:34: C0103: Variable name "f" doesn't conform to snake_case naming style (invalid-name)
 examples/admm/admm_example_coordinator_multiprocessing.py:95:4: W0612: Unused variable 'broker' (unused-variable)
-************* Module models.simulation_model
+************* Module simulation_model
 examples/admm/models/simulation_model.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-examples/admm/models/simulation_model.py:1:0: F0002: examples/admm/models/simulation_model.py: Fatal error while checking 'examples/admm/models/simulation_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-33.txt'. (astroid-error)
-************* Module models.ca_room_model
+examples/admm/models/simulation_model.py:1:0: F0002: examples/admm/models/simulation_model.py: Fatal error while checking 'examples/admm/models/simulation_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-37.txt'. (astroid-error)
+************* Module ca_room_model
 examples/admm/models/ca_room_model.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/admm/models/ca_room_model.py:11:0: C0115: Missing class docstring (missing-class-docstring)
 examples/admm/models/ca_room_model.py:45:17: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
 examples/admm/models/ca_room_model.py:50:17: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
 examples/admm/models/ca_room_model.py:85:0: C0115: Missing class docstring (missing-class-docstring)
 examples/admm/models/ca_room_model.py:1:0: W0611: Unused CasadiOutput imported from agentlib_mpc.models.casadi_model (unused-import)
-************* Module models.ca_cooler_model
+************* Module ca_cooler_model
 examples/admm/models/ca_cooler_model.py:21:0: C0301: Line too long (104/100) (line-too-long)
 examples/admm/models/ca_cooler_model.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/admm/models/ca_cooler_model.py:11:0: C0115: Missing class docstring (missing-class-docstring)
@@ -483,8 +480,8 @@ examples/admm/models/ca_cooler_model.py:49:0: C0115: Missing class docstring (mi
 ************* Module mhe_example
 examples/Estimators/mhe_example.py:358:23: W1401: Anomalous backslash in string: '\d'. String constant might be missing an r prefix. (anomalous-backslash-in-string)
 examples/Estimators/mhe_example.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-examples/Estimators/mhe_example.py:1:0: F0002: examples/Estimators/mhe_example.py: Fatal error while checking 'examples/Estimators/mhe_example.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-33.txt'. (astroid-error)
-************* Module admm_3zone_sim
+examples/Estimators/mhe_example.py:1:0: F0002: examples/Estimators/mhe_example.py: Fatal error while checking 'examples/Estimators/mhe_example.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-37.txt'. (astroid-error)
+************* Module examples.three_zone_datadriven_admm.admm_3zone_sim
 examples/three_zone_datadriven_admm/admm_3zone_sim.py:32:0: E0401: Unable to import 'agentlib.utils.multi_agent_system' (import-error)
 examples/three_zone_datadriven_admm/admm_3zone_sim.py:32:0: C0413: Import "from agentlib.utils.multi_agent_system import LocalMASAgency" should be placed at the top of the module (wrong-import-position)
 examples/three_zone_datadriven_admm/admm_3zone_sim.py:48:0: C0116: Missing function or method docstring (missing-function-docstring)
@@ -496,7 +493,7 @@ examples/three_zone_datadriven_admm/admm_3zone_sim.py:75:8: C0415: Import outsid
 examples/three_zone_datadriven_admm/admm_3zone_sim.py:49:33: W0613: Unused argument 'start_pred' (unused-argument)
 examples/three_zone_datadriven_admm/admm_3zone_sim.py:84:4: W0105: String statement has no effect (pointless-string-statement)
 examples/three_zone_datadriven_admm/admm_3zone_sim.py:24:0: C0412: Imports from package logging are not grouped (ungrouped-imports)
-************* Module plot_ADMM_anim
+************* Module examples.three_zone_datadriven_admm.plot_ADMM_anim
 examples/three_zone_datadriven_admm/plot_ADMM_anim.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/three_zone_datadriven_admm/plot_ADMM_anim.py:1:0: C0103: Module name "plot_ADMM_anim" doesn't conform to snake_case naming style (invalid-name)
 examples/three_zone_datadriven_admm/plot_ADMM_anim.py:4:0: E0401: Unable to import 'matplotlib.pyplot' (import-error)
@@ -536,7 +533,7 @@ examples/three_zone_datadriven_admm/plot_ADMM_anim.py:7:0: W0611: Unused FontPro
 examples/three_zone_datadriven_admm/plot_ADMM_anim.py:8:0: W0611: Unused MultipleLocator imported from matplotlib.ticker (unused-import)
 examples/three_zone_datadriven_admm/plot_ADMM_anim.py:8:0: W0611: Unused FormatStrFormatter imported from matplotlib.ticker (unused-import)
 examples/three_zone_datadriven_admm/plot_ADMM_anim.py:9:0: W0611: Unused pandas imported as pd (unused-import)
-************* Module plot
+************* Module examples.three_zone_datadriven_admm.plot
 examples/three_zone_datadriven_admm/plot.py:56:23: W1401: Anomalous backslash in string: '\d'. String constant might be missing an r prefix. (anomalous-backslash-in-string)
 examples/three_zone_datadriven_admm/plot.py:62:23: W1401: Anomalous backslash in string: '\d'. String constant might be missing an r prefix. (anomalous-backslash-in-string)
 examples/three_zone_datadriven_admm/plot.py:68:23: W1401: Anomalous backslash in string: '\d'. String constant might be missing an r prefix. (anomalous-backslash-in-string)
@@ -578,7 +575,7 @@ examples/three_zone_datadriven_admm/plot.py:354:0: C0116: Missing function or me
 examples/three_zone_datadriven_admm/plot.py:355:9: C0103: Variable name "ax" doesn't conform to snake_case naming style (invalid-name)
 examples/three_zone_datadriven_admm/plot.py:355:4: W0612: Unused variable 'fig' (unused-variable)
 examples/three_zone_datadriven_admm/plot.py:367:0: C0116: Missing function or method docstring (missing-function-docstring)
-************* Module three_zone_util
+************* Module examples.three_zone_datadriven_admm.three_zone_util
 examples/three_zone_datadriven_admm/three_zone_util.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/three_zone_datadriven_admm/three_zone_util.py:1:0: E0401: Unable to import 'pandas' (import-error)
 examples/three_zone_datadriven_admm/three_zone_util.py:2:0: E0401: Unable to import 'numpy' (import-error)
@@ -591,7 +588,7 @@ examples/three_zone_datadriven_admm/three_zone_util.py:57:24: W0621: Redefining 
 examples/three_zone_datadriven_admm/three_zone_util.py:65:4: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
 examples/three_zone_datadriven_admm/three_zone_util.py:78:26: W0621: Redefining name 'weather_data' from outer scope (line 98) (redefined-outer-name)
 examples/three_zone_datadriven_admm/three_zone_util.py:85:4: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
-************* Module training_direct
+************* Module examples.three_zone_datadriven_admm.training_direct
 examples/three_zone_datadriven_admm/training_direct.py:152:0: C0301: Line too long (116/100) (line-too-long)
 examples/three_zone_datadriven_admm/training_direct.py:194:0: C0301: Line too long (101/100) (line-too-long)
 examples/three_zone_datadriven_admm/training_direct.py:195:0: C0301: Line too long (107/100) (line-too-long)
@@ -599,22 +596,22 @@ examples/three_zone_datadriven_admm/training_direct.py:350:0: C0301: Line too lo
 examples/three_zone_datadriven_admm/training_direct.py:351:0: C0301: Line too long (111/100) (line-too-long)
 examples/three_zone_datadriven_admm/training_direct.py:486:0: C0325: Unnecessary parens after '=' keyword (superfluous-parens)
 examples/three_zone_datadriven_admm/training_direct.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-examples/three_zone_datadriven_admm/training_direct.py:1:0: F0002: examples/three_zone_datadriven_admm/training_direct.py: Fatal error while checking 'examples/three_zone_datadriven_admm/training_direct.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-43.txt'. (astroid-error)
-************* Module plotting_agent
+examples/three_zone_datadriven_admm/training_direct.py:1:0: F0002: examples/three_zone_datadriven_admm/training_direct.py: Fatal error while checking 'examples/three_zone_datadriven_admm/training_direct.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-47.txt'. (astroid-error)
+************* Module examples.three_zone_datadriven_admm.plotting_agent
 examples/three_zone_datadriven_admm/plotting_agent.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/three_zone_datadriven_admm/plotting_agent.py:5:0: E0401: Unable to import 'matplotlib.pyplot' (import-error)
 examples/three_zone_datadriven_admm/plotting_agent.py:6:0: E0401: Unable to import 'pandas' (import-error)
 examples/three_zone_datadriven_admm/plotting_agent.py:7:0: E0401: Unable to import 'numpy' (import-error)
-examples/three_zone_datadriven_admm/plotting_agent.py:1:0: F0002: examples/three_zone_datadriven_admm/plotting_agent.py: Fatal error while checking 'examples/three_zone_datadriven_admm/plotting_agent.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-44.txt'. (astroid-error)
-************* Module models.CCA
+examples/three_zone_datadriven_admm/plotting_agent.py:1:0: F0002: examples/three_zone_datadriven_admm/plotting_agent.py: Fatal error while checking 'examples/three_zone_datadriven_admm/plotting_agent.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-47.txt'. (astroid-error)
+************* Module CCA
 examples/three_zone_datadriven_admm/models/CCA.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/three_zone_datadriven_admm/models/CCA.py:1:0: C0103: Module name "CCA" doesn't conform to snake_case naming style (invalid-name)
 examples/three_zone_datadriven_admm/models/CCA.py:1:0: W0401: Wildcard import agentlib_mpc.models.casadi_model (wildcard-import)
 examples/three_zone_datadriven_admm/models/CCA.py:4:0: C0115: Missing class docstring (missing-class-docstring)
-examples/three_zone_datadriven_admm/models/CCA.py:1:0: F0002: examples/three_zone_datadriven_admm/models/CCA.py: Fatal error while checking 'examples/three_zone_datadriven_admm/models/CCA.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-44.txt'. (astroid-error)
+examples/three_zone_datadriven_admm/models/CCA.py:1:0: F0002: examples/three_zone_datadriven_admm/models/CCA.py: Fatal error while checking 'examples/three_zone_datadriven_admm/models/CCA.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-47.txt'. (astroid-error)
 examples/three_zone_datadriven_admm/models/simulation_model.py:8:0: C0413: Import "from agentlib_mpc.models.casadi_model import CasadiInput, CasadiState, CasadiParameter, CasadiOutput, CasadiModel, CasadiModelConfig" should be placed at the top of the module (wrong-import-position)
-examples/three_zone_datadriven_admm/models/simulation_model.py:1:0: F0002: examples/three_zone_datadriven_admm/models/simulation_model.py: Fatal error while checking 'examples/three_zone_datadriven_admm/models/simulation_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-44.txt'. (astroid-error)
-************* Module models.Disturbances
+examples/three_zone_datadriven_admm/models/simulation_model.py:1:0: F0002: examples/three_zone_datadriven_admm/models/simulation_model.py: Fatal error while checking 'examples/three_zone_datadriven_admm/models/simulation_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-47.txt'. (astroid-error)
+************* Module Disturbances
 examples/three_zone_datadriven_admm/models/Disturbances.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/three_zone_datadriven_admm/models/Disturbances.py:1:0: C0103: Module name "Disturbances" doesn't conform to snake_case naming style (invalid-name)
 examples/three_zone_datadriven_admm/models/Disturbances.py:1:0: E0401: Unable to import 'agentlib' (import-error)
@@ -635,16 +632,16 @@ examples/three_zone_datadriven_admm/models/Disturbances.py:2:0: C0411: third par
 examples/three_zone_datadriven_admm/models/Disturbances.py:3:0: C0411: third party import "import pandas as pd" should be placed before "from agentlib_mpc.models.casadi_model import *" (wrong-import-order)
 examples/three_zone_datadriven_admm/models/Disturbances.py:2:0: C0412: Imports from package numpy are not grouped (ungrouped-imports)
 examples/three_zone_datadriven_admm/models/Disturbances.py:3:0: C0412: Imports from package pandas are not grouped (ungrouped-imports)
-************* Module models.AHU
+************* Module AHU
 examples/three_zone_datadriven_admm/models/AHU.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/three_zone_datadriven_admm/models/AHU.py:1:0: C0103: Module name "AHU" doesn't conform to snake_case naming style (invalid-name)
 examples/three_zone_datadriven_admm/models/AHU.py:1:0: W0401: Wildcard import agentlib_mpc.models.casadi_model (wildcard-import)
 examples/three_zone_datadriven_admm/models/AHU.py:4:0: C0115: Missing class docstring (missing-class-docstring)
-examples/three_zone_datadriven_admm/models/AHU.py:1:0: F0002: examples/three_zone_datadriven_admm/models/AHU.py: Fatal error while checking 'examples/three_zone_datadriven_admm/models/AHU.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-44.txt'. (astroid-error)
-************* Module models.Room_model
+examples/three_zone_datadriven_admm/models/AHU.py:1:0: F0002: examples/three_zone_datadriven_admm/models/AHU.py: Fatal error while checking 'examples/three_zone_datadriven_admm/models/AHU.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-48.txt'. (astroid-error)
+************* Module Room_model
 examples/three_zone_datadriven_admm/models/Room_model.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/three_zone_datadriven_admm/models/Room_model.py:1:0: C0103: Module name "Room_model" doesn't conform to snake_case naming style (invalid-name)
-examples/three_zone_datadriven_admm/models/Room_model.py:1:0: F0002: examples/three_zone_datadriven_admm/models/Room_model.py: Fatal error while checking 'examples/three_zone_datadriven_admm/models/Room_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-44.txt'. (astroid-error)
+examples/three_zone_datadriven_admm/models/Room_model.py:1:0: F0002: examples/three_zone_datadriven_admm/models/Room_model.py: Fatal error while checking 'examples/three_zone_datadriven_admm/models/Room_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-48.txt'. (astroid-error)
 ************* Module predictor
 examples/three_zone_datadriven_admm/custom_modules/predictor.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 examples/three_zone_datadriven_admm/custom_modules/predictor.py:1:0: E0401: Unable to import 'agentlib' (import-error)
@@ -670,7 +667,7 @@ agentlib_mpc/models/casadi_predictor.py:1:0: C0114: Missing module docstring (mi
 agentlib_mpc/models/casadi_predictor.py:3:0: E0401: Unable to import 'casadi' (import-error)
 agentlib_mpc/models/casadi_predictor.py:4:0: E0401: Unable to import 'numpy' (import-error)
 agentlib_mpc/models/casadi_predictor.py:7:0: E0401: Unable to import 'keras' (import-error)
-agentlib_mpc/models/casadi_predictor.py:1:0: F0002: agentlib_mpc/models/casadi_predictor.py: Fatal error while checking 'agentlib_mpc/models/casadi_predictor.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-44.txt'. (astroid-error)
+agentlib_mpc/models/casadi_predictor.py:1:0: F0002: agentlib_mpc/models/casadi_predictor.py: Fatal error while checking 'agentlib_mpc/models/casadi_predictor.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-48.txt'. (astroid-error)
 ************* Module agentlib_mpc.models.serialized_ml_model
 agentlib_mpc/models/serialized_ml_model.py:60:0: C0301: Line too long (101/100) (line-too-long)
 agentlib_mpc/models/serialized_ml_model.py:115:0: C0301: Line too long (112/100) (line-too-long)
@@ -689,14 +686,14 @@ agentlib_mpc/models/serialized_ml_model.py:12:0: E0401: Unable to import 'pydant
 agentlib_mpc/models/serialized_ml_model.py:13:0: E0401: Unable to import 'sklearn.gaussian_process' (import-error)
 agentlib_mpc/models/serialized_ml_model.py:14:0: E0401: Unable to import 'sklearn.gaussian_process.kernels' (import-error)
 agentlib_mpc/models/serialized_ml_model.py:15:0: E0401: Unable to import 'sklearn.linear_model' (import-error)
-agentlib_mpc/models/serialized_ml_model.py:1:0: F0002: agentlib_mpc/models/serialized_ml_model.py: Fatal error while checking 'agentlib_mpc/models/serialized_ml_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-45.txt'. (astroid-error)
+agentlib_mpc/models/serialized_ml_model.py:1:0: F0002: agentlib_mpc/models/serialized_ml_model.py: Fatal error while checking 'agentlib_mpc/models/serialized_ml_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-49.txt'. (astroid-error)
 ************* Module agentlib_mpc.models.casadi_ml_model
 agentlib_mpc/models/casadi_ml_model.py:453:0: C0301: Line too long (131/100) (line-too-long)
-agentlib_mpc/models/casadi_ml_model.py:1:0: F0002: agentlib_mpc/models/casadi_ml_model.py: Fatal error while checking 'agentlib_mpc/models/casadi_ml_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-45.txt'. (astroid-error)
+agentlib_mpc/models/casadi_ml_model.py:1:0: F0002: agentlib_mpc/models/casadi_ml_model.py: Fatal error while checking 'agentlib_mpc/models/casadi_ml_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-49.txt'. (astroid-error)
 ************* Module agentlib_mpc.models.casadi_model
 agentlib_mpc/models/casadi_model.py:301:0: C0301: Line too long (110/100) (line-too-long)
 agentlib_mpc/models/casadi_model.py:529:0: C0301: Line too long (101/100) (line-too-long)
-agentlib_mpc/models/casadi_model.py:1:0: F0002: agentlib_mpc/models/casadi_model.py: Fatal error while checking 'agentlib_mpc/models/casadi_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-45.txt'. (astroid-error)
+agentlib_mpc/models/casadi_model.py:1:0: F0002: agentlib_mpc/models/casadi_model.py: Fatal error while checking 'agentlib_mpc/models/casadi_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-49.txt'. (astroid-error)
 ************* Module agentlib_mpc.models
 agentlib_mpc/models/__init__.py:5:0: E0401: Unable to import 'agentlib.utils.plugin_import' (import-error)
 agentlib_mpc/models/casadi_predictor.py:6:0: C0411: standard import "from enum import Enum" should be placed before "import casadi as ca" (wrong-import-order)
@@ -727,16 +724,16 @@ agentlib_mpc/models/serialized_ml_model.py:6:0: C0412: Imports from package nump
 agentlib_mpc/models/serialized_ml_model.py:10:0: C0412: Imports from package keras are not grouped (ungrouped-imports)
 ************* Module agentlib_mpc.utils.sampling
 agentlib_mpc/utils/sampling.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/utils/sampling.py:1:0: F0002: agentlib_mpc/utils/sampling.py: Fatal error while checking 'agentlib_mpc/utils/sampling.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-45.txt'. (astroid-error)
+agentlib_mpc/utils/sampling.py:1:0: F0002: agentlib_mpc/utils/sampling.py: Fatal error while checking 'agentlib_mpc/utils/sampling.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-49.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.analysis
 agentlib_mpc/utils/analysis.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/utils/analysis.py:1:0: F0002: agentlib_mpc/utils/analysis.py: Fatal error while checking 'agentlib_mpc/utils/analysis.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-46.txt'. (astroid-error)
+agentlib_mpc/utils/analysis.py:1:0: F0002: agentlib_mpc/utils/analysis.py: Fatal error while checking 'agentlib_mpc/utils/analysis.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-50.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.__init__
-agentlib_mpc/utils/__init__.py:1:0: F0002: agentlib_mpc/utils/__init__.py: Fatal error while checking 'agentlib_mpc/utils/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-46.txt'. (astroid-error)
+agentlib_mpc/utils/__init__.py:1:0: F0002: agentlib_mpc/utils/__init__.py: Fatal error while checking 'agentlib_mpc/utils/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-50.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.plotting.interactive
 agentlib_mpc/utils/plotting/interactive.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/utils/plotting/interactive.py:1:0: E0401: Unable to import 'pandas' (import-error)
-agentlib_mpc/utils/plotting/interactive.py:1:0: F0002: agentlib_mpc/utils/plotting/interactive.py: Fatal error while checking 'agentlib_mpc/utils/plotting/interactive.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-46.txt'. (astroid-error)
+agentlib_mpc/utils/plotting/interactive.py:1:0: F0002: agentlib_mpc/utils/plotting/interactive.py: Fatal error while checking 'agentlib_mpc/utils/plotting/interactive.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-50.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.plotting.admm_consensus_shades
 agentlib_mpc/utils/plotting/admm_consensus_shades.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/utils/plotting/admm_consensus_shades.py:1:0: E0401: Unable to import 'pandas' (import-error)
@@ -751,28 +748,28 @@ agentlib_mpc/utils/plotting/admm_consensus_shades.py:42:4: W0612: Unused variabl
 agentlib_mpc/utils/plotting/admm_consensus_shades.py:57:8: W0612: Unused variable 'prediction_color' (unused-variable)
 ************* Module agentlib_mpc.utils.plotting.mpc
 agentlib_mpc/utils/plotting/mpc.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/utils/plotting/mpc.py:1:0: F0002: agentlib_mpc/utils/plotting/mpc.py: Fatal error while checking 'agentlib_mpc/utils/plotting/mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-46.txt'. (astroid-error)
+agentlib_mpc/utils/plotting/mpc.py:1:0: F0002: agentlib_mpc/utils/plotting/mpc.py: Fatal error while checking 'agentlib_mpc/utils/plotting/mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-50.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.plotting.discretization_structure
 agentlib_mpc/utils/plotting/discretization_structure.py:57:0: C0301: Line too long (102/100) (line-too-long)
 agentlib_mpc/utils/plotting/discretization_structure.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/utils/plotting/discretization_structure.py:3:0: E0401: Unable to import 'matplotlib.pyplot' (import-error)
 agentlib_mpc/utils/plotting/discretization_structure.py:4:0: E0401: Unable to import 'pandas' (import-error)
-agentlib_mpc/utils/plotting/discretization_structure.py:1:0: F0002: agentlib_mpc/utils/plotting/discretization_structure.py: Fatal error while checking 'agentlib_mpc/utils/plotting/discretization_structure.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-46.txt'. (astroid-error)
+agentlib_mpc/utils/plotting/discretization_structure.py:1:0: F0002: agentlib_mpc/utils/plotting/discretization_structure.py: Fatal error while checking 'agentlib_mpc/utils/plotting/discretization_structure.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-50.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.plotting.ml_model_test
 agentlib_mpc/utils/plotting/ml_model_test.py:127:0: C0301: Line too long (103/100) (line-too-long)
 agentlib_mpc/utils/plotting/ml_model_test.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/utils/plotting/ml_model_test.py:1:0: F0002: agentlib_mpc/utils/plotting/ml_model_test.py: Fatal error while checking 'agentlib_mpc/utils/plotting/ml_model_test.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-47.txt'. (astroid-error)
+agentlib_mpc/utils/plotting/ml_model_test.py:1:0: F0002: agentlib_mpc/utils/plotting/ml_model_test.py: Fatal error while checking 'agentlib_mpc/utils/plotting/ml_model_test.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-50.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.plotting.admm_dashboard
 agentlib_mpc/utils/plotting/admm_dashboard.py:110:0: C0301: Line too long (105/100) (line-too-long)
 agentlib_mpc/utils/plotting/admm_dashboard.py:122:0: C0301: Line too long (102/100) (line-too-long)
 agentlib_mpc/utils/plotting/admm_dashboard.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/utils/plotting/admm_dashboard.py:1:0: F0002: agentlib_mpc/utils/plotting/admm_dashboard.py: Fatal error while checking 'agentlib_mpc/utils/plotting/admm_dashboard.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-47.txt'. (astroid-error)
+agentlib_mpc/utils/plotting/admm_dashboard.py:1:0: F0002: agentlib_mpc/utils/plotting/admm_dashboard.py: Fatal error while checking 'agentlib_mpc/utils/plotting/admm_dashboard.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-50.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.plotting.admm_residuals
 agentlib_mpc/utils/plotting/admm_residuals.py:144:0: C0301: Line too long (109/100) (line-too-long)
 agentlib_mpc/utils/plotting/admm_residuals.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/utils/plotting/admm_residuals.py:1:0: F0002: agentlib_mpc/utils/plotting/admm_residuals.py: Fatal error while checking 'agentlib_mpc/utils/plotting/admm_residuals.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-47.txt'. (astroid-error)
+agentlib_mpc/utils/plotting/admm_residuals.py:1:0: F0002: agentlib_mpc/utils/plotting/admm_residuals.py: Fatal error while checking 'agentlib_mpc/utils/plotting/admm_residuals.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-51.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.plotting.admm_animation
-agentlib_mpc/utils/plotting/admm_animation.py:1:0: F0002: agentlib_mpc/utils/plotting/admm_animation.py: Fatal error while checking 'agentlib_mpc/utils/plotting/admm_animation.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-47.txt'. (astroid-error)
+agentlib_mpc/utils/plotting/admm_animation.py:1:0: F0002: agentlib_mpc/utils/plotting/admm_animation.py: Fatal error while checking 'agentlib_mpc/utils/plotting/admm_animation.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-51.txt'. (astroid-error)
 agentlib_mpc/utils/plotting/ml_model_test.py:1:0: C0411: standard import "from pathlib import Path" should be placed before "import matplotlib.pyplot as plt" (wrong-import-order)
 agentlib_mpc/utils/plotting/admm_dashboard.py:1:0: C0411: standard import "import os" should be placed before "import matplotlib.pyplot as plt" (wrong-import-order)
 agentlib_mpc/utils/plotting/admm_dashboard.py:2:0: C0411: standard import "import webbrowser" should be placed before "import matplotlib.pyplot as plt" (wrong-import-order)
@@ -786,7 +783,7 @@ agentlib_mpc/utils/plotting/admm_residuals.py:2:0: C0412: Imports from package p
 agentlib_mpc/utils/plotting/admm_animation.py:5:0: C0412: Imports from package pathlib are not grouped (ungrouped-imports)
 ************* Module agentlib_mpc.data_structures.ml_model_datatypes
 agentlib_mpc/data_structures/ml_model_datatypes.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/data_structures/ml_model_datatypes.py:1:0: F0002: agentlib_mpc/data_structures/ml_model_datatypes.py: Fatal error while checking 'agentlib_mpc/data_structures/ml_model_datatypes.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-47.txt'. (astroid-error)
+agentlib_mpc/data_structures/ml_model_datatypes.py:1:0: F0002: agentlib_mpc/data_structures/ml_model_datatypes.py: Fatal error while checking 'agentlib_mpc/data_structures/ml_model_datatypes.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-51.txt'. (astroid-error)
 ************* Module agentlib_mpc.data_structures.interpolation
 agentlib_mpc/data_structures/interpolation.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/data_structures/interpolation.py:3:0: C0103: Constant name "a" doesn't conform to UPPER_CASE naming style (invalid-name)
@@ -816,7 +813,7 @@ agentlib_mpc/data_structures/coordinator_datatypes.py:7:0: W0611: Unused Source 
 agentlib_mpc/data_structures/__init__.py:1:0: C0305: Trailing newlines (trailing-newlines)
 ************* Module agentlib_mpc.optimization_backends.backend
 agentlib_mpc/optimization_backends/backend.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/optimization_backends/backend.py:1:0: F0002: agentlib_mpc/optimization_backends/backend.py: Fatal error while checking 'agentlib_mpc/optimization_backends/backend.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-47.txt'. (astroid-error)
+agentlib_mpc/optimization_backends/backend.py:1:0: F0002: agentlib_mpc/optimization_backends/backend.py: Fatal error while checking 'agentlib_mpc/optimization_backends/backend.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-51.txt'. (astroid-error)
 ************* Module agentlib_mpc.optimization_backends
 agentlib_mpc/optimization_backends/__init__.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/optimization_backends/__init__.py:3:0: E0401: Unable to import 'pydantic' (import-error)
@@ -868,7 +865,7 @@ agentlib_mpc/optimization_backends/casadi_/basic.py:457:8: C0103: Variable name 
 ************* Module agentlib_mpc.optimization_backends.casadi_.casadi_ml
 agentlib_mpc/optimization_backends/casadi_/casadi_ml.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/optimization_backends/casadi_/casadi_ml.py:1:0: E0401: Unable to import 'casadi' (import-error)
-agentlib_mpc/optimization_backends/casadi_/casadi_ml.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/casadi_ml.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/casadi_ml.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-48.txt'. (astroid-error)
+agentlib_mpc/optimization_backends/casadi_/casadi_ml.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/casadi_ml.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/casadi_ml.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-52.txt'. (astroid-error)
 ************* Module agentlib_mpc.optimization_backends.casadi_.full
 agentlib_mpc/optimization_backends/casadi_/full.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/optimization_backends/casadi_/full.py:1:0: E0401: Unable to import 'casadi' (import-error)
@@ -944,13 +941,13 @@ agentlib_mpc/optimization_backends/casadi_/minlp.py:170:12: C0103: Variable name
 ************* Module agentlib_mpc.optimization_backends.casadi_.minlp_cia
 agentlib_mpc/optimization_backends/casadi_/minlp_cia.py:28:29: W1401: Anomalous backslash in string: '\ '. String constant might be missing an r prefix. (anomalous-backslash-in-string)
 agentlib_mpc/optimization_backends/casadi_/minlp_cia.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/optimization_backends/casadi_/minlp_cia.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/minlp_cia.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/minlp_cia.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-49.txt'. (astroid-error)
+agentlib_mpc/optimization_backends/casadi_/minlp_cia.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/minlp_cia.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/minlp_cia.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-52.txt'. (astroid-error)
 ************* Module agentlib_mpc.optimization_backends.casadi_.mhe
 agentlib_mpc/optimization_backends/casadi_/mhe.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/optimization_backends/casadi_/mhe.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/mhe.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/mhe.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-49.txt'. (astroid-error)
+agentlib_mpc/optimization_backends/casadi_/mhe.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/mhe.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/mhe.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-53.txt'. (astroid-error)
 ************* Module agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml
 agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-49.txt'. (astroid-error)
+agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-53.txt'. (astroid-error)
 ************* Module agentlib_mpc.optimization_backends.casadi_.core.VariableGroup
 agentlib_mpc/optimization_backends/casadi_/core/VariableGroup.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/optimization_backends/casadi_/core/VariableGroup.py:1:0: C0103: Module name "VariableGroup" doesn't conform to snake_case naming style (invalid-name)
@@ -963,11 +960,11 @@ agentlib_mpc/optimization_backends/casadi_/core/VariableGroup.py:144:0: C0115: M
 agentlib_mpc/optimization_backends/casadi_/core/VariableGroup.py:149:4: R0913: Too many arguments (6/5) (too-many-arguments)
 ************* Module agentlib_mpc.optimization_backends.casadi_.core.casadi_backend
 agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-50.txt'. (astroid-error)
+agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-53.txt'. (astroid-error)
 ************* Module agentlib_mpc.optimization_backends.casadi_.core.system
-agentlib_mpc/optimization_backends/casadi_/core/system.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/core/system.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/core/system.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-50.txt'. (astroid-error)
+agentlib_mpc/optimization_backends/casadi_/core/system.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/core/system.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/core/system.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-53.txt'. (astroid-error)
 ************* Module agentlib_mpc.optimization_backends.casadi_.core.discretization
-agentlib_mpc/optimization_backends/casadi_/core/discretization.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/core/discretization.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/core/discretization.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-50.txt'. (astroid-error)
+agentlib_mpc/optimization_backends/casadi_/core/discretization.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/core/discretization.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/core/discretization.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-54.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.data_source
 agentlib_mpc/modules/data_source.py:122:0: C0301: Line too long (147/100) (line-too-long)
 agentlib_mpc/modules/data_source.py:178:0: C0301: Line too long (101/100) (line-too-long)
@@ -976,9 +973,9 @@ agentlib_mpc/modules/data_source.py:1:0: C0114: Missing module docstring (missin
 agentlib_mpc/modules/data_source.py:3:0: E0401: Unable to import 'pandas' (import-error)
 agentlib_mpc/modules/data_source.py:4:0: E0401: Unable to import 'numpy' (import-error)
 agentlib_mpc/modules/data_source.py:6:0: E0401: Unable to import 'pydantic' (import-error)
-agentlib_mpc/modules/data_source.py:1:0: F0002: agentlib_mpc/modules/data_source.py: Fatal error while checking 'agentlib_mpc/modules/data_source.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-50.txt'. (astroid-error)
+agentlib_mpc/modules/data_source.py:1:0: F0002: agentlib_mpc/modules/data_source.py: Fatal error while checking 'agentlib_mpc/modules/data_source.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-54.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.mpc
-agentlib_mpc/modules/mpc.py:1:0: F0002: agentlib_mpc/modules/mpc.py: Fatal error while checking 'agentlib_mpc/modules/mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-50.txt'. (astroid-error)
+agentlib_mpc/modules/mpc.py:1:0: F0002: agentlib_mpc/modules/mpc.py: Fatal error while checking 'agentlib_mpc/modules/mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-54.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.minlp_mpc
 agentlib_mpc/modules/minlp_mpc.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/modules/minlp_mpc.py:4:0: E0401: Unable to import 'pydantic' (import-error)
@@ -1022,11 +1019,11 @@ agentlib_mpc/modules/__init__.py:11:0: C0115: Missing class docstring (missing-c
 agentlib_mpc/modules/__init__.py:16:4: C0116: Missing function or method docstring (missing-function-docstring)
 ************* Module agentlib_mpc.modules.estimation.mhe
 agentlib_mpc/modules/estimation/mhe.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/modules/estimation/mhe.py:1:0: F0002: agentlib_mpc/modules/estimation/mhe.py: Fatal error while checking 'agentlib_mpc/modules/estimation/mhe.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-51.txt'. (astroid-error)
+agentlib_mpc/modules/estimation/mhe.py:1:0: F0002: agentlib_mpc/modules/estimation/mhe.py: Fatal error while checking 'agentlib_mpc/modules/estimation/mhe.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-54.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.dmpc.coordinator
 agentlib_mpc/modules/dmpc/coordinator.py:204:0: C0325: Unnecessary parens after 'not' keyword (superfluous-parens)
 agentlib_mpc/modules/dmpc/coordinator.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/modules/dmpc/coordinator.py:1:0: F0002: agentlib_mpc/modules/dmpc/coordinator.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/coordinator.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-51.txt'. (astroid-error)
+agentlib_mpc/modules/dmpc/coordinator.py:1:0: F0002: agentlib_mpc/modules/dmpc/coordinator.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/coordinator.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-54.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.dmpc.employee
 agentlib_mpc/modules/dmpc/employee.py:87:0: C0301: Line too long (140/100) (line-too-long)
 agentlib_mpc/modules/dmpc/employee.py:171:0: C0325: Unnecessary parens after 'not' keyword (superfluous-parens)
@@ -1048,13 +1045,13 @@ agentlib_mpc/modules/dmpc/employee.py:2:0: C0412: Imports from package dataclass
 ************* Module agentlib_mpc.modules.dmpc
 agentlib_mpc/modules/dmpc/__init__.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 ************* Module agentlib_mpc.modules.dmpc.admm.admm_coordinated
-agentlib_mpc/modules/dmpc/admm/admm_coordinated.py:1:0: F0002: agentlib_mpc/modules/dmpc/admm/admm_coordinated.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/admm/admm_coordinated.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-51.txt'. (astroid-error)
+agentlib_mpc/modules/dmpc/admm/admm_coordinated.py:1:0: F0002: agentlib_mpc/modules/dmpc/admm/admm_coordinated.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/admm/admm_coordinated.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-55.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.dmpc.admm.admm
-agentlib_mpc/modules/dmpc/admm/admm.py:1:0: F0002: agentlib_mpc/modules/dmpc/admm/admm.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/admm/admm.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-51.txt'. (astroid-error)
+agentlib_mpc/modules/dmpc/admm/admm.py:1:0: F0002: agentlib_mpc/modules/dmpc/admm/admm.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/admm/admm.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-55.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.dmpc.admm.admm_coordinator
 agentlib_mpc/modules/dmpc/admm/admm_coordinator.py:599:0: C0325: Unnecessary parens after 'not' keyword (superfluous-parens)
 agentlib_mpc/modules/dmpc/admm/admm_coordinator.py:631:0: C0325: Unnecessary parens after 'not' keyword (superfluous-parens)
-agentlib_mpc/modules/dmpc/admm/admm_coordinator.py:1:0: F0002: agentlib_mpc/modules/dmpc/admm/admm_coordinator.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/admm/admm_coordinator.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-51.txt'. (astroid-error)
+agentlib_mpc/modules/dmpc/admm/admm_coordinator.py:1:0: F0002: agentlib_mpc/modules/dmpc/admm/admm_coordinator.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/admm/admm_coordinator.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-55.txt'. (astroid-error)
 agentlib_mpc/modules/dmpc/admm/admm_coordinator.py:6:0: C0412: Imports from package time are not grouped (ungrouped-imports)
 ************* Module agentlib_mpc.modules.ml_model_training.data_reduction
 agentlib_mpc/modules/ml_model_training/data_reduction.py:97:0: C0301: Line too long (122/100) (line-too-long)
@@ -1083,7 +1080,7 @@ agentlib_mpc/modules/ml_model_training/setpoint_generator.py:44:4: C0116: Missin
 agentlib_mpc/modules/ml_model_training/ml_model_trainer.py:515:0: C0325: Unnecessary parens after '=' keyword (superfluous-parens)
 agentlib_mpc/modules/ml_model_training/ml_model_trainer.py:723:0: C0301: Line too long (102/100) (line-too-long)
 agentlib_mpc/modules/ml_model_training/ml_model_trainer.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/modules/ml_model_training/ml_model_trainer.py:1:0: F0002: agentlib_mpc/modules/ml_model_training/ml_model_trainer.py: Fatal error while checking 'agentlib_mpc/modules/ml_model_training/ml_model_trainer.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-52.txt'. (astroid-error)
+agentlib_mpc/modules/ml_model_training/ml_model_trainer.py:1:0: F0002: agentlib_mpc/modules/ml_model_training/ml_model_trainer.py: Fatal error while checking 'agentlib_mpc/modules/ml_model_training/ml_model_trainer.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-55.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.InputPrediction.try_predictor
 agentlib_mpc/modules/InputPrediction/try_predictor.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/modules/InputPrediction/try_predictor.py:1:0: E0401: Unable to import 'pandas' (import-error)
@@ -1243,7 +1240,7 @@ tests/fixtures/linreg.py:21:4: C0116: Missing function or method docstring (miss
 tests/fixtures/linreg.py:3:0: W0611: Unused CustomGPR imported from agentlib_mpc.models.serialized_ml_model (unused-import)
 ************* Module fixtures.casadi_test_model
 tests/fixtures/casadi_test_model.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-tests/fixtures/casadi_test_model.py:1:0: F0002: tests/fixtures/casadi_test_model.py: Fatal error while checking 'tests/fixtures/casadi_test_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-00-53.txt'. (astroid-error)
+tests/fixtures/casadi_test_model.py:1:0: F0002: tests/fixtures/casadi_test_model.py: Fatal error while checking 'tests/fixtures/casadi_test_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-30-12-14-56.txt'. (astroid-error)
 ************* Module fixtures.ann
 tests/fixtures/ann.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 tests/fixtures/ann.py:1:0: E0401: Unable to import 'keras' (import-error)
@@ -2508,8 +2505,8 @@ class PhysicalModel(CasadiModel):
         objective = sum(
             [ (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==training_nn:[0:83]
 ==training_nn:[0:86]
-==with_learned_cost.training_nn:[0:83]
 import logging
 import random
 
@@ -2603,6 +2600,7 @@ import agentlib as al
 import matplotlib.pyplot as plt
 
 from agentlib.utils.multi_agent_system import LocalMASAgency
+
 
 import model
 
@@ -2988,6 +2986,7 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000):
     # Add the script directory to Python path for imports
     if script_dir not in sys.path:
         sys.path.insert(0, script_dir)
+
     logging.basicConfig(level=log_level)
 
     # gets the subdirectory of anns with the highest number, i.e. the longest training
@@ -3049,9 +3048,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             denotation="rho",
             variables=[CasadiParameter(name="penalty_factor")],
             ref_list=["penalty_factor"],
-        )
-
-        # add admm terms to objective function (duplicate-code)
+        ) (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc_linreg:[40:99]
 ==simple_mpc_nn:[38:94]
@@ -3175,7 +3172,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
  (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==training_linreg:[133:186]
-==with_learned_cost.training_nn:[142:195]
+==training_nn:[142:195]
             },
             {
                 "module_id": "input_generator",
@@ -3581,7 +3578,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
     outputs: List[CasadiOutput] = [ (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc_linreg:[40:88]
-==with_learned_cost.simple_mpc_nn:[38:86]
+==simple_mpc_nn:[38:86]
                 },
                 "time_step": 300,
                 "prediction_horizon": 15,
@@ -3629,7 +3626,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 
 
 def run_example(with_plots=True, log_level=logging.INFO, until=8000):
-    # Change the working directory so that relative paths work (duplicate-code)
+    # Change the working directly so that relative paths work (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc_time_dependent_obj:[39:89]
 ==with_change_control_penalty:[30:80]
@@ -3839,7 +3836,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         CasadiParameter( (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==model:[136:190]
-==with_learned_cost.model:[139:193]
+==model:[139:193]
         CasadiState(
             name="T_slack",
             value=0,
@@ -3933,17 +3930,15 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             ref_list=var_ref.parameters,
         )
         self.initial_state = OptimizationParameter.declare(
-            denotation="initial_state",  # append the 0 as a convention to get initial guess
+            denotation="initial_state",
             variables=model.get_states(var_ref.states),
             ref_list=var_ref.states,
             use_in_stage_function=False,
             assert_complete=True,
-        )
-
-        # dynamics (duplicate-code)
+        ) (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==training_gpr:[139:180]
-==with_learned_cost.training_nn:[142:183]
+==training_nn:[142:183]
             },
             {
                 "module_id": "input_generator",
@@ -4083,7 +4078,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         CasadiParameter( (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==model:[0:48]
-==with_learned_cost.model:[0:48]
+==model:[0:48]
 from typing import List
 
 from agentlib_mpc.models.casadi_model import (
@@ -4185,10 +4180,10 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             output_denotations,
         )
 
- (duplicate-code)
+    def _create_lag_structure_for_denotations(self, system: CasadiMLSystem): (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==training_nn:[95:131]
 ==training_nn:[97:133]
-==with_learned_cost.training_nn:[95:131]
                 "interpolations": {"mDot": "mean_over_interval"},
                 "layers": [{32, "sigmoid"}],
                 "train_share": 0.6,
@@ -4313,8 +4308,8 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                     "results_file": "results//opt.csv",
                     "overwrite_result_file": True, (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==model:[139:171]
 ==simple_mpc_multiple_shooting:[58:90]
-==with_learned_cost.model:[139:171]
         CasadiState(
             name="T_slack",
             value=0,
@@ -4348,8 +4343,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
     ]
     outputs: List[CasadiOutput] = [ (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.simulation_model:[70:100]
-==training_direct:[102:132]
+==examples.three_zone_datadriven_admm.training_direct:[102:132]
+==simulation_model:[70:100]
         ),
         CasadiParameter(
             name="c_BKA",
@@ -4418,7 +4413,8 @@ class CaCooledRoom(CasadiModel):
         self.T.ode = (
             self.cp * self.mDot / self.cZ * (self.T_in - self.T) + self.d / self.cZ
         )
- (duplicate-code)
+
+        # Constraints: List[(lower bound, function, upper bound)] (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.basic:[208:275]
 ==agentlib_mpc.optimization_backends.casadi_.mhe:[231:298]
@@ -4490,8 +4486,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             state_k_end[MX]: state at the end of collocation interval
         """ (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==model:[139:169]
 ==simple_mpc_time_dependent_obj:[59:89]
-==with_learned_cost.model:[139:169]
         CasadiState(
             name="T_slack",
             value=0,
@@ -4559,7 +4555,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         # results["myMPCAgent"]["AgentLogger"]["cooler_on"].plot(ax=ax[2], color="black", drawstyle="steps-post", label="Switch") (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==model:[142:172]
-==with_learned_cost.model:[49:79]
+==model:[49:79]
     ]
 
     parameters: List[CasadiParameter] = [
@@ -4591,8 +4587,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 
  (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==model:[14:48]
 ==with_change_control_penalty:[22:56]
-==with_learned_cost.model:[14:48]
     inputs: List[CasadiInput] = [
         # controls
         CasadiInput(
@@ -4628,8 +4624,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             description="Slack variable of temperature of zone",
         ), (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==simple_mpc_nn:[114:144]
 ==simple_mpc_nn:[141:171]
-==with_learned_cost.simple_mpc_nn:[114:144]
         fig, ax = plt.subplots(2, 1, sharex=True)
         temperature = mpc_results["variable"]["T"] - 273.15
         plot_mpc(
@@ -4700,10 +4696,10 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             )
             mx_dict[time][sys.last_control.name] = u_past
 
-        # add all variables over future grid (duplicate-code)
+            # admm quantities (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.ca_room_model:[13:41]
-==models.simulation_model:[14:42]
+==ca_room_model:[13:41]
+==simulation_model:[14:42]
         CasadiInput(
             name="mDot_0",
             value=0.0225,
@@ -4734,7 +4730,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
  (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc_gpr:[132:161]
-==with_learned_cost.simple_mpc_nn:[115:144]
+==simple_mpc_nn:[115:144]
         temperature = mpc_results["variable"]["T"] - 273.15
         plot_mpc(
             series=temperature,
@@ -4797,8 +4793,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 if __name__ == "__main__":
     run_example(with_plots=True, until=3600) (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==model:[49:75]
 ==simple_mpc_multiple_shooting:[64:90]
-==with_learned_cost.model:[49:75]
     ]
 
     parameters: List[CasadiParameter] = [
@@ -4877,8 +4873,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 
  (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.ca_room_model:[57:81]
-==models.simulation_model:[58:82]
+==ca_room_model:[57:81]
+==simulation_model:[58:82]
         CasadiParameter(
             name="cp",
             value=1000,
@@ -4938,7 +4934,7 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                     "overwrite_result_file": True, (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==mixed_integer.mixed_integer_mpc:[68:93]
-==with_learned_cost.model:[139:164]
+==model:[139:164]
         CasadiState(
             name="T_slack",
             value=0,
@@ -4966,7 +4962,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         CasadiParameter( (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==mixed_integer.mixed_integer_mpc:[44:74]
-==with_learned_cost.model:[18:48]
+==model:[18:48]
         ),
         # disturbances
         CasadiInput(
@@ -4998,8 +4994,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             description="Slack variable of temperature of zone",
         ), (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==model:[49:73]
 ==simple_mpc_time_dependent_obj:[65:89]
-==with_learned_cost.model:[49:73]
     ]
 
     parameters: List[CasadiParameter] = [
@@ -5067,43 +5063,43 @@ class MultipleShooting(basic.MultipleShooting):
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.mhe:[484:518]
 ==agentlib_mpc.utils.sampling:[109:143]
-    if (target_grid.shape == source_grid.shape) and all(target_grid == source_grid):
-        return list(values)
-    values = np.array(values)
+        if (target_grid.shape == source_grid.shape) and all(target_grid == source_grid):
+            return list(values)
+        values = np.array(values)
 
-    # check requested portion of trajectory, whether the most recent value in the
-    # source grid is older than the first value in the MHE trajectory
-    if target_grid[0] >= source_grid[-1]:
-        # return the last value of the trajectory if requested sample
-        # starts out of range
-        logger.warning(
-            f"Latest value of source grid %s is older than "
-            f"current time (%s. Returning latest value anyway.",
-            source_grid[-1],
-            current,
+        # check requested portion of trajectory, whether the most recent value in the
+        # source grid is older than the first value in the MHE trajectory
+        if target_grid[0] >= source_grid[-1]:
+            # return the last value of the trajectory if requested sample
+            # starts out of range
+            logger.warning(
+                f"Latest value of source grid %s is older than "
+                f"current time (%s. Returning latest value anyway.",
+                source_grid[-1],
+                current,
+            )
+            return [values[-1]] * target_grid_length
+
+        # determine whether the target grid lies within the available source grid, and
+        # how many entries to extrapolate on either side
+        source_grid_oldest_time: float = source_grid[0]
+        source_grid_newest_time: float = source_grid[-1]
+        source_is_recent_enough: np.ndarray = target_grid < source_grid_newest_time
+        source_is_old_enough: np.ndarray = target_grid > source_grid_oldest_time
+        number_of_missing_old_entries: int = target_grid_length - np.count_nonzero(
+            source_is_old_enough
         )
-        return [values[-1]] * target_grid_length
+        number_of_missing_new_entries: int = target_grid_length - np.count_nonzero(
+            source_is_recent_enough
+        )
+        # shorten target interpolation grid by extra points that go above or below
+        # available data range
+        target_grid = target_grid[source_is_recent_enough * source_is_old_enough]
 
-    # determine whether the target grid lies within the available source grid, and
-    # how many entries to extrapolate on either side
-    source_grid_oldest_time: float = source_grid[0]
-    source_grid_newest_time: float = source_grid[-1]
-    source_is_recent_enough: np.ndarray = target_grid < source_grid_newest_time
-    source_is_old_enough: np.ndarray = target_grid > source_grid_oldest_time
-    number_of_missing_old_entries: int = target_grid_length - np.count_nonzero(
-        source_is_old_enough
-    )
-    number_of_missing_new_entries: int = target_grid_length - np.count_nonzero(
-        source_is_recent_enough
-    )
-    # shorten target interpolation grid by extra points that go above or below
-    # available data range
-    target_grid = target_grid[source_is_recent_enough * source_is_old_enough]
-
-    # interpolate data to match new grid (duplicate-code)
+        # interpolate data to match new grid (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.simulation_model:[143:167]
-==training_direct:[157:181]
+==examples.three_zone_datadriven_admm.training_direct:[157:181]
+==simulation_model:[143:167]
         self.T_CCA_0.ode = self.cp * self.mDot * (self.T_v - self.T_CCA_0) / (
             self.c_BKA * self.ABKA
         ) + self.hBKA / self.c_BKA * (self.T_air - self.T_CCA_0)
@@ -5158,12 +5154,11 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 
 
 def run_example(
+    until=3000,
     with_plots=True,
-    until=2000,
+    start_pred=0,
     log_level: int = logging.INFO,
     cleanup=True,
-    start_pred=0,
-    TESTING: bool = False,
 ):
     # Set the log-level
     logging.basicConfig(level=log_level)
@@ -5232,7 +5227,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
                 sys.model_parameters.name: const_par, (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==training_linreg:[103:126]
-==with_learned_cost.training_nn:[108:131]
+==training_nn:[108:131]
             },
             {"type": "local", "subscriptions": ["Simulator", "PID"]},
         ],
@@ -5281,8 +5276,8 @@ AGENT_SIM = {
             ],
             "inputs": [ (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==model:[22:48]
 ==simple_mpc_time_dependent_obj:[39:65]
-==with_learned_cost.model:[22:48]
         ),
         CasadiInput(
             name="T_in", value=290.15, unit="K", description="Inflow air temperature"
@@ -5312,28 +5307,29 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc_time_dependent_obj:[265:289]
 ==with_change_control_penalty:[199:222]
-        plot_mpc(
-            series=mpc_results["variable"]["T"] - 273.15,
-            ax=ax[0],
-            plot_actual_values=True,
-            plot_predictions=True,
-        )
-        ax[0].axhline(ub - 273.15, color="grey", linestyle="--", label="upper boundary")
-        plot_mpc(
-            series=mpc_results["variable"]["mDot"],
-            ax=ax[1],
-            plot_actual_values=True,
-            plot_predictions=True,
-        )
+    plot_mpc(
+        series=mpc_results["variable"]["T"] - 273.15,
+        ax=ax[0],
+        plot_actual_values=True,
+        plot_predictions=True,
+    )
+    ax[0].axhline(ub - 273.15, color="grey", linestyle="--", label="upper boundary")
+    plot_mpc(
+        series=mpc_results["variable"]["mDot"],
+        ax=ax[1],
+        plot_actual_values=True,
+        plot_predictions=True,
+    )
 
-        ax[1].legend()
-        ax[0].legend()
-        ax[0].set_ylabel("$T_{room}$ / °C")
-        ax[1].set_ylabel("$\dot{m}_{air}$ / kg/s")
-        ax[1].set_xlabel("simulation time / s")
-        ax[1].set_ylim([0, 0.06])
-        ax[1].set_xlim([0, until])
-        plt.show()
+    ax[1].legend()
+    ax[0].legend()
+    ax[0].set_ylabel("$T_{room}$ / °C")
+    ax[1].set_ylabel("$\dot{m}_{air}$ / kg/s")
+    ax[1].set_xlabel("simulation time / s")
+    ax[1].set_ylim([0, 0.06])
+    ax[1].set_xlim([0, until])
+    plt.show()
+
  (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==models.room_model:[13:36]
@@ -5372,8 +5368,6 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
                     l_name = name_with_lag(denotation, lag)
                     mx_list = []
                     for v_name in var_names:
-                        # add only the singular variable which has a lag on this level
-                        # to the stage arguments
                         index = all_quantities[denotation].full_names.index(v_name)
                         mx_list.append(mx_dict[time - lag * ts][denotation][index])
                     stage_arguments[l_name] = ca.vertcat(*mx_list)
@@ -5391,9 +5385,23 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             )
             self.objective_function += stage_result["cost_function"] * ts
 
-    def initialize(self, system: CasadiMLSystem, solver_factory: SolverFactory):
-        """Initializes the trajectory optimization problem, creating all symbolic
-        variables of the OCP, the mapping function and the numerical solver.""" (duplicate-code)
+    def _construct_stage_function(self, system: CasadiADMMNNSystem):
+        """
+        Combine information from the model and the var_ref to create CasADi
+        functions which describe the system dynamics and constraints at each
+        stage of the optimization problem. Sets the stage function. It has
+        all mpc variables as inputs, sorted by denotation (declared in
+        self.declare_quantities) and outputs ode, cost function and 3 outputs
+        per constraint (constraint, lb_constraint, ub_constraint).
+
+        In the basic case, it has the form:
+        CasadiFunction: ['x', 'z', 'u', 'y', 'd', 'p'] ->
+            ['ode', 'cost_function', 'model_constraints',
+            'ub_model_constraints', 'lb_model_constraints']
+
+        Args:
+            system
+        """ (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.basic:[495:519]
 ==agentlib_mpc.optimization_backends.casadi_.casadi_ml:[256:280]
@@ -5424,26 +5432,27 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc:[245:267]
 ==simple_mpc_nn:[145:166]
-            ax=ax[0],
-            plot_actual_values=True,
-            plot_predictions=True,
-        )
-        ax[0].axhline(ub - 273.15, color="grey", linestyle="--", label="upper boundary")
-        plot_mpc(
-            series=mpc_results["variable"]["mDot"],
-            ax=ax[1],
-            plot_actual_values=True,
-            plot_predictions=True,
-        )
+        ax=ax[0],
+        plot_actual_values=True,
+        plot_predictions=True,
+    )
+    ax[0].axhline(ub - 273.15, color="grey", linestyle="--", label="upper boundary")
+    plot_mpc(
+        series=mpc_results["variable"]["mDot"],
+        ax=ax[1],
+        plot_actual_values=True,
+        plot_predictions=True,
+    )
 
-        ax[1].legend()
-        ax[0].legend()
-        ax[0].set_ylabel("$T_{room}$ / °C")
-        ax[1].set_ylabel("$\dot{m}_{air}$ / kg/s")
-        ax[1].set_xlabel("simulation time / s")
-        ax[1].set_ylim([0, 0.06])
-        ax[1].set_xlim([0, until])
-        plt.show()
+    ax[1].legend()
+    ax[0].legend()
+    ax[0].set_ylabel("$T_{room}$ / °C")
+    ax[1].set_ylabel("$\dot{m}_{air}$ / kg/s")
+    ax[1].set_xlabel("simulation time / s")
+    ax[1].set_ylim([0, 0.06])
+    ax[1].set_xlim([0, until])
+    plt.show()
+
  (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc_gpr:[135:156]
@@ -5473,26 +5482,27 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc_linreg:[136:157]
 ==simple_mpc_time_dependent_obj:[267:289]
-            ax=ax[0],
-            plot_actual_values=True,
-            plot_predictions=True,
-        )
-        ax[0].axhline(ub - 273.15, color="grey", linestyle="--", label="upper boundary")
-        plot_mpc(
-            series=mpc_results["variable"]["mDot"],
-            ax=ax[1],
-            plot_actual_values=True,
-            plot_predictions=True,
-        )
+        ax=ax[0],
+        plot_actual_values=True,
+        plot_predictions=True,
+    )
+    ax[0].axhline(ub - 273.15, color="grey", linestyle="--", label="upper boundary")
+    plot_mpc(
+        series=mpc_results["variable"]["mDot"],
+        ax=ax[1],
+        plot_actual_values=True,
+        plot_predictions=True,
+    )
 
-        ax[1].legend()
-        ax[0].legend()
-        ax[0].set_ylabel("$T_{room}$ / °C")
-        ax[1].set_ylabel("$\dot{m}_{air}$ / kg/s")
-        ax[1].set_xlabel("simulation time / s")
-        ax[1].set_ylim([0, 0.06])
-        ax[1].set_xlim([0, until])
-        plt.show()
+    ax[1].legend()
+    ax[0].legend()
+    ax[0].set_ylabel("$T_{room}$ / °C")
+    ax[1].set_ylabel("$\dot{m}_{air}$ / kg/s")
+    ax[1].set_xlabel("simulation time / s")
+    ax[1].set_ylim([0, 0.06])
+    ax[1].set_xlim([0, until])
+    plt.show()
+
  (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.basic:[276:307]
@@ -5527,12 +5537,10 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             opt_pars_collocation.append({})
             for opt_par in opt_pars:
                 par_kj = self.add_opt_par(opt_par, post_den=f"_{j}")
-                opt_pars_collocation[-1].update({opt_par.name: par_kj})
-
-        # Loop over collocation points (duplicate-code)
+                opt_pars_collocation[-1].update({opt_par.name: par_kj}) (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==mixed_integer.mixed_integer_mpc:[74:93]
-==with_learned_cost.model:[49:68]
+==model:[49:68]
     ]
 
     parameters: List[CasadiParameter] = [
@@ -5576,10 +5584,10 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         constraint_lb_denotations = [LB_PREFIX + k for k in constraints]
         constraint_ub_denotations = [UB_PREFIX + k for k in constraints]
 
-        # create a dictionary which holds all the inputs for the sim step of the model (duplicate-code)
+        # aggregate outputs (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==model:[0:21]
-==with_learned_cost.model:[0:21]
+==model:[0:21]
 from typing import List
 
 from agentlib_mpc.models.casadi_model import (
@@ -5603,7 +5611,7 @@ class PhysicalModelConfig(CasadiModelConfig):
         CasadiInput( (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc_linreg:[2:26]
-==with_learned_cost.simple_mpc_nn:[1:25]
+==simple_mpc_nn:[1:25]
 from pathlib import Path
 import matplotlib.pyplot as plt
 import os
@@ -5726,7 +5734,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             self.k += 1
             self.pred_time = ts * self.k
 
-            # New NLP variables at end of interval
+            # New NLP variable for differential state at end of interval
             xk = self.add_opt_var(sys.states)
 
             # Add continuity constraint
@@ -5738,8 +5746,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 
  (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.Room_model:[61:76]
-==models.simulation_model:[103:118]
+==Room_model:[61:76]
+==simulation_model:[103:118]
         CasadiParameter(
             name="q_T",
             value=1,
@@ -5774,8 +5782,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
     ]
     outputs: List[CasadiOutput] = [ (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==model:[118:137]
 ==simple_mpc_time_dependent_obj:[39:59]
-==with_learned_cost.model:[118:137]
         ),
         CasadiInput(
             name="T_in", value=290.15, unit="K", description="Inflow air temperature"
@@ -5794,7 +5802,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         CasadiState(
             name="T", value=293.15, unit="K", description="Temperature of zone"
         ),
-        # algebraic (duplicate-code)
+        # algebraic
+        # slack variables (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.admm:[86:106]
 ==agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml:[181:202]
@@ -5817,7 +5826,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 
         self.cost_function += admm_objective
 
- (duplicate-code)
+    @property
+    def variables(self) -> list[OptimizationVariable]: (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.admm:[158:182]
 ==agentlib_mpc.optimization_backends.casadi_.full:[78:102]
@@ -5834,7 +5844,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             self.k += 1
             self.pred_time = ts * self.k
 
-            # New NLP variables at end of interval
+            # New NLP variable for differential state at end of interval
             xk = self.add_opt_var(sys.states)
 
             # Add continuity constraint
@@ -5865,8 +5875,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 
  (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==three_zone_util:[9:25]
-==training_direct:[20:35]
+==examples.three_zone_datadriven_admm.three_zone_util:[9:25]
+==examples.three_zone_datadriven_admm.training_direct:[20:35]
         contents = f.readlines()
     contents = [x.strip() for x in contents]
     contents = contents[32:]
@@ -5897,7 +5907,7 @@ def run_example(
     start_pred=0,
     log_level=logging.INFO,
     cleanup=True,
-    show_dashboard: bool = False,
+    testing: bool = False,
 ):
     # Set the log-level
     logging.basicConfig(level=log_level)
@@ -5970,13 +5980,12 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.minlp:[164:180]
             )
             xk_end = fk["xf"]
+            # calculate model constraint
             self.k += 1
             self.pred_time = ts * self.k
             xk = self.add_opt_var(sys.states)
             vars_dict[sys.states.name][self.k] = xk
             self.add_constraint(xk - xk_end, gap_closing=True)
-
-            # add model constraints last due to fatrop
             self.add_constraint(
                 stage["model_constraints"],
                 lb=stage["lb_model_constraints"],
@@ -5986,8 +5995,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 
  (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.simulation_model:[103:116]
-==training_direct:[133:146]
+==examples.three_zone_datadriven_admm.training_direct:[133:146]
+==simulation_model:[103:116]
         CasadiParameter(
             name="q_T",
             value=1,
@@ -6054,13 +6063,14 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         al.AgentVariable(
             name="update_interval", (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.simulation_model:[51:65]
 ==simple_mpc_with_time_variant_inputs:[173:186]
+==simulation_model:[51:65]
             value=0,
             unit="K",
             description="Slack variable of temperature of zone 0",
         ),
     ]
+
     parameters: List[CasadiParameter] = [
         CasadiParameter(
             name="cp",
@@ -6104,19 +6114,19 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc_linreg:[40:53]
 ==simple_mpc_multiple_shooting:[145:158]
-                },
-                "time_step": 300,
-                "prediction_horizon": 15,
-                "parameters": [
-                    {"name": "s_T", "value": 3},
-                    {"name": "r_mDot", "value": 1},
-                ],
-                "inputs": [
-                    {"name": "T_in", "value": 290.15},
-                    {"name": "load", "value": 150},
-                    {"name": "T_upper", "value": ub},
-                ],
-                "controls": [{"name": "mDot", "value": 0.02, "ub": 0.05, "lb": 0}], (duplicate-code)
+            },
+            "time_step": 300,
+            "prediction_horizon": 15,
+            "parameters": [
+                {"name": "s_T", "value": 3},
+                {"name": "r_mDot", "value": 1},
+            ],
+            "inputs": [
+                {"name": "T_in", "value": 290.15},
+                {"name": "load", "value": 150},
+                {"name": "T_upper", "value": ub},
+            ],
+            "controls": [{"name": "mDot", "value": 0.02, "ub": 0.05, "lb": 0}], (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc_time_dependent_obj:[76:89]
 ==simple_mpc_with_time_variant_inputs:[196:209]
@@ -6190,7 +6200,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             ref_list=var_ref.r_del_u,
             use_in_stage_function=False,
             assert_complete=True,
-        ) (duplicate-code)
+        )
+ (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.basic:[192:205]
 ==agentlib_mpc.optimization_backends.casadi_.casadi_ml:[256:269]
@@ -6281,9 +6292,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 }
 
 
-def run_example(
-    with_plots=True, log_level=logging.INFO, until=10000, with_dashboard=False
-):
+def run_example(with_plots=True, log_level=logging.INFO, until=10000):
     # Change the working directly so that relative paths work
     os.chdir(Path(__file__).parent)
 
@@ -6382,7 +6391,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         if isinstance(trajectory, pd.Series): (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc_nn:[7:24]
-==with_learned_cost.simple_mpc_nn:[8:25]
+==simple_mpc_nn:[8:25]
 logger = logging.getLogger(__name__)
 
 # script variables
@@ -6391,7 +6400,7 @@ ub = 295.15
 ENV_CONFIG = {"rt": False, "factor": 0.01, "t_sample": 60}
 
 
-def agent_configs(ml_model_path: str) -> list[dict]:
+def agent_configs(ann_path: str) -> list[dict]:
     agent_mpc = {
         "id": "myMPCAgent",
         "modules": [
@@ -6403,17 +6412,17 @@ def agent_configs(ml_model_path: str) -> list[dict]:
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==mhe_example:[261:272]
 ==with_change_control_penalty:[155:166]
-        },
-    ],
-}
-AGENT_SIM = {
-    "id": "SimAgent",
-    "modules": [
-        {"module_id": "Ag1Com", "type": "local_broadcast"},
-        {
-            "module_id": "room",
-            "type": "simulator",
-            "model": { (duplicate-code)
+            },
+        ],
+    }
+    AGENT_SIM = {
+        "id": "SimAgent",
+        "modules": [
+            {"module_id": "Ag1Com", "type": "local_broadcast"},
+            {
+                "module_id": "room",
+                "type": "simulator",
+                "model": { (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==model:[179:196]
 ==with_change_control_penalty:[96:115]
@@ -6433,9 +6442,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             ]
         )
 
-        return objective
-
- (duplicate-code)
+        return objective (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==mixed_integer.mixed_integer_mpc:[7:25]
 ==with_change_control_penalty:[4:21]
@@ -6458,8 +6465,8 @@ ub = 295.15
 
 # constants (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.simulation_model:[102:113]
 ==simple_mpc_with_time_variant_inputs:[190:201]
+==simulation_model:[102:113]
         ),
         CasadiParameter(
             name="q_T",
@@ -6490,9 +6497,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             ]
         )
 
-        return objective
-
- (duplicate-code)
+        return objective (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==mixed_integer.mixed_integer_mpc_cia:[132:147]
 ==simple_mpc:[116:131]
@@ -6567,7 +6572,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
     print(f"Cooling energy used: {energy_cost_kWh} kWh.")
  (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.ca_room_model:[0:14]
+==ca_room_model:[0:14]
 ==models.room_model:[0:14]
 from agentlib_mpc.models.casadi_model import (
     CasadiModel,
@@ -6604,7 +6609,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             dk = self.add_opt_par(sys.non_controlled_inputs)
             zk = self.add_opt_var(sys.algebraics)
             yk = self.add_opt_var(sys.outputs)
-            # get stage
+
+            # get path constraints and objective values (stage)
             stage_arguments = {
                 # variables
                 sys.states.name: xk,
@@ -6630,8 +6636,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 
  (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.AHU:[22:34]
-==models.CCA:[13:25]
+==AHU:[22:34]
+==CCA:[13:25]
     ]
 
     states: List[CasadiState] = []
@@ -6645,8 +6651,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         ),
         CasadiParameter( (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.ca_room_model:[43:56]
-==models.simulation_model:[44:57]
+==ca_room_model:[43:56]
+==simulation_model:[44:57]
         CasadiState(
             name=f"T_0", value=293.15, unit="K", description="Temperature of zone 0"
         ),
@@ -6662,7 +6668,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
  (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==training_linreg:[187:199]
-==with_learned_cost.training_nn:[198:210]
+==training_nn:[198:210]
         ),
         env=env_config,
         variable_logging=False,
@@ -6678,20 +6684,16 @@ if __name__ == "__main__":
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc_linreg:[73:83]
 ==with_change_control_penalty:[170:184]
-            "update_inputs_on_callback": False,
-            "outputs": [
-                {"name": "T_out", "value": 298, "alias": "T"},
-            ],
-            "inputs": [
-                {"name": "mDot", "value": 0.02, "alias": "mDot"},
-            ],
-        },
-    ],
-}
-
-
-def run_example(with_plots=True, log_level=logging.INFO, until=10000):
-    # Change the working directly so that relative paths work (duplicate-code)
+                "update_inputs_on_callback": False,
+                "outputs": [
+                    {"name": "T_out", "value": 298, "alias": "T"},
+                ],
+                "inputs": [
+                    {"name": "mDot", "value": 0.02, "alias": "mDot"},
+                ],
+            },
+        ],
+    } (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==mixed_integer.mixed_integer_mpc_cia:[202:218]
 ==with_change_control_penalty:[176:192]
@@ -6712,8 +6714,8 @@ def run_example(with_plots=True, log_level=logging.INFO, until=10000):
     )
     mas.run(until=until) (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==examples.three_zone_datadriven_admm.training_direct:[133:143]
 ==simple_mpc_with_time_variant_inputs:[191:201]
-==training_direct:[133:143]
         CasadiParameter(
             name="q_T",
             value=1,
@@ -6725,8 +6727,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             value=1,
             unit="-", (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.simulation_model:[54:65]
 ==simple_mpc:[63:74]
+==simulation_model:[54:65]
         ),
     ]
 
@@ -6763,6 +6765,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc_with_time_variant_inputs:[176:186]
         ),
     ]
+
     parameters: List[CasadiParameter] = [
         CasadiParameter(
             name="cp",
@@ -6831,7 +6834,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         ),
         CasadiParameter( (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.ca_room_model:[53:64]
+==ca_room_model:[53:64]
 ==models.room_model:[50:61]
         ),
     ]
@@ -6862,7 +6865,6 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==admm_4rooms_main:[15:25]
 ==admm_4rooms_main_coord:[29:40]
     conf_dicts = []
-
     for conf in agent_configs:
         with open(conf) as f:
             conf_dict = json.load(f)
@@ -6963,21 +6965,26 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==admm_example_coordinator:[34:52]
 ==admm_example_coordinator_multiprocessing:[29:42]
 agent_configs = [
+    # use MS discretization method
+    # "configs//cooler_ms.json",
+    # "configs//cooled_room_ms.json",
+    # use DC discretization method
     "configs//cooler_with_coordinator.json",
     "configs//cooled_room_with_coordinator.json",
+    # use casadi network
     "configs//coordinator.json",
     "configs//simulator.json",
 ]
 
 
-def plot(results, start_pred: float):
+def plot(results, start_pred=0):
     import matplotlib.pyplot as plt
     from agentlib_mpc.utils.analysis import admm_at_time_step
 
     res_sim = results["Simulation"]["simulator"] (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==training_gpr:[193:204]
-==with_learned_cost.training_nn:[198:209]
+==training_nn:[198:209]
         ),
         env=env_config,
         variable_logging=False,
@@ -6991,7 +6998,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 if __name__ == "__main__": (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==model:[100:136]
-==with_learned_cost.model:[102:137]
+==model:[102:137]
                 self.s_T * self.T_slack**2,
             ]
         )
@@ -7227,8 +7234,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             },
             "time_step": 300, (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==model:[49:59]
 ==room_model:[36:46]
-==with_learned_cost.model:[49:59]
     ]
 
     parameters: List[CasadiParameter] = [
@@ -7240,8 +7247,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         ),
         CasadiParameter( (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==examples.three_zone_datadriven_admm.training_direct:[543:557]
 ==generate_training_data:[19:33]
-==training_direct:[543:557]
     inputs = list(np.random.random((10000, 1)) * 100 - 50)
     func = lambda x: 2 * x
     outputs = [func(x) for x in inputs]
@@ -7275,12 +7282,14 @@ import os
 import logging
 from agentlib.utils.multi_agent_system import LocalMASAgency
 
-agent_configs = [
-    "configs\\rlt_admm.json",
-    "configs\\room_1_admm.json",
-    "configs\\room_2_admm.json",
-    "configs\\room_3_admm.json",
-    "configs\\room_4_admm.json", (duplicate-code)
+
+def configs() -> list[dict]:
+    agent_configs = [
+        "configs\\rlt_admm.json",
+        "configs\\room_1_admm.json",
+        "configs\\room_2_admm.json",
+        "configs\\room_3_admm.json",
+        "configs\\room_4_admm.json", (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==admm_4rooms_main_coord:[29:39]
 ==admm_example_multiprocessing:[80:89]
@@ -7407,9 +7416,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             mx_dict[time][sys.algebraics.name] = self.add_opt_var(sys.algebraics)
             mx_dict[time][sys.outputs.name] = self.add_opt_var(sys.outputs)
 
-        # create the state grid
-        # x0 will always be the state at time 0 since the loop it is defined in starts
-        # in the past and finishes at 0 (duplicate-code)
+            # admm related quantities (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.basic:[101:118]
 ==agentlib_mpc.optimization_backends.casadi_.mhe:[125:135]
@@ -7451,8 +7458,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 
             # increment loop counter and time (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.AHU:[53:63]
-==models.CCA:[44:54]
+==AHU:[53:63]
+==CCA:[44:54]
             value=293,
             unit="K",
             description="Air mass flow out of cooler.",
@@ -7489,8 +7496,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
     results = mas.get_results()
     if with_plots: (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==examples.three_zone_datadriven_admm.training_direct:[6:14]
 ==model:[2:10]
-==training_direct:[6:14]
 from agentlib_mpc.models.casadi_model import (
     CasadiModelConfig,
     CasadiInput,
@@ -7500,7 +7507,7 @@ from agentlib_mpc.models.casadi_model import (
     CasadiModel,
 ) (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.ca_cooler_model:[0:10]
+==ca_cooler_model:[0:10]
 ==with_change_control_penalty:[4:12]
 from agentlib_mpc.models.casadi_model import (
     CasadiModel,
@@ -7515,14 +7522,14 @@ from agentlib_mpc.models.casadi_model import (
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc_linreg:[18:26]
 ==simple_mpc_with_time_variant_inputs:[242:250]
-    agent_mpc = {
-        "id": "myMPCAgent",
-        "modules": [
-            {"module_id": "Ag1Com", "type": "local_broadcast"},
-            {
-                "module_id": "myMPC",
-                "type": "agentlib_mpc.mpc",
-                "optimization_backend": { (duplicate-code)
+agent_mpc = {
+    "id": "myMPCAgent",
+    "modules": [
+        {"module_id": "Ag1Com", "type": "local_broadcast"},
+        {
+            "module_id": "myMPC",
+            "type": "agentlib_mpc.mpc",
+            "optimization_backend": { (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==mixed_integer.mixed_integer_mpc:[85:93]
 ==simple_mpc_with_time_variant_inputs:[196:204]
@@ -7535,7 +7542,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         ),
         CasadiParameter( (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.ca_room_model:[0:10]
+==ca_room_model:[0:10]
 ==simple_mpc:[7:15]
 from agentlib_mpc.models.casadi_model import (
     CasadiModel,
@@ -7548,8 +7555,8 @@ from agentlib_mpc.models.casadi_model import (
 
  (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.simulation_model:[0:8]
 ==simple_mpc_multiple_shooting:[7:15]
+==simulation_model:[0:8]
 from agentlib_mpc.models.casadi_model import (
     CasadiModel,
     CasadiInput,
@@ -7628,8 +7635,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
                     "alias": "T",
                     "source": "SimAgent", (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.simulation_model:[102:110]
 ==room_model:[50:58]
+==simulation_model:[102:110]
         ),
         CasadiParameter(
             name="q_T",
@@ -7683,7 +7690,11 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         df.to_csv(res_file, mode="a", header=False)
 
         with open(stats_path(res_file), "a") as f:
-            f.writelines(results.stats_line(str(now))) (duplicate-code)
+            f.writelines(results.stats_line(str(now)))
+
+    def rel_results_file_exists(self) -> bool:
+        """Checks if the relaxed results file already exists, and if not, creates it with
+        headers.""" (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml:[405:413]
 ==agentlib_mpc.optimization_backends.casadi_.casadi_ml:[255:263]
@@ -7733,23 +7744,19 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.mhe:[532:542]
 ==agentlib_mpc.utils.sampling:[145:159]
-    )
+            )
 
-    # extrapolate sequence with last available value if necessary
-    interpolated_trajectory = (
-        [values[0]] * number_of_missing_old_entries
-        + sequence_new
-        + [values[-1]] * number_of_missing_new_entries
-    )
+        # extrapolate sequence with last available value if necessary
+        interpolated_trajectory = (
+            [values[0]] * number_of_missing_old_entries
+            + sequence_new
+            + [values[-1]] * number_of_missing_new_entries
+        )
 
-    return interpolated_trajectory
-
-
-def pairwise(iterable: Iterable):
-    "s -> (s0,s1), (s1,s2), (s2, s3), ..." (duplicate-code)
+        return interpolated_trajectory (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.Room_model:[37:44]
-==models.simulation_model:[39:46]
+==Room_model:[37:44]
+==simulation_model:[39:46]
             unit="K",
             description="Set point for T in objective function",
         ),
@@ -7758,8 +7765,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         ),
         CasadiInput( (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.AHU:[81:90]
-==models.CCA:[66:75]
+==AHU:[81:90]
+==CCA:[66:75]
         self.constraints = [
             # soft constraints
         ]
@@ -7770,8 +7777,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
                 * 0.001
                 * self.r_T_v (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.Room_model:[34:41]
-==training_direct:[64:71]
+==Room_model:[34:41]
+==examples.three_zone_datadriven_admm.training_direct:[64:71]
         CasadiInput(
             name="T_set",
             value=298.55,
@@ -7780,8 +7787,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         ),
         CasadiInput( (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.simulation_model:[62:69]
-==training_direct:[94:101]
+==examples.three_zone_datadriven_admm.training_direct:[94:101]
+==simulation_model:[62:69]
         ),
     ]
     parameters: List[CasadiParameter] = [
@@ -7791,7 +7798,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             unit="J/kg*K", (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==model:[169:190]
-==with_learned_cost.model:[172:193]
+==model:[172:193]
     ]
 
 
@@ -7815,7 +7822,7 @@ class DataDrivenModel(CasadiMLModel):
             [ (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==model:[75:91]
-==with_learned_cost.model:[76:90]
+==model:[76:90]
     ]
 
 
@@ -7884,18 +7891,18 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 if __name__ == "__main__":
     run_example(with_plots=True, until=3600) (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==simple_mpc_nn:[56:63]
 ==with_change_control_penalty:[159:166]
-==with_learned_cost.simple_mpc_nn:[56:63]
-        "id": "SimAgent",
-        "modules": [
-            {"module_id": "Ag1Com", "type": "local_broadcast"},
-            {
-                "module_id": "room",
-                "type": "simulator",
-                "model": { (duplicate-code)
+    "id": "SimAgent",
+    "modules": [
+        {"module_id": "Ag1Com", "type": "local_broadcast"},
+        {
+            "module_id": "room",
+            "type": "simulator",
+            "model": { (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==simple_mpc_nn:[18:25]
 ==with_change_control_penalty:[118:125]
-==with_learned_cost.simple_mpc_nn:[18:25]
         "id": "myMPCAgent",
         "modules": [
             {"module_id": "Ag1Com", "type": "local_broadcast"},
@@ -7917,43 +7924,43 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc:[173:180]
 ==simple_mpc_nn:[56:63]
-        "id": "SimAgent",
-        "modules": [
-            {"module_id": "Ag1Com", "type": "local_broadcast"},
-            {
-                "module_id": "room",
-                "type": "simulator",
-                "model": { (duplicate-code)
+    "id": "SimAgent",
+    "modules": [
+        {"module_id": "Ag1Com", "type": "local_broadcast"},
+        {
+            "module_id": "room",
+            "type": "simulator",
+            "model": { (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc:[126:133]
 ==simple_mpc_nn:[17:24]
-    "id": "myMPCAgent",
-    "modules": [
-        {"module_id": "Ag1Com", "type": "local_broadcast"},
-        {
-            "module_id": "myMPC",
-            "type": "agentlib_mpc.mpc",
-            "optimization_backend": { (duplicate-code)
-tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==simple_mpc_gpr:[58:65]
-==simple_mpc_multiple_shooting:[173:180]
-        "id": "SimAgent",
+        "id": "myMPCAgent",
         "modules": [
             {"module_id": "Ag1Com", "type": "local_broadcast"},
             {
-                "module_id": "room",
-                "type": "simulator",
-                "model": { (duplicate-code)
+                "module_id": "myMPC",
+                "type": "agentlib_mpc.mpc",
+                "optimization_backend": { (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==simple_mpc_gpr:[19:26]
-==simple_mpc_multiple_shooting:[126:133]
-    "id": "myMPCAgent",
+==simple_mpc_gpr:[58:65]
+==simple_mpc_multiple_shooting:[173:180]
+    "id": "SimAgent",
     "modules": [
         {"module_id": "Ag1Com", "type": "local_broadcast"},
         {
-            "module_id": "myMPC",
-            "type": "agentlib_mpc.mpc",
-            "optimization_backend": { (duplicate-code)
+            "module_id": "room",
+            "type": "simulator",
+            "model": { (duplicate-code)
+tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==simple_mpc_gpr:[19:26]
+==simple_mpc_multiple_shooting:[126:133]
+        "id": "myMPCAgent",
+        "modules": [
+            {"module_id": "Ag1Com", "type": "local_broadcast"},
+            {
+                "module_id": "myMPC",
+                "type": "agentlib_mpc.mpc",
+                "optimization_backend": { (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==mhe_example:[61:68]
 ==simple_mpc_time_dependent_obj:[59:67]
@@ -7978,13 +7985,13 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc_linreg:[58:65]
 ==simple_mpc_time_dependent_obj:[195:202]
-        "id": "SimAgent",
-        "modules": [
-            {"module_id": "Ag1Com", "type": "local_broadcast"},
-            {
-                "module_id": "room",
-                "type": "simulator",
-                "model": { (duplicate-code)
+    "id": "SimAgent",
+    "modules": [
+        {"module_id": "Ag1Com", "type": "local_broadcast"},
+        {
+            "module_id": "room",
+            "type": "simulator",
+            "model": { (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==simple_mpc_linreg:[19:26]
 ==simple_mpc_time_dependent_obj:[145:152]
@@ -8023,7 +8030,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             ],
             "controls": [{"name": "mDot", "value": 0.02, "ub": 0.05, "lb": 0}], (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.Room_model:[61:68]
+==Room_model:[61:68]
 ==room_model:[51:58]
         CasadiParameter(
             name="q_T",
@@ -8033,7 +8040,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         ),
         CasadiParameter( (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.ca_room_model:[57:64]
+==ca_room_model:[57:64]
 ==room_model:[39:46]
         CasadiParameter(
             name="cp",
@@ -8043,8 +8050,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         ),
         CasadiParameter( (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==examples.three_zone_datadriven_admm.training_direct:[565:572]
 ==generate_training_data:[47:54]
-==training_direct:[565:572]
         "train_share": 0.6,
         "validation_share": 0.2,
         "test_share": 0.2,
@@ -8053,8 +8060,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         "use_values_for_incomplete_data": True,
         "save_data": True, (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==examples.three_zone_datadriven_admm.training_direct:[133:140]
 ==models.room_model:[66:73]
-==training_direct:[133:140]
         CasadiParameter(
             name="q_T",
             value=1,
@@ -8109,9 +8116,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
                 name=var.name,
             )
 
-        # registers callback which listens to alias/source of the state variable, but
-        # gets the name of the measured state as parameter, to correctly save it in the
-        # history (duplicate-code)
+    def _after_config_update(self): (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.modules.estimation.mhe:[143:149]
 ==agentlib_mpc.modules.mpc:[161:167]
@@ -8136,7 +8141,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.full:[41:58]
 ==agentlib_mpc.optimization_backends.casadi_.minlp:[62:81]
 class DirectCollocation(basic.DirectCollocation):
-    def _discretize(self, sys: FullSystem):
+    def _discretize(self, sys: CasadiMINLPSystem):
         """
         Defines a direct collocation discretization.
         # pylint: disable=invalid-name
@@ -8151,7 +8156,9 @@ class DirectCollocation(basic.DirectCollocation):
 
         # Initial State
         x0 = self.add_opt_par(sys.initial_state)
-        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0) (duplicate-code)
+        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)
+
+        # Parameters that are constant over the horizon (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.casadi_ml:[256:263]
 ==agentlib_mpc.optimization_backends.casadi_.mhe:[217:224]
@@ -8181,7 +8188,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         constraint_lb_denotations = [LB_PREFIX + k for k in constraints]
         constraint_ub_denotations = [UB_PREFIX + k for k in constraints]
 
-        # create a dictionary which holds all the inputs for the sim step of the model (duplicate-code)
+        # aggregate outputs (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.basic:[192:199]
 ==agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml:[406:413]
@@ -8260,7 +8267,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
         constraint_lb_denotations = [LB_PREFIX + k for k in constraints]
         constraint_ub_denotations = [UB_PREFIX + k for k in constraints]
 
-        # create a dictionary which holds all the inputs for the sim step of the model (duplicate-code)
+        # aggregate outputs (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.basic:[92:98]
 ==agentlib_mpc.optimization_backends.casadi_.casadi_ml:[95:101]
@@ -8294,8 +8301,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
     # expand scalar values
     if len(source_grid) == 1: (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.Room_model:[21:28]
-==models.simulation_model:[23:30]
+==Room_model:[21:28]
+==simulation_model:[23:30]
         CasadiInput(
             name="mDot_ahu",
             value=0.025,
@@ -8306,12 +8313,12 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==mhe_example:[224:230]
 ==test_mpc:[129:135]
-                {
-                    "module_id": "myMPC",
-                    "type": "agentlib_mpc.mpc",
-                    "optimization_backend": {
-                        "type": "casadi",
-                        "model": { (duplicate-code)
+            {
+                "module_id": "myMPC",
+                "type": "agentlib_mpc.mpc",
+                "optimization_backend": {
+                    "type": "casadi",
+                    "model": { (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==admm_example_coordinator:[113:121]
 ==admm_example_coordinator_multiprocessing:[105:113]
@@ -8346,7 +8353,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
     if with_plots: (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==mhe_example:[61:67]
-==with_learned_cost.model:[42:48]
+==model:[42:48]
         CasadiState(
             name="T_slack",
             value=0,
@@ -8354,8 +8361,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             description="Slack variable of temperature of zone",
         ), (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==training_nn:[192:198]
 ==training_nn:[200:206]
-==with_learned_cost.training_nn:[192:198]
     logging.basicConfig(level=logging.INFO)
     mas = LocalMASAgency(
         agent_configs=configs(
@@ -8363,8 +8370,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
             plot_results=plot_results,
             step_size=step_size, (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
+==training_nn:[84:90]
 ==training_nn:[87:93]
-==with_learned_cost.training_nn:[84:90]
                 "batch_size": 64,
                 "inputs": [
                     {"name": "mDot", "value": 0.0225, "source": "PID"},
@@ -8421,8 +8428,8 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
                 },
                 "solver": { (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==admm_3zone_sim:[67:74]
 ==admm_4rooms_coord_main:[25:32]
+==examples.three_zone_datadriven_admm.admm_3zone_sim:[67:74]
     mas = LocalMASAgency(
         agent_configs=agent_configs, env=env_config, variable_logging=False
     )
@@ -8431,7 +8438,7 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 
     if with_plots: (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.ca_cooler_model:[36:43]
+==ca_cooler_model:[36:43]
 ==models.room_model:[43:49]
     ]
 
@@ -8491,7 +8498,9 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 
         # Initial State
         x0 = self.add_opt_par(sys.initial_state)
-        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0) (duplicate-code)
+        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)
+
+        # Parameters that are constant over the horizon (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.backend:[65:70]
 ==agentlib_mpc.optimization_backends.casadi_.minlp_cia:[40:45]
@@ -8509,8 +8518,8 @@ try:
     from dash.dependencies import Input, Output, State
     import plotly.graph_objects as go (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.Room_model:[2:7]
-==models.simulation_model:[7:12]
+==Room_model:[2:7]
+==simulation_model:[7:12]
 from agentlib_mpc.models.casadi_model import (
     CasadiInput,
     CasadiState,
@@ -8518,7 +8527,7 @@ from agentlib_mpc.models.casadi_model import (
     CasadiOutput, (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
 ==model:[4:9]
-==models.simulation_model:[8:13]
+==simulation_model:[8:13]
     CasadiInput,
     CasadiState,
     CasadiParameter,
@@ -8549,11 +8558,12 @@ tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
     def process(self):
         """Sets a new prediction at each time step."""
         self.env.process(self.send_comfort_trajectories())
+
         while True:
             ts = self.get("sampling_time").value
             n = self.get("prediction_length").value (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.ca_cooler_model:[30:35]
+==ca_cooler_model:[30:35]
 ==simple_mpc_time_dependent_obj:[83:88]
         CasadiParameter(
             name="r_mDot",
@@ -8592,7 +8602,7 @@ class MyCasadiModelConfig(CasadiModelConfig):
             name="mDot",
             value=0.0225, (duplicate-code)
 tests/fixtures/ann.py:1:0: R0801: Similar lines in 2 files
-==models.ca_cooler_model:[11:17]
+==ca_cooler_model:[11:17]
 ==models.room_model:[11:17]
     inputs: list[CasadiInput] = [
         # controls
