@@ -77,12 +77,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">casadi</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ca</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigurationError</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPCVariable</span><span class="p">,</span> <span class="n">stats_path</span><span class="p">,</span><span class="n">objective_path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPCVariable</span><span class="p">,</span> <span class="n">stats_path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">system</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.VariableGroup</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">OptimizationVariable</span><span class="p">,</span>
@@ -329,10 +328,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">discretization</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span></div>
 
 <div class="viewcode-block" id="CasADiBackend.save_result_df"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.save_result_df">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_result_df</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">objective</span><span class="p">,</span>
-            <span class="n">results</span><span class="p">:</span> <span class="n">Results</span><span class="p">,</span>
-            <span class="n">now</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">objective</span><span class="p">,</span>
+        <span class="n">results</span><span class="p">:</span> <span class="n">Results</span><span class="p">,</span>
+        <span class="n">now</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">         Save the results of `solve` into a dataframe at each time step.</span>
@@ -365,12 +364,16 @@
             <span class="k">return</span> <span class="n">objective_values</span>
 
         <span class="n">df</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">df</span>
-        <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span><span class="o">.</span><span class="n">prediction_horizon</span> <span class="o">*</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span><span class="o">.</span><span class="n">time_step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span><span class="o">.</span><span class="n">time_step</span><span class="p">)</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
+            <span class="mi">0</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span><span class="o">.</span><span class="n">prediction_horizon</span>
+            <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span><span class="o">.</span><span class="n">time_step</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span><span class="o">.</span><span class="n">time_step</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">objective_values</span> <span class="o">=</span> <span class="n">get_objective_values</span><span class="p">(</span><span class="n">objective</span><span class="o">=</span><span class="n">objective</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">objective_values</span><span class="p">:</span>
-            <span class="n">objective_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objective</span><span class="o">.</span><span class="n">objectives</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span>
+            <span class="n">objective_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objective</span><span class="o">.</span><span class="n">objectives</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">objective_names</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -382,7 +385,9 @@
         <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">res_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">stats_path</span><span class="p">(</span><span class="n">res_file</span><span class="p">),</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">combined_stats_line</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">now</span><span class="p">),</span> <span class="n">objective_values</span><span class="p">,</span> <span class="n">objective_names</span><span class="p">))</span></div></div>
+            <span class="n">f</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">combined_stats_line</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">now</span><span class="p">),</span> <span class="n">objective_values</span><span class="p">,</span> <span class="n">objective_names</span><span class="p">)</span>
+            <span class="p">)</span></div></div>
 </pre></div>
 
            </div>

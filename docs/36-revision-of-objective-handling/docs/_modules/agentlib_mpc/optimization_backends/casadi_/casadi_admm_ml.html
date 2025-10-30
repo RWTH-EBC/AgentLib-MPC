@@ -300,7 +300,7 @@
         <span class="k">return</span> <span class="p">{</span>
             <span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">var</span>
             <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">var</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">omit_in_blackbox_function</span>
+            <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">omit_in_blackbox_function</span>
         <span class="p">}</span></div>
 
 
@@ -411,7 +411,8 @@
                 <span class="n">uk</span> <span class="o">=</span> <span class="n">stage_mx</span><span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">delta_obj</span> <span class="ow">in</span> <span class="n">delta_u_objectives</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_objective</span><span class="p">(</span>
-                        <span class="n">sys</span><span class="p">,</span> <span class="n">delta_obj</span><span class="p">,</span> <span class="n">u_prev</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">const_par</span><span class="p">)</span>
+                        <span class="n">sys</span><span class="p">,</span> <span class="n">delta_obj</span><span class="p">,</span> <span class="n">u_prev</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">const_par</span>
+                    <span class="p">)</span>
 
             <span class="c1"># get stage arguments from current time step</span>
             <span class="n">stage_arguments</span> <span class="o">=</span> <span class="p">{</span>
