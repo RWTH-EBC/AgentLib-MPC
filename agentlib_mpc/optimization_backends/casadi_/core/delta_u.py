@@ -5,9 +5,6 @@ logger = logging.getLogger(__name__)
 
 
 def get_delta_u_objectives(sys):
-    if isinstance(sys.objective, ca.MX):
-        # control change penalty not supported for old syntax
-        return []
     return sys.objective.get_delta_u_objectives()
 
 

@@ -316,7 +316,7 @@ class MultipleShooting_ML(MultipleShooting):
         # aggregate outputs
         outputs = [
             state_output,
-            system.cost_function,
+            system.objective.get_casadi_expression(),
             *constraints_func,
             *constraints_lb,
             *constraints_ub,

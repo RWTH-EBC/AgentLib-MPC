@@ -301,9 +301,6 @@ class CasADiBackend(OptimizationBackend):
     def approximate_objective(self, results_df: pd.DataFrame):
         """Returns the approximate objective value of this MPC step."""
         objective = self.system.objective
-        if isinstance(objective, ca.MX):
-            # not supported for old syntax
-            return [], {}
 
         # approximate objective over multiple shooting grid. This introduces slight but usually unimportant errors when actual objective is calculated with a different discretization.
         grid = np.arange(

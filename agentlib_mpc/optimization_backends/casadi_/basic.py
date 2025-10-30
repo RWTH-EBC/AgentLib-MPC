@@ -100,14 +100,6 @@ class BaseSystem(System):
         )
         self.time = model.time
 
-    @property
-    def cost_function(self):
-        """Returns the sybolic cost function. Currently has check depending on old or
-        new syntax."""
-        if isinstance(self.objective, ca.MX):
-            return self.objective
-        return self.objective.get_casadi_expression()
-
 
 @dataclasses.dataclass
 class CollocationMatrices:
@@ -226,7 +218,7 @@ class DirectCollocation(Discretization):
         # aggregate outputs
         outputs = [
             system.ode,
-            system.cost_function,
+            system.objective.get_casadi_expression(),
             *constraints_func,
             *constraints_lb,
             *constraints_ub,
@@ -529,7 +521,7 @@ class MultipleShooting(Discretization):
         # aggregate outputs
         outputs = [
             system.ode,
-            system.cost_function,
+            system.objective.get_casadi_expression(),
             *constraints_func,
             *constraints_lb,
             *constraints_ub,
