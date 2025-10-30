@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.optimization_backends.casadi_.core package &mdash; agentlib_mpc 0.6.8 documentation</title>
+  <title>agentlib_mpc.optimization_backends.casadi_.core package &mdash; agentlib_mpc 0.6.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
@@ -354,6 +354,7 @@ accessing a column.</p>
 <li><p><a class="reference internal" href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasadiBackendConfig.build_batch_bat" title="agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasadiBackendConfig.build_batch_bat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_batch_bat</span> <span class="pre">(pathlib.Path</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
 <li><p><a class="reference internal" href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasadiBackendConfig.discretization_options" title="agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasadiBackendConfig.discretization_options"><code class="xref py py-obj docutils literal notranslate"><span class="pre">discretization_options</span> <span class="pre">(agentlib_mpc.data_structures.casadi_utils.CasadiDiscretizationOptions)</span></code></a></p></li>
 <li><p><a class="reference internal" href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasadiBackendConfig.do_jit" title="agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasadiBackendConfig.do_jit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">do_jit</span> <span class="pre">(bool</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasadiBackendConfig.save_only_stats" title="agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasadiBackendConfig.save_only_stats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_only_stats</span> <span class="pre">(bool)</span></code></a></p></li>
 <li><p><a class="reference internal" href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasadiBackendConfig.solver" title="agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasadiBackendConfig.solver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver</span> <span class="pre">(agentlib_mpc.data_structures.casadi_utils.SolverOptions)</span></code></a></p></li>
 </ul>
 </dd>
@@ -385,6 +386,12 @@ accessing a column.</p>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasadiBackendConfig.save_only_stats">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_only_stats</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasadiBackendConfig.save_only_stats" title="Permalink to this definition"></a></dt>
+<dd><p>If results should be saved, setting this to True will only savethe optimization statistics. May be useful for longer timespans,if the results with all predictions gets too large.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules.ml_model_training.ml_model_trainer &mdash; agentlib_mpc 0.6.8 documentation</title>
+  <title>agentlib_mpc.modules.ml_model_training.ml_model_trainer &mdash; agentlib_mpc 0.6.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -494,7 +494,7 @@
         <span class="n">sampled</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">sg</span> <span class="ow">in</span> <span class="n">source_grids</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">single_sampled</span> <span class="o">=</span> <span class="n">sample_values_to_target_grid</span><span class="p">(</span>
-                <span class="n">values</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">time_series_data</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span>
+                <span class="n">values</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">time_series_data</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
                 <span class="n">original_grid</span><span class="o">=</span><span class="n">sg</span><span class="p">,</span>
                 <span class="n">target_grid</span><span class="o">=</span><span class="n">target_grid</span><span class="p">,</span>
                 <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">interpolations</span><span class="p">[</span><span class="n">name</span><span class="p">],</span>
