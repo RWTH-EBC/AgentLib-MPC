@@ -1,5 +1,8 @@
 """Holds the class for full featured MPCs."""
 
+from typing import Dict, Union, Optional
+
+import agentlib
 import numpy as np
 import pandas as pd
 from agentlib.core import AgentVariable
@@ -8,10 +11,14 @@ from agentlib_mpc.data_structures import mpc_datamodels
 from pydantic import Field, field_validator, FieldValidationInfo
 from rapidfuzz import process, fuzz
 
-from agentlib_mpc.modules.mpc import BaseMPCConfig, BaseMPC
+from agentlib_mpc.modules.mpc.mpc import BaseMPCConfig, BaseMPC
+from agentlib_mpc.modules.mpc.skippable_mixin import (
+    SkippableMixinConfig,
+    SkippableMixin,
+)
 
 
-class MPCConfig(BaseMPCConfig):
+class MPCConfig(BaseMPCConfig, SkippableMixinConfig):
     """
     Pydantic data model for MPC configuration parser
     """
@@ -43,7 +50,7 @@ class MPCConfig(BaseMPCConfig):
         return r_del_u
 
 
-class MPC(BaseMPC):
+class MPC(BaseMPC, SkippableMixin):
     """
     A model predictive controller.
     More info to follow.
@@ -81,6 +88,8 @@ class MPC(BaseMPC):
         self.register_callbacks_for_lagged_variables()
 
     def do_step(self):
+        if self.check_if_should_be_skipped():
+            return
         super().do_step()
         self._remove_old_values_from_history()
 
