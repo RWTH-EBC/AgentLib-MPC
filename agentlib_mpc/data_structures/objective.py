@@ -221,6 +221,42 @@ class DeltaUObjective(SubObjective):
 class FullObjective:
     """Container for multiple objective terms with normalization"""
 
+    def __add__(self, other):
+        return self.expression + other
+
+    def __radd__(self, other):
+        return other + self.expression
+
+    def __sub__(self, other):
+        return self.expression - other
+
+    def __rsub__(self, other):
+        return other - self.expression
+
+    def __mul__(self, other):
+        return self.expression * other
+
+    def __rmul__(self, other):
+        return other * self.expression
+
+    def __truediv__(self, other):
+        return self.expression / other
+
+    def __rtruediv__(self, other):
+        return other / self.expression
+
+    def __pow__(self, power, modulo=None):
+        return self.expression**power
+
+    def __rpow__(self, other):
+        return other**self.expression
+
+    def __abs__(self):
+        return ca.fabs(self.expression)
+
+    def __neg__(self):
+        return -self.expression
+
     def __init__(self, *objectives, normalization: float = 1.0):
         """
         Args:
@@ -234,6 +270,10 @@ class FullObjective:
     def get_delta_u_objectives(self):
         """Returns a list of all DeltaUObjective instances"""
         return [obj for obj in self.objectives if isinstance(obj, DeltaUObjective)]
+
+    @property
+    def expression(self):
+        return self.get_casadi_expression()
 
     def get_casadi_expression(self):
         """Combine all objectives into a single CasADi expression"""

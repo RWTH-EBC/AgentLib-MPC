@@ -96,7 +96,7 @@ class CasadiADMMNNSystem(CasadiADMMSystem, CasadiMLSystem):
             assert_complete=True,
         )
 
-        self.cost_function = model.cost_func
+        self.objective = model.objective
         self.model_constraints = Constraint(
             function=ca.vertcat(*[c.function for c in model.get_constraints()]),
             lb=ca.vertcat(*[c.lb for c in model.get_constraints()]),
@@ -190,7 +190,8 @@ class CasadiADMMNNSystem(CasadiADMMSystem, CasadiMLSystem):
             admm_lam = self.exchange_multipliers.full_symbolic[i]
             admm_objective += admm_lam * admm_out + rho / 2 * (admm_in - admm_out) ** 2
 
-        self.cost_function += admm_objective
+        # todo this part needs cleanup. should add actual admm objective components
+        self.objective += admm_objective
 
     @property
     def variables(self) -> list[OptimizationVariable]:

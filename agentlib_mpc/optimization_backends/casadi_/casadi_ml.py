@@ -85,18 +85,15 @@ class CasadiMLSystem(FullSystem):
             use_in_stage_function=False,
             assert_complete=True,
         )
-        self.cost_function = model.cost_func
         self.model_constraints = Constraint(
             function=ca.vertcat(*[c.function for c in model.get_constraints()]),
             lb=ca.vertcat(*[c.lb for c in model.get_constraints()]),
             ub=ca.vertcat(*[c.ub for c in model.get_constraints()]),
         )
         self.sim_step = model.make_predict_function_for_mpc()
-        self._model = model
         self.lags_dict: dict[str, int] = model.lags_dict
         self.lags_mx_store = model.lags_mx_store
         self.objective = model.objective
-        self.cost_func = model.cost_func
         self.time = model.time
 
     @property
@@ -110,6 +107,7 @@ class CasadiMLSystem(FullSystem):
     def all_system_quantities(self) -> dict[str, OptimizationQuantity]:
         return {var.name: var for var in self.quantities}
 
+
 class MultipleShooting_ML(MultipleShooting):
     max_lag: int
 
@@ -117,7 +115,6 @@ class MultipleShooting_ML(MultipleShooting):
         n = self.options.prediction_horizon
         ts = self.options.time_step
         const_par = self.add_opt_par(sys.model_parameters)
-
 
         delta_u_objectives = delta_u.get_delta_u_objectives(sys)
 
@@ -186,7 +183,8 @@ class MultipleShooting_ML(MultipleShooting):
                 uk = stage_mx[sys.controls.name]
                 for delta_obj in delta_u_objectives:
                     self.objective_function += delta_u.get_objective(
-                        sys, delta_obj, u_prev, uk, const_par)
+                        sys, delta_obj, u_prev, uk, const_par
+                    )
 
             # get stage arguments from current time step
             stage_arguments = {

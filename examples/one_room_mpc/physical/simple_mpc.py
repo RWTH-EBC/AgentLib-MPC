@@ -21,7 +21,8 @@ logger = logging.getLogger(__name__)
 
 # script variables
 ub = 295.15
-prediction_horizon = 300*15
+prediction_horizon = 300 * 15
+
 
 class MyCasadiModelConfig(CasadiModelConfig):
     inputs: List[CasadiInput] = [
@@ -109,6 +110,7 @@ class MyCasadiModel(CasadiModel):
             (0, self.T + self.T_slack, self.T_upper),
         ]
         import casadi
+
         obj1 = self.create_sub_objective(
             expressions=self.mDot,
             weight=self.r_mDot,
@@ -116,9 +118,7 @@ class MyCasadiModel(CasadiModel):
         )
 
         obj2 = self.create_sub_objective(
-            expressions=self.T_slack**2,
-            weight=self.s_T,
-            name="temp_slack"
+            expressions=self.T_slack**2, weight=self.s_T, name="temp_slack"
         )
 
         objective = self.create_full_objective(obj1, obj2, normalization=1)
@@ -152,8 +152,8 @@ AGENT_MPC = {
             "time_step": 300,
             "prediction_horizon": 15,
             "parameters": [
-                {"name": "s_T", "value": 1000},
-                {"name": "r_mDot", "value": 1}
+                {"name": "s_T", "value": 0.01},
+                {"name": "r_mDot", "value": 0.001},
             ],
             "inputs": [
                 {"name": "T_in", "value": 290.15},
@@ -215,7 +215,6 @@ def run_example(
     results = mas.get_results(cleanup=False)
     mpc_results = results["myMPCAgent"]["myMPC"]
     sim_res = results["SimAgent"]["room"]
-
 
     if with_dashboard:
         from agentlib_mpc.utils.analysis import load_mpc_stats

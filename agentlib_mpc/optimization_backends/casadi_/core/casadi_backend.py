@@ -256,7 +256,6 @@ class CasADiBackend(OptimizationBackend):
 
     def save_result_df(
         self,
-        objective,
         results: Results,
         now: float = 0,
     ):
@@ -302,6 +301,9 @@ class CasADiBackend(OptimizationBackend):
     def approximate_objective(self, results_df: pd.DataFrame):
         """Returns the approximate objective value of this MPC step."""
         objective = self.system.objective
+        if isinstance(objective, ca.MX):
+            # not supported for old syntax
+            return [], {}
 
         # approximate objective over multiple shooting grid. This introduces slight but usually unimportant errors when actual objective is calculated with a different discretization.
         grid = np.arange(
@@ -310,10 +312,7 @@ class CasADiBackend(OptimizationBackend):
             * (self.config.discretization_options.time_step + 1),
             self.config.discretization_options.time_step,
         )
-        objective_values = {}
-        if objective is not None:
-            objective_values.update(objective.calculate_values(results_df, grid))
-            objective_names = [obj.name for obj in objective.objectives] + ["total"]
-        else:
-            objective_names = []
+        objective_values = objective.calculate_values(results_df, grid)
+        objective_names = [obj.name for obj in objective.objectives] + ["total"]
+
         return objective_names, objective_values
