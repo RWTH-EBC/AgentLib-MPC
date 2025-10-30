@@ -1,0 +1,176 @@
+agentlib_mpc/__init__.py:4:22: F401 [*] `.modules.MODULE_TYPES` imported but unused
+agentlib_mpc/__init__.py:5:21: F401 [*] `.models.MODEL_TYPES` imported but unused
+agentlib_mpc/data_structures/coordinator_datatypes.py:7:27: F401 [*] `agentlib.core.Source` imported but unused
+agentlib_mpc/models/casadi_ml_model.py:30:5: F401 [*] `agentlib_mpc.models.casadi_model.CasadiTypes` imported but unused
+agentlib_mpc/modules/dmpc/admm/admm.py:5:32: F401 [*] `typing.Tuple` imported but unused
+agentlib_mpc/modules/dmpc/admm/admm_coordinator.py:599:17: E713 [*] Test for membership should be `not in`
+agentlib_mpc/modules/dmpc/admm/admm_coordinator.py:631:17: E713 [*] Test for membership should be `not in`
+agentlib_mpc/modules/dmpc/coordinator.py:204:17: E713 [*] Test for membership should be `not in`
+agentlib_mpc/modules/ml_model_training/ml_model_trainer.py:5:26: F401 [*] `typing.TYPE_CHECKING` imported but unused
+agentlib_mpc/optimization_backends/backend.py:8:18: F401 [*] `pandas` imported but unused
+agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py:235:20: E713 [*] Test for membership should be `not in`
+agentlib_mpc/optimization_backends/casadi_/mhe.py:495:17: F541 [*] f-string without any placeholders
+agentlib_mpc/optimization_backends/casadi_/mhe.py:496:17: F541 [*] f-string without any placeholders
+agentlib_mpc/utils/plotting/admm_animation.py:6:20: F401 [*] `typing.NewType` imported but unused
+agentlib_mpc/utils/plotting/admm_consensus_shades.py:41:5: F841 Local variable `a_trajectory` is assigned to but never used
+agentlib_mpc/utils/plotting/admm_consensus_shades.py:42:5: F841 Local variable `number_of_iterations` is assigned to but never used
+agentlib_mpc/utils/plotting/admm_consensus_shades.py:52:44: F821 Undefined name `series`
+agentlib_mpc/utils/plotting/admm_consensus_shades.py:57:9: F841 Local variable `prediction_color` is assigned to but never used
+agentlib_mpc/utils/plotting/admm_dashboard.py:43:21: E713 [*] Test for membership should be `not in`
+agentlib_mpc/utils/plotting/interactive.py:116:33: F541 [*] f-string without any placeholders
+agentlib_mpc/utils/plotting/interactive.py:117:43: F541 [*] f-string without any placeholders
+agentlib_mpc/utils/plotting/interactive.py:135:33: F541 [*] f-string without any placeholders
+agentlib_mpc/utils/plotting/interactive.py:136:43: F541 [*] f-string without any placeholders
+agentlib_mpc/utils/plotting/ml_model_test.py:66:9: E731 Do not assign a `lambda` expression, use a `def`
+agentlib_mpc/utils/plotting/mpc.py:2:21: F401 [*] `pathlib.Path` imported but unused
+agentlib_mpc/utils/plotting/mpc.py:9:41: F401 [*] `agentlib_mpc.utils.analysis.load_mpc` imported but unused
+agentlib_mpc/utils/plotting/mpc.py:14:5: F401 [*] `agentlib_mpc.utils.plotting.basic.make_fig` imported but unused
+agentlib_mpc/utils/plotting/mpc.py:15:5: F401 [*] `agentlib_mpc.utils.plotting.basic.Style` imported but unused
+agentlib_mpc/utils/sampling.py:120:13: F541 [*] f-string without any placeholders
+agentlib_mpc/utils/sampling.py:121:13: F541 [*] f-string without any placeholders
+ci/test_examples.py:5:8: F401 [*] `subprocess` imported but unused
+examples/4_Room_ADMM_Coordinator/animate.py:28:39: F541 [*] f-string without any placeholders
+examples/4_Room_ADMM_Coordinator/models/rlt_model.py:1:1: F403 `from agentlib_mpc.models.casadi_model import *` used; unable to detect undefined names
+examples/4_Room_ADMM_Coordinator/models/rlt_model.py:6:5: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/rlt_model.py:16:5: F405 `CasadiOutput` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/rlt_model.py:26:17: F405 `CasadiModelConfig` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/rlt_model.py:27:13: F405 `List` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/rlt_model.py:27:18: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/rlt_model.py:29:13: F405 `List` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/rlt_model.py:29:18: F405 `CasadiState` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/rlt_model.py:31:17: F405 `List` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/rlt_model.py:31:22: F405 `CasadiParameter` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/rlt_model.py:32:9: F405 `CasadiParameter` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/rlt_model.py:40:14: F405 `List` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/rlt_model.py:40:19: F405 `CasadiOutput` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/rlt_model.py:43:11: F405 `CasadiModel` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:1:1: F403 `from agentlib_mpc.models.casadi_model import *` used; unable to detect undefined names
+examples/4_Room_ADMM_Coordinator/models/room_model.py:4:26: F405 `CasadiModelConfig` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:5:13: F405 `List` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:5:18: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:7:9: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:14:9: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:15:9: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:19:9: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:25:9: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:30:13: F405 `List` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:30:18: F405 `CasadiState` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:32:9: F405 `CasadiState` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:33:18: F541 [*] f-string without any placeholders
+examples/4_Room_ADMM_Coordinator/models/room_model.py:39:17: F405 `List` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:39:22: F405 `CasadiParameter` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:40:9: F405 `CasadiParameter` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:46:9: F405 `CasadiParameter` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:52:9: F405 `CasadiParameter` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:58:9: F405 `CasadiParameter` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:67:20: F405 `CasadiModel` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:94:14: F405 `List` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:94:19: F405 `CasadiOutput` may be undefined, or defined from star imports
+examples/4_Room_ADMM_Coordinator/models/room_model.py:95:9: F405 `CasadiOutput` may be undefined, or defined from star imports
+examples/admm/admm_example_coordinator.py:31:41: F401 [*] `agentlib_mpc.utils.plotting.admm_dashboard` imported but unused
+examples/admm/admm_example_coordinator.py:33:53: F401 [*] `agentlib_mpc.utils.plotting.interactive.show_dashboard` imported but unused
+examples/admm/admm_example_coordinator.py:75:5: F811 Redefinition of unused `show_dashboard` from line 33
+examples/admm/admm_example_coordinator.py:97:5: F841 Local variable `broker` is assigned to but never used
+examples/admm/admm_example_coordinator_multiprocessing.py:95:5: F841 Local variable `broker` is assigned to but never used
+examples/admm/admm_example_multiprocessing.py:97:5: F841 Local variable `broker` is assigned to but never used
+examples/admm/models/ca_room_model.py:6:5: F401 [*] `agentlib_mpc.models.casadi_model.CasadiOutput` imported but unused
+examples/admm/models/ca_room_model.py:45:18: F541 [*] f-string without any placeholders
+examples/admm/models/ca_room_model.py:50:18: F541 [*] f-string without any placeholders
+examples/admm/models/simulation_model.py:46:18: F541 [*] f-string without any placeholders
+examples/admm/models/simulation_model.py:51:18: F541 [*] f-string without any placeholders
+examples/exchange_admm/admm_4rooms_main.py:53:49: F401 [*] `agentlib_mpc.utils.analysis.admm_at_time_step` imported but unused
+examples/exchange_admm/models/rlt_model.py:19:25: F541 [*] f-string without any placeholders
+examples/exchange_admm/models/rlt_model.py:29:25: F541 [*] f-string without any placeholders
+examples/exchange_admm/models/rlt_model.py:40:25: F541 [*] f-string without any placeholders
+examples/exchange_admm/models/room_model.py:40:18: F541 [*] f-string without any placeholders
+examples/one_room_mpc/physical/simple_mpc_with_time_variant_inputs.py:169:18: F541 [*] f-string without any placeholders
+examples/one_room_mpc/physical/simple_mpc_with_time_variant_inputs.py:173:18: F541 [*] f-string without any placeholders
+examples/output_ann/generate_training_data.py:10:5: F401 [*] `agentlib_mpc.models.casadi_model.CasadiModel` imported but unused
+examples/output_ann/generate_training_data.py:11:5: F401 [*] `agentlib_mpc.models.casadi_model.CasadiModelConfig` imported but unused
+examples/output_ann/generate_training_data.py:21:5: E731 Do not assign a `lambda` expression, use a `def`
+examples/output_ann/generate_training_data.py:23:5: E731 Do not assign a `lambda` expression, use a `def`
+examples/three_zone_datadriven_admm/admm_3zone_sim.py:32:1: E402 Module level import not at top of file
+examples/three_zone_datadriven_admm/models/AHU.py:1:1: F403 `from agentlib_mpc.models.casadi_model import *` used; unable to detect undefined names
+examples/three_zone_datadriven_admm/models/AHU.py:4:17: F405 `CasadiModelConfig` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:5:13: F405 `List` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:5:18: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:6:9: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:12:9: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:16:9: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:17:9: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:18:9: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:20:9: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:21:9: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:22:9: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:25:13: F405 `List` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:25:18: F405 `CasadiState` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:27:17: F405 `List` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:27:22: F405 `CasadiParameter` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:28:9: F405 `CasadiParameter` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:34:9: F405 `CasadiParameter` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:39:14: F405 `List` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:39:19: F405 `CasadiOutput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:40:9: F405 `CasadiOutput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:46:9: F405 `CasadiOutput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:52:9: F405 `CasadiOutput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:58:9: F405 `CasadiOutput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:59:9: F405 `CasadiOutput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:60:9: F405 `CasadiOutput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/AHU.py:64:11: F405 `CasadiModel` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:1:1: F403 `from agentlib_mpc.models.casadi_model import *` used; unable to detect undefined names
+examples/three_zone_datadriven_admm/models/CCA.py:4:28: F405 `CasadiModelConfig` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:5:13: F405 `List` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:5:18: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:6:9: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:10:9: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:11:9: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:12:9: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:13:9: F405 `CasadiInput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:16:13: F405 `List` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:16:18: F405 `CasadiState` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:18:17: F405 `List` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:18:22: F405 `CasadiParameter` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:19:9: F405 `CasadiParameter` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:25:9: F405 `CasadiParameter` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:30:14: F405 `List` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:30:19: F405 `CasadiOutput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:31:9: F405 `CasadiOutput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:37:9: F405 `CasadiOutput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:43:9: F405 `CasadiOutput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:49:9: F405 `CasadiOutput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:50:9: F405 `CasadiOutput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:51:9: F405 `CasadiOutput` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/CCA.py:55:22: F405 `CasadiModel` may be undefined, or defined from star imports
+examples/three_zone_datadriven_admm/models/Room_model.py:51:18: F541 [*] f-string without any placeholders
+examples/three_zone_datadriven_admm/models/simulation_model.py:56:18: F541 [*] f-string without any placeholders
+examples/three_zone_datadriven_admm/models/simulation_model.py:59:18: F541 [*] f-string without any placeholders
+examples/three_zone_datadriven_admm/plot.py:284:5: F841 Local variable `res_sim` is assigned to but never used
+examples/three_zone_datadriven_admm/plot.py:285:5: F841 Local variable `res_sim2` is assigned to but never used
+examples/three_zone_datadriven_admm/plot.py:286:5: F841 Local variable `res_sim3` is assigned to but never used
+examples/three_zone_datadriven_admm/plot.py:288:5: F841 Local variable `air_controller` is assigned to but never used
+examples/three_zone_datadriven_admm/plot_ADMM_anim.py:7:37: F401 [*] `matplotlib.font_manager.FontProperties` imported but unused
+examples/three_zone_datadriven_admm/plot_ADMM_anim.py:8:31: F401 [*] `matplotlib.ticker.MultipleLocator` imported but unused
+examples/three_zone_datadriven_admm/plot_ADMM_anim.py:8:48: F401 [*] `matplotlib.ticker.FormatStrFormatter` imported but unused
+examples/three_zone_datadriven_admm/plot_ADMM_anim.py:9:18: F401 [*] `pandas` imported but unused
+examples/three_zone_datadriven_admm/plotting_agent.py:1:8: F401 [*] `os` imported but unused
+examples/three_zone_datadriven_admm/plotting_agent.py:2:8: F401 [*] `json` imported but unused
+examples/three_zone_datadriven_admm/plotting_agent.py:3:8: F401 [*] `time` imported but unused
+examples/three_zone_datadriven_admm/plotting_agent.py:4:8: F401 [*] `logging` imported but unused
+examples/three_zone_datadriven_admm/plotting_agent.py:8:26: F401 [*] `typing.Dict` imported but unused
+examples/three_zone_datadriven_admm/plotting_agent.py:259:19: F541 [*] f-string without any placeholders
+examples/three_zone_datadriven_admm/plotting_agent.py:268:19: F541 [*] f-string without any placeholders
+examples/three_zone_datadriven_admm/plotting_agent.py:278:19: F541 [*] f-string without any placeholders
+examples/three_zone_datadriven_admm/training_direct.py:81:18: F541 [*] f-string without any placeholders
+examples/three_zone_datadriven_admm/training_direct.py:87:18: F541 [*] f-string without any placeholders
+examples/three_zone_datadriven_admm/training_direct.py:545:5: E731 Do not assign a `lambda` expression, use a `def`
+examples/three_zone_datadriven_admm/training_direct.py:547:5: E731 Do not assign a `lambda` expression, use a `def`
+tests/fixtures/ann.py:2:17: F401 [*] `numpy` imported but unused
+tests/fixtures/linreg.py:3:53: F401 [*] `agentlib_mpc.models.serialized_ml_model.CustomGPR` imported but unused
+tests/test_admm.py:76:9: F841 Local variable `admm_module` is assigned to but never used
+tests/test_casadi_backend.py:68:9: F841 Local variable `optimization_variable` is assigned to but never used
+tests/test_casadi_backend.py:75:5: F841 Local variable `optimization_variable_1` is assigned to but never used
+tests/test_casadi_backend.py:90:9: F841 Local variable `optimization_variable_3` is assigned to but never used
+tests/test_mpc.py:13:56: F401 [*] `agentlib_mpc.optimization_backends.backend.OptimizationBackend` imported but unused
+tests/test_serialized_gpr.py:10:79: F401 [*] `agentlib_mpc.models.serialized_ml_model.MLModels` imported but unused
+Found 174 errors.
+[*] 65 fixable with the `--fix` option (19 hidden fixes can be enabled with the `--unsafe-fixes` option).
