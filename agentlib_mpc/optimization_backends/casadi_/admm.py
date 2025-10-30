@@ -138,7 +138,6 @@ class ADMMCollocation(DirectCollocation):
             self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
 
             # perform inner collocation loop
-            # perform inner collocation loop
             opt_vars_inside_inner = [
                 sys.algebraics,
                 sys.outputs,
@@ -150,7 +149,7 @@ class ADMMCollocation(DirectCollocation):
                 sys.multipliers,
                 sys.exchange_multipliers,
                 sys.exchange_diff,
-                sys.non_controlled_inputs
+                sys.non_controlled_inputs,
             ]
             constant_over_inner = {
                 sys.controls: uk,

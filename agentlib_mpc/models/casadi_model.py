@@ -296,10 +296,10 @@ class CasadiModel(Model):
     parameters and override the setup_system() method."""
 
     config: CasadiModelConfig
+    # Disable __setattr__ checks during initialization as self.config does not exists at first
+    _is_initialized = False
 
     def __init__(self, **kwargs):
-        # Temporarily disable __setattr__ checks during initialization as self.config does not exists at first
-        super().__setattr__("_is_initialized", False)
         # Initializes the config
         super().__init__(**kwargs)
         self._is_initialized = True
@@ -328,8 +328,7 @@ class CasadiModel(Model):
         self.integrator = None  # set in intitialize
         self.initialize()
 
-    @staticmethod
-    def _get_forbidden_variable_names() -> set[str]:
+    def _get_forbidden_variable_names(self) -> set[str]:
         """
         Function gives all variable names which are forbidden
         due to the fact that we override __setattr__ in order
@@ -363,17 +362,18 @@ class CasadiModel(Model):
         if t_sample is None:
             t_sample = self.dt
         pars = self.get_input_values(t_start)
+        z0 = self.get_initial_guess_outputs()
         t_sim = 0
         if self.differentials:
             x0 = self.get_differential_values()
             curr_x = x0
             while t_sim < t_sample:
-                result = self.integrator(x0=curr_x, p=pars)
+                result = self.integrator(x0=curr_x, p=pars, z0=z0)
                 t_sim += self.dt
                 curr_x = result["xf"]
             self.set_differential_values(np.array(result["xf"]).flatten())
         else:
-            result = self.integrator(p=pars)
+            result = self.integrator(p=pars, z0=z0)
         if self.outputs:
             self.set_output_values(np.array(result["zf"]).flatten())
 
@@ -383,7 +383,8 @@ class CasadiModel(Model):
         algebraic values at the end of the interval."""
         opts = {"t0": 0, "tf": self.dt}
         par = ca.vertcat(
-            *[inp.sym for inp in chain.from_iterable([self.inputs, self.parameters])], self.time
+            *[inp.sym for inp in chain.from_iterable([self.inputs, self.parameters])],
+            self.time,
         )
         x = ca.vertcat(*[sta.sym for sta in self.differentials])
         z = ca.vertcat(*[var.sym for var in self.outputs])
@@ -415,7 +416,11 @@ class CasadiModel(Model):
             }
             integrator_ = ca.integrator("system", "idas", dae, opts)
             integrator = ca.Function(
-                "system", [par], [integrator_(x0=0, p=par)["zf"]], ["p"], ["zf"]
+                "system",
+                [par, z],
+                [integrator_(x0=0, p=par, z0=z)["zf"]],
+                ["p", "z0"],
+                ["zf"],
             )
         return integrator
 
@@ -485,8 +490,16 @@ class CasadiModel(Model):
 
     def get_input_values(self, t_start):
         return ca.vertcat(
-            *[inp.value for inp in chain.from_iterable([self.inputs, self.parameters])],t_start
+            *[inp.value for inp in chain.from_iterable([self.inputs, self.parameters])],
+            t_start,
         )
+
+    def get_initial_guess_outputs(self):
+        values = [
+            var.value if var.value is not None else 0
+            for var in chain.from_iterable([self.outputs])
+        ]
+        return ca.vertcat(*values)
 
     def get_differential_values(self):
         return ca.vertcat(*[sta.value for sta in self.differentials])

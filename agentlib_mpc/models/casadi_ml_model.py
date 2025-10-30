@@ -182,8 +182,7 @@ class CasadiMLModel(CasadiModel):
         # construct a stage function for optimization and simulation
         self.sim_step = self._make_unified_predict_function()
 
-    @staticmethod
-    def _get_forbidden_variable_names() -> set[str]:
+    def _get_forbidden_variable_names(self) -> set[str]:
         return (
             super()
             ._get_forbidden_variable_names()
