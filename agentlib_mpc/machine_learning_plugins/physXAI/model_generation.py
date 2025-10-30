@@ -4,7 +4,8 @@ import os
 import pathlib
 import shutil
 from typing import Union
-from agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation import config_physXAI_2_ddmpc
+from agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation import physXAI_2_agentlib_json
+from physXAI import models  # Keep this import to ensure physXAI models are registered
 
 
 model_save_path_rel: str = 'models'
@@ -80,7 +81,7 @@ def generate_physxai_model(models: Union[list, dict, str], physXAI_config_base_p
         for path in pathes.values():
             os.remove(path)
 
-        model_config = config_physXAI_2_ddmpc(run_id, preprocessing, model, training_data)
+        model_config = physXAI_2_agentlib_json(run_id, preprocessing, model, training_data)
         os.makedirs(os.path.join(model_save_path, run_id), exist_ok=True)
         file = os.path.join(model_save_path, run_id, f"{name}.json")
         with open(file, 'w') as f:
