@@ -108,7 +108,6 @@ class MyCasadiModel(CasadiModel):
             # soft constraints
             (0, self.T + self.T_slack, self.T_upper),
         ]
-        import casadi
         obj1 = self.create_sub_objective(
             expressions=self.mDot,
             weight=self.r_mDot,
@@ -122,6 +121,14 @@ class MyCasadiModel(CasadiModel):
         )
 
         objective = self.create_full_objective(obj1, obj2, normalization=1)
+
+        # Outdated notation
+        # objective = sum(
+        #     [
+        #         self.r_mDot * self.mDot,
+        #         self.s_T * self.T_slack**2,
+        #     ]
+        # )
 
         return objective
 
