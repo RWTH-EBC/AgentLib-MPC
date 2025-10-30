@@ -68,6 +68,7 @@ Most public configuration/data models use Pydantic v2 models or clear typed data
 #### 2. Code Quality & Standards
 - **Pydantic usage**: Ensure v2 syntax (e.g., `Field()`, `field_validator`, not v1 `validator`)
 - **Docstrings**: Check for docstrings on new public classes/methods (Google style)
+- **Type hints**: Ensure type hints are added for new functions/methods
 - **Pylint compliance**: Flag obvious issues (unused imports, naming violations, etc.)
 
 #### 3. Testing Requirements
@@ -76,8 +77,8 @@ Most public configuration/data models use Pydantic v2 models or clear typed data
 - **Coverage concerns**: Highlight complex logic added without test coverage
 
 #### 4. Documentation & Examples
-- **Type hints**: Ensure type hints are added for new functions/methods
 - **Examples**: Add examples for new features and functionality
+- **CHANGELOG.md**: All notable changes should be documented
 
 #### 5. CI/CD Considerations
 - **Import errors**: New dependencies must be in `setup.cfg`/`pyproject.toml` optional-dependencies
@@ -86,7 +87,7 @@ Most public configuration/data models use Pydantic v2 models or clear typed data
 - **Example scripts**: `examples/` should remain functional (tested by CI)
 
 #### 6. Version & Release
-- **Version bump**: Check if `agentlib/__init__.py` `__version__` updated appropriately
+- **Version bump**: Check if `agentlib_mpc/__init__.py` `__version__` updated appropriately
 - **CHANGELOG**: Verify changes documented under correct version header
 - **Breaking changes**: Major version bump (0.x.0) vs minor (0.8.x)
 
