@@ -139,22 +139,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Tried to update the MLModels, but new MLModels do not have matching &#39;dt&#39;. &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;Error message from model: &#39;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
-            <span class="p">)</span>
-
-<div class="viewcode-block" id="MLModelSimulator.update_model_inputs"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.ml_model_simulator.MLModelSimulator.update_model_inputs">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_model_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Internal method to write current data_broker to simulation model.</span>
-<span class="sd">        Only update values, not other module_types.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">model_input_names</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_input_names</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_parameter_names</span><span class="p">()</span>
-        <span class="p">)</span>
-        <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">inp</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">model_input_names</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Updating model variable </span><span class="si">%s</span><span class="s2">=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">inp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">inp</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">set_with_timestamp</span><span class="p">(</span>
-                    <span class="n">name</span><span class="o">=</span><span class="n">inp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">inp</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">inp</span><span class="o">.</span><span class="n">timestamp</span>
-                <span class="p">)</span></div></div>
+            <span class="p">)</span></div>
 </pre></div>
 
            </div>
