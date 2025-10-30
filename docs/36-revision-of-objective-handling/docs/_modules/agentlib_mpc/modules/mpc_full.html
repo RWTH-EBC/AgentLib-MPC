@@ -164,11 +164,6 @@
                 <span class="n">name</span><span class="o">=</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_after_config_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># self._internal_variables = self._create_internal_variables()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_internal_variables</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_after_config_update</span><span class="p">()</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_setup_var_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">VariableReferenceT</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">VariableReference</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
 
@@ -197,14 +192,7 @@
             <span class="p">)</span>
             <span class="n">variables</span><span class="p">[</span><span class="n">hist_var</span><span class="p">]</span> <span class="o">=</span> <span class="n">updated_var</span>
 
-        <span class="c1"># return {**variables, **self._internal_variables}</span>
         <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">variables</span><span class="p">}</span></div></div>
-
-        <span class="c1"># class AgVarDropin:</span>
-        <span class="c1">#     ub: float</span>
-        <span class="c1">#     lb: float</span>
-        <span class="c1">#     value: Union[float, list, pd.Series]</span>
-        <span class="c1">#     interpolation_method: InterpolationMethod</span>
 </pre></div>
 
            </div>

@@ -170,7 +170,7 @@
             <span class="n">assert_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">cost_function</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">cost_func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">objective</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_constraints</span> <span class="o">=</span> <span class="n">Constraint</span><span class="p">(</span>
             <span class="n">function</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">function</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">()]),</span>
             <span class="n">lb</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">lb</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">()]),</span>
@@ -264,7 +264,8 @@
             <span class="n">admm_lam</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exchange_multipliers</span><span class="o">.</span><span class="n">full_symbolic</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="n">admm_objective</span> <span class="o">+=</span> <span class="n">admm_lam</span> <span class="o">*</span> <span class="n">admm_out</span> <span class="o">+</span> <span class="n">rho</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">admm_in</span> <span class="o">-</span> <span class="n">admm_out</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">cost_function</span> <span class="o">+=</span> <span class="n">admm_objective</span></div>
+        <span class="c1"># todo this part needs cleanup. should add actual admm objective components</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objective</span> <span class="o">+=</span> <span class="n">admm_objective</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">OptimizationVariable</span><span class="p">]:</span>
@@ -543,7 +544,7 @@
         <span class="c1"># aggregate outputs</span>
         <span class="n">outputs</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">state_output</span><span class="p">,</span>
-            <span class="n">system</span><span class="o">.</span><span class="n">cost_function</span><span class="p">,</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">objective</span><span class="o">.</span><span class="n">get_casadi_expression</span><span class="p">(),</span>
             <span class="o">*</span><span class="n">constraints_func</span><span class="p">,</span>
             <span class="o">*</span><span class="n">constraints_lb</span><span class="p">,</span>
             <span class="o">*</span><span class="n">constraints_ub</span><span class="p">,</span>

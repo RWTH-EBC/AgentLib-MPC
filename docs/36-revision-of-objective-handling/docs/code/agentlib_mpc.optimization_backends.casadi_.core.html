@@ -278,16 +278,17 @@ not contain all variables.</p></li>
 <dd><p>Bases: <a class="reference internal" href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.backend.OptimizationBackend" title="agentlib_mpc.optimization_backends.backend.OptimizationBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">OptimizationBackend</span></code></a></p>
 <p>OptimizationBackend for solving the optimization problem with CasADi.
 Requires the model to be a CasADi model.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.approximate_objective">
+<span class="sig-name descname"><span class="pre">approximate_objective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.html#CasADiBackend.approximate_objective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.approximate_objective" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the approximate objective value of this MPC step.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.config_type">
 <span class="sig-name descname"><span class="pre">config_type</span></span><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.config_type" title="Permalink to this definition"></a></dt>
 <dd><p>alias of <a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasadiBackendConfig" title="agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasadiBackendConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CasadiBackendConfig</span></code></a></p>
 </dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.cost_function">
-<span class="sig-name descname"><span class="pre">cost_function</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.cost_function" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.discretization">
@@ -312,7 +313,7 @@ Requires the model to be a CasADi model.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.save_result_df">
-<span class="sig-name descname"><span class="pre">save_result_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objective</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results" title="agentlib_mpc.optimization_backends.casadi_.core.discretization.Results"><span class="pre">Results</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">now</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.html#CasADiBackend.save_result_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.save_result_df" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">save_result_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results" title="agentlib_mpc.optimization_backends.casadi_.core.discretization.Results"><span class="pre">Results</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">now</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.html#CasADiBackend.save_result_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.save_result_df" title="Permalink to this definition"></a></dt>
 <dd><blockquote>
 <div><p>Save the results of <cite>solve</cite> into a dataframe at each time step.</p>
 </div></blockquote>

@@ -88,16 +88,12 @@
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">delta_u</span>
 
+
 <div class="viewcode-block" id="FullSystem"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.full.FullSystem">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">FullSystem</span><span class="p">(</span><span class="n">basic</span><span class="o">.</span><span class="n">BaseSystem</span><span class="p">):</span>
     <span class="n">last_control</span><span class="p">:</span> <span class="n">OptimizationParameter</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-
 <div class="viewcode-block" id="FullSystem.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.full.FullSystem.initialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">CasadiModel</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">VariableReference</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">var_ref</span><span class="o">=</span><span class="n">var_ref</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">model</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">last_control</span> <span class="o">=</span> <span class="n">OptimizationParameter</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
             <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;u_prev&quot;</span><span class="p">,</span>
@@ -108,8 +104,7 @@
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">time</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">objective</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cost_func</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">cost_func</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">objective</span></div></div>
 
 
 <div class="viewcode-block" id="DirectCollocation"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.full.DirectCollocation">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DirectCollocation</span><span class="p">(</span><span class="n">basic</span><span class="o">.</span><span class="n">DirectCollocation</span><span class="p">):</span>
@@ -145,7 +140,8 @@
 
             <span class="k">for</span> <span class="n">delta_obj</span> <span class="ow">in</span> <span class="n">delta_u_objectives</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_objective</span><span class="p">(</span>
-                    <span class="n">sys</span><span class="p">,</span> <span class="n">delta_obj</span><span class="p">,</span> <span class="n">u_prev</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">const_par</span><span class="p">)</span>
+                    <span class="n">sys</span><span class="p">,</span> <span class="n">delta_obj</span><span class="p">,</span> <span class="n">u_prev</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">const_par</span>
+                <span class="p">)</span>
 
             <span class="c1"># perform inner collocation loop</span>
             <span class="n">opt_vars_inside_inner</span> <span class="o">=</span> <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">algebraics</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span>
@@ -205,7 +201,8 @@
 
             <span class="k">for</span> <span class="n">delta_obj</span> <span class="ow">in</span> <span class="n">delta_u_objectives</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_objective</span><span class="p">(</span>
-                    <span class="n">sys</span><span class="p">,</span> <span class="n">delta_obj</span><span class="p">,</span> <span class="n">u_prev</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">const_par</span><span class="p">)</span>
+                    <span class="n">sys</span><span class="p">,</span> <span class="n">delta_obj</span><span class="p">,</span> <span class="n">u_prev</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">const_par</span>
+                <span class="p">)</span>
 
             <span class="n">dk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="p">)</span>
             <span class="n">zk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">algebraics</span><span class="p">)</span>

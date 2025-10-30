@@ -159,18 +159,15 @@
             <span class="n">use_in_stage_function</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">assert_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cost_function</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">cost_func</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_constraints</span> <span class="o">=</span> <span class="n">Constraint</span><span class="p">(</span>
             <span class="n">function</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">function</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">()]),</span>
             <span class="n">lb</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">lb</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">()]),</span>
             <span class="n">ub</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">ub</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">()]),</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sim_step</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">make_predict_function_for_mpc</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lags_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lags_dict</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lags_mx_store</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lags_mx_store</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">objective</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cost_func</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">cost_func</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">time</span></div>
 
     <span class="nd">@property</span>
@@ -184,6 +181,7 @@
 <div class="viewcode-block" id="CasadiMLSystem.all_system_quantities"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.all_system_quantities">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">all_system_quantities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">OptimizationQuantity</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span><span class="p">}</span></div></div>
 
+
 <div class="viewcode-block" id="MultipleShooting_ML"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.casadi_ml.MultipleShooting_ML">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MultipleShooting_ML</span><span class="p">(</span><span class="n">MultipleShooting</span><span class="p">):</span>
     <span class="n">max_lag</span><span class="p">:</span> <span class="nb">int</span>
 
@@ -191,7 +189,6 @@
         <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">prediction_horizon</span>
         <span class="n">ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">time_step</span>
         <span class="n">const_par</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">)</span>
-
 
         <span class="n">delta_u_objectives</span> <span class="o">=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_delta_u_objectives</span><span class="p">(</span><span class="n">sys</span><span class="p">)</span>
 
@@ -260,7 +257,8 @@
                 <span class="n">uk</span> <span class="o">=</span> <span class="n">stage_mx</span><span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">delta_obj</span> <span class="ow">in</span> <span class="n">delta_u_objectives</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_objective</span><span class="p">(</span>
-                        <span class="n">sys</span><span class="p">,</span> <span class="n">delta_obj</span><span class="p">,</span> <span class="n">u_prev</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">const_par</span><span class="p">)</span>
+                        <span class="n">sys</span><span class="p">,</span> <span class="n">delta_obj</span><span class="p">,</span> <span class="n">u_prev</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">const_par</span>
+                    <span class="p">)</span>
 
             <span class="c1"># get stage arguments from current time step</span>
             <span class="n">stage_arguments</span> <span class="o">=</span> <span class="p">{</span>
@@ -392,7 +390,7 @@
         <span class="c1"># aggregate outputs</span>
         <span class="n">outputs</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">state_output</span><span class="p">,</span>
-            <span class="n">system</span><span class="o">.</span><span class="n">cost_function</span><span class="p">,</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">objective</span><span class="o">.</span><span class="n">get_casadi_expression</span><span class="p">(),</span>
             <span class="o">*</span><span class="n">constraints_func</span><span class="p">,</span>
             <span class="o">*</span><span class="n">constraints_lb</span><span class="p">,</span>
             <span class="o">*</span><span class="n">constraints_ub</span><span class="p">,</span>

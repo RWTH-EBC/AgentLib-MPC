@@ -269,8 +269,8 @@ in which outputs are saved, there is no check.</p>
 </dd>
 <dt class="field-even">Fields<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><a class="reference internal" href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.cost_function" title="agentlib_mpc.models.casadi_model.CasadiModelConfig.cost_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cost_function</span> <span class="pre">(casadi.casadi.MX</span> <span class="pre">|</span> <span class="pre">casadi.casadi.SX</span> <span class="pre">|</span> <span class="pre">casadi.casadi.DM</span> <span class="pre">|</span> <span class="pre">casadi.casadi.Sparsity)</span></code></a></p></li>
 <li><p><a class="reference internal" href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.inputs" title="agentlib_mpc.models.casadi_model.CasadiModelConfig.inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inputs</span> <span class="pre">(List[agentlib_mpc.models.casadi_model.CasadiInput])</span></code></a></p></li>
+<li><p><a class="reference internal" href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.objective" title="agentlib_mpc.models.casadi_model.CasadiModelConfig.objective"><code class="xref py py-obj docutils literal notranslate"><span class="pre">objective</span> <span class="pre">(casadi.casadi.MX</span> <span class="pre">|</span> <span class="pre">casadi.casadi.SX</span> <span class="pre">|</span> <span class="pre">casadi.casadi.DM</span> <span class="pre">|</span> <span class="pre">casadi.casadi.Sparsity)</span></code></a></p></li>
 <li><p><a class="reference internal" href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.outputs" title="agentlib_mpc.models.casadi_model.CasadiModelConfig.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outputs</span> <span class="pre">(List[agentlib_mpc.models.casadi_model.CasadiOutput])</span></code></a></p></li>
 <li><p><a class="reference internal" href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.parameters" title="agentlib_mpc.models.casadi_model.CasadiModelConfig.parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parameters</span> <span class="pre">(List[agentlib_mpc.models.casadi_model.CasadiParameter])</span></code></a></p></li>
 <li><p><a class="reference internal" href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.states" title="agentlib_mpc.models.casadi_model.CasadiModelConfig.states"><code class="xref py py-obj docutils literal notranslate"><span class="pre">states</span> <span class="pre">(List[agentlib_mpc.models.casadi_model.CasadiState])</span></code></a></p></li>
@@ -287,11 +287,6 @@ in which outputs are saved, there is no check.</p>
 </dd>
 </dl>
 <dl class="py attribute pydantic_field">
-<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_model.CasadiModelConfig.cost_function">
-<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cost_function</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MX</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SX</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DM</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sparsity</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_model.CasadiModelConfig.cost_function" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="agentlib_mpc.models.casadi_model.CasadiModelConfig.inputs">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiInput" title="agentlib_mpc.models.casadi_model.CasadiInput"><span class="pre">CasadiInput</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_model.CasadiModelConfig.inputs" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
@@ -302,6 +297,11 @@ in which outputs are saved, there is no check.</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_model.CasadiModelConfig.objective">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">objective</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MX</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">SX</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">DM</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Sparsity</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_model.CasadiModelConfig.objective" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="agentlib_mpc.models.casadi_model.CasadiModelConfig.outputs">

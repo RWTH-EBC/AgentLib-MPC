@@ -74,17 +74,12 @@
   <h1>Source code for agentlib_mpc.optimization_backends.casadi_.core.delta_u</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">casadi</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ca</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="get_delta_u_objectives"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.delta_u.get_delta_u_objectives">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_delta_u_objectives</span><span class="p">(</span><span class="n">sys</span><span class="p">):</span>
-    <span class="n">delta_u_objectives</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s1">&#39;objective&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">objective</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">delta_u_objectives</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">objective</span><span class="o">.</span><span class="n">get_delta_u_objectives</span><span class="p">()</span>
-        <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to get delta_u_objectives: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">delta_u_objectives</span></div>
+    <span class="k">return</span> <span class="n">sys</span><span class="o">.</span><span class="n">objective</span><span class="o">.</span><span class="n">get_delta_u_objectives</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="get_objective"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.delta_u.get_objective">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_objective</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="n">delta_obj</span><span class="p">,</span> <span class="n">u_prev</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">const_par</span><span class="p">):</span>
@@ -93,19 +88,16 @@
         <span class="n">control_curr</span> <span class="o">=</span> <span class="n">uk</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
         <span class="n">delta</span> <span class="o">=</span> <span class="n">control_curr</span> <span class="o">-</span> <span class="n">control_prev</span>
 
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">delta_obj</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="s1">&#39;sym&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">delta_obj</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="s2">&quot;sym&quot;</span><span class="p">):</span>
             <span class="n">weight_value</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">substitute</span><span class="p">(</span>
-                <span class="n">delta_obj</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">sym</span><span class="p">,</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="o">.</span><span class="n">full_symbolic</span><span class="p">,</span>
-                <span class="n">const_par</span>
+                <span class="n">delta_obj</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">sym</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="o">.</span><span class="n">full_symbolic</span><span class="p">,</span> <span class="n">const_par</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">weight_value</span> <span class="o">=</span> <span class="n">delta_obj</span><span class="o">.</span><span class="n">weight</span>
 
-        <span class="k">return</span> <span class="n">weight_value</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">delta</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="k">return</span> <span class="n">weight_value</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">delta</span><span class="o">**</span><span class="mi">2</span>
 
     <span class="k">return</span> <span class="mi">0</span></div>
-
 </pre></div>
 
            </div>
