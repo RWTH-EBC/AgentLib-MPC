@@ -275,7 +275,6 @@ def plot(sim_res: pd.DataFrame, until: float, results=None):
     print(f"Absolute integral error: {aie_kh} Kh.")
     print(f"Cooling energy used: {energy_cost_kWh} kWh.")
 
-    # Create a figure with 3 subplots
     fig, ax = plt.subplots(3, 1, sharex=True, figsize=(12, 10))
 
     # Plot room temperature (from simulator results)
@@ -301,67 +300,22 @@ def plot(sim_res: pd.DataFrame, until: float, results=None):
     ax[1].legend(fontsize=10)
     ax[1].grid(True, alpha=0.3)
 
-    # Get the AgentLogger data and plot MPC active flag
-    mpc_flag_found = False
-    if results and "myMPCAgent" in results and "AgentLogger" in results["myMPCAgent"]:
-        agent_logger = results["myMPCAgent"]["AgentLogger"]
-        # Try "mpc_active" first, then "MPC_FLAG_ACTIVE"
-        for var_name in ["MPC_FLAG_ACTIVE"]:
-            if var_name in agent_logger.columns:
-                mpc_flag = agent_logger[var_name]
-                ax[2].step(
-                    agent_logger.index,
-                    mpc_flag,
-                    "r-",
-                    linewidth=2,
-                    where="post",
-                    label="MPC Active",
-                )
-
-                # Shade regions where MPC is inactive
-                for i in range(len(mpc_flag) - 1):
-                    if not mpc_flag.iloc[i]:
-                        start_time = mpc_flag.index[i]
-                        # Find when it becomes active again
-                        next_active = np.where(mpc_flag.iloc[i + 1 :].values)[0]
-                        if len(next_active) > 0:
-                            end_time = mpc_flag.index[i + 1 + next_active[0]]
-                        else:
-                            end_time = mpc_flag.index[-1]
-
-                        # Shade the inactive regions in all plots
-                        for a in ax:
-                            a.axvspan(
-                                start_time,
-                                end_time,
-                                alpha=0.2,
-                                color="lightgray",
-                                label="_nolegend_",
-                            )
-
-                mpc_flag_found = True
-                print(f"Found MPC active flag as '{var_name}' in AgentLogger")
-                break
-
-    if not mpc_flag_found:
-        print("Warning: MPC active flag not found in AgentLogger.")
-        ax[2].text(
-            0.5,
-            0.5,
-            "MPC active flag not found",
-            horizontalalignment="center",
-            verticalalignment="center",
-            transform=ax[2].transAxes,
-            fontsize=12,
-        )
+    agent_logger = results["myMPCAgent"]["AgentLogger"]
+    mpc_flag = agent_logger["MPC_FLAG_ACTIVE"]
+    ax[2].step(
+        agent_logger.index,
+        mpc_flag,
+        "r-",
+        linewidth=2,
+        where="post",
+        label="MPC Active",
+    )
 
     ax[2].set_ylim([-0.1, 1.1])
     ax[2].set_yticks([0, 1])
     ax[2].set_yticklabels(["Inactive", "Active"])
     ax[2].set_ylabel("MPC Status", fontsize=12)
     ax[2].set_xlabel("Simulation Time (s)", fontsize=12)
-    if mpc_flag_found:
-        ax[2].legend(fontsize=10)
     ax[2].grid(True, alpha=0.3)
 
     # Set x limits for all subplots
