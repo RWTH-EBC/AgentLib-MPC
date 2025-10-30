@@ -90,11 +90,6 @@ class MPC(BaseMPC):
                 name=var.name,
             )
 
-    def _after_config_update(self):
-        # self._internal_variables = self._create_internal_variables()
-        self._internal_variables = {}
-        super()._after_config_update()
-
     def _setup_var_ref(self) -> mpc_datamodels.VariableReferenceT:
         return mpc_datamodels.VariableReference.from_config(self.config)
 
@@ -123,11 +118,4 @@ class MPC(BaseMPC):
             )
             variables[hist_var] = updated_var
 
-        # return {**variables, **self._internal_variables}
         return {**variables}
-
-        # class AgVarDropin:
-        #     ub: float
-        #     lb: float
-        #     value: Union[float, list, pd.Series]
-        #     interpolation_method: InterpolationMethod

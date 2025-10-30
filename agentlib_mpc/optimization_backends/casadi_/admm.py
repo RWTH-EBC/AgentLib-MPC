@@ -3,6 +3,7 @@ import pandas as pd
 
 from agentlib_mpc.data_structures.casadi_utils import DiscretizationMethod, Integrators
 from agentlib_mpc.data_structures.mpc_datamodels import stats_path
+from agentlib_mpc.data_structures.objective import SubObjective
 from agentlib_mpc.models.casadi_model import CasadiModel, CasadiInput, CasadiParameter
 from agentlib_mpc.data_structures import admm_datatypes
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
@@ -88,21 +89,30 @@ class CasadiADMMSystem(FullSystem):
         )
 
         # add admm terms to objective function
-        admm_objective = 0
         rho = self.penalty_factor.full_symbolic[0]
-        for i in range(len(var_ref.couplings)):
+        admm_terms = {}
+        for i, coupling in enumerate(var_ref.couplings):
             admm_in = self.global_couplings.full_symbolic[i]
             admm_out = self.local_couplings.full_symbolic[i]
             admm_lam = self.multipliers.full_symbolic[i]
-            admm_objective += admm_lam * admm_out + rho / 2 * (admm_in - admm_out) ** 2
+            admm_terms[f"admm_multiplier_{coupling.name}"] = admm_lam * admm_out
+            admm_terms[f"admm_augmentation_{coupling.name}"] = (
+                rho / 2 * (admm_in - admm_out) ** 2
+            )
 
-        for i in range(len(var_ref.exchange)):
+        for i, coupling in enumerate(var_ref.exchange):
             admm_in = self.exchange_diff.full_symbolic[i]
             admm_out = self.local_exchange.full_symbolic[i]
             admm_lam = self.exchange_multipliers.full_symbolic[i]
-            admm_objective += admm_lam * admm_out + rho / 2 * (admm_in - admm_out) ** 2
+            admm_terms[f"admm_multiplier_{coupling.name}"] = admm_lam * admm_out
+            admm_terms[f"admm_augmentation_{coupling.name}"] = (
+                rho / 2 * (admm_in - admm_out) ** 2
+            )
 
-        self.cost_function += admm_objective
+        for name, term in admm_terms.items():
+            self.objective.objectives += [
+                SubObjective(term, name="admm_augmentation_term")
+            ]
 
 
 class ADMMCollocation(DirectCollocation):
@@ -138,7 +148,8 @@ class ADMMCollocation(DirectCollocation):
 
             for delta_obj in delta_u_objectives:
                 self.objective_function += delta_u.get_objective(
-                    sys, delta_obj, u_prev, uk, const_par)
+                    sys, delta_obj, u_prev, uk, const_par
+                )
 
             # perform inner collocation loop
             opt_vars_inside_inner = [
@@ -152,7 +163,7 @@ class ADMMCollocation(DirectCollocation):
                 sys.multipliers,
                 sys.exchange_multipliers,
                 sys.exchange_diff,
-                sys.non_controlled_inputs
+                sys.non_controlled_inputs,
             ]
             constant_over_inner = {
                 sys.controls: uk,
@@ -210,6 +221,7 @@ class ADMMMultipleShooting(MultipleShooting):
             sys.states, lb=initial_state, ub=initial_state, guess=initial_state
         )
 
+        current_control = self.add_opt_par(sys.last_control)
         const_par = self.add_opt_par(sys.model_parameters)
 
         # Add time-invariant parameters
@@ -229,8 +241,8 @@ class ADMMMultipleShooting(MultipleShooting):
 
             for delta_obj in delta_u_objectives:
                 self.objective_function += delta_u.get_objective(
-                    sys, delta_obj, previous_control, current_control, const_par)
-
+                    sys, delta_obj, previous_control, current_control, const_par
+                )
 
             # 2. Add optimization variables for current shooting interval
             disturbance = self.add_opt_par(sys.non_controlled_inputs)
@@ -297,7 +309,6 @@ class ADMMMultipleShooting(MultipleShooting):
             current_state = next_state
 
     def _create_ode(
-
         self, sys: CasadiADMMSystem, opts: dict, integrator: Integrators
     ) -> ca.Function:
         # dummy function for empty ode, since ca.integrator would throw an error
@@ -351,7 +362,6 @@ class CasADiADMMBackend(CasADiBaseBackend, ADMMBackend):
 
     def save_result_df(
         self,
-        system,
         results: Results,
         now: float = 0,
     ):

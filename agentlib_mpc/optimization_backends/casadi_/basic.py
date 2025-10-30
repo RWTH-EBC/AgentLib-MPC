@@ -12,6 +12,7 @@ from agentlib_mpc.data_structures.casadi_utils import (
     Integrators,
 )
 from agentlib_mpc.data_structures.mpc_datamodels import VariableReference
+from agentlib_mpc.data_structures.objective import FullObjective
 from agentlib_mpc.models.casadi_model import CasadiModel
 from agentlib_mpc.optimization_backends.casadi_.core.casadi_backend import CasADiBackend
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
@@ -39,8 +40,9 @@ class BaseSystem(System):
 
     # dynamics
     model_constraints: Constraint
-    cost_function: ca.MX
+    objective: FullObjective
     ode: ca.MX
+    time: ca.MX
 
     def initialize(self, model: CasadiModel, var_ref: VariableReference):
         # define variables
@@ -90,14 +92,13 @@ class BaseSystem(System):
         # dynamics
         ode = ca.vertcat(*[sta.ode for sta in model.get_states(var_ref.states)])
         self.ode = ca.reshape(ode, -1, 1)
-        self.cost_function = model.cost_func
+        self.objective = model.objective
         self.model_constraints = Constraint(
             function=ca.vertcat(*[c.function for c in model.get_constraints()]),
             lb=ca.vertcat(*[c.lb for c in model.get_constraints()]),
             ub=ca.vertcat(*[c.ub for c in model.get_constraints()]),
         )
         self.time = model.time
-
 
 
 @dataclasses.dataclass
@@ -217,7 +218,7 @@ class DirectCollocation(Discretization):
         # aggregate outputs
         outputs = [
             system.ode,
-            system.cost_function,
+            system.objective.get_casadi_expression(),
             *constraints_func,
             *constraints_lb,
             *constraints_ub,
@@ -520,7 +521,7 @@ class MultipleShooting(Discretization):
         # aggregate outputs
         outputs = [
             system.ode,
-            system.cost_function,
+            system.objective.get_casadi_expression(),
             *constraints_func,
             *constraints_lb,
             *constraints_ub,

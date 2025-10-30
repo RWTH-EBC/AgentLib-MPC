@@ -14,16 +14,12 @@ from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
 )
 from agentlib_mpc.optimization_backends.casadi_.core import delta_u
 
+
 class FullSystem(basic.BaseSystem):
     last_control: OptimizationParameter
 
-    def __init__(self):
-        super().__init__()
-
     def initialize(self, model: CasadiModel, var_ref: VariableReference):
         super().initialize(model=model, var_ref=var_ref)
-
-        self._model = model
 
         self.last_control = OptimizationParameter.declare(
             denotation="u_prev",
@@ -35,7 +31,6 @@ class FullSystem(basic.BaseSystem):
 
         self.time = model.time
         self.objective = model.objective
-        self.cost_func = model.cost_func
 
 
 class DirectCollocation(basic.DirectCollocation):
@@ -71,7 +66,8 @@ class DirectCollocation(basic.DirectCollocation):
 
             for delta_obj in delta_u_objectives:
                 self.objective_function += delta_u.get_objective(
-                    sys, delta_obj, u_prev, uk, const_par)
+                    sys, delta_obj, u_prev, uk, const_par
+                )
 
             # perform inner collocation loop
             opt_vars_inside_inner = [sys.algebraics, sys.outputs]
@@ -131,7 +127,8 @@ class MultipleShooting(basic.MultipleShooting):
 
             for delta_obj in delta_u_objectives:
                 self.objective_function += delta_u.get_objective(
-                    sys, delta_obj, u_prev, uk, const_par)
+                    sys, delta_obj, u_prev, uk, const_par
+                )
 
             dk = self.add_opt_par(sys.non_controlled_inputs)
             zk = self.add_opt_var(sys.algebraics)

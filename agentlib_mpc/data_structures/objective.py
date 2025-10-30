@@ -15,7 +15,7 @@ class SubObjective:
     def __init__(
         self,
         expressions: ca.MX,
-        weight: Union[float, int, CasadiParameter],
+        weight: Union[float, int, CasadiParameter] = 1,
         name: str = None,
     ):
         """
@@ -234,6 +234,10 @@ class FullObjective:
     def get_delta_u_objectives(self):
         """Returns a list of all DeltaUObjective instances"""
         return [obj for obj in self.objectives if isinstance(obj, DeltaUObjective)]
+
+    @property
+    def expression(self):
+        return self.get_casadi_expression()
 
     def get_casadi_expression(self):
         """Combine all objectives into a single CasADi expression"""
