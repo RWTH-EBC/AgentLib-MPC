@@ -5,7 +5,6 @@ import pandas as pd
 from agentlib.core import AgentVariable
 
 from agentlib_mpc.data_structures import mpc_datamodels
-from pydantic import Field, field_validator, ValidationInfo
 
 from agentlib_mpc.modules.mpc import BaseMPCConfig, BaseMPC
 
@@ -69,7 +68,6 @@ class MPC(BaseMPC):
                 if timestamp < (self.env.time - lag_in_seconds):
                     var_history.pop(timestamp)
 
-
     def _callback_hist_vars(self, variable: AgentVariable, name: str):
         """Adds received measured inputs to the past trajectory."""
         # if variables are intentionally sent as series, we don't need to store them
@@ -96,7 +94,6 @@ class MPC(BaseMPC):
         # self._internal_variables = self._create_internal_variables()
         self._internal_variables = {}
         super()._after_config_update()
-
 
     def _setup_var_ref(self) -> mpc_datamodels.VariableReferenceT:
         return mpc_datamodels.VariableReference.from_config(self.config)
@@ -134,4 +131,3 @@ class MPC(BaseMPC):
         #     lb: float
         #     value: Union[float, list, pd.Series]
         #     interpolation_method: InterpolationMethod
-

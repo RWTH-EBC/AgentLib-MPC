@@ -226,7 +226,7 @@ class CasadiADMMNNSystem(CasadiADMMSystem, CasadiMLSystem):
         return {
             var.name: var
             for var in self.quantities
-            if not var.name in omit_in_blackbox_function
+            if var.name not in omit_in_blackbox_function
         }
 
 
@@ -337,7 +337,8 @@ class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_ML):
                 uk = stage_mx[sys.controls.name]
                 for delta_obj in delta_u_objectives:
                     self.objective_function += delta_u.get_objective(
-                        sys, delta_obj, u_prev, uk, const_par)
+                        sys, delta_obj, u_prev, uk, const_par
+                    )
 
             # get stage arguments from current time step
             stage_arguments = {

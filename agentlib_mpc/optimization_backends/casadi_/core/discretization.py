@@ -2,9 +2,8 @@
 
 import abc
 import dataclasses
-import traceback
 from pathlib import Path
-from typing import TypeVar, Union, Callable, Optional, Dict
+from typing import TypeVar, Union, Callable, Optional
 
 import casadi as ca
 import numpy as np
@@ -65,7 +64,6 @@ class Results:
                 lookup[label[1]] = index
         return lookup
 
-
     @property
     def df(self) -> pd.DataFrame:
         return pd.DataFrame(self.matrix, index=self.grid, columns=self.columns)
@@ -79,15 +77,17 @@ class Results:
         # Add prefixes to distinguish objective from stats columns
         tagged_obj_names = [f"obj_{name}" for name in objective_names]
         tagged_stats_names = [f"stats_{name}" for name in self.stats.keys()]
-        combined_names = ['time'] + tagged_obj_names + tagged_stats_names
+        combined_names = ["time"] + tagged_obj_names + tagged_stats_names
         line = f""",{",".join(combined_names[1:])}\n"""
         with open(file, "w") as f:
             f.write(line)
 
-    def combined_stats_line(self, index: str, objective_values: dict, objective_names: list[str]) -> str:
+    def combined_stats_line(
+        self, index: str, objective_values: dict, objective_names: list[str]
+    ) -> str:
         """Generate a line with both objective and stats values"""
         # Use the same order as in the headers
-        obj_values = [str(objective_values.get(name, '')) for name in objective_names]
+        obj_values = [str(objective_values.get(name, "")) for name in objective_names]
         stats_values = [str(val) for val in self.stats.values()]
         combined_values = obj_values + stats_values
         return f'"{index}",{",".join(combined_values)}\n'
@@ -206,12 +206,8 @@ class Discretization(abc.ABC):
         mpc_output = self._nlp_outputs_to_mpc_outputs(vars_at_optimum=nlp_output["x"])
         self._remember_solution(mpc_output)
 
-        result = self._process_solution(
-            inputs=mpc_inputs,
-            outputs=mpc_output
-        )
+        result = self._process_solution(inputs=mpc_inputs, outputs=mpc_output)
         return result
-
 
     def _determine_initial_guess(self, mpc_inputs: MPCInputs) -> MPCInputs:
         """
@@ -367,8 +363,8 @@ class Discretization(abc.ABC):
         )
 
         def make_results_view(
-                result_matrix: ca.DM,
-                stats: dict,
+            result_matrix: ca.DM,
+            stats: dict,
         ) -> Results:
             return Results(
                 matrix=result_matrix,

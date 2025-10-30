@@ -3,12 +3,11 @@ import platform
 from pathlib import Path
 from typing import Type, Optional
 import numpy as np
-import os
 import casadi as ca
 import pydantic
 from agentlib.core.errors import ConfigurationError
 
-from agentlib_mpc.data_structures.mpc_datamodels import MPCVariable, stats_path,objective_path
+from agentlib_mpc.data_structures.mpc_datamodels import MPCVariable, stats_path
 from agentlib_mpc.optimization_backends.casadi_.core import system
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
     OptimizationVariable,
@@ -255,10 +254,10 @@ class CasADiBackend(OptimizationBackend):
         self.discretization.logger = self.logger
 
     def save_result_df(
-            self,
-            objective,
-            results: Results,
-            now: float = 0,
+        self,
+        objective,
+        results: Results,
+        now: float = 0,
     ):
         """
          Save the results of `solve` into a dataframe at each time step.
@@ -291,12 +290,16 @@ class CasADiBackend(OptimizationBackend):
             return objective_values
 
         df = results.df
-        grid = np.arange(0, self.config.discretization_options.prediction_horizon * (
-                self.config.discretization_options.time_step + 1), self.config.discretization_options.time_step)
+        grid = np.arange(
+            0,
+            self.config.discretization_options.prediction_horizon
+            * (self.config.discretization_options.time_step + 1),
+            self.config.discretization_options.time_step,
+        )
         objective_values = get_objective_values(objective=objective, df=df, grid=grid)
 
         if objective_values:
-            objective_names = [obj.name for obj in objective.objectives] + ['total']
+            objective_names = [obj.name for obj in objective.objectives] + ["total"]
         else:
             objective_names = []
 
@@ -308,4 +311,6 @@ class CasADiBackend(OptimizationBackend):
         df.to_csv(res_file, mode="a", header=False)
 
         with open(stats_path(res_file), "a") as f:
-            f.writelines(results.combined_stats_line(str(now), objective_values, objective_names))
+            f.writelines(
+                results.combined_stats_line(str(now), objective_values, objective_names)
+            )
