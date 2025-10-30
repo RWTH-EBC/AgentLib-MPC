@@ -1,12 +1,17 @@
 # Changelog
 
-## 0.6.7
+## 0.6.9
 - Add option to skip MPC calculation in given time intervals, e.g. during summer period
 - Add a fallback pid module that listens to the same deactivation module and switches on
 
+## 0.6.8
+- #55 improved numerics of casadi model simulation by adding initial guess for outputs
+
+## 0.6.7
+- #60: Forbid users from creating instance attributes which are also variables in CasadiModel
+
 ## 0.6.6
 - self.time available in mpc and ml mpc (not yet available for admm, minlp, etc)
-
 
 ## 0.6.5
 - Fix faulty warning about boundaries of binary controls

@@ -65,7 +65,7 @@ def plot_mpc_plotly(
     series: pd.Series,
     step: bool = False,
     convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds",
-    y_axis_label: str = "",
+    y_axis_label: str = ""
 ) -> go.Figure:
     """
     Args:
@@ -91,8 +91,11 @@ def plot_mpc_plotly(
     for i, (time_seconds, prediction) in enumerate(series.groupby(level=0)):
         prediction: pd.Series = prediction.dropna().droplevel(0)
 
-        time_converted = time_seconds / TIME_CONVERSION[convert_to]
-        actual_values[time_converted] = prediction.loc[0]
+        try:
+            time_converted = time_seconds / TIME_CONVERSION[convert_to]
+            actual_values[time_converted] = prediction.loc[0]
+        except KeyError:
+            pass
         prediction.index = (prediction.index + time_seconds) / TIME_CONVERSION[
             convert_to
         ]
@@ -136,30 +139,30 @@ def plot_mpc_plotly(
                     # id=f"trace-{y_axis_label}-{i}",
                 )
             )
-
-    actual_series = pd.Series(actual_values)
-    if not step:
-        fig.add_trace(
-            go.Scatter(
-                x=actual_series.index,
-                y=actual_series,
-                mode="lines",
-                line=dict(color="black", width=1.5),
-                name="Actual Values",
-                legendrank=1,
+    if len(actual_values) > 0:
+        actual_series = pd.Series(actual_values)
+        if not step:
+            fig.add_trace(
+                go.Scatter(
+                    x=actual_series.index,
+                    y=actual_series,
+                    mode="lines",
+                    line=dict(color="black", width=1.5),
+                    name="Actual Values",
+                    legendrank=1,
+                )
             )
-        )
-    else:
-        fig.add_trace(
-            go.Scatter(
-                x=actual_series.index,
-                y=actual_series,
-                mode="lines",
-                line=dict(color="black", width=1.5, shape="hv"),
-                name="Actual Values",
-                legendrank=1,
+        else:
+            fig.add_trace(
+                go.Scatter(
+                    x=actual_series.index,
+                    y=actual_series,
+                    mode="lines",
+                    line=dict(color="black", width=1.5, shape="hv"),
+                    name="Actual Values",
+                    legendrank=1,
+                )
             )
-        )
 
     # Update x-axis label based on convert_to argument
     x_axis_label = f"Time in {convert_to}"
@@ -214,11 +217,16 @@ def show_dashboard(
     data: pd.DataFrame,
     stats: Optional[pd.DataFrame] = None,
     scale: Literal["seconds", "minutes", "hours", "days"] = "seconds",
+    port: Optional[int] = None,
+    variables_to_plot: list = None,
 ):
     app = dash.Dash(__name__, title="MPC Results")
 
     # Get the list of columns from the DataFrame, and check if they can be plotted
-    columns = data["variable"].columns
+    if variables_to_plot is None:
+        columns = data["variable"].columns
+    else:
+        columns = variables_to_plot
     columns_okay = []
     for column in columns:
         try:
@@ -253,7 +261,8 @@ def show_dashboard(
         ]
     )
 
-    port = get_port()
+    if port is None:
+        port = get_port()
 
     @app.callback(
         [Output(f"plot-{column}", "figure") for column in columns_okay],

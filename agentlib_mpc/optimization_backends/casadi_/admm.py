@@ -137,10 +137,6 @@ class ADMMCollocation(DirectCollocation):
             # penalty for control change between time steps
             self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
 
-            # New parameter for inputs
-            dk = self.add_opt_par(sys.non_controlled_inputs)
-
-            # perform inner collocation loop
             # perform inner collocation loop
             opt_vars_inside_inner = [
                 sys.algebraics,
@@ -153,10 +149,10 @@ class ADMMCollocation(DirectCollocation):
                 sys.multipliers,
                 sys.exchange_multipliers,
                 sys.exchange_diff,
+                sys.non_controlled_inputs,
             ]
             constant_over_inner = {
                 sys.controls: uk,
-                sys.non_controlled_inputs: dk,
                 sys.model_parameters: const_par,
                 sys.penalty_factor: rho,
             }
@@ -274,7 +270,6 @@ class ADMMMultipleShooting(MultipleShooting):
                 p=ca.vertcat(
                     current_control,
                     local_coupling,
-                    local_exchange,
                     disturbance,
                     model_parameters,
                     algebraic_vars,
@@ -312,7 +307,6 @@ class ADMMMultipleShooting(MultipleShooting):
         p = ca.vertcat(
             sys.controls.full_symbolic,
             sys.local_couplings.full_symbolic,
-            sys.local_exchange.full_symbolic,
             sys.non_controlled_inputs.full_symbolic,
             sys.model_parameters.full_symbolic,
             sys.algebraics.full_symbolic,
@@ -381,7 +375,7 @@ class CasADiADMMBackend(CasADiBaseBackend, ADMMBackend):
 
         res_file = self.config.results_file
 
-        if self.results_folder_exists():
+        if self.results_file_exists():
             self.it += 1
             if now != self.now:  # means we advanced to next step
                 self.it = 0

@@ -1,10 +1,15 @@
 import logging
+import os
 
 from pydantic import field_validator, Field
 
 from agentlib_mpc.data_structures import mpc_datamodels
-from agentlib_mpc.data_structures.mpc_datamodels import MINLPVariableReference
-from agentlib_mpc.modules.mpc.mpc import BaseMPCConfig, BaseMPC
+from agentlib_mpc.data_structures.mpc_datamodels import (
+    MINLPVariableReference,
+    cia_relaxed_results_path,
+)
+from agentlib_mpc.modules.mpc import BaseMPCConfig, BaseMPC
+from agentlib_mpc.optimization_backends.casadi_.minlp_cia import CasADiCIABackend
 
 logger = logging.getLogger(__name__)
 
@@ -94,3 +99,15 @@ class MINLPMPC(BaseMPC):
             # take the first entry of the control trajectory
             actuation = solution[b_control][0]
             self.set(b_control, actuation)
+
+    def cleanup_results(self):
+        results_file = self.optimization_backend.config.results_file
+        if not results_file:
+            return
+        os.remove(results_file)
+        os.remove(mpc_datamodels.stats_path(results_file))
+
+        if isinstance(self.optimization_backend, CasADiCIABackend):
+            relaxed_res_file = cia_relaxed_results_path(results_file)
+            os.remove(relaxed_res_file)
+            os.remove(mpc_datamodels.stats_path(relaxed_res_file))

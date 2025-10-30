@@ -298,8 +298,21 @@ class CasadiModel(Model):
     config: CasadiModelConfig
 
     def __init__(self, **kwargs):
+        # Temporarily disable __setattr__ checks during initialization as self.config does not exists at first
+        super().__setattr__("_is_initialized", False)
         # Initializes the config
         super().__init__(**kwargs)
+        self._is_initialized = True
+        # Check forbidden names
+        bad_variable_names = self._get_forbidden_variable_names().intersection(
+            self.config.get_variable_names()
+        )
+        if bad_variable_names:
+            raise NameError(
+                "The following variable names are not allowed as the intersect "
+                f"with internal names of {self.__class__.__name__}: "
+                f"{' ,'.join(bad_variable_names)}"
+            )
 
         self.constraints = []  # constraint functions
         self.time = ca.MX.sym("time", 1, 1)
@@ -315,6 +328,26 @@ class CasadiModel(Model):
         self.integrator = None  # set in intitialize
         self.initialize()
 
+    def _get_forbidden_variable_names(self) -> set[str]:
+        """
+        Function gives all variable names which are forbidden
+        due to the fact that we override __setattr__ in order
+        to avoid users creating instance attributes for variable
+        names.
+        If a user names a variable, e.g. "constraints", the
+        error would not point to the variable name being a
+        bad choice.
+
+        Returns:
+            Set of forbidden names as str
+        """
+        return {
+            "constraints",
+            "cost_func",
+            "time",
+            "system",
+            "integrator",
+        }
 
     def _assert_outputs_are_defined(self):
         """Raises an Error, if the output variables are not defined with an equation"""
@@ -329,17 +362,18 @@ class CasadiModel(Model):
         if t_sample is None:
             t_sample = self.dt
         pars = self.get_input_values(t_start)
+        z0 = self.get_initial_guess_outputs()
         t_sim = 0
         if self.differentials:
             x0 = self.get_differential_values()
             curr_x = x0
             while t_sim < t_sample:
-                result = self.integrator(x0=curr_x, p=pars)
+                result = self.integrator(x0=curr_x, p=pars, z0=z0)
                 t_sim += self.dt
                 curr_x = result["xf"]
             self.set_differential_values(np.array(result["xf"]).flatten())
         else:
-            result = self.integrator(p=pars)
+            result = self.integrator(p=pars, z0=z0)
         if self.outputs:
             self.set_output_values(np.array(result["zf"]).flatten())
 
@@ -349,7 +383,8 @@ class CasadiModel(Model):
         algebraic values at the end of the interval."""
         opts = {"t0": 0, "tf": self.dt}
         par = ca.vertcat(
-            *[inp.sym for inp in chain.from_iterable([self.inputs, self.parameters])], self.time
+            *[inp.sym for inp in chain.from_iterable([self.inputs, self.parameters])],
+            self.time,
         )
         x = ca.vertcat(*[sta.sym for sta in self.differentials])
         z = ca.vertcat(*[var.sym for var in self.outputs])
@@ -381,7 +416,11 @@ class CasadiModel(Model):
             }
             integrator_ = ca.integrator("system", "idas", dae, opts)
             integrator = ca.Function(
-                "system", [par], [integrator_(x0=0, p=par)["zf"]], ["p"], ["zf"]
+                "system",
+                [par, z],
+                [integrator_(x0=0, p=par, z0=z)["zf"]],
+                ["p", "z0"],
+                ["zf"],
             )
         return integrator
 
@@ -451,8 +490,16 @@ class CasadiModel(Model):
 
     def get_input_values(self, t_start):
         return ca.vertcat(
-            *[inp.value for inp in chain.from_iterable([self.inputs, self.parameters])],t_start
+            *[inp.value for inp in chain.from_iterable([self.inputs, self.parameters])],
+            t_start,
         )
+
+    def get_initial_guess_outputs(self):
+        values = [
+            var.value if var.value is not None else 0
+            for var in chain.from_iterable([self.outputs])
+        ]
+        return ca.vertcat(*values)
 
     def get_differential_values(self):
         return ca.vertcat(*[sta.value for sta in self.differentials])
@@ -474,6 +521,14 @@ class CasadiModel(Model):
 
     def __setattr__(self, key, value):
         super().__setattr__(key, value)
+        if self._is_initialized and key in self.config.get_variable_names():
+            raise AttributeError(
+                f"You are trying to create an instance attribute with the name {key}, "
+                f"which is also in the variables of {self.__class__.__name__}. This can "
+                f"lead to unwanted behaviour. Assign variables or equations via .alg "
+                f"for CasadiOutputs and .ode for CasadiStates. To change other variable attributes, "
+                f"use .value, .lb or similar."
+            )
         # todo
 
 
