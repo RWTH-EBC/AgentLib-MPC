@@ -172,7 +172,7 @@ class SubObjective:
             raise ValueError(f"Unable to evaluate expression: {expr}. Error: {e}")
 
 
-class DeltaUObjective(SubObjective):
+class ChangePenaltyObjective(SubObjective):
     def __init__(
         self,
         expressions: CasadiInput,
@@ -218,7 +218,7 @@ class DeltaUObjective(SubObjective):
         return sum(results.dropna())
 
 
-class FullObjective:
+class CombinedObjective:
     """Container for multiple objective terms with normalization"""
 
     def __init__(self, *objectives, normalization: float = 1.0):
@@ -232,8 +232,8 @@ class FullObjective:
         self._values = {}
 
     def get_delta_u_objectives(self):
-        """Returns a list of all DeltaUObjective instances"""
-        return [obj for obj in self.objectives if isinstance(obj, DeltaUObjective)]
+        """Returns a list of all ChangePenaltyObjective instances"""
+        return [obj for obj in self.objectives if isinstance(obj, ChangePenaltyObjective)]
 
     @property
     def expression(self):
@@ -265,7 +265,7 @@ class FullObjective:
                     weight = obj.weight
             else:
                 weight = obj.weight
-            if isinstance(obj, DeltaUObjective):
+            if isinstance(obj, ChangePenaltyObjective):
                 control_name = obj.get_control_name()
                 control_series = df.loc[:, ("variable", control_name)]
                 value = obj.calculate_value(control_series, weight)
@@ -356,11 +356,11 @@ class ConditionalObjective:
         Args:
             *condition_objective_pairs: Tuples of (condition, objective)
                 where condition is a CasADi expression that evaluates to True/False
-                and objective is a FullObjective
+                and objective is a CombinedObjective
             default_objective: The objective to use when all conditions are False
         """
         self.condition_objective_pairs = condition_objective_pairs
-        self.default_objective = default_objective or FullObjective()
+        self.default_objective = default_objective or CombinedObjective()
 
         self.all_objectives = [self.default_objective]
         for _, objective in condition_objective_pairs:
@@ -387,7 +387,7 @@ class ConditionalObjective:
         return result
 
     def get_delta_u_objectives(self):
-        """Returns all DeltaUObjective instances from all contained objectives"""
+        """Returns all ChangePenaltyObjective instances from all contained objectives"""
         all_delta_u = []
         for objective in self.all_objectives:
             all_delta_u.extend(objective.get_delta_u_objectives())

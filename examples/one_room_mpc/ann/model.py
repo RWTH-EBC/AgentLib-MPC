@@ -107,7 +107,7 @@ class PhysicalModel(CasadiModel):
             name="temp_slack"
         )
 
-        objective = self.create_full_objective(obj1, obj2, normalization=1)
+        objective = self.create_combined_objective(obj1, obj2, normalization=1)
         return objective
 
 
@@ -205,6 +205,6 @@ class DataDrivenModel(CasadiMLModel):
             name="temp_slack"
         )
 
-        objective = self.create_full_objective(obj1, obj2, normalization=1)
+        objective = self.create_combined_objective(obj1, obj2, normalization=1)
 
         return objective

@@ -120,13 +120,13 @@ class MyCasadiModel(CasadiModel):
             expressions=self.T_slack**2, weight=self.s_T, name="temp_slack"
         )
 
-        obj3 = self.create_delta_u_objective(
+        obj3 = self.create_change_penalty(
             expressions=self.mDot,
             weight=self.r_delta_mDot,
             name="delta_control_penalty",
         )
 
-        objective = self.create_full_objective(
+        objective = self.create_combined_objective(
             obj1, obj2, obj3, normalization=1
         )
 

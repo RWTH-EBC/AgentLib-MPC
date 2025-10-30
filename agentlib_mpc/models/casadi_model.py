@@ -528,17 +528,17 @@ class CasadiModel(Model):
 
         return SubObjective(expressions=expressions, weight=weight, name=name)
 
-    def create_delta_u_objective(self, expressions, weight, name=None):
+    def create_change_penalty(self, expressions, weight, name=None):
         """Create a DeltaUObjective without requiring imports"""
-        from agentlib_mpc.data_structures.objective import DeltaUObjective
+        from agentlib_mpc.data_structures.objective import ChangePenaltyObjective
 
-        return DeltaUObjective(expressions=expressions, weight=weight, name=name)
+        return ChangePenaltyObjective(expressions=expressions, weight=weight, name=name)
 
-    def create_full_objective(self, *objectives, normalization=1.0):
+    def create_combined_objective(self, *objectives, normalization=1.0):
         """Create a FullObjective without requiring imports"""
-        from agentlib_mpc.data_structures.objective import FullObjective
+        from agentlib_mpc.data_structures.objective import CombinedObjective
 
-        return FullObjective(*objectives, normalization=normalization)
+        return CombinedObjective(*objectives, normalization=normalization)
 
     def create_conditional_objective(
         self, *condition_objective_pairs, default_objective=None

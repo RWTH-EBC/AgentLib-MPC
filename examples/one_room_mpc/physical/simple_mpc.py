@@ -119,7 +119,7 @@ class MyCasadiModel(CasadiModel):
             expressions=self.T_slack**2, weight=self.s_T, name="temp_slack"
         )
 
-        objective = self.create_full_objective(obj1, obj2, normalization=1)
+        objective = self.create_combined_objective(obj1, obj2, normalization=1)
 
         # Outdated notation
         # objective = sum(
