@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Type, Optional
 import numpy as np
 import casadi as ca
+import pandas as pd
 import pydantic
 from agentlib.core.errors import ConfigurationError
 
@@ -127,7 +128,7 @@ class CasADiBackend(OptimizationBackend):
         # collect and format inputs
         mpc_inputs = self._get_current_mpc_inputs(agent_variables=current_vars, now=now)
         full_results = self.discretization.solve(mpc_inputs)
-        self.save_result_df(self.system.objective, full_results, now)
+        self.save_result_df(full_results, now)
 
         return full_results
 
@@ -283,25 +284,8 @@ class CasADiBackend(OptimizationBackend):
         res_file = self.config.results_file
 
         # Calculate objective values
-        def get_objective_values(objective, df, grid):
-            objective_values = {}
-            if objective is not None:
-                objective_values.update(objective.calculate_values(df, grid))
-            return objective_values
-
         df = results.df
-        grid = np.arange(
-            0,
-            self.config.discretization_options.prediction_horizon
-            * (self.config.discretization_options.time_step + 1),
-            self.config.discretization_options.time_step,
-        )
-        objective_values = get_objective_values(objective=objective, df=df, grid=grid)
-
-        if objective_values:
-            objective_names = [obj.name for obj in objective.objectives] + ["total"]
-        else:
-            objective_names = []
+        objective_names, objective_values = self.approximate_objective(df)
 
         if not self.results_file_exists():
             results.write_columns(res_file)
@@ -314,3 +298,22 @@ class CasADiBackend(OptimizationBackend):
             f.writelines(
                 results.combined_stats_line(str(now), objective_values, objective_names)
             )
+
+    def approximate_objective(self, results_df: pd.DataFrame):
+        """Returns the approximate objective value of this MPC step."""
+        objective = self.system.objective
+
+        # approximate objective over multiple shooting grid. This introduces slight but usually unimportant errors when actual objective is calculated with a different discretization.
+        grid = np.arange(
+            0,
+            self.config.discretization_options.prediction_horizon
+            * (self.config.discretization_options.time_step + 1),
+            self.config.discretization_options.time_step,
+        )
+        objective_values = {}
+        if objective is not None:
+            objective_values.update(objective.calculate_values(results_df, grid))
+            objective_names = [obj.name for obj in objective.objectives] + ["total"]
+        else:
+            objective_names = []
+        return objective_names, objective_values
