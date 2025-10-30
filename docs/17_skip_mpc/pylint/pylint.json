@@ -2061,10 +2061,10 @@
                 "test_admm"
             ],
             "numpy": [
-                "test_serialized_gpr",
                 "test_serialized_linreg",
-                "test_mpc",
                 "test_admm",
+                "test_serialized_gpr",
+                "test_mpc",
                 "test_serialized_ann"
             ],
             "agentlib.core": [
@@ -2349,14 +2349,14 @@
                 "test_examples"
             ],
             "agentlib.utils.local_broadcast_broker": [
-                "test_examples",
-                "test_admm"
+                "test_admm",
+                "test_examples"
             ],
             "numpy": [
-                "test_serialized_gpr",
                 "test_serialized_linreg",
-                "test_mpc",
                 "test_admm",
+                "test_serialized_gpr",
+                "test_mpc",
                 "test_serialized_ann"
             ],
             "agentlib.core": [
