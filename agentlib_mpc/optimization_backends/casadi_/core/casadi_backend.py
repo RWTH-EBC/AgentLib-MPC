@@ -2,8 +2,9 @@ import logging
 import platform
 from pathlib import Path
 from typing import Type, Optional
-
+import numpy as np
 import casadi as ca
+import pandas as pd
 import pydantic
 from agentlib.core.errors import ConfigurationError
 
@@ -127,7 +128,7 @@ class CasADiBackend(OptimizationBackend):
         # collect and format inputs
         mpc_inputs = self._get_current_mpc_inputs(agent_variables=current_vars, now=now)
         full_results = self.discretization.solve(mpc_inputs)
-        self.save_result_df(full_results, now=now)
+        self.save_result_df(full_results, now)
 
         return full_results
 
@@ -259,7 +260,7 @@ class CasADiBackend(OptimizationBackend):
         now: float = 0,
     ):
         """
-        Save the results of `solve` into a dataframe at each time step.
+         Save the results of `solve` into a dataframe at each time step.
 
         Example results dataframe:
 
@@ -275,19 +276,40 @@ class CasADiBackend(OptimizationBackend):
             now:
 
         Returns:
-
         """
         if not self.config.save_results:
             return
 
         res_file = self.config.results_file
+
+        # Calculate objective values
+        df = results.df
+        objective_names, objective_values = self.approximate_objective(df)
+
         if not self.results_file_exists():
             results.write_columns(res_file)
-            results.write_stats_columns(stats_path(res_file))
+            results.write_combined_stats_columns(stats_path(res_file), objective_names)
 
-        df = results.df
         df.index = list(map(lambda x: str((now, x)), df.index))
         df.to_csv(res_file, mode="a", header=False)
 
         with open(stats_path(res_file), "a") as f:
-            f.writelines(results.stats_line(str(now)))
+            f.writelines(
+                results.combined_stats_line(str(now), objective_values, objective_names)
+            )
+
+    def approximate_objective(self, results_df: pd.DataFrame):
+        """Returns the approximate objective value of this MPC step."""
+        objective = self.system.objective
+
+        # approximate objective over multiple shooting grid. This introduces slight but usually unimportant errors when actual objective is calculated with a different discretization.
+        grid = np.arange(
+            0,
+            self.config.discretization_options.prediction_horizon
+            * (self.config.discretization_options.time_step + 1),
+            self.config.discretization_options.time_step,
+        )
+        objective_values = objective.calculate_values(results_df, grid)
+        objective_names = [obj.name for obj in objective.objectives] + ["total"]
+
+        return objective_names, objective_values

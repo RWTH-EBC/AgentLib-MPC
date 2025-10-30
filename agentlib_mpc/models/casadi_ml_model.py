@@ -27,7 +27,6 @@ from agentlib_mpc.models.casadi_model import (
     CasadiModelConfig,
     CasadiState,
     CasadiOutput,
-    CasadiTypes,
 )
 from agentlib_mpc.models.serialized_ml_model import (
     SerializedMLModel,

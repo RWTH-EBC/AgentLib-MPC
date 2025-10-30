@@ -2,7 +2,7 @@ import abc
 import logging
 import math
 from pathlib import Path
-from typing import Type, TYPE_CHECKING
+from typing import Type
 
 import numpy as np
 import pandas as pd

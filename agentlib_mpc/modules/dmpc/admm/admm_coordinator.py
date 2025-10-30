@@ -596,7 +596,7 @@ class ADMMCoordinator(Coordinator):
 
     def registration_callback(self, variable: AgentVariable):
         self.logger.debug(f"receiving {variable.name} from {variable.source}")
-        if not (variable.source in self.agent_dict):
+        if variable.source not in self.agent_dict:
             self.agent_dict[variable.source] = adt.AgentDictEntry(
                 name=variable.source,
                 status=cdt.AgentStatus.pending,
@@ -628,7 +628,7 @@ class ADMMCoordinator(Coordinator):
         the agent_dict and send it the global parameters. If it is sending its
         confirmation with initial trajectories,
         refer to the actual registration function."""
-        if not (variable.source in self.agent_dict):
+        if variable.source not in self.agent_dict:
             self.agent_dict[variable.source] = adt.AgentDictEntry(
                 name=variable.source,
                 status=cdt.AgentStatus.pending,

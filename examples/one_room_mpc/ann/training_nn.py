@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 
 from agentlib.utils.multi_agent_system import LocalMASAgency
 
-
-import model
+from examples.one_room_mpc.ann import model
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +83,7 @@ def configs(
                 "step_size": 300,
                 "module_id": "trainer",
                 "type": "agentlib_mpc.ann_trainer",
-                "epochs": epochs,
+                "epochs": 1000,
                 "batch_size": 64,
                 "inputs": [
                     {"name": "mDot", "value": 0.0225, "source": "PID"},
@@ -103,7 +102,7 @@ def configs(
                 "retrain_delay": training_time,
                 "save_directory": "anns",
                 "use_values_for_incomplete_data": True,
-                "data_sources": ["results//simulation_data_14days.csv"],
+                "data_sources": ["results//simulation_data.csv"],
                 "save_data": True,
                 "save_ml_model": True,
                 "save_plots": True,
@@ -216,4 +215,4 @@ def main(
 
 
 if __name__ == "__main__":
-    main(training_time=3600 * 24 * 1, plot_results=True, step_size=300, epochs=10)
+    main(training_time=3600 * 24 * 1, plot_results=True, step_size=300)

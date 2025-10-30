@@ -2,8 +2,6 @@ import casadi as ca
 from typing import Dict
 import collections
 
-from agentlib_mpc.models.casadi_model import CasadiParameter
-
 from agentlib_mpc.data_structures.casadi_utils import (
     LB_PREFIX,
     UB_PREFIX,
@@ -13,7 +11,7 @@ from agentlib_mpc.data_structures.casadi_utils import (
 )
 from agentlib_mpc.data_structures.ml_model_datatypes import name_with_lag
 from agentlib_mpc.data_structures.mpc_datamodels import (
-    FullVariableReference,
+    VariableReference,
 )
 from agentlib_mpc.models.casadi_ml_model import CasadiMLModel
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
@@ -26,6 +24,7 @@ from agentlib_mpc.optimization_backends.casadi_.basic import (
     CasADiBaseBackend,
 )
 from agentlib_mpc.optimization_backends.casadi_.full import FullSystem
+from agentlib_mpc.optimization_backends.casadi_.core import delta_u
 
 
 class CasadiMLSystem(FullSystem):
@@ -35,7 +34,7 @@ class CasadiMLSystem(FullSystem):
     lags_dict: dict[str, int]
     sim_step: ca.Function
 
-    def initialize(self, model: CasadiMLModel, var_ref: FullVariableReference):
+    def initialize(self, model: CasadiMLModel, var_ref: VariableReference):
         # define variables
         self.states = OptimizationVariable.declare(
             denotation="state",
@@ -86,22 +85,15 @@ class CasadiMLSystem(FullSystem):
             use_in_stage_function=False,
             assert_complete=True,
         )
-        self.r_del_u = OptimizationParameter.declare(
-            denotation="r_del_u",
-            variables=[CasadiParameter(name=r_del_u) for r_del_u in var_ref.r_del_u],
-            ref_list=var_ref.r_del_u,
-            use_in_stage_function=False,
-            assert_complete=True,
-        )
-        self.cost_function = model.cost_func
         self.model_constraints = Constraint(
             function=ca.vertcat(*[c.function for c in model.get_constraints()]),
             lb=ca.vertcat(*[c.lb for c in model.get_constraints()]),
             ub=ca.vertcat(*[c.ub for c in model.get_constraints()]),
         )
         self.sim_step = model.make_predict_function_for_mpc()
-        self.model = model
         self.lags_dict: dict[str, int] = model.lags_dict
+        self.lags_mx_store = model.lags_mx_store
+        self.objective = model.objective
         self.time = model.time
 
     @property
@@ -123,7 +115,8 @@ class MultipleShooting_ML(MultipleShooting):
         n = self.options.prediction_horizon
         ts = self.options.time_step
         const_par = self.add_opt_par(sys.model_parameters)
-        du_weights = self.add_opt_par(sys.r_del_u)
+
+        delta_u_objectives = delta_u.get_delta_u_objectives(sys)
 
         pre_grid_states = [ts * i for i in range(-sys.max_lag + 1, 1)]
         inputs_lag = min(-2, -sys.max_lag)  # at least -2, to consider last control
@@ -185,10 +178,13 @@ class MultipleShooting_ML(MultipleShooting):
         for time in prediction_grid:
             stage_mx = mx_dict[time]
 
-            # add penalty on control change between intervals
-            u_prev = mx_dict[time - ts][sys.controls.name]
-            uk = stage_mx[sys.controls.name]
-            self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
+            if delta_u_objectives:
+                u_prev = mx_dict[time - ts][sys.controls.name]
+                uk = stage_mx[sys.controls.name]
+                for delta_obj in delta_u_objectives:
+                    self.objective_function += delta_u.get_objective(
+                        sys, delta_obj, u_prev, uk, const_par
+                    )
 
             # get stage arguments from current time step
             stage_arguments = {
@@ -293,7 +289,7 @@ class MultipleShooting_ML(MultipleShooting):
                 for j in range(1, lag):
                     # create an MX variable for this lag
                     l_name = name_with_lag(v_name, j)
-                    new_lag_var = system.model.lags_mx_store[l_name]
+                    new_lag_var = system.lags_mx_store[l_name]
                     all_input_variables[l_name] = new_lag_var
 
                     # add the mx variable to its lag time and denotation
@@ -320,7 +316,7 @@ class MultipleShooting_ML(MultipleShooting):
         # aggregate outputs
         outputs = [
             state_output,
-            system.cost_function,
+            system.objective.get_casadi_expression(),
             *constraints_func,
             *constraints_lb,
             *constraints_ub,

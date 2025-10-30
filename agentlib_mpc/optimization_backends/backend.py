@@ -5,7 +5,6 @@ import logging
 from pathlib import Path
 from typing import Dict, Union, Callable, TypeVar, Optional
 
-import pandas as pd
 import pydantic
 from agentlib.core.errors import ConfigurationError
 from pydantic import ConfigDict
@@ -97,7 +96,6 @@ class OptimizationBackend(abc.ABC):
         self.config = self.config_type(**config)
         self.model: ModelT = self.model_from_config(self.config.model)
         self.var_ref: Optional[mpc_datamodels.VariableReference] = None
-        self.cost_function: Optional[Callable] = None
         self.stats = {}
         self._created_file: bool = False  # flag if we checked the file location
 
