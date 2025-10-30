@@ -19,7 +19,7 @@ jobs:
       GENERATE_DOCUMENTATION: true
       GH_PAGES: true
       EXECUTE_TESTS: true
-      TEST_ENGINE: "unittest"
+      TEST_ENGINE: "PYTEST"
       EXECUTE_COVERAGE_TEST: true
       USE_DYMOLA: false
       EXTRA_REQUIREMENTS: "[full]"
