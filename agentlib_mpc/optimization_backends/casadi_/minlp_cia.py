@@ -99,7 +99,7 @@ class CasADiCIABackend(CasADiMINLPBackend):
         get the binary control variables for input of pycombina and their control vector indexes
         """
 
-        b_rel = [full_results[var] for var in self.var_ref.binary_controls]
+        b_rel = [(full_results[var]).ravel() for var in self.var_ref.binary_controls]
         b_rel_np = np.transpose(np.vstack(b_rel))
 
         # clip binary values within tolerance
