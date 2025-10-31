@@ -31,7 +31,7 @@ def use_existing_models(old_id: str, new_id: str, model_save_path: str):
 
 def generate_physxai_model(models: Union[list, dict, str], physXAI_config_base_path: str, scenario_name: str,
                            training_data_path: str, run_id: str, time_step: int = 900):
-    """Generate PhysXAI models based on the provided configuration and training data."""
+    """Generate PhysXAI models based on the provided configuration and training data. """
 
     if isinstance(models, str):
         return use_existing_models(models, run_id, model_save_path_rel)
