@@ -1,0 +1,851 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>agentlib_mpc.models.casadi_predictor &mdash; agentlib_mpc 0.6.9 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../../_static/jquery.js"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+      <script src="../../../_static/doctools.js"></script>
+      <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            agentlib_mpc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../PackageReference.html">Package Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">agentlib_mpc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">agentlib_mpc.models.casadi_predictor</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for agentlib_mpc.models.casadi_predictor</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">casadi</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ca</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">layers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">keras.src</span><span class="w"> </span><span class="kn">import</span> <span class="n">Functional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.serialized_ml_model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SerializedMLModel</span><span class="p">,</span>
+    <span class="n">SerializedLinReg</span><span class="p">,</span>
+    <span class="n">SerializedGPR</span><span class="p">,</span>
+    <span class="n">SerializedANN</span><span class="p">,</span>
+    <span class="n">MLModels</span><span class="p">,</span> <span class="n">SerializedKerasANN</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.serialized_ml_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomGPR</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+
+
+<div class="viewcode-block" id="CasadiPredictor"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiPredictor">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CasadiPredictor</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Protocol for generic Casadi implementation of various ML-Model-based predictors.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        serialized_model: Serialized model which will be translated to a casadi model.</span>
+<span class="sd">        predictor_model: Predictor model from other libraries, which are translated to</span>
+<span class="sd">        casadi syntax.</span>
+<span class="sd">        sym_input: Symbolical input of predictor. Has the necessary shape of the input.</span>
+<span class="sd">        prediction_function: Symbolical casadi prediction function of the given model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CasadiPredictor.Config"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiPredictor.Config">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
+        <span class="n">arbitrary_types_allowed</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serialized_model</span><span class="p">:</span> <span class="n">SerializedMLModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize Predictor class.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">serialized_model</span><span class="p">:</span> <span class="n">SerializedMLModel</span> <span class="o">=</span> <span class="n">serialized_model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">CustomGPR</span><span class="p">,</span> <span class="n">LinearRegression</span><span class="p">,</span> <span class="n">Functional</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">serialized_model</span><span class="o">.</span><span class="n">deserialize</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sym_input</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sym_input</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prediction_function</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_prediction_function</span><span class="p">()</span>
+
+<div class="viewcode-block" id="CasadiPredictor.from_serialized_model"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiPredictor.from_serialized_model">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_serialized_model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">serialized_model</span><span class="p">:</span> <span class="n">SerializedMLModel</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize sub predictor class.&quot;&quot;&quot;</span>
+        <span class="n">model_type</span> <span class="o">=</span> <span class="n">serialized_model</span><span class="o">.</span><span class="n">model_type</span>
+        <span class="c1"># todo return type[cls]</span>
+        <span class="k">return</span> <span class="n">casadi_predictors</span><span class="p">[</span><span class="n">model_type</span><span class="p">](</span><span class="n">serialized_model</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">input_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input shape of Predictor.&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">output_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Output shape of Predictor.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">serialized_model</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_sym_input</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns symbolical input object in the required shape.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_prediction_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the prediction function with casadi and a symbolic input.&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="CasadiPredictor.predict"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiPredictor.predict">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate prediction function with input data.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            x: input data.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            results of evaluation of prediction function with input data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prediction_function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CasadiLinReg"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiLinReg">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CasadiLinReg</span><span class="p">(</span><span class="n">CasadiPredictor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic Casadi implementation of scikit-learn LinerRegression.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serialized_model</span><span class="p">:</span> <span class="n">SerializedLinReg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes CasadiLinReg predictor.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            serialized_model: SerializedLinReg object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">serialized_model</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">input_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input shape of Predictor.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_prediction_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the prediction function with casadi and a symbolic input.&quot;&quot;&quot;</span>
+        <span class="n">intercept</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="o">.</span><span class="n">intercept_</span>
+        <span class="n">coef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="o">.</span><span class="n">coef_</span>
+        <span class="n">function</span> <span class="o">=</span> <span class="n">intercept</span> <span class="o">+</span> <span class="n">ca</span><span class="o">.</span><span class="n">mtimes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_input</span><span class="p">,</span> <span class="n">coef</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_input</span><span class="p">],</span> <span class="p">[</span><span class="n">function</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="CasadiGPR"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiGPR">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CasadiGPR</span><span class="p">(</span><span class="n">CasadiPredictor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic implementation of scikit-learn Gaussian Process Regressor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serialized_model</span><span class="p">:</span> <span class="n">SerializedGPR</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">serialized_model</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">input_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input shape of Predictor.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="o">.</span><span class="n">X_train_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_prediction_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the prediction function with casadi and a symbolic input.&quot;&quot;&quot;</span>
+        <span class="n">normalize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="o">.</span><span class="n">data_handling</span><span class="o">.</span><span class="n">normalize</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="o">.</span><span class="n">data_handling</span><span class="o">.</span><span class="n">scale</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="o">.</span><span class="n">alpha_</span>
+        <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
+            <span class="n">normalized_inp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_input</span><span class="p">)</span>
+            <span class="n">k_star</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kernel</span><span class="p">(</span><span class="n">normalized_inp</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">k_star</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_kernel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_input</span><span class="p">)</span>
+        <span class="n">f_mean</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">mtimes</span><span class="p">(</span><span class="n">k_star</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span>
+        <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sym_input</span><span class="p">],</span> <span class="p">[</span><span class="n">f_mean</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_kernel</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">x_test</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the kernel with regard to mpc and testing data.</span>
+<span class="sd">        If x_train is None the internal mpc data is used.</span>
+
+<span class="sd">        shape(x_test)  = (n_samples, n_features)</span>
+<span class="sd">        shape(x_train) = (n_samples, n_features)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">square_distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_square_distance</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+        <span class="n">length_scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="o">.</span><span class="n">kernel_</span><span class="o">.</span><span class="n">k1</span><span class="o">.</span><span class="n">k2</span><span class="o">.</span><span class="n">length_scale</span>
+        <span class="n">constant_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="o">.</span><span class="n">kernel_</span><span class="o">.</span><span class="n">k1</span><span class="o">.</span><span class="n">k1</span><span class="o">.</span><span class="n">constant_value</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">((</span><span class="o">-</span><span class="n">square_distance</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">length_scale</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span> <span class="o">*</span> <span class="n">constant_value</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_square_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the square distance from x_train to x_test.</span>
+
+<span class="sd">        shape(x_test)  = (n_test_samples, n_features)</span>
+<span class="sd">        shape(x_train) = (n_train_samples, n_features)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">x_train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="o">.</span><span class="n">X_train_</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_shapes</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">x_train</span><span class="p">)</span>
+
+        <span class="n">a</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">sum2</span><span class="p">(</span><span class="n">inp</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">b</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x_train</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ca</span><span class="o">.</span><span class="n">mtimes</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">inp</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">+</span> <span class="n">c</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">):</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="o">.</span><span class="n">data_handling</span><span class="o">.</span><span class="n">mean</span>
+        <span class="n">std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="o">.</span><span class="n">data_handling</span><span class="o">.</span><span class="n">std</span>
+
+        <span class="k">if</span> <span class="n">mean</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">std</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Mean and std are not valid.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">(</span><span class="n">std</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_shapes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_test</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">x_train</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">x_test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The shape of x_test </span><span class="si">{</span><span class="n">x_test</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">[1] and x_train </span><span class="si">{</span><span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">[1] must match.&quot;</span>
+            <span class="p">)</span></div>
+
+
+<span class="c1">###################################</span>
+<span class="c1">###             ANN             ###</span>
+<span class="c1">###################################</span>
+
+
+<div class="viewcode-block" id="ANNLayerTypes"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ANNLayerTypes">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ANNLayerTypes</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+    <span class="n">DENSE</span> <span class="o">=</span> <span class="s2">&quot;dense&quot;</span>
+    <span class="n">FLATTEN</span> <span class="o">=</span> <span class="s2">&quot;flatten&quot;</span>
+    <span class="n">BATCHNORMALIZATION</span> <span class="o">=</span> <span class="s2">&quot;batch_normalization&quot;</span>
+    <span class="n">NORMALIZATION</span> <span class="o">=</span> <span class="s2">&quot;normalization&quot;</span>
+    <span class="n">CROPPING1D</span> <span class="o">=</span> <span class="s2">&quot;cropping1d&quot;</span>
+    <span class="n">CONCATENATE</span> <span class="o">=</span> <span class="s2">&quot;concatenate&quot;</span>
+    <span class="n">RESHAPE</span> <span class="o">=</span> <span class="s2">&quot;reshape&quot;</span>
+    <span class="n">INPUTSLICE</span> <span class="o">=</span> <span class="s2">&quot;input_slice&quot;</span>
+    <span class="n">CONSTANT</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span>
+    <span class="n">ADD</span> <span class="o">=</span> <span class="s2">&quot;add&quot;</span>
+    <span class="n">SUBTRACT</span> <span class="o">=</span> <span class="s2">&quot;subtract&quot;</span>
+    <span class="n">MULTIPLY</span> <span class="o">=</span> <span class="s2">&quot;multiply&quot;</span>
+    <span class="n">TRUEDIVIDE</span> <span class="o">=</span> <span class="s2">&quot;divide&quot;</span>
+    <span class="n">POWER</span> <span class="o">=</span> <span class="s2">&quot;power&quot;</span>
+    <span class="n">AVERAGE</span> <span class="o">=</span> <span class="s2">&quot;average&quot;</span>
+    <span class="n">RESCALING</span> <span class="o">=</span> <span class="s2">&quot;rescaling&quot;</span>
+    <span class="n">RBF</span> <span class="o">=</span> <span class="s1">&#39;rbf&#39;</span></div>
+
+
+<div class="viewcode-block" id="Layer"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Layer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Layer</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Single layer of an artificial neural network.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
+
+        <span class="c1"># name</span>
+        <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+
+        <span class="c1"># input / output shape</span>
+        <span class="c1"># TODO: Check if more detailed translation is needed</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="c1"># update the dimensions to two dimensions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_dimensions</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Layer.update_dimensions"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Layer.update_dimensions">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_dimensions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        CasADi does only work with two dimensional arrays. So the dimensions must be updated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Please check input dimensions.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Layer.get_activation"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Layer.get_activation">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_activation</span><span class="p">(</span><span class="n">function</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">:</span>
+        <span class="n">blank</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="s2">&quot;blank&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">function</span> <span class="o">==</span> <span class="s2">&quot;sigmoid&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="p">[</span><span class="n">blank</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">ca</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">blank</span><span class="p">))])</span>
+
+        <span class="k">elif</span> <span class="n">function</span> <span class="o">==</span> <span class="s2">&quot;tanh&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="p">[</span><span class="n">blank</span><span class="p">],</span> <span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">blank</span><span class="p">)])</span>
+
+        <span class="k">elif</span> <span class="n">function</span> <span class="o">==</span> <span class="s2">&quot;relu&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="p">[</span><span class="n">blank</span><span class="p">],</span> <span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">fmax</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">blank</span><span class="p">)])</span>
+
+        <span class="k">elif</span> <span class="n">function</span> <span class="o">==</span> <span class="s1">&#39;exponential&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="p">[</span><span class="n">blank</span><span class="p">],</span> <span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">blank</span><span class="p">)])</span>
+
+        <span class="k">elif</span> <span class="n">function</span> <span class="o">==</span> <span class="s2">&quot;softplus&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="p">[</span><span class="n">blank</span><span class="p">],</span> <span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">ca</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">blank</span><span class="p">))])</span>
+
+        <span class="k">elif</span> <span class="n">function</span> <span class="o">==</span> <span class="s2">&quot;gaussian&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="p">[</span><span class="n">blank</span><span class="p">],</span> <span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">blank</span><span class="o">**</span><span class="mi">2</span><span class="p">))])</span>
+
+        <span class="k">elif</span> <span class="n">function</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="p">[</span><span class="n">blank</span><span class="p">],</span> <span class="p">[</span><span class="n">blank</span><span class="p">])</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;class_name&#39;</span> <span class="ow">in</span> <span class="n">function</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;registered_name&#39;</span> <span class="ow">in</span> <span class="n">function</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">function</span><span class="p">[</span><span class="s1">&#39;registered_name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;custom_activation&gt;ConcaveActivation&#39;</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">function</span><span class="p">[</span><span class="s1">&#39;class_name&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">blank</span><span class="p">],</span>
+                                        <span class="p">[</span><span class="o">-</span><span class="n">Layer</span><span class="o">.</span><span class="n">get_activation</span><span class="p">(</span><span class="n">function</span><span class="p">[</span><span class="s1">&#39;config&#39;</span><span class="p">][</span><span class="s1">&#39;activation&#39;</span><span class="p">])(</span><span class="o">-</span><span class="n">blank</span><span class="p">)])</span>
+                    <span class="k">elif</span> <span class="n">function</span><span class="p">[</span><span class="s1">&#39;registered_name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;custom_activation&gt;SaturatedActivation&#39;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">function</span><span class="p">[</span><span class="s1">&#39;config&#39;</span><span class="p">][</span><span class="s1">&#39;activation&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;relu&#39;</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">function</span><span class="p">[</span><span class="s1">&#39;class_name&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">blank</span><span class="p">],</span> <span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">fmin</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">fmax</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">blank</span><span class="p">))])</span>
+                        <span class="k">elif</span> <span class="n">function</span><span class="p">[</span><span class="s1">&#39;config&#39;</span><span class="p">][</span><span class="s1">&#39;activation&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;softplus&#39;</span><span class="p">:</span>
+                            <span class="n">casadi_function</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">if_else</span><span class="p">(</span>
+                                <span class="n">blank</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span>
+                                <span class="n">ca</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">ca</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">ca</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">blank</span><span class="p">))),</span>
+                                <span class="n">ca</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">ca</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">blank</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">ca</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="p">)))</span>
+                            <span class="p">)</span>
+                            <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="n">function</span><span class="p">[</span><span class="s1">&#39;class_name&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">blank</span><span class="p">],</span> <span class="p">[</span><span class="n">casadi_function</span><span class="p">])</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Keras Model: Saturated activation function for activions other &#39;</span>
+                                                      <span class="s1">&#39;than relu or softplus are not implemented yet.&#39;</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown activation function:</span><span class="si">{</span><span class="n">function</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Layer.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Layer.forward">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="Dense"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Dense">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Dense</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fully connected layer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_activation</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">get_config</span><span class="p">()[</span><span class="s2">&quot;activation&quot;</span><span class="p">])</span>
+
+        <span class="c1"># weights and biases</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">biases</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;not enough values to unpack (expected 2, got 1)&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">biases</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">e</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">biases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">biases</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">biases</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># check input dimension</span>
+        <span class="c1"># TODO: Check if needed</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Please check the input dimensions of this layer. Layer with error: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="Dense.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Dense.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="c1"># return forward pass</span>
+        <span class="c1"># TODO: Check if np.repeat is needed</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="nb">input</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">biases</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Flatten"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Flatten">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Flatten</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+<div class="viewcode-block" id="Flatten.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Flatten.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="c1"># flattens the input</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">horzcat</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="nb">input</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="p">:])</span>
+
+        <span class="k">return</span> <span class="n">f</span></div></div>
+
+
+<div class="viewcode-block" id="BatchNormalization"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.BatchNormalization">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BatchNormalization</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Batch Normalizing layer. Make sure the axis setting is set to two.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BatchNormalization</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+
+        <span class="c1"># weights and biases</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">layer</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">layer</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">layer</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">var</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">layer</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()[</span><span class="mi">3</span><span class="p">]]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">get_config</span><span class="p">()[</span><span class="s2">&quot;epsilon&quot;</span><span class="p">]</span>
+
+        <span class="c1"># check Dimensions</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="n">axis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;axis&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dimension mismatch. Normalized axis: </span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BatchNormalization.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.BatchNormalization.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="c1"># forward pass</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="p">(</span><span class="nb">input</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+            <span class="n">ca</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">var</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)</span>
+        <span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span>
+
+        <span class="k">return</span> <span class="n">f</span></div></div>
+
+
+<div class="viewcode-block" id="Normalization"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Normalization">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Normalization</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">layers</span><span class="o">.</span><span class="n">Normalization</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Normalization</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">var</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">variance</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">var</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">variance</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Normalization layer: Expecting dimension to be 2 or 3, was </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Normalization.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Normalization.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">input</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span> <span class="o">/</span> \
+            <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">var</span><span class="p">),</span> <span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Cropping1D"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Cropping1D">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Cropping1D</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">layers</span><span class="o">.</span><span class="n">Cropping1D</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Cropping1D</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cropping</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">cropping</span>
+
+<div class="viewcode-block" id="Cropping1D.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Cropping1D.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">input</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cropping</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">cropping</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">:]</span></div></div>
+
+
+<div class="viewcode-block" id="Concatenate"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Concatenate">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Concatenate</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">layers</span><span class="o">.</span><span class="n">Concatenate</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Concatenate</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">axis</span>
+
+<div class="viewcode-block" id="Concatenate.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Concatenate.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="nb">input</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">horzcat</span><span class="p">(</span><span class="o">*</span><span class="nb">input</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="nb">input</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Concatenate layer with axis=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="si">}</span><span class="s1"> not implemented yet.&#39;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Reshape"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Reshape">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Reshape</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">layers</span><span class="o">.</span><span class="n">Reshape</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Reshape</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">target_shape</span>
+
+<div class="viewcode-block" id="Reshape.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Reshape.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div></div>
+
+
+<div class="viewcode-block" id="Add"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Add">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Add</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">layers</span><span class="o">.</span><span class="n">Add</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Add</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Add.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Add.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="nb">input</span><span class="p">):</span>
+        <span class="n">init</span> <span class="o">=</span> <span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="nb">input</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">init</span> <span class="o">+=</span> <span class="n">inp</span>
+        <span class="k">return</span> <span class="n">init</span></div></div>
+
+
+<div class="viewcode-block" id="Subtract"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Subtract">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Subtract</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">layers</span><span class="o">.</span><span class="n">Subtract</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Subtract</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Subtract.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Subtract.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="nb">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div></div>
+    
+
+<div class="viewcode-block" id="Multiply"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Multiply">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Multiply</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">layers</span><span class="o">.</span><span class="n">Multiply</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Multiply</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Multiply.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Multiply.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="nb">input</span><span class="p">):</span>
+        <span class="n">init</span> <span class="o">=</span> <span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="nb">input</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">init</span> <span class="o">*=</span> <span class="n">inp</span>
+        <span class="k">return</span> <span class="n">init</span></div></div>
+    
+
+<div class="viewcode-block" id="TrueDivide"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.TrueDivide">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TrueDivide</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TrueDivide</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TrueDivide.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.TrueDivide.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="nb">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="Power"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Power">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Power</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Power</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Power.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Power.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="nb">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div></div>
+    
+
+<div class="viewcode-block" id="Average"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Average">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Average</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Average</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Average.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Average.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="nb">input</span><span class="p">):</span>
+        <span class="n">init</span> <span class="o">=</span> <span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="nb">input</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">init</span> <span class="o">+=</span> <span class="n">inp</span>
+        <span class="k">return</span> <span class="n">init</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Rescaling"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Rescaling">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Rescaling</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">:</span> <span class="n">layers</span><span class="o">.</span><span class="n">Rescaling</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Rescaling</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">offset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">scale</span>
+
+<div class="viewcode-block" id="Rescaling.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Rescaling.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">input</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span>
+        <span class="k">return</span> <span class="n">f</span></div></div>
+    
+    
+<div class="viewcode-block" id="InputSliceLayer"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.InputSliceLayer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">InputSliceLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feature_indices</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">feature_indices</span>
+
+<div class="viewcode-block" id="InputSliceLayer.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.InputSliceLayer.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">input</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feature_indices</span><span class="p">]</span></div></div>
+    
+
+<div class="viewcode-block" id="ConstantLayer"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ConstantLayer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ConstantLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constant</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">constant</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+
+<div class="viewcode-block" id="ConstantLayer.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ConstantLayer.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">constant</span></div></div>
+
+
+<div class="viewcode-block" id="RBF"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.RBF">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">RBF</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">centers</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">centers</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_gamma</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">log_gamma</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_gamma</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">units</span>
+
+<div class="viewcode-block" id="RBF.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.RBF.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="n">input_repm</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">repmat</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">input_repm</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">centers</span>
+        <span class="n">distance_sq</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">sum2</span><span class="p">(</span><span class="n">diff</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">*</span> <span class="n">distance_sq</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">phi</span><span class="o">.</span><span class="n">T</span></div></div>
+
+
+<div class="viewcode-block" id="FunctionalWrapper"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.FunctionalWrapper">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">FunctionalWrapper</span><span class="p">:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">functional</span><span class="p">:</span> <span class="n">Functional</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">functional</span> <span class="o">=</span> <span class="n">CasadiANN</span><span class="o">.</span><span class="n">build_prediction_function_functionalAPI</span><span class="p">(</span><span class="n">functional</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FunctionalWrapper.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.FunctionalWrapper.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">functional</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span></div></div>
+    
+
+<div class="viewcode-block" id="SequentialWrapper"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.SequentialWrapper">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SequentialWrapper</span><span class="p">:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequential</span><span class="p">:</span> <span class="n">Sequential</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">functional</span> <span class="o">=</span> <span class="n">CasadiANN</span><span class="o">.</span><span class="n">build_prediction_function_sequential</span><span class="p">(</span><span class="n">sequential</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SequentialWrapper.forward"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.SequentialWrapper.forward">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">functional</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CasadiANN"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiANN">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CasadiANN</span><span class="p">(</span><span class="n">CasadiPredictor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic implementations of sequential Keras models in CasADi.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">serialized_model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">SerializedANN</span><span class="p">,</span> <span class="n">SerializedKerasANN</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Supported layers:</span>
+<span class="sd">            - Dense (Fully connected layer)</span>
+<span class="sd">            - Flatten (Reduces the input dimension to 1)</span>
+<span class="sd">            - BatchNormalizing</span>
+<span class="sd">            - Normalizing</span>
+<span class="sd">            - Cropping1D</span>
+<span class="sd">            - Concatenate</span>
+<span class="sd">            - Reshape</span>
+<span class="sd">            - Add</span>
+<span class="sd">            - Rescaling</span>
+<span class="sd">        Args:</span>
+<span class="sd">            serialized_model: SerializedANN or SerializedKerasANN Model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">serialized_model</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">input_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Input shape of Predictor.&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="o">.</span><span class="n">input_shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: Current version only supports Keras Models with &quot;</span>
+                                                            <span class="sa">f</span><span class="s2">&quot;input_shape length 2, but was &quot;</span>
+                                                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="o">.</span><span class="n">input_shape</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: Current version only supports &quot;</span>
+                                                                      <span class="sa">f</span><span class="s2">&quot;Keras Models with 1 input layer, but was &quot;</span>
+                                                                      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="o">.</span><span class="n">input_shape</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_prediction_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the prediction function with casadi and a symbolic input.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="p">,</span> <span class="n">Functional</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_prediction_function_functionalAPI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="p">,</span> <span class="n">Sequential</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: Keras Model type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="p">)</span><span class="si">}</span><span class="s2"> not supported&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_prediction_function_sequential</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictor_model</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="CasadiANN.build_prediction_function_sequential"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiANN.build_prediction_function_sequential">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_prediction_function_sequential</span><span class="p">(</span><span class="n">predictor_model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">:</span>
+        <span class="n">keras_layers</span> <span class="o">=</span> <span class="p">[</span><span class="n">layer</span> <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">predictor_model</span><span class="o">.</span><span class="n">layers</span><span class="p">]</span>
+        <span class="n">casadi_layers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">keras_layer</span> <span class="ow">in</span> <span class="n">keras_layers</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">keras_layer</span><span class="o">.</span><span class="n">get_config</span><span class="p">()[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">layer_type</span> <span class="ow">in</span> <span class="n">ANNLayerTypes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">layer_type</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+                    <span class="n">casadi_layers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ann_layer_types</span><span class="p">[</span><span class="n">layer_type</span><span class="p">](</span><span class="n">keras_layer</span><span class="p">))</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Keras Layer with type &quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot; is not supported yet.&#39;</span><span class="p">)</span>
+        <span class="n">sym_input</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="s2">&quot;input&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">predictor_model</span><span class="o">.</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">function</span> <span class="o">=</span> <span class="n">sym_input</span>
+        <span class="k">for</span> <span class="n">casadi_layer</span> <span class="ow">in</span> <span class="n">casadi_layers</span><span class="p">:</span>
+            <span class="n">function</span> <span class="o">=</span> <span class="n">casadi_layer</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">function</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">sym_input</span><span class="p">],</span> <span class="p">[</span><span class="n">function</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="CasadiANN.build_prediction_function_functionalAPI"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiANN.build_prediction_function_functionalAPI">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_prediction_function_functionalAPI</span><span class="p">(</span><span class="n">predictor_model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">:</span>
+
+        <span class="n">fmx</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">fnodes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">flayers</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Add Layers</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">predictor_model</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+
+            <span class="c1"># get the name of the layer</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">get_config</span><span class="p">()[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+
+            <span class="c1"># recreate the matching layer</span>
+            <span class="k">if</span> <span class="s1">&#39;input&#39;</span> <span class="ow">in</span> <span class="n">name</span> <span class="ow">and</span> <span class="s1">&#39;slice&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="o">.</span><span class="n">batch_shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">layer</span><span class="o">.</span><span class="n">batch_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">fmx</span><span class="p">[</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="s1">&#39;input_layer&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">layer</span><span class="o">.</span><span class="n">batch_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">fmx</span><span class="p">[</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="s1">&#39;input_layer&#39;</span><span class="p">,</span> <span class="n">layer</span><span class="o">.</span><span class="n">batch_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">layer</span><span class="o">.</span><span class="n">batch_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">fmx</span><span class="p">[</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="s1">&#39;input_layer&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">layer</span><span class="o">.</span><span class="n">batch_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">layer_type</span> <span class="ow">in</span> <span class="n">ANNLayerTypes</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">layer_type</span><span class="o">.</span><span class="n">value</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+                        <span class="n">ca_layer</span> <span class="o">=</span> <span class="n">ann_layer_types</span><span class="p">[</span><span class="n">layer_type</span><span class="p">](</span><span class="n">layer</span><span class="p">)</span>
+                        <span class="n">flayers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ca_layer</span>
+                        <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">Functional</span><span class="p">):</span>
+                        <span class="n">flayers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">FunctionalWrapper</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">Sequential</span><span class="p">):</span>
+                        <span class="n">flayers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">SequentialWrapper</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Keras Layer with type &quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot; is not supported yet.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Create Nodes</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">predictor_model</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">connections</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">layer</span><span class="o">.</span><span class="n">_inbound_nodes</span><span class="p">:</span>
+                <span class="n">connection</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">input_tensors</span><span class="p">:</span>
+                    <span class="n">keras_history</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="n">_keras_history</span>
+                    <span class="n">inbound_layer</span> <span class="o">=</span> <span class="n">keras_history</span><span class="o">.</span><span class="n">operation</span>
+                    <span class="n">node_index</span> <span class="o">=</span> <span class="n">keras_history</span><span class="o">.</span><span class="n">node_index</span>
+                    <span class="n">tensor_index</span> <span class="o">=</span> <span class="n">keras_history</span><span class="o">.</span><span class="n">tensor_index</span>
+                    <span class="n">connection</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">inbound_layer</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">node_index</span><span class="p">,</span> <span class="n">tensor_index</span><span class="p">])</span>
+                <span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+            <span class="n">fnodes</span><span class="p">[</span><span class="n">layer</span><span class="o">.</span><span class="n">get_config</span><span class="p">()[</span><span class="s1">&#39;name&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">connections</span>
+
+        <span class="c1"># Order Nodes</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">predictor_model</span><span class="o">.</span><span class="n">output_names</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Error: Current version only supports Keras Models with one output&quot;</span>
+        <span class="n">ordering</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">visited_notes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">recursive_search</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
+            <span class="n">input_nodes</span> <span class="o">=</span> <span class="n">fnodes</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">depth</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">input_node</span> <span class="ow">in</span> <span class="n">input_nodes</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">input_node</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">input_node</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited_notes</span><span class="p">:</span>
+                        <span class="n">recursive_search</span><span class="p">(</span><span class="n">input_node</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">input_node</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">visited_notes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">depth</span><span class="p">))</span>
+            <span class="n">ordering</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">depth</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">outputs</span><span class="p">:</span>
+            <span class="n">recursive_search</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fnodes</span><span class="p">[</span><span class="n">output</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Update Forward</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">depth</span> <span class="ow">in</span> <span class="n">ordering</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;input&#39;</span> <span class="ow">in</span> <span class="n">name</span> <span class="ow">and</span> <span class="s1">&#39;slice&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">input_nodes</span> <span class="o">=</span> <span class="n">fnodes</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">depth</span><span class="p">]</span>
+                <span class="nb">input</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">input_node</span> <span class="ow">in</span> <span class="n">input_nodes</span><span class="p">:</span>
+                        <span class="n">i</span> <span class="o">=</span> <span class="n">fmx</span><span class="p">[</span><span class="n">input_node</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">input_node</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                            <span class="nb">input</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="n">input_node</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="nb">input</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                    <span class="n">output</span> <span class="o">=</span> <span class="n">flayers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="o">*</span><span class="nb">input</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">input</span> <span class="o">=</span> <span class="n">fmx</span><span class="p">[</span><span class="n">input_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">input_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                        <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="p">[</span><span class="n">input_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]]</span>
+                    <span class="n">output</span> <span class="o">=</span> <span class="n">flayers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+                <span class="n">fmx</span><span class="p">[</span><span class="n">name</span><span class="p">,</span> <span class="n">depth</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span>
+
+        <span class="n">_input</span> <span class="o">=</span> <span class="p">[</span><span class="n">fmx</span><span class="p">[</span><span class="n">inp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">inp</span> <span class="ow">in</span> <span class="n">predictor_model</span><span class="o">.</span><span class="n">inputs</span><span class="p">]</span>
+        <span class="n">prediction</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">predictor_model</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span>
+            <span class="n">keras_history</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="n">_keras_history</span>
+            <span class="n">inbound_layer</span> <span class="o">=</span> <span class="n">keras_history</span><span class="o">.</span><span class="n">operation</span>
+            <span class="n">node_index</span> <span class="o">=</span> <span class="n">keras_history</span><span class="o">.</span><span class="n">node_index</span>
+            <span class="n">tensor_index</span> <span class="o">=</span> <span class="n">keras_history</span><span class="o">.</span><span class="n">tensor_index</span>
+            <span class="n">mx_var</span> <span class="o">=</span> <span class="n">fmx</span><span class="p">[</span><span class="n">inbound_layer</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">node_index</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mx_var</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">mx_var</span> <span class="o">=</span> <span class="n">mx_var</span><span class="p">[</span><span class="n">tensor_index</span><span class="p">]</span>
+            <span class="n">prediction</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mx_var</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span><span class="s2">&quot;forward&quot;</span><span class="p">,</span> <span class="n">_input</span><span class="p">,</span> <span class="n">prediction</span><span class="p">)</span></div></div>
+
+
+<span class="n">ann_layer_types</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">DENSE</span><span class="p">:</span> <span class="n">Dense</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">FLATTEN</span><span class="p">:</span> <span class="n">Flatten</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">BATCHNORMALIZATION</span><span class="p">:</span> <span class="n">BatchNormalization</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">NORMALIZATION</span><span class="p">:</span> <span class="n">Normalization</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">CROPPING1D</span><span class="p">:</span> <span class="n">Cropping1D</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">CONCATENATE</span><span class="p">:</span> <span class="n">Concatenate</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">RESHAPE</span><span class="p">:</span> <span class="n">Reshape</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">INPUTSLICE</span><span class="p">:</span> <span class="n">InputSliceLayer</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">CONSTANT</span><span class="p">:</span> <span class="n">ConstantLayer</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">ADD</span><span class="p">:</span> <span class="n">Add</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">SUBTRACT</span><span class="p">:</span> <span class="n">Subtract</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">MULTIPLY</span><span class="p">:</span> <span class="n">Multiply</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">TRUEDIVIDE</span><span class="p">:</span> <span class="n">TrueDivide</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">POWER</span><span class="p">:</span> <span class="n">Power</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">RESCALING</span><span class="p">:</span> <span class="n">Rescaling</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">RBF</span><span class="p">:</span> <span class="n">RBF</span><span class="p">,</span>
+    <span class="n">ANNLayerTypes</span><span class="o">.</span><span class="n">AVERAGE</span><span class="p">:</span> <span class="n">Average</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">casadi_predictors</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">MLModels</span><span class="o">.</span><span class="n">ANN</span><span class="p">:</span> <span class="n">CasadiANN</span><span class="p">,</span>
+    <span class="n">MLModels</span><span class="o">.</span><span class="n">GPR</span><span class="p">:</span> <span class="n">CasadiGPR</span><span class="p">,</span>
+    <span class="n">MLModels</span><span class="o">.</span><span class="n">LINREG</span><span class="p">:</span> <span class="n">CasadiLinReg</span><span class="p">,</span>
+    <span class="n">MLModels</span><span class="o">.</span><span class="n">KerasANN</span><span class="p">:</span> <span class="n">CasadiANN</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, AGENT-Project Associates.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
