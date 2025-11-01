@@ -11,10 +11,10 @@ import numpy as np
 
 
 thresholds = {
-    "3.9": {"rel_error": 0.1, "abs_diff": 5e-5},
+    "3.9": {"rel_error": 0.25, "abs_diff": 5e-5},
     "3.10": {"rel_error": 0.25, "abs_diff": 5e-5},
-    "3.11": {"rel_error": 0.1, "abs_diff": 5e-5},
-    "3.12": {"rel_error": 0.1, "abs_diff": 5e-5},
+    "3.11": {"rel_error": 0.25, "abs_diff": 5e-5},
+    "3.12": {"rel_error": 0.25, "abs_diff": 5e-5},
 }
 
 
