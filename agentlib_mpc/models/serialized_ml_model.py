@@ -267,7 +267,7 @@ class CustomGPR(GaussianProcessRegressor):
         normalize_y=False,
         copy_X_train=True,
         random_state=None,
-        data_handling=GPRDataHandlingParameters(),
+        data_handling=None,
     ):
         super().__init__(
             kernel=kernel,
@@ -278,6 +278,8 @@ class CustomGPR(GaussianProcessRegressor):
             copy_X_train=copy_X_train,
             random_state=random_state,
         )
+        if data_handling is None:
+            data_handling = GPRDataHandlingParameters()
         self.data_handling: GPRDataHandlingParameters = data_handling
 
     def predict(self, X, return_std=False, return_cov=False):
