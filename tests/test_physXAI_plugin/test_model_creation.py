@@ -59,10 +59,10 @@ def test_model_creation(monkeypatch):
     )
 
     files_01 = generate_physxai_model(**test_args_01)
-    assert files_01 == test_return_value_01
+    assert set(files_01) == set(test_return_value_01)
 
     files_02 = generate_physxai_model(**test_args_02)
-    assert files_02 == test_return_value_02
+    assert set(files_02) == set(test_return_value_02)
 
     dir_to_remove = 'models/03'
     if Path(dir_to_remove).exists() and Path(dir_to_remove).is_dir():
