@@ -519,7 +519,7 @@ class ADMM(DistributedMPC):
         """
         self.logger.info("Sending optimal values to other agents.")
         for coup in self.cons_and_exchange:
-            self.send_coupling_variable(coup.local, list(solution[coup.name]))
+            self.send_coupling_variable(coup.local, list(solution[coup.name].ravel()))
 
     def _set_mean_coupling_values(self):
         """Computes the current global value of a coupling variable and saves
