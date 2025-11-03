@@ -20,14 +20,6 @@ from agentlib_mpc.data_structures.ml_model_datatypes import OutputFeature, Featu
 logger = logging.getLogger(__name__)
 
 
-def get_git_revision_short_hash() -> str:
-    return (
-        subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
-        .decode("ascii")
-        .strip()
-    )
-
-
 class MLModels(str, Enum):
     ANN = "ANN"
     GPR = "GPR"
@@ -49,10 +41,6 @@ class SerializedMLModel(BaseModel, abc.ABC):
         title="output",
         description="Model output variables (which are automatically also inputs, as "
         "we need them recursively in MPC.) with their lag order.",
-    )
-    agentlib_mpc_hash: str = Field(
-        default_factory=get_git_revision_short_hash,
-        description="The commit hash of the agentlib_mpc version this was created with.",
     )
     training_info: Optional[dict] = Field(
         default=None,
