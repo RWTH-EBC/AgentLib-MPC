@@ -26,8 +26,7 @@ def use_existing_models(old_id: str, new_id: str, model_save_path: str) -> list[
 
     old_path = pathlib.Path(os.path.join(model_save_path, old_id))
     if not old_path.is_dir():
-        raise ValueError(f"Error: Models should be a list or dict of new models or should contain a path to an existing "
-                         f"model folder. {str(old_path)} is not a valid directory.")
+        raise ValueError(f"Error: If a single string is given, it is assumed to be an id to an existing model folder. {str(old_path)} is not a valid directory.")
 
     try:
         shutil.copytree(old_path, new_path, dirs_exist_ok=True)

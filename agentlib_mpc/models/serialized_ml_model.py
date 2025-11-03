@@ -673,7 +673,7 @@ class SerializedLinReg(SerializedMLModel):
 
 class SerializedKerasANN(SerializedMLModel):
     """
-       Allows using a saved Keras ANN model in agentlib_mpc directly without serialization.
+       Allows using a saved Keras ANN model (Sequential or Functional) in agentlib_mpc directly without serialization.
 
        attributes:
            model_path: Path to saved Keras ANN model.
@@ -687,18 +687,18 @@ class SerializedKerasANN(SerializedMLModel):
     @classmethod
     def serialize(
             cls,
-            model: Sequential,
+            model: Union[Sequential, Functional],
             dt: Union[float, int],
             input: dict[str, Feature],
             output: dict[str, OutputFeature],
             training_info: Optional[dict] = None,
     ):
-        """Serializes path to Keras Sequential ANN and returns SerializedKerasANN object"""
+        """Serializes path to Keras Sequential or Functional ANN and returns SerializedKerasANN object"""
 
         try:
             model_path = model.save_path
         except AttributeError:
-            model_path = Path("stored_models/model.keras")  # your default value
+            model_path = Path("stored_models/model.keras")  # default value
 
         directory = os.path.dirname(model_path)
         os.makedirs(directory, exist_ok=True)
