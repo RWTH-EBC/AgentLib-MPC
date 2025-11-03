@@ -130,7 +130,7 @@ def physXAI_2_agentlib_json(run_id: str, preprocessing_dict: dict, model_dict: d
         actual_indices = [item['original_index'] for item in recursive_inputs]
         if expected_indices != actual_indices:
             raise ValueError(
-                f"Config Translation Error: Recursive Feature '{output_key_name}' und its Lags must be at the end of the "
+                f"Config Translation Error: Recursive Feature '{output_key_name}' and its Lags must be at the end of the "
                 f"'inputs'-List. Expected Indices: {expected_indices}, "
                 f"Actual Indices: {actual_indices}."
             )
