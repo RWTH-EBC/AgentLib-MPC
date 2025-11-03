@@ -771,7 +771,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">model_path</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">save_path</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="n">model_path</span> <span class="o">=</span> <span class="s2">&quot;stored_models/model.keras&quot;</span>  <span class="c1"># your default value</span>
+            <span class="n">model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;stored_models/model.keras&quot;</span><span class="p">)</span>  <span class="c1"># your default value</span>
 
         <span class="n">directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">model_path</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
