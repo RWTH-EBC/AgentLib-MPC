@@ -123,7 +123,6 @@ class TestExamples(unittest.TestCase):
             log_level=logging.FATAL,
         )
 
-    @pytest.mark.skip
     def test_exchange_admm(self):
         self._run_example_with_return(
             file="exchange_admm//admm_4rooms_main.py",

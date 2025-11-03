@@ -116,8 +116,8 @@ def configs(
                 "type": "simulator",
                 "model": {
                     "type": {
-                        "file": model.__file__,
-                        "class_name": model.PhysicalModel.__name__,
+                        "file": "model.py",
+                        "class_name": "PhysicalModel",
                     },
                 },
                 "t_sample": t_sample_sim,
