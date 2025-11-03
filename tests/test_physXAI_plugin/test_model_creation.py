@@ -19,7 +19,11 @@ def test_model_creation(monkeypatch):
         "training_data_path": "training_data.csv",
         "run_id": "03",
     }
-    test_return_value_01 = ["models\\03\\output_model.json", "models\\03\\output_preprocessing.json", "models\\03\\output_training_data.json"]
+    test_return_value_01 = [
+        os.path.join("models", "03", "output_model.json"),
+        os.path.join("models", "03", "output_preprocessing.json"),
+        os.path.join("models", "03", "output_training_data.json")
+    ]
     ##############################################################################
     test_args_02 = {
         "models": ["output"],
@@ -27,7 +31,7 @@ def test_model_creation(monkeypatch):
         "training_data_path": "training_data.csv",
         "run_id": "03",
     }
-    test_return_value_02 = ["models\\03\\output.json"]
+    test_return_value_02 = [os.path.join("models", "03", "output.json")]
     test_return_value_02 = [os.path.abspath(p) for p in test_return_value_02]
     ###############################################################################
 

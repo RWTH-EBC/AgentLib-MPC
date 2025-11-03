@@ -5,7 +5,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import keras
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '0'
 from agentlib_mpc.models.casadi_predictor import FunctionalWrapper
-from physXAI import models
+from physXAI import models  # Keep this import to ensure physXAI models are registered
 import pandas as pd
 import numpy as np
 
