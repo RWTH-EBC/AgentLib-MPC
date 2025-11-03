@@ -60,7 +60,7 @@ def physXAI_2_agentlib_json(run_id: str, preprocessing_dict: dict, model_dict: d
     # Validate and extract shift and output
     default_shift = preprocessing_dict.get("shift", 1)
     if default_shift != 1:
-        raise ValueError(f"Config Translation Error: Shift should be 1 to be used in AgentLib, bus was {default_shift}")
+        raise ValueError(f"Config Translation Error: Shift should be 1 to be used in AgentLib, but was {default_shift}")
     if not isinstance(preprocessing_dict.get("output"), list) or len(preprocessing_dict["output"]) != 1:
         raise ValueError("Config Translation Error: Output should be a list with 1 element")
 
