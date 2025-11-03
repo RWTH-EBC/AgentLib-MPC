@@ -203,7 +203,7 @@
         <span class="n">actual_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;original_index&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">recursive_inputs</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">expected_indices</span> <span class="o">!=</span> <span class="n">actual_indices</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Config Translation Error: Recursive Feature &#39;</span><span class="si">{</span><span class="n">output_key_name</span><span class="si">}</span><span class="s2">&#39; and its Lags must be at the end of the &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Config Translation Error: Recursive Feature &#39;</span><span class="si">{</span><span class="n">output_key_name</span><span class="si">}</span><span class="s2">&#39; und its Lags must be at the end of the &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;&#39;inputs&#39;-List. Expected Indices: </span><span class="si">{</span><span class="n">expected_indices</span><span class="si">}</span><span class="s2">, &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;Actual Indices: </span><span class="si">{</span><span class="n">actual_indices</span><span class="si">}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
