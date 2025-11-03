@@ -340,7 +340,7 @@
         <span class="n">normalize_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">copy_X_train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">data_handling</span><span class="o">=</span><span class="n">GPRDataHandlingParameters</span><span class="p">(),</span>
+        <span class="n">data_handling</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span>
@@ -351,6 +351,8 @@
             <span class="n">copy_X_train</span><span class="o">=</span><span class="n">copy_X_train</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="n">data_handling</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data_handling</span> <span class="o">=</span> <span class="n">GPRDataHandlingParameters</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_handling</span><span class="p">:</span> <span class="n">GPRDataHandlingParameters</span> <span class="o">=</span> <span class="n">data_handling</span>
 
 <div class="viewcode-block" id="CustomGPR.predict"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.CustomGPR.predict">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">return_std</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_cov</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
