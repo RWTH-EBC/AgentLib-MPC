@@ -698,7 +698,7 @@ class SerializedKerasANN(SerializedMLModel):
         try:
             model_path = model.save_path
         except AttributeError:
-            model_path = "stored_models/model.keras"  # your default value
+            model_path = Path("stored_models/model.keras")  # your default value
 
         directory = os.path.dirname(model_path)
         os.makedirs(directory, exist_ok=True)
