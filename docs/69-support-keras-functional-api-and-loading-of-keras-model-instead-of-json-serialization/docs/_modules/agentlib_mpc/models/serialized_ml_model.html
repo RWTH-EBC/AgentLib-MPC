@@ -746,7 +746,7 @@
 
 <div class="viewcode-block" id="SerializedKerasANN"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasANN">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SerializedKerasANN</span><span class="p">(</span><span class="n">SerializedMLModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">       Allows using a saved Keras ANN model in agentlib_mpc directly without serialization.</span>
+<span class="sd">       Allows using a saved Keras ANN model (Sequential or Functional) in agentlib_mpc directly without serialization.</span>
 
 <span class="sd">       attributes:</span>
 <span class="sd">           model_path: Path to saved Keras ANN model.</span>
@@ -760,18 +760,18 @@
 <div class="viewcode-block" id="SerializedKerasANN.serialize"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasANN.serialize">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
             <span class="bp">cls</span><span class="p">,</span>
-            <span class="n">model</span><span class="p">:</span> <span class="n">Sequential</span><span class="p">,</span>
+            <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">Functional</span><span class="p">],</span>
             <span class="n">dt</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
             <span class="nb">input</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Feature</span><span class="p">],</span>
             <span class="n">output</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">OutputFeature</span><span class="p">],</span>
             <span class="n">training_info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serializes path to Keras Sequential ANN and returns SerializedKerasANN object&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serializes path to Keras Sequential or Functional ANN and returns SerializedKerasANN object&quot;&quot;&quot;</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">model_path</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">save_path</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="n">model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;stored_models/model.keras&quot;</span><span class="p">)</span>  <span class="c1"># your default value</span>
+            <span class="n">model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;stored_models/model.keras&quot;</span><span class="p">)</span>  <span class="c1"># default value</span>
 
         <span class="n">directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">model_path</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
