@@ -84,12 +84,26 @@ class TestExamples(unittest.TestCase):
             testing=True,
         )
 
-    def test_admm_coordinated(self):
         self._run_example_with_return(
             file="admm//admm_example_coordinator.py",
             func_name="run_example",
             with_plots=False,
             until=1000,
+            log_level=logging.FATAL,
+        )
+        self._run_example_with_return(
+            file="admm//admm_example_multiprocessing.py",
+            func_name="run_example",
+            with_plots=False,
+            until=600,
+            log_level=logging.FATAL,
+            TESTING=True,
+        )
+        self._run_example_with_return(
+            file="admm//admm_example_coordinator_multiprocessing.py",
+            func_name="run_example",
+            with_plots=False,
+            until=600,
             log_level=logging.FATAL,
         )
 
@@ -106,24 +120,6 @@ class TestExamples(unittest.TestCase):
             func_name="run_example",
             with_plots=False,
             until=1000,
-            log_level=logging.FATAL,
-        )
-
-    def test_admm_mp_broadcast(self):
-        self._run_example_with_return(
-            file="admm//admm_example_multiprocessing.py",
-            func_name="run_example",
-            with_plots=False,
-            until=600,
-            log_level=logging.FATAL,
-            TESTING=True,
-        )
-
-        self._run_example_with_return(
-            file="admm//admm_example_coordinator_multiprocessing.py",
-            func_name="run_example",
-            with_plots=False,
-            until=600,
             log_level=logging.FATAL,
         )
 
