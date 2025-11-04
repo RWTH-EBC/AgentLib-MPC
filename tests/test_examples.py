@@ -150,6 +150,14 @@ class TestExamples(unittest.TestCase):
             TESTING=True,
         )
 
+        self._run_example_with_return(
+            file="admm//admm_example_coordinator_multiprocessing.py",
+            func_name="run_example",
+            with_plots=False,
+            until=600,
+            log_level=logging.FATAL,
+        )
+
     def test_ann_mpc(self):
         """Test the data-driven MPC examples"""
         # ANN examples
