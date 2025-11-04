@@ -20,51 +20,20 @@ class TestExamples(unittest.TestCase):
         self.timeout = 15  # Seconds which the script is allowed to run
         self.main_cwd = os.getcwd()
 
-        # Create a unique temporary directory for this test
-        self.test_dir = tempfile.mkdtemp(prefix="agentlib_test_")
-
-        # Create results subdirectory
-        self.results_dir = os.path.join(self.test_dir, "results")
-        os.makedirs(self.results_dir, exist_ok=True)
-
     def tearDown(self) -> None:
         broker = LocalBroadcastBroker()
         broker.delete_all_clients()
-
-        # Change back to original directory
+        # Change back cwd:
         os.chdir(self.main_cwd)
-
-        # Clean up temporary directory
-        try:
-            shutil.rmtree(self.test_dir)
-        except Exception as e:
-            logging.warning(f"Failed to cleanup test directory {self.test_dir}: {e}")
 
     def _run_example_with_return(
         self, file: str, func_name: str, **kwargs
     ) -> dict[str, dict[str, pd.DataFrame]]:
         file = pathlib.Path(__file__).absolute().parents[1].joinpath("examples", file)
-        example_dir = file.parent
-
-        # Copy the example directory to our test directory
-        # This handles examples that use relative paths to helper files
-        example_name = example_dir.name
-        test_example_dir = os.path.join(self.test_dir, example_name)
-        shutil.copytree(example_dir, test_example_dir, dirs_exist_ok=True)
-
-        # Change to the test example directory
-        os.chdir(test_example_dir)
-
-        # Ensure results directory exists in the test directory
-        os.makedirs("results", exist_ok=True)
-
-        # Get the copied file path
-        test_file = os.path.join(test_example_dir, file.name)
 
         # Custom file import
-        test_func = custom_injection({"file": test_file, "class_name": func_name})
+        test_func = custom_injection({"file": file, "class_name": func_name})
         results = test_func(**kwargs)
-
         self.assertIsInstance(results, dict)
         agent_name, agent = results.popitem()
         self.assertIsInstance(agent, dict)
