@@ -2,7 +2,8 @@
 
 [run]
 source = agentlib_mpc
-
+omit =
+    tests/*
 
 [paths]
 source =
