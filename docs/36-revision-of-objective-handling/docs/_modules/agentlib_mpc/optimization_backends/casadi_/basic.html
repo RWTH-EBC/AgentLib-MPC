@@ -86,7 +86,7 @@
     <span class="n">Integrators</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariableReference</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.objective</span><span class="w"> </span><span class="kn">import</span> <span class="n">FullObjective</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.objective</span><span class="w"> </span><span class="kn">import</span> <span class="n">CombinedObjective</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.casadi_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasADiBackend</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.VariableGroup</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -114,7 +114,7 @@
 
     <span class="c1"># dynamics</span>
     <span class="n">model_constraints</span><span class="p">:</span> <span class="n">Constraint</span>
-    <span class="n">objective</span><span class="p">:</span> <span class="n">FullObjective</span>
+    <span class="n">objective</span><span class="p">:</span> <span class="n">CombinedObjective</span>
     <span class="n">ode</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span>
     <span class="n">time</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span>
 

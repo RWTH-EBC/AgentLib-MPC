@@ -103,6 +103,29 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;obj_</span><span class="si">{</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add two objectives together to create a CombinedObjective&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">SubObjective</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">CombinedObjective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">CombinedObjective</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">CombinedObjective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">other</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="n">other</span><span class="o">.</span><span class="n">normalization</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot add SubObjective with </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Scale objective by a factor&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">):</span>
+                <span class="n">new_expression</span> <span class="o">=</span> <span class="n">other</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">expression</span>
+                <span class="n">new_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_expression</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expression</span>
+                <span class="n">new_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">*</span> <span class="n">other</span>
+
+            <span class="k">return</span> <span class="n">SubObjective</span><span class="p">(</span><span class="n">new_expression</span><span class="p">,</span> <span class="n">new_weight</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;scaled_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot multiply SubObjective with </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
 <div class="viewcode-block" id="SubObjective.get_weighted_expression"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.SubObjective.get_weighted_expression">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_weighted_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the final weighted expression&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">is_casadi_expression</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">):</span>
@@ -245,7 +268,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to evaluate expression: </span><span class="si">{</span><span class="n">expr</span><span class="si">}</span><span class="s2">. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DeltaUObjective"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.DeltaUObjective">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DeltaUObjective</span><span class="p">(</span><span class="n">SubObjective</span><span class="p">):</span>
+<div class="viewcode-block" id="ChangePenaltyObjective"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.ChangePenaltyObjective">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ChangePenaltyObjective</span><span class="p">(</span><span class="n">SubObjective</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">expressions</span><span class="p">:</span> <span class="n">CasadiInput</span><span class="p">,</span>
@@ -271,18 +294,31 @@
             <span class="n">name</span><span class="o">=</span><span class="n">name</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;delta_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_control_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="DeltaUObjective.get_control_name"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.DeltaUObjective.get_control_name">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_control_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Scale change penalty objective by a factor&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">):</span>
+                <span class="n">new_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span>
+                <span class="n">scaled_obj</span> <span class="o">=</span> <span class="n">ChangePenaltyObjective</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">,</span> <span class="n">new_weight</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;scaled_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">scaled_obj</span><span class="o">.</span><span class="n">_scale_factor</span> <span class="o">=</span> <span class="n">other</span>
+                <span class="k">return</span> <span class="n">scaled_obj</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">*</span> <span class="n">other</span>
+                <span class="k">return</span> <span class="n">ChangePenaltyObjective</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">,</span> <span class="n">new_weight</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;scaled_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot multiply ChangePenaltyObjective with </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="ChangePenaltyObjective.get_control_name"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.ChangePenaltyObjective.get_control_name">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_control_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the name of the associated control variable&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="o">.</span><span class="n">name</span></div>
 
-<div class="viewcode-block" id="DeltaUObjective.get_weighted_expression"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.DeltaUObjective.get_weighted_expression">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_weighted_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ChangePenaltyObjective.get_weighted_expression"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.ChangePenaltyObjective.get_weighted_expression">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_weighted_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override parent method to provide a placeholder.</span>
 <span class="sd">        The actual penalty calculation happens in the discretization step.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="mi">0</span></div>
 
-<div class="viewcode-block" id="DeltaUObjective.calculate_value"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.DeltaUObjective.calculate_value">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
+<div class="viewcode-block" id="ChangePenaltyObjective.calculate_value"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.ChangePenaltyObjective.calculate_value">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the final weighted result by multiplying all expressions&quot;&quot;&quot;</span>
         <span class="n">diff_values</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span>
         <span class="n">diff</span> <span class="o">=</span> <span class="n">diff_values</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
@@ -291,7 +327,7 @@
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">dropna</span><span class="p">())</span></div></div>
 
 
-<div class="viewcode-block" id="FullObjective"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.FullObjective">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">FullObjective</span><span class="p">:</span>
+<div class="viewcode-block" id="CombinedObjective"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.CombinedObjective">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CombinedObjective</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Container for multiple objective terms with normalization&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">objectives</span><span class="p">,</span> <span class="n">normalization</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">):</span>
@@ -304,15 +340,32 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">normalization</span> <span class="o">=</span> <span class="n">normalization</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="FullObjective.get_delta_u_objectives"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.FullObjective.get_delta_u_objectives">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_delta_u_objectives</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of all DeltaUObjective instances&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">DeltaUObjective</span><span class="p">)]</span></div>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add another objective to this CombinedObjective&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">SubObjective</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">CombinedObjective</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">normalization</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">CombinedObjective</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">CombinedObjective</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span> <span class="o">*</span><span class="n">other</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">normalization</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot add CombinedObjective with </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Scale all objectives in the combination&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="n">scaled_objectives</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="o">*</span> <span class="n">other</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">CombinedObjective</span><span class="p">(</span><span class="o">*</span><span class="n">scaled_objectives</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">normalization</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot multiply CombinedObjective with </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CombinedObjective.get_delta_u_objectives"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.CombinedObjective.get_delta_u_objectives">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_delta_u_objectives</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of all ChangePenaltyObjective instances&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ChangePenaltyObjective</span><span class="p">)]</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_casadi_expression</span><span class="p">()</span>
 
-<div class="viewcode-block" id="FullObjective.get_casadi_expression"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.FullObjective.get_casadi_expression">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_casadi_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CombinedObjective.get_casadi_expression"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.CombinedObjective.get_casadi_expression">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_casadi_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Combine all objectives into a single CasADi expression&quot;&quot;&quot;</span>
         <span class="n">terms</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
@@ -321,7 +374,7 @@
             <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">terms</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization</span>
         <span class="k">return</span> <span class="mi">0</span></div>
 
-<div class="viewcode-block" id="FullObjective.calculate_values"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.FullObjective.calculate_values">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_df</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
+<div class="viewcode-block" id="CombinedObjective.calculate_values"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.CombinedObjective.calculate_values">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_df</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate values for each objective component using the result dataframe&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_dataframe</span><span class="p">(</span><span class="n">result_df</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
@@ -338,7 +391,7 @@
                     <span class="n">weight</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">weight</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">weight</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">weight</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">DeltaUObjective</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ChangePenaltyObjective</span><span class="p">):</span>
                 <span class="n">control_name</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_control_name</span><span class="p">()</span>
                 <span class="n">control_series</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="s2">&quot;variable&quot;</span><span class="p">,</span> <span class="n">control_name</span><span class="p">)]</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">calculate_value</span><span class="p">(</span><span class="n">control_series</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
@@ -429,11 +482,11 @@
 <span class="sd">        Args:</span>
 <span class="sd">            *condition_objective_pairs: Tuples of (condition, objective)</span>
 <span class="sd">                where condition is a CasADi expression that evaluates to True/False</span>
-<span class="sd">                and objective is a FullObjective</span>
+<span class="sd">                and objective is a CombinedObjective</span>
 <span class="sd">            default_objective: The objective to use when all conditions are False</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">condition_objective_pairs</span> <span class="o">=</span> <span class="n">condition_objective_pairs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">default_objective</span> <span class="o">=</span> <span class="n">default_objective</span> <span class="ow">or</span> <span class="n">FullObjective</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_objective</span> <span class="o">=</span> <span class="n">default_objective</span> <span class="ow">or</span> <span class="n">CombinedObjective</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">all_objectives</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">default_objective</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">objective</span> <span class="ow">in</span> <span class="n">condition_objective_pairs</span><span class="p">:</span>
@@ -460,7 +513,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="ConditionalObjective.get_delta_u_objectives"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.ConditionalObjective.get_delta_u_objectives">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_delta_u_objectives</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns all DeltaUObjective instances from all contained objectives&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns all ChangePenaltyObjective instances from all contained objectives&quot;&quot;&quot;</span>
         <span class="n">all_delta_u</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">objective</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_objectives</span><span class="p">:</span>
             <span class="n">all_delta_u</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">objective</span><span class="o">.</span><span class="n">get_delta_u_objectives</span><span class="p">())</span>
