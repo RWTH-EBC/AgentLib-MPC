@@ -329,14 +329,14 @@ class CasadiModel(Model):
             # Old objective system - backwards compatibility
             from agentlib_mpc.data_structures import objective
 
-            self.objective = objective.FullObjective(
+            self.objective = objective.CombinedObjective(
                 objective.SubObjective(
                     expressions=self.objective, name=str(self.objective)
                 )
             )
             warnings.warn(
                 "\033[93mWARNING:\033[0m Model uses the deprecated objective formulation. "
-                "Consider migrating to the new FullObjective formulation.\n"
+                "Consider migrating to the new CombinedObjective formulation.\n"
             )
 
         # save system equations as a single casadi vector
@@ -529,13 +529,13 @@ class CasadiModel(Model):
         return SubObjective(expressions=expressions, weight=weight, name=name)
 
     def create_change_penalty(self, expressions, weight, name=None):
-        """Create a DeltaUObjective without requiring imports"""
+        """Create a ChangePenaltyObjective without requiring imports"""
         from agentlib_mpc.data_structures.objective import ChangePenaltyObjective
 
         return ChangePenaltyObjective(expressions=expressions, weight=weight, name=name)
 
     def create_combined_objective(self, *objectives, normalization=1.0):
-        """Create a FullObjective without requiring imports"""
+        """Create a CombinedObjective without requiring imports"""
         from agentlib_mpc.data_structures.objective import CombinedObjective
 
         return CombinedObjective(*objectives, normalization=normalization)

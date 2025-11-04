@@ -30,6 +30,29 @@ class SubObjective:
         self.weight = weight
         self.name = name or f"obj_{id(self)}"
 
+    def __add__(self, other):
+        """Add two objectives together to create a CombinedObjective"""
+        if isinstance(other, SubObjective):
+            return CombinedObjective(self, other)
+        elif isinstance(other, CombinedObjective):
+            return CombinedObjective(self, *other.objectives, normalization=other.normalization)
+        else:
+            raise TypeError(f"Cannot add SubObjective with {type(other)}")
+
+    def __mul__(self, other):
+        """Scale objective by a factor"""
+        if isinstance(other, (int, float)):
+            if isinstance(self.weight, CasadiParameter):
+                new_expression = other * self.expression
+                new_weight = self.weight
+            else:
+                new_expression = self.expression
+                new_weight = self.weight * other
+
+            return SubObjective(new_expression, new_weight, f"scaled_{self.name}")
+        else:
+            raise TypeError(f"Cannot multiply SubObjective with {type(other)}")
+
     def get_weighted_expression(self):
         """Returns the final weighted expression"""
         if is_casadi_expression(self.weight):
@@ -198,6 +221,19 @@ class ChangePenaltyObjective(SubObjective):
             name=name or f"delta_{self.get_control_name()}",
         )
 
+    def __mul__(self, other):
+        """Scale change penalty objective by a factor"""
+        if isinstance(other, (int, float)):
+            if isinstance(self.weight, CasadiParameter):
+                new_weight = self.weight
+                scaled_obj = ChangePenaltyObjective(self.control, new_weight, f"scaled_{self.name}")
+                scaled_obj._scale_factor = other
+                return scaled_obj
+            else:
+                new_weight = self.weight * other
+                return ChangePenaltyObjective(self.control, new_weight, f"scaled_{self.name}")
+        else:
+            raise TypeError(f"Cannot multiply ChangePenaltyObjective with {type(other)}")
     def get_control_name(self):
         """Return the name of the associated control variable"""
         return self.control.name
@@ -230,6 +266,23 @@ class CombinedObjective:
         self.objectives = list(objectives)
         self.normalization = normalization
         self._values = {}
+
+    def __add__(self, other):
+        """Add another objective to this CombinedObjective"""
+        if isinstance(other, SubObjective):
+            return CombinedObjective(*self.objectives, other, normalization=self.normalization)
+        elif isinstance(other, CombinedObjective):
+            return CombinedObjective(*self.objectives, *other.objectives, normalization=self.normalization)
+        else:
+            raise TypeError(f"Cannot add CombinedObjective with {type(other)}")
+
+    def __mul__(self, other):
+        """Scale all objectives in the combination"""
+        if isinstance(other, (int, float)):
+            scaled_objectives = [obj * other for obj in self.objectives]
+            return CombinedObjective(*scaled_objectives, normalization=self.normalization)
+        else:
+            raise TypeError(f"Cannot multiply CombinedObjective with {type(other)}")
 
     def get_delta_u_objectives(self):
         """Returns a list of all ChangePenaltyObjective instances"""

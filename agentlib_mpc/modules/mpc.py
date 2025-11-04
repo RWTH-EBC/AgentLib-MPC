@@ -96,7 +96,7 @@ class BaseMPCConfig(BaseModuleConfig):
         if r_del_u:
             raise DeprecationWarning(
                 "The 'r_del_u' parameter is no longer supported. "
-                "Please use delta_u objectives in the new DeltaUObjective/FullObjective formulation instead. "
+                "Please use delta_u objectives in the new ChangePenaltyObjective/CombinedObjective formulation instead. "
             )
 
     @field_validator("sampling_time")

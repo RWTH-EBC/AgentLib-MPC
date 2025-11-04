@@ -129,6 +129,12 @@ class MyCasadiModel(CasadiModel):
         #     ]
         # )
 
+        # Also supported:
+        # return obj1 + obj2
+        # return obj1 + obj2 * 0.5
+        # return objective + objective
+        # return objective + objective * 3
+
         return objective
 
 

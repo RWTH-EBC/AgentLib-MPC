@@ -12,7 +12,7 @@ from agentlib_mpc.data_structures.casadi_utils import (
     Integrators,
 )
 from agentlib_mpc.data_structures.mpc_datamodels import VariableReference
-from agentlib_mpc.data_structures.objective import FullObjective
+from agentlib_mpc.data_structures.objective import CombinedObjective
 from agentlib_mpc.models.casadi_model import CasadiModel
 from agentlib_mpc.optimization_backends.casadi_.core.casadi_backend import CasADiBackend
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
@@ -40,7 +40,7 @@ class BaseSystem(System):
 
     # dynamics
     model_constraints: Constraint
-    objective: FullObjective
+    objective: CombinedObjective
     ode: ca.MX
     time: ca.MX
 
