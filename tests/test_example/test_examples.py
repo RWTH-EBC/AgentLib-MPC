@@ -29,7 +29,7 @@ class TestExamples(unittest.TestCase):
     def _run_example_with_return(
         self, file: str, func_name: str, **kwargs
     ) -> dict[str, dict[str, pd.DataFrame]]:
-        file = pathlib.Path(__file__).absolute().parents[1].joinpath("examples", file)
+        file = pathlib.Path(__file__).absolute().parents[2].joinpath("examples", file)
 
         # Custom file import
         test_func = custom_injection({"file": file, "class_name": func_name})
