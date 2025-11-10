@@ -38,9 +38,9 @@ class TestSerializedKerasANN(unittest.TestCase):
             self.test_ann, dt=1, input=self.inputs, output=self.outputs
         )
         # tests
-        save_path = Path("stored_models/model.keras")
+        custom_path = Path("stored_models/model.keras")
         self.assertIsInstance(serialized_ann.model_path, Path)
-        assert serialized_ann.model_path == save_path
+        assert serialized_ann.model_path == custom_path
 
         if custom_path.exists():
             os.remove(custom_path)
