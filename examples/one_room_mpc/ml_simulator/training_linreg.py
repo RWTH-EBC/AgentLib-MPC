@@ -69,14 +69,14 @@ def plot(results):
 
 
 def configs(
-    training_time: float = 1000, plot_results: bool = False, step_size: float = 60
+    training_time: float = 1000, plot_results: bool = False, step_size: float = 60, module_id: str = "default"
 ):
     trainer_config = {
         "id": "Trainer",
         "modules": [
             {
-                "step_size": 300,
-                "module_id": "trainer",
+                "step_size": step_size,
+                "module_id": module_id,
                 "type": "agentlib_mpc.linreg_trainer",
                 "inputs": [
                     {"name": "mDot", "value": 0.0225, "source": "PID"},
@@ -94,7 +94,7 @@ def configs(
                 "retrain_delay": training_time,
                 "save_directory": "linregs",
                 "use_values_for_incomplete_data": True,
-                "data_sources": ["results//simulation_data_14days.csv"],
+                "data_sources": ["results//simulation_data.csv"],
                 "save_data": True,
                 "save_ml_model": True,
                 "save_plots": True,
@@ -132,7 +132,7 @@ def configs(
             {
                 "module_id": "input_generator",
                 "type": "simulator",
-                "t_sample": step_size * 10,
+                "t_sample": step_size,
                 "model": {"type": {"file": __file__, "class_name": "InputGenerator"}},
                 "outputs": [
                     # {"name": "mDot"},
@@ -176,12 +176,12 @@ def configs(
     return [simulator_config, trainer_config, pid_controller]
 
 
-def main(training_time: float = 1000, plot_results=False, step_size: float = 300):
+def main(training_time: float = 1000, plot_results=False, step_size: float = 300, module_id: str = "default"):
     env_config = {"rt": False, "t_sample": 60}
     logging.basicConfig(level=logging.INFO)
     mas = LocalMASAgency(
         agent_configs=configs(
-            training_time=training_time, plot_results=plot_results, step_size=step_size
+            training_time=training_time, plot_results=plot_results, step_size=step_size, module_id=module_id
         ),
         env=env_config,
         variable_logging=False,
