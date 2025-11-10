@@ -38,16 +38,28 @@ class TestSerializedKerasANN(unittest.TestCase):
             self.test_ann, dt=1, input=self.inputs, output=self.outputs
         )
         # tests
+        save_path = Path("stored_models/model.keras")
         self.assertIsInstance(serialized_ann.model_path, Path)
-        assert serialized_ann.model_path == Path("stored_models/model.keras")
+        assert serialized_ann.model_path == save_path
+
+        if custom_path.exists():
+            os.remove(custom_path)
+            custom_path.parent.rmdir()
 
         # setup
-        self.test_ann.save_path = "custom_path/model.keras"
+        test_dir = Path(__file__).parent
+        custom_path = os.path.join(test_dir, "custom_path", "model.keras")
+        self.test_ann.save_path = str(custom_path)
         serialized_ann = SerializedKerasANN.serialize(
             self.test_ann, dt=1, input=self.inputs, output=self.outputs
         )
         # tests
-        assert serialized_ann.model_path == Path("custom_path/model.keras")
+        assert serialized_ann.model_path == custom_path
+
+        if custom_path.exists():
+            os.remove(custom_path)
+            custom_path.parent.rmdir()
+        
 
     def test_deserialize_function(self):
         """Test deserialize function."""
