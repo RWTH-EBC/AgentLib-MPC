@@ -71,7 +71,7 @@ def generate_physxai_model(models: Union[list[str], dict[str, str], str], physXA
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             # Train the model
-            name = module.train_model(base_path=model_save_path, folder_name=run_id, training_data_path=training_data_path, time_step=time_step)
+            name = module.train_model(base_path=model_save_path, folder_name=run_id, training_data_path=os.path.abspath(training_data_path), time_step=time_step)
             model_names.append(name)
 
     # If a dict is given, each key is the desired output model name, and each value is the physXAI script filename (with or without .py ending) to be executed for model training.
@@ -84,7 +84,7 @@ def generate_physxai_model(models: Union[list[str], dict[str, str], str], physXA
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             # Train the model
-            module.train_model(base_path=model_save_path, folder_name=run_id, training_data_path=training_data_path,
+            module.train_model(base_path=model_save_path, folder_name=run_id, training_data_path=os.path.abspath(training_data_path),
                                time_step=time_step, output_name=model_name)
             model_names.append(model_name)
 
