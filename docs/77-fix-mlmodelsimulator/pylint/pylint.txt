@@ -71,7 +71,7 @@ pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pyli
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'old-octal-literal' (unknown-option-value)
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'non-ascii-bytes-literal' (unknown-option-value)
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'eq-without-hash' (unknown-option-value)
-************* Module ci.test_examples
+************* Module test_examples
 ci/test_examples.py:9:0: E0401: Unable to import 'pytest' (import-error)
 ci/test_examples.py:60:8: W0105: String statement has no effect (pointless-string-statement)
 ci/test_examples.py:68:4: C0116: Missing function or method docstring (missing-function-docstring)
@@ -142,6 +142,10 @@ tests/test_casadi_ml_model.py:3:0: E0401: Unable to import 'pytest' (import-erro
 tests/test_casadi_ml_model.py:9:0: C0115: Missing class docstring (missing-class-docstring)
 tests/test_casadi_ml_model.py:14:0: C0115: Missing class docstring (missing-class-docstring)
 tests/test_casadi_ml_model.py:23:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_examples.py:51:0: C0304: Final newline missing (missing-final-newline)
+tests/test_examples.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests/test_examples.py:5:0: C0411: standard import "import pathlib" should be placed before "import pandas as pd" (wrong-import-order)
+tests/test_examples.py:6:0: C0411: standard import "import unittest" should be placed before "import pandas as pd" (wrong-import-order)
 ************* Module test_mpc
 tests/test_mpc.py:176:0: C0301: Line too long (108/100) (line-too-long)
 tests/test_mpc.py:187:0: C0301: Line too long (127/100) (line-too-long)
@@ -180,7 +184,49 @@ tests/test_serialized_linreg.py:3:0: C0411: standard import "import unittest" sh
 tests/test_serialized_linreg.py:5:0: C0411: standard import "from pathlib import Path" should be placed before "import numpy as np" (wrong-import-order)
 tests/test_serialized_linreg.py:11:0: C0411: third party import "from fixtures.linreg import LinRegTrainer" should be placed before "from agentlib_mpc.data_structures import ml_model_datatypes" (wrong-import-order)
 tests/test_serialized_linreg.py:12:0: C0411: third party import "from fixtures.data_generator import DataGenerator" should be placed before "from agentlib_mpc.data_structures import ml_model_datatypes" (wrong-import-order)
+tests/test_serialized_linreg.py:1:0: R0801: Similar lines in 2 files
+==test_examples:[10:47]
+==test_examples:[7:46]
+from agentlib.utils import custom_injection
+from agentlib.utils.local_broadcast_broker import LocalBroadcastBroker
+
+
+class TestExamples(unittest.TestCase):
+    """Test all examples inside the agentlib"""
+
+    def setUp(self) -> None:
+        self.timeout = 15  # Seconds which the script is allowed to run
+        self.main_cwd = os.getcwd()
+
+    def tearDown(self) -> None:
+        broker = LocalBroadcastBroker()
+        broker.delete_all_clients()
+        # Change back cwd:
+        os.chdir(self.main_cwd)
+
+    def _run_example_with_return(
+        self, file: str, func_name: str, **kwargs
+    ) -> dict[str, dict[str, pd.DataFrame]]:
+        file = pathlib.Path(__file__).absolute().parents[1].joinpath("examples", file)
+
+        # Custom file import
+        test_func = custom_injection({"file": file, "class_name": func_name})
+        results = test_func(**kwargs)
+        self.assertIsInstance(results, dict)
+        agent_name, agent = results.popitem()
+        self.assertIsInstance(agent, dict)
+        module_name, module_res = agent.popitem()
+        self.assertIsInstance(module_res, pd.DataFrame)
+        agent_results = results.setdefault(agent_name, {})
+        agent_results[module_name] = module_res
+        return results
+
+    def test_ml_model_simulator_mpc(self):
+        """Test the data-driven MPC examples"""
+
+        # Linear regression examples
+        self._run_example_with_return( (duplicate-code)
 
 -----------------------------------
-Your code has been rated at 7.39/10
+Your code has been rated at 7.44/10
 

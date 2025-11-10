@@ -28,9 +28,9 @@
 
         
         <h2>Score</h2>
-        7.39 / 10
+        7.44 / 10
             
-            (previous score: 7.39 / 10)
+            (previous score: 7.44 / 10)
             
         
 
@@ -1500,6 +1500,60 @@
             
         </table>
         
+        <h3>Module <code>test_examples</code> (<code>tests/test_examples.py</code>)</h3>
+        <table>
+            <tr>
+                <th>Line</th>
+                <th>Col.</th>
+                <th>Type</th>
+                <th>Symbol</th>
+                <th>ID</th>
+                <th>Obj</th>
+                <th>Message</th>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>missing-module-docstring</code></td>
+                <td>C0114</td>
+                <td></td>
+                <td><pre>Missing module docstring</pre></td>
+            </tr>
+            
+            <tr>
+                <td>5</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>wrong-import-order</code></td>
+                <td>C0411</td>
+                <td></td>
+                <td><pre>standard import &#34;import pathlib&#34; should be placed before &#34;import pandas as pd&#34;</pre></td>
+            </tr>
+            
+            <tr>
+                <td>6</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>wrong-import-order</code></td>
+                <td>C0411</td>
+                <td></td>
+                <td><pre>standard import &#34;import unittest&#34; should be placed before &#34;import pandas as pd&#34;</pre></td>
+            </tr>
+            
+            <tr>
+                <td>51</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>missing-final-newline</code></td>
+                <td>C0304</td>
+                <td></td>
+                <td><pre>Final newline missing</pre></td>
+            </tr>
+            
+        </table>
+        
         <h3>Module <code>test_mpc</code> (<code>tests/test_mpc.py</code>)</h3>
         <table>
             <tr>
@@ -1845,6 +1899,57 @@
             </tr>
             
             <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>duplicate-code</code></td>
+                <td>R0801</td>
+                <td></td>
+                <td><pre>Similar lines in 2 files
+==test_examples:[10:47]
+==test_examples:[7:46]
+from agentlib.utils import custom_injection
+from agentlib.utils.local_broadcast_broker import LocalBroadcastBroker
+
+
+class TestExamples(unittest.TestCase):
+    &#34;&#34;&#34;Test all examples inside the agentlib&#34;&#34;&#34;
+
+    def setUp(self) -&gt; None:
+        self.timeout = 15  # Seconds which the script is allowed to run
+        self.main_cwd = os.getcwd()
+
+    def tearDown(self) -&gt; None:
+        broker = LocalBroadcastBroker()
+        broker.delete_all_clients()
+        # Change back cwd:
+        os.chdir(self.main_cwd)
+
+    def _run_example_with_return(
+        self, file: str, func_name: str, **kwargs
+    ) -&gt; dict[str, dict[str, pd.DataFrame]]:
+        file = pathlib.Path(__file__).absolute().parents[1].joinpath(&#34;examples&#34;, file)
+
+        # Custom file import
+        test_func = custom_injection({&#34;file&#34;: file, &#34;class_name&#34;: func_name})
+        results = test_func(**kwargs)
+        self.assertIsInstance(results, dict)
+        agent_name, agent = results.popitem()
+        self.assertIsInstance(agent, dict)
+        module_name, module_res = agent.popitem()
+        self.assertIsInstance(module_res, pd.DataFrame)
+        agent_results = results.setdefault(agent_name, {})
+        agent_results[module_name] = module_res
+        return results
+
+    def test_ml_model_simulator_mpc(self):
+        &#34;&#34;&#34;Test the data-driven MPC examples&#34;&#34;&#34;
+
+        # Linear regression examples
+        self._run_example_with_return(</pre></td>
+            </tr>
+            
+            <tr>
                 <td>2</td>
                 <td>0</td>
                 <td>convention</td>
@@ -1909,7 +2014,7 @@
             
             <tr>
                 <td>refactor</td>
-                <td>67</td>
+                <td>68</td>
             </tr>
             
             <tr>
@@ -1924,7 +2029,7 @@
             
             <tr>
                 <td>convention</td>
-                <td>61</td>
+                <td>65</td>
             </tr>
             
         </table>
@@ -1969,7 +2074,7 @@
             
             <tr>
                 <td>missing-module-docstring</td>
-                <td>6</td>
+                <td>7</td>
             </tr>
             
             <tr>
@@ -2003,13 +2108,23 @@
             </tr>
             
             <tr>
+                <td>missing-final-newline</td>
+                <td>1</td>
+            </tr>
+            
+            <tr>
+                <td>wrong-import-order</td>
+                <td>17</td>
+            </tr>
+            
+            <tr>
                 <td>line-too-long</td>
                 <td>2</td>
             </tr>
             
             <tr>
-                <td>wrong-import-order</td>
-                <td>15</td>
+                <td>duplicate-code</td>
+                <td>1</td>
             </tr>
             
         </table>
@@ -2029,7 +2144,7 @@
             
             <tr>
                 <td>test_examples</td>
-                <td>8</td>
+                <td>12</td>
             </tr>
             
             <tr>
@@ -2069,7 +2184,7 @@
             
             <tr>
                 <td>test_serialized_linreg</td>
-                <td>6</td>
+                <td>7</td>
             </tr>
             
         </table>
@@ -2113,6 +2228,11 @@
             </tr>
             
             <tr>
+                <td>tests/test_examples.py</td>
+                <td>4</td>
+            </tr>
+            
+            <tr>
                 <td>tests/test_mpc.py</td>
                 <td>17</td>
             </tr>
@@ -2129,7 +2249,7 @@
             
             <tr>
                 <td>tests/test_serialized_linreg.py</td>
-                <td>6</td>
+                <td>7</td>
             </tr>
             
         </table>
