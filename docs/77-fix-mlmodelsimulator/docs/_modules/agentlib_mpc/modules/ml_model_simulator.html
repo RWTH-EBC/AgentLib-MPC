@@ -90,6 +90,12 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_t_sample</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">t_sample</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if t_sample is smaller than stop-start time&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s2">&quot;model&quot;</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;There is an Error in the model. Most likely it is raised in the &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;check_model&#39; method of the SimulatorConfig class of the core Agentlib. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Please check your model for any mistakes.&quot;</span>
+            <span class="p">)</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span>
         <span class="k">if</span> <span class="n">t_sample</span> <span class="o">%</span> <span class="n">dt</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
