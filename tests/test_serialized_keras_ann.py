@@ -48,7 +48,7 @@ class TestSerializedKerasANN(unittest.TestCase):
 
         # setup
         test_dir = Path(__file__).parent
-        custom_path = os.path.join(test_dir, "custom_path", "model.keras")
+        custom_path = Path(test_dir, "custom_path", "model.keras")
         self.test_ann.save_path = str(custom_path)
         serialized_ann = SerializedKerasANN.serialize(
             self.test_ann, dt=1, input=self.inputs, output=self.outputs
