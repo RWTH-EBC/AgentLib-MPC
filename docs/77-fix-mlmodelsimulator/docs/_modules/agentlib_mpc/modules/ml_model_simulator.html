@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules.ml_model_simulator &mdash; agentlib_mpc 0.6.8 documentation</title>
+  <title>agentlib_mpc.modules.ml_model_simulator &mdash; agentlib_mpc 0.6.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -72,7 +72,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for agentlib_mpc.modules.ml_model_simulator</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module contains the MLModelSimulator, used to simulate with ML-Models. The</span>
+<span class="sd">class inherits from the Simulator class from the agentlib core.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">AgentVariables</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigurationError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.modules.simulation.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulatorConfig</span><span class="p">,</span> <span class="n">Simulator</span>
@@ -96,7 +101,7 @@
                 <span class="s2">&quot;Please verify your model configuration.&quot;</span>
             <span class="p">)</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span>
-        <span class="k">if</span> <span class="n">t_sample</span> <span class="o">%</span> <span class="n">dt</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">t_sample</span> <span class="o">&lt;</span> <span class="n">dt</span> <span class="ow">or</span> <span class="n">t_sample</span> <span class="o">%</span> <span class="n">dt</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Sampling Time of Simulator must be multiple of MLModel time step. Current&quot;</span>
                 <span class="sa">f</span><span class="s2">&quot; MLModel time step is </span><span class="si">{</span><span class="n">dt</span><span class="si">}</span><span class="s2"> and chosen sampling time is </span><span class="si">{</span><span class="n">t_sample</span><span class="si">}</span><span class="s2">.&quot;</span>

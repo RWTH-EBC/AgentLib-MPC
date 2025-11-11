@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules.dmpc.admm.admm_coordinator &mdash; agentlib_mpc 0.6.8 documentation</title>
+  <title>agentlib_mpc.modules.dmpc.admm.admm_coordinator &mdash; agentlib_mpc 0.6.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/autodoc_pydantic.css" />
@@ -335,7 +335,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Process function for use in fast-as-possible simulations. Regularly yields</span>
 <span class="sd">        control back to the environment, to allow the callbacks to run.&quot;&quot;&quot;</span>
         <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_non_rt</span><span class="p">()</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">cdt</span><span class="o">.</span><span class="n">CoordinatorStatus</span><span class="o">.</span><span class="n">sleeping</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="c1"># ------------------</span>
             <span class="c1"># start iteration</span>
@@ -729,6 +729,13 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_initial_registration</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_wrap_up_algorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterations</span><span class="p">):</span>
+        <span class="n">active_agents_sources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_agents_with_status</span><span class="p">(</span>
+            <span class="n">cdt</span><span class="o">.</span><span class="n">AgentStatus</span><span class="o">.</span><span class="n">ready</span>
+        <span class="p">)</span>  <span class="c1"># Get list before changing status</span>
+        <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">active_agents_sources</span><span class="p">:</span>
+            <span class="c1"># Reset status to standby, ready for the next cycle&#39;s init signal</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">agent_dict</span><span class="p">[</span><span class="n">source</span><span class="p">]</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">cdt</span><span class="o">.</span><span class="n">AgentStatus</span><span class="o">.</span><span class="n">standby</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_save_stats</span><span class="p">(</span><span class="n">iterations</span><span class="o">=</span><span class="n">iterations</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">penalty_parameter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">penalty_factor</span>
 

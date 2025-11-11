@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.utils package &mdash; agentlib_mpc 0.6.8 documentation</title>
+  <title>agentlib_mpc.utils package &mdash; agentlib_mpc 0.6.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
@@ -74,6 +74,23 @@
   <section id="module-agentlib_mpc.utils">
 <span id="agentlib-mpc-utils-package"></span><h1>agentlib_mpc.utils package<a class="headerlink" href="#module-agentlib_mpc.utils" title="Permalink to this heading"></a></h1>
 <p>Package containing utils for agentlib_mpc.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.is_time_in_intervals">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.</span></span><span class="sig-name descname"><span class="pre">is_time_in_intervals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intervals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils.html#is_time_in_intervals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.is_time_in_intervals" title="Permalink to this definition"></a></dt>
+<dd><p>Check if given time is within any of the provided intervals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time</strong> – The time value to check</p></li>
+<li><p><strong>intervals</strong> – List of tuples, each containing (start_time, end_time)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if time falls within any interval, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
 <section id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
 <div class="toctree-wrapper compound">
@@ -168,6 +185,17 @@
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc.interpolate_colors"><code class="docutils literal notranslate"><span class="pre">interpolate_colors()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc.plot_admm"><code class="docutils literal notranslate"><span class="pre">plot_admm()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc.plot_mpc"><code class="docutils literal notranslate"><span class="pre">plot_mpc()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#module-agentlib_mpc.utils.plotting.mpc_dashboard">agentlib_mpc.utils.plotting.mpc_dashboard module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.detect_index_type"><code class="docutils literal notranslate"><span class="pre">detect_index_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.is_mhe_data"><code class="docutils literal notranslate"><span class="pre">is_mhe_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.launch_dashboard_from_results"><code class="docutils literal notranslate"><span class="pre">launch_dashboard_from_results()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.make_components"><code class="docutils literal notranslate"><span class="pre">make_components()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.plot_mpc_plotly"><code class="docutils literal notranslate"><span class="pre">plot_mpc_plotly()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.process_mas_results"><code class="docutils literal notranslate"><span class="pre">process_mas_results()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.reduce_triple_index"><code class="docutils literal notranslate"><span class="pre">reduce_triple_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.show_multi_room_dashboard"><code class="docutils literal notranslate"><span class="pre">show_multi_room_dashboard()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -382,11 +410,14 @@ result = list(tck(target_grid))</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>trajectory</strong> – <p>The trajectory to be sampled. Scalars will be
-expanded onto the grid. Lists need to exactly match the provided
-grid. Otherwise, a pandas Series is accepted with the timestamp as index. A</p>
+<li><p><strong>trajectory</strong> – <p>The trajectory to be sampled. Accepted formats:
+- Scalars will be expanded onto the grid.
+- Lists need to exactly match the provided grid.
+- A pandas Series is accepted with the timestamp as index.
+- A dict with the keys as time stamps is also accepted.
+- A pandas Series serialized as a json-str is accepted.</p>
 <blockquote>
-<div><p>dict with the keys as time stamps is also accepted.</p>
+<div><p>Any given string will be cast as Series.</p>
 </div></blockquote>
 </p></li>
 <li><p><strong>current</strong> – start time of requested trajectory</p></li>

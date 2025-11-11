@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules &mdash; agentlib_mpc 0.6.8 documentation</title>
+  <title>agentlib_mpc.modules &mdash; agentlib_mpc 0.6.9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
@@ -96,9 +96,11 @@
         <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.data_source&quot;</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;DataSource&quot;</span>
     <span class="p">),</span>
     <span class="s2">&quot;mpc_basic&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
-        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.mpc&quot;</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;BaseMPC&quot;</span>
+        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.mpc.mpc&quot;</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;BaseMPC&quot;</span>
     <span class="p">),</span>
-    <span class="s2">&quot;mpc&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span><span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.mpc_full&quot;</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;MPC&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;mpc&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
+        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.mpc.mpc_full&quot;</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;MPC&quot;</span>
+    <span class="p">),</span>
     <span class="s2">&quot;minlp_mpc&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
         <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.minlp_mpc&quot;</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;MINLPMPC&quot;</span>
     <span class="p">),</span>
@@ -138,6 +140,14 @@
     <span class="p">),</span>
     <span class="s2">&quot;mhe&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
         <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.estimation.mhe&quot;</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;MHE&quot;</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;skip_mpc_intervals&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
+        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.deactivate_mpc.deactivate_mpc&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;SkipMPCInIntervals&quot;</span><span class="p">,</span>
+    <span class="p">),</span>
+    <span class="s2">&quot;fallback_pid&quot;</span><span class="p">:</span> <span class="n">ModuleImport</span><span class="p">(</span>
+        <span class="n">module_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.modules.deactivate_mpc.fallback_pid&quot;</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;FallbackPID&quot;</span><span class="p">,</span>
     <span class="p">),</span>
 <span class="p">}</span>
 </pre></div>
