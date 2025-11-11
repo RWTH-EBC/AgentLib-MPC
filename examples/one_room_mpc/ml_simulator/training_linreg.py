@@ -16,7 +16,7 @@ class InputGeneratorConfig(al.ModelConfig):
             value=0.0225,
             lb=0,
             ub=0.05,
-            unit="K",
+            unit="kg/s",
             description="Air mass flow into zone",
         ),
         # disturbances
