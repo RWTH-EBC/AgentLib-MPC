@@ -166,6 +166,7 @@ class CoordinatedADMM(MiniEmployee, ADMM):
         self._result = self.optimization_backend.solve(
             now=self._start_optimization_at, current_vars=opt_inputs
         )
+        self._result_obtained = True
 
         # send optimizationData back to coordinator to signal finished
         # optimization. Select only trajectory where index is at least zero, to not

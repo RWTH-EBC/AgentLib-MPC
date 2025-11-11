@@ -1,5 +1,8 @@
 """Holds the class for full featured MPCs."""
 
+from typing import Dict, Union, Optional
+
+import agentlib
 import numpy as np
 import pandas as pd
 from agentlib.core import AgentVariable
@@ -8,10 +11,14 @@ from agentlib_mpc.data_structures import mpc_datamodels
 from pydantic import Field, field_validator, FieldValidationInfo
 from rapidfuzz import process, fuzz
 
-from agentlib_mpc.modules.mpc import BaseMPCConfig, BaseMPC
+from agentlib_mpc.modules.mpc.mpc import BaseMPCConfig, BaseMPC
+from agentlib_mpc.modules.mpc.skippable_mixin import (
+    SkippableMixinConfig,
+    SkippableMixin,
+)
 
 
-class MPCConfig(BaseMPCConfig):
+class MPCConfig(BaseMPCConfig, SkippableMixinConfig):
     """
     Pydantic data model for MPC configuration parser
     """
@@ -43,7 +50,7 @@ class MPCConfig(BaseMPCConfig):
         return r_del_u
 
 
-class MPC(BaseMPC):
+class MPC(BaseMPC, SkippableMixin):
     """
     A model predictive controller.
     More info to follow.
@@ -55,32 +62,14 @@ class MPC(BaseMPC):
         super()._init_optimization()
         self._lags_dict_seconds = self.optimization_backend.get_lags_per_variable()
 
-        history = {}
         # create a dict to keep track of all values for lagged variables timestamped
-        for v in self._lags_dict_seconds:
-            var = self.get(v)
-            history[v] = {}
-            # store scalar values as initial if they exist
-            if isinstance(var.value, (float, int)):
-                timestamp = var.timestamp or self.env.time
-                value = var.value
-            elif var.value is None:
-                self.logger.info(
-                    "Initializing history for variable %s, but no value was available."
-                    " Interpolating between bounds or setting to zero."
-                )
-                timestamp = self.env.time
-                value = var.value or np.nan_to_num(
-                    (var.ub + var.lb) / 2, posinf=1000, neginf=1000
-                )
-            else:
-                # in this case it should probably be a series, which we can take as is
-                continue
-            history[v][timestamp] = value
+        history = {v: {} for v in self._lags_dict_seconds}
         self.history: dict[str, dict[float, float]] = history
         self.register_callbacks_for_lagged_variables()
 
     def do_step(self):
+        if self.check_if_should_be_skipped():
+            return
         super().do_step()
         self._remove_old_values_from_history()
 
@@ -101,8 +90,26 @@ class MPC(BaseMPC):
         # if variables are intentionally sent as series, we don't need to store them
         # ourselves
         # only store scalar values
-        if isinstance(variable.value, (float, int)):
-            self.history[name][variable.timestamp] = variable.value
+        value = variable.value
+        if isinstance(value, (float, int)):
+            self.history[name][variable.timestamp] = value
+        elif isinstance(value, pd.Series):
+            # Get the range of the new series
+            min_index = value.index.min()
+            max_index = value.index.max()
+
+            # Remove values within the range of the new series
+            keys_to_delete = [
+                key
+                for key in self.history[name].keys()
+                if min_index <= key <= max_index
+            ]
+            for key in keys_to_delete:
+                del self.history[name][key]
+
+            # Add the new series values
+            for index, value in variable.value.items():
+                self.history[name][index] = value
 
     def register_callbacks_for_lagged_variables(self):
         """Registers callbacks which listen to the variables which have to be saved as
@@ -146,7 +153,7 @@ class MPC(BaseMPC):
             # create copy to not mess up scalar value of original variable in case
             # fallback is needed
             updated_var = variables[hist_var].copy(
-                update={"value": pd.Series(past_values)}
+                update={"value": pd.Series(past_values).sort_index()}
             )
             variables[hist_var] = updated_var
 
