@@ -71,7 +71,7 @@ pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pyli
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'old-octal-literal' (unknown-option-value)
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'non-ascii-bytes-literal' (unknown-option-value)
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'eq-without-hash' (unknown-option-value)
-************* Module test_examples
+************* Module ci.test_examples
 ci/test_examples.py:9:0: E0401: Unable to import 'pytest' (import-error)
 ci/test_examples.py:60:8: W0105: String statement has no effect (pointless-string-statement)
 ci/test_examples.py:68:4: C0116: Missing function or method docstring (missing-function-docstring)
@@ -142,6 +142,7 @@ tests/test_casadi_ml_model.py:3:0: E0401: Unable to import 'pytest' (import-erro
 tests/test_casadi_ml_model.py:9:0: C0115: Missing class docstring (missing-class-docstring)
 tests/test_casadi_ml_model.py:14:0: C0115: Missing class docstring (missing-class-docstring)
 tests/test_casadi_ml_model.py:23:0: C0116: Missing function or method docstring (missing-function-docstring)
+************* Module test_examples
 tests/test_examples.py:51:0: C0304: Final newline missing (missing-final-newline)
 tests/test_examples.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 tests/test_examples.py:5:0: C0411: standard import "import pathlib" should be placed before "import pandas as pd" (wrong-import-order)
@@ -185,7 +186,7 @@ tests/test_serialized_linreg.py:5:0: C0411: standard import "from pathlib import
 tests/test_serialized_linreg.py:11:0: C0411: third party import "from fixtures.linreg import LinRegTrainer" should be placed before "from agentlib_mpc.data_structures import ml_model_datatypes" (wrong-import-order)
 tests/test_serialized_linreg.py:12:0: C0411: third party import "from fixtures.data_generator import DataGenerator" should be placed before "from agentlib_mpc.data_structures import ml_model_datatypes" (wrong-import-order)
 tests/test_serialized_linreg.py:1:0: R0801: Similar lines in 2 files
-==test_examples:[10:47]
+==ci.test_examples:[10:47]
 ==test_examples:[7:46]
 from agentlib.utils import custom_injection
 from agentlib.utils.local_broadcast_broker import LocalBroadcastBroker
