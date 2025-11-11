@@ -584,8 +584,11 @@ class CasadiMLModel(CasadiModel):
         """
 
         if t_sample:
-            ...
-            assert t_sample == self.dt
+            if t_sample < self.dt or t_sample % self.dt != 0:
+                raise ConfigurationError(
+                    f"Sampling Time of Model must be multiple of MLModel time step. Current"
+                    f" MLModel time step is {self.dt} and chosen sampling time is {t_sample}."
+                )
 
         ml_model_input = self.get_ml_model_values(t_start)
         full_input = {
