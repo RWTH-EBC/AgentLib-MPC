@@ -1,7 +1,12 @@
+"""
+Module contains the MLModelSimulator, used to simulate with ML-Models. The
+class inherits from the Simulator class from the agentlib core.
+"""
+
 import pydantic
 from agentlib.core import AgentVariable, AgentVariables
 from agentlib.core.errors import ConfigurationError
-from agentlib.modules.simulator import SimulatorConfig, Simulator
+from agentlib.modules.simulation.simulator import SimulatorConfig, Simulator
 from pydantic_core.core_schema import FieldValidationInfo
 
 from agentlib_mpc.models.casadi_ml_model import CasadiMLModel
@@ -16,8 +21,13 @@ class MLModelSimulatorConfig(SimulatorConfig):
     @classmethod
     def check_t_sample(cls, t_sample, info: FieldValidationInfo):
         """Check if t_sample is smaller than stop-start time"""
+        if "model" not in info.data:
+            raise ConfigurationError(
+                "Model validation failed: the 'model' field is missing or invalid in the configuration. "
+                "Please verify your model configuration."
+            )
         dt = info.data["model"].dt
-        if t_sample % dt != 0:
+        if t_sample < dt or t_sample % dt != 0:
             raise ConfigurationError(
                 f"Sampling Time of Simulator must be multiple of MLModel time step. Current"
                 f" MLModel time step is {dt} and chosen sampling time is {t_sample}."
@@ -66,18 +76,3 @@ class MLModelSimulator(Simulator):
                 f"Tried to update the MLModels, but new MLModels do not have matching 'dt'. "
                 f"Error message from model: '{e}'."
             )
-
-    def update_model_inputs(self):
-        """
-        Internal method to write current data_broker to simulation model.
-        Only update values, not other module_types.
-        """
-        model_input_names = (
-            self.model.get_input_names() + self.model.get_parameter_names()
-        )
-        for inp in self.variables:
-            if inp.name in model_input_names:
-                self.logger.debug("Updating model variable %s=%s", inp.name, inp.value)
-                self.model.set_with_timestamp(
-                    name=inp.name, value=inp.value, timestamp=inp.timestamp
-                )
