@@ -1,3 +1,7 @@
+"""
+Example for a MPC with ML-Model as Simulator.
+"""
+
 import logging
 import sys
 from pathlib import Path
@@ -141,7 +145,7 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000):
             * 1
             / 3600
         )  # cp is 1
-        print(f"Absoulute integral error: {aie_kh} Kh.")
+        print(f"Absolute integral error: {aie_kh} Kh.")
         print(f"Cooling energy used: {energy_cost_kWh} kWh.")
         temperature = mpc_results["variable"]["T"] - 273.15
         plot_mpc(

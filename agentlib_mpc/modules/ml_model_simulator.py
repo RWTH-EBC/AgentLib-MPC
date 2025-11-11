@@ -1,3 +1,8 @@
+"""
+Module contains the MLModelSimulator, used to simulate with ML-Models. The
+class inherits from the Simulator class from the agentlib core.
+"""
+
 import pydantic
 from agentlib.core import AgentVariable, AgentVariables
 from agentlib.core.errors import ConfigurationError
@@ -22,7 +27,7 @@ class MLModelSimulatorConfig(SimulatorConfig):
                 "Please verify your model configuration."
             )
         dt = info.data["model"].dt
-        if t_sample % dt != 0:
+        if t_sample < dt or t_sample % dt != 0:
             raise ConfigurationError(
                 f"Sampling Time of Simulator must be multiple of MLModel time step. Current"
                 f" MLModel time step is {dt} and chosen sampling time is {t_sample}."

@@ -1,3 +1,7 @@
+"""
+Trainer config for linregs to train models the simple_mpc_ml_sim.
+"""
+
 import logging
 import random
 

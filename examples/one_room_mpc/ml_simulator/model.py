@@ -15,7 +15,7 @@ class PhysicalModelConfig(CasadiModelConfig):
     inputs: List[CasadiInput] = [
         # controls
         CasadiInput(
-            name="mDot", value=0.0225, unit="K", description="Air mass flow into zone"
+            name="mDot", value=0.0225, unit="kg/s", description="Air mass flow into zone"
         ),
         # disturbances
         CasadiInput(
@@ -108,7 +108,7 @@ class MLModelConfig(CasadiMLModelConfig):
     inputs: List[CasadiInput] = [
         # controls
         CasadiInput(
-            name="mDot", value=0.0225, unit="K", description="Air mass flow into zone"
+            name="mDot", value=0.0225, unit="kg/s", description="Air mass flow into zone"
         ),
         # disturbances
         CasadiInput(
@@ -151,9 +151,6 @@ class MLModelConfig(CasadiMLModelConfig):
 
 class MLModel(CasadiMLModel):
     config: MLModelConfig
-
-    def setup_system(self):
-        pass
 
 
 class DataDrivenModelConfig(CasadiMLModelConfig, PhysicalModelConfig):
