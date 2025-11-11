@@ -5,7 +5,6 @@ import os
 from agentlib.core.errors import OptionalDependencyError
 from agentlib.utils.multi_agent_system import LocalMASAgency
 from agentlib_mpc.machine_learning_plugins.physXAI.model_generation import generate_physxai_model
-import generate_train_data
 
 
 logger = logging.getLogger(__name__)
@@ -106,6 +105,7 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000, testing=Fal
 
     ##################################################################################
     # Generate training data
+    import generate_train_data
     if testing:
         generate_train_data.main(
             training_time=3600 * 2,  # Much shorter training time
