@@ -16,7 +16,7 @@ class MLModelSimulatorConfig(SimulatorConfig):
     @classmethod
     def check_t_sample(cls, t_sample, info: FieldValidationInfo):
         """Check if t_sample is smaller than stop-start time"""
-        if not "model" in info.data.keys():
+        if "model" not in info.data:
             raise ConfigurationError(
                 "Model validation failed: the 'model' field is missing or invalid in the configuration. "
                 "Please verify your model configuration."
