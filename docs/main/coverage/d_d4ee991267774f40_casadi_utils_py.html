@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for agentlib_mpc/data_structures/casadi_utils.py: 55%</title>
+    <title>Coverage for agentlib_mpc/data_structures/casadi_utils.py: 59%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="coverage_html.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>agentlib_mpc/data_structures/casadi_utils.py</b>:
-            <span class="pc_cov">55%</span>
+            <span class="pc_cov">59%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -55,8 +55,8 @@
         </aside>
         <h2>
             <span class="text">186 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">102<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">84<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">109<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">77<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_d4ee991267774f40_coordinator_datatypes_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.4">coverage.py v7.4.4</a>,
-            created at 2025-10-31 10:48 +0000
+            created at 2025-11-11 09:33 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -217,14 +217,14 @@
     <p class="pln"><span class="n"><a id="t135" href="#t135">135</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t136" href="#t136">136</a></span><span class="t">        <span class="key">if</span> <span class="nam">solver_name</span> <span class="op">==</span> <span class="nam">Solvers</span><span class="op">.</span><span class="nam">ipopt</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t137" href="#t137">137</a></span><span class="t">            <span class="key">return</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_create_ipopt_solver</span><span class="op">(</span><span class="nam">nlp</span><span class="op">=</span><span class="nam">nlp</span><span class="op">,</span> <span class="nam">options</span><span class="op">=</span><span class="nam">options</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t138" href="#t138">138</a></span><span class="t">        <span class="key">if</span> <span class="nam">solver_name</span> <span class="op">==</span> <span class="nam">Solvers</span><span class="op">.</span><span class="nam">fatrop</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t138" href="#t138">138</a></span><span class="t">        <span class="key">if</span> <span class="nam">solver_name</span> <span class="op">==</span> <span class="nam">Solvers</span><span class="op">.</span><span class="nam">fatrop</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t139" href="#t139">139</a></span><span class="t">            <span class="key">return</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_create_fatrop_solver</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t140" href="#t140">140</a></span><span class="t">                <span class="nam">nlp</span><span class="op">=</span><span class="nam">nlp</span><span class="op">,</span> <span class="nam">options</span><span class="op">=</span><span class="nam">options</span><span class="op">,</span> <span class="nam">equalities</span><span class="op">=</span><span class="nam">equalities</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t141" href="#t141">141</a></span><span class="t">            <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t142" href="#t142">142</a></span><span class="t">        <span class="key">if</span> <span class="nam">solver_name</span> <span class="op">==</span> <span class="nam">Solvers</span><span class="op">.</span><span class="nam">sqpmethod</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t142" href="#t142">142</a></span><span class="t">        <span class="key">if</span> <span class="nam">solver_name</span> <span class="op">==</span> <span class="nam">Solvers</span><span class="op">.</span><span class="nam">sqpmethod</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t143" href="#t143">143</a></span><span class="t">            <span class="key">return</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_create_sqpmethod_solver</span><span class="op">(</span><span class="nam">nlp</span><span class="op">=</span><span class="nam">nlp</span><span class="op">,</span> <span class="nam">options</span><span class="op">=</span><span class="nam">options</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t144" href="#t144">144</a></span><span class="t">        <span class="key">if</span> <span class="nam">solver_name</span> <span class="op">==</span> <span class="nam">Solvers</span><span class="op">.</span><span class="nam">qpoases</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t145" href="#t145">145</a></span><span class="t">            <span class="key">return</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_create_qpoases_solver</span><span class="op">(</span><span class="nam">nlp</span><span class="op">=</span><span class="nam">nlp</span><span class="op">,</span> <span class="nam">options</span><span class="op">=</span><span class="nam">options</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t144" href="#t144">144</a></span><span class="t">        <span class="key">if</span> <span class="nam">solver_name</span> <span class="op">==</span> <span class="nam">Solvers</span><span class="op">.</span><span class="nam">qpoases</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t145" href="#t145">145</a></span><span class="t">            <span class="key">return</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_create_qpoases_solver</span><span class="op">(</span><span class="nam">nlp</span><span class="op">=</span><span class="nam">nlp</span><span class="op">,</span> <span class="nam">options</span><span class="op">=</span><span class="nam">options</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t146" href="#t146">146</a></span><span class="t">        <span class="key">if</span> <span class="nam">solver_name</span> <span class="op">==</span> <span class="nam">Solvers</span><span class="op">.</span><span class="nam">proxqp</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t147" href="#t147">147</a></span><span class="t">            <span class="key">return</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_create_proxqp_solver</span><span class="op">(</span><span class="nam">nlp</span><span class="op">=</span><span class="nam">nlp</span><span class="op">,</span> <span class="nam">options</span><span class="op">=</span><span class="nam">options</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t148" href="#t148">148</a></span><span class="t">        <span class="key">if</span> <span class="nam">solver_name</span> <span class="op">==</span> <span class="nam">Solvers</span><span class="op">.</span><span class="nam">osqp</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -314,14 +314,14 @@
     <p class="mis show_mis"><span class="n"><a id="t232" href="#t232">232</a></span><span class="t">        <span class="key">return</span> <span class="nam">ca</span><span class="op">.</span><span class="nam">nlpsol</span><span class="op">(</span><span class="str">"mpc"</span><span class="op">,</span> <span class="str">"sqpmethod"</span><span class="op">,</span> <span class="nam">nlp</span><span class="op">,</span> <span class="nam">opts</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t233" href="#t233">233</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t234" href="#t234">234</a></span><span class="t">    <span class="key">def</span> <span class="nam">_create_qpoases_solver</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">nlp</span><span class="op">:</span> <span class="nam">dict</span><span class="op">,</span> <span class="nam">options</span><span class="op">:</span> <span class="nam">dict</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t235" href="#t235">235</a></span><span class="t">        <span class="nam">default_opts</span> <span class="op">=</span> <span class="op">{</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t235" href="#t235">235</a></span><span class="t">        <span class="nam">default_opts</span> <span class="op">=</span> <span class="op">{</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t236" href="#t236">236</a></span><span class="t">            <span class="str">"verbose"</span><span class="op">:</span> <span class="key">False</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t237" href="#t237">237</a></span><span class="t">            <span class="str">"print_time"</span><span class="op">:</span> <span class="key">False</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t238" href="#t238">238</a></span><span class="t">            <span class="str">"record_time"</span><span class="op">:</span> <span class="key">True</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t239" href="#t239">239</a></span><span class="t">            <span class="str">"printLevel"</span><span class="op">:</span> <span class="str">"low"</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t240" href="#t240">240</a></span><span class="t">        <span class="op">}</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t241" href="#t241">241</a></span><span class="t">        <span class="nam">opts</span> <span class="op">=</span> <span class="op">{</span><span class="op">**</span><span class="nam">default_opts</span><span class="op">,</span> <span class="op">**</span><span class="nam">options</span><span class="op">}</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t242" href="#t242">242</a></span><span class="t">        <span class="key">return</span> <span class="nam">ca</span><span class="op">.</span><span class="nam">qpsol</span><span class="op">(</span><span class="str">"mpc"</span><span class="op">,</span> <span class="str">"qpoases"</span><span class="op">,</span> <span class="nam">nlp</span><span class="op">,</span> <span class="nam">opts</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t241" href="#t241">241</a></span><span class="t">        <span class="nam">opts</span> <span class="op">=</span> <span class="op">{</span><span class="op">**</span><span class="nam">default_opts</span><span class="op">,</span> <span class="op">**</span><span class="nam">options</span><span class="op">}</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t242" href="#t242">242</a></span><span class="t">        <span class="key">return</span> <span class="nam">ca</span><span class="op">.</span><span class="nam">qpsol</span><span class="op">(</span><span class="str">"mpc"</span><span class="op">,</span> <span class="str">"qpoases"</span><span class="op">,</span> <span class="nam">nlp</span><span class="op">,</span> <span class="nam">opts</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t243" href="#t243">243</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t244" href="#t244">244</a></span><span class="t">    <span class="key">def</span> <span class="nam">_create_proxqp_solver</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">nlp</span><span class="op">:</span> <span class="nam">dict</span><span class="op">,</span> <span class="nam">options</span><span class="op">:</span> <span class="nam">dict</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t245" href="#t245">245</a></span><span class="t">        <span class="nam">default_opts</span> <span class="op">=</span> <span class="op">{</span>&nbsp;</span><span class="r"></span></p>
@@ -458,7 +458,7 @@
             <a id="nextFileLink" class="nav" href="d_d4ee991267774f40_coordinator_datatypes_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.4">coverage.py v7.4.4</a>,
-            created at 2025-10-31 10:48 +0000
+            created at 2025-11-11 09:33 +0000
         </p>
     </div>
 </footer>
