@@ -794,7 +794,7 @@
         },
         {
             "type": "error",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "",
             "line": 9,
             "column": 0,
@@ -805,7 +805,7 @@
         },
         {
             "type": "warning",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "TestExamples.test_mpc",
             "line": 60,
             "column": 8,
@@ -816,7 +816,7 @@
         },
         {
             "type": "convention",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "TestExamples.test_mixed_integer_mpc",
             "line": 68,
             "column": 4,
@@ -827,7 +827,7 @@
         },
         {
             "type": "convention",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "TestExamples.test_admm_local",
             "line": 76,
             "column": 4,
@@ -838,7 +838,7 @@
         },
         {
             "type": "convention",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "TestExamples.test_admm_coordinated",
             "line": 86,
             "column": 4,
@@ -849,7 +849,7 @@
         },
         {
             "type": "convention",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "TestExamples.test_exchange_admm",
             "line": 96,
             "column": 4,
@@ -860,7 +860,7 @@
         },
         {
             "type": "convention",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "TestExamples.test_admm_mp_broadcast",
             "line": 112,
             "column": 4,
@@ -871,7 +871,7 @@
         },
         {
             "type": "warning",
-            "module": "test_examples",
+            "module": "ci.test_examples",
             "obj": "",
             "line": 5,
             "column": 0,
@@ -1944,7 +1944,7 @@
             "column": 0,
             "path": "tests/test_serialized_linreg.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==test_examples:[10:47]\n==test_examples:[7:46]\nfrom agentlib.utils import custom_injection\nfrom agentlib.utils.local_broadcast_broker import LocalBroadcastBroker\n\n\nclass TestExamples(unittest.TestCase):\n    \"\"\"Test all examples inside the agentlib\"\"\"\n\n    def setUp(self) -> None:\n        self.timeout = 15  # Seconds which the script is allowed to run\n        self.main_cwd = os.getcwd()\n\n    def tearDown(self) -> None:\n        broker = LocalBroadcastBroker()\n        broker.delete_all_clients()\n        # Change back cwd:\n        os.chdir(self.main_cwd)\n\n    def _run_example_with_return(\n        self, file: str, func_name: str, **kwargs\n    ) -> dict[str, dict[str, pd.DataFrame]]:\n        file = pathlib.Path(__file__).absolute().parents[1].joinpath(\"examples\", file)\n\n        # Custom file import\n        test_func = custom_injection({\"file\": file, \"class_name\": func_name})\n        results = test_func(**kwargs)\n        self.assertIsInstance(results, dict)\n        agent_name, agent = results.popitem()\n        self.assertIsInstance(agent, dict)\n        module_name, module_res = agent.popitem()\n        self.assertIsInstance(module_res, pd.DataFrame)\n        agent_results = results.setdefault(agent_name, {})\n        agent_results[module_name] = module_res\n        return results\n\n    def test_ml_model_simulator_mpc(self):\n        \"\"\"Test the data-driven MPC examples\"\"\"\n\n        # Linear regression examples\n        self._run_example_with_return(",
+            "message": "Similar lines in 2 files\n==ci.test_examples:[10:47]\n==test_examples:[7:46]\nfrom agentlib.utils import custom_injection\nfrom agentlib.utils.local_broadcast_broker import LocalBroadcastBroker\n\n\nclass TestExamples(unittest.TestCase):\n    \"\"\"Test all examples inside the agentlib\"\"\"\n\n    def setUp(self) -> None:\n        self.timeout = 15  # Seconds which the script is allowed to run\n        self.main_cwd = os.getcwd()\n\n    def tearDown(self) -> None:\n        broker = LocalBroadcastBroker()\n        broker.delete_all_clients()\n        # Change back cwd:\n        os.chdir(self.main_cwd)\n\n    def _run_example_with_return(\n        self, file: str, func_name: str, **kwargs\n    ) -> dict[str, dict[str, pd.DataFrame]]:\n        file = pathlib.Path(__file__).absolute().parents[1].joinpath(\"examples\", file)\n\n        # Custom file import\n        test_func = custom_injection({\"file\": file, \"class_name\": func_name})\n        results = test_func(**kwargs)\n        self.assertIsInstance(results, dict)\n        agent_name, agent = results.popitem()\n        self.assertIsInstance(agent, dict)\n        module_name, module_res = agent.popitem()\n        self.assertIsInstance(module_res, pd.DataFrame)\n        agent_results = results.setdefault(agent_name, {})\n        agent_results[module_name] = module_res\n        return results\n\n    def test_ml_model_simulator_mpc(self):\n        \"\"\"Test the data-driven MPC examples\"\"\"\n\n        # Linear regression examples\n        self._run_example_with_return(",
             "message-id": "R0801"
         }
     ],
@@ -1974,14 +1974,14 @@
                 "statement": 3,
                 "warning": 0
             },
-            "test_examples": {
-                "convention": 4,
-                "error": 0,
+            "ci.test_examples": {
+                "convention": 5,
+                "error": 1,
                 "fatal": 0,
                 "info": 0,
                 "refactor": 0,
-                "statement": 29,
-                "warning": 0
+                "statement": 51,
+                "warning": 2
             },
             "conftest": {
                 "convention": 3,
@@ -2017,6 +2017,15 @@
                 "info": 0,
                 "refactor": 0,
                 "statement": 13,
+                "warning": 0
+            },
+            "test_examples": {
+                "convention": 4,
+                "error": 0,
+                "fatal": 0,
+                "info": 0,
+                "refactor": 0,
+                "statement": 29,
                 "warning": 0
             },
             "test_full_backend": {
@@ -2107,21 +2116,24 @@
             ],
             "pandas": [
                 "test_examples",
-                "test_mpc"
+                "test_mpc",
+                "ci.test_examples"
             ],
             "agentlib.utils": [
                 "test_examples",
-                "conftest"
+                "conftest",
+                "ci.test_examples"
             ],
             "agentlib.utils.local_broadcast_broker": [
                 "test_examples",
-                "test_admm"
+                "test_admm",
+                "ci.test_examples"
             ],
             "numpy": [
-                "test_serialized_linreg",
-                "test_admm",
                 "test_mpc",
                 "test_serialized_gpr",
+                "test_serialized_linreg",
+                "test_admm",
                 "test_serialized_ann"
             ],
             "agentlib.core": [
@@ -2412,10 +2424,10 @@
                 "test_admm"
             ],
             "numpy": [
-                "test_serialized_linreg",
-                "test_admm",
                 "test_mpc",
                 "test_serialized_gpr",
+                "test_serialized_linreg",
+                "test_admm",
                 "test_serialized_ann"
             ],
             "agentlib.core": [
@@ -2437,8 +2449,8 @@
                 "test_casadi_backend"
             ],
             "agentlib_mpc.models.casadi_model": [
-                "test_casadi_ml_model",
-                "test_casadi_backend"
+                "test_casadi_backend",
+                "test_casadi_ml_model"
             ],
             "agentlib_mpc.optimization_backends.casadi_.basic": [
                 "test_casadi_backend"
