@@ -5,7 +5,11 @@ import pathlib
 import shutil
 from typing import Union
 from agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation import physXAI_2_agentlib_json
-from physXAI import models  # Keep this import to ensure physXAI models are registered
+from agentlib.core.errors import OptionalDependencyError
+try:
+    from physXAI import models  # Keep this import to ensure physXAI models are registered
+except ImportError:
+    raise OptionalDependencyError(dependency_name="physXAI", dependency_install="git+https://github.com/RWTH-EBC/physXAI.git", used_object="physXAI")
 
 
 model_save_path_rel: str = 'models'  # Relative path in agentlib_mpc to save machine learning models

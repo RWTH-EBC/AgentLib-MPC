@@ -5,9 +5,13 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import keras
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '0'
 from agentlib_mpc.models.casadi_predictor import FunctionalWrapper
-from physXAI import models  # Keep this import to ensure physXAI models are registered
+from agentlib.core.errors import OptionalDependencyError
 import pandas as pd
 import numpy as np
+try:
+    from physXAI import models  # Keep this import to ensure physXAI models are registered
+except ImportError:
+    raise OptionalDependencyError(dependency_name="physXAI", dependency_install="git+https://github.com/RWTH-EBC/physXAI.git", used_object="physXAI")
 
 
 thresholds = {

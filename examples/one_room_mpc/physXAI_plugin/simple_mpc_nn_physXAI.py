@@ -2,7 +2,7 @@ import logging
 import sys
 from pathlib import Path
 import os
-import pandas as pd
+from agentlib.core.errors import OptionalDependencyError
 from agentlib.utils.multi_agent_system import LocalMASAgency
 from agentlib_mpc.machine_learning_plugins.physXAI.model_generation import generate_physxai_model
 import generate_train_data
@@ -88,9 +88,14 @@ def agent_configs(ml_model_path: str) -> list[dict]:
 
 
 def run_example(with_plots=True, log_level=logging.INFO, until=8000, testing=False):
-    import physXAI.agentlib_mpc_plugin as physXAI_plugin
+    ##################################################################################
+    # Import example training script of physXAI
+    try:
+        import physXAI.agentlib_mpc_plugin as physXAI_plugin
+    except ImportError:
+        raise OptionalDependencyError(dependency_name="physXAI", dependency_install="git+https://github.com/RWTH-EBC/physXAI.git", used_object="physXAI")
+    ##################################################################################
 
-    # Change the working directory so that relative paths work
     script_dir = os.path.abspath(os.path.dirname(__file__))
     os.chdir(script_dir)
 
@@ -99,6 +104,8 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000, testing=Fal
 
     logging.basicConfig(level=log_level)
 
+    ##################################################################################
+    # Generate training data
     if testing:
         generate_train_data.main(
             training_time=3600 * 2,  # Much shorter training time
@@ -108,24 +115,21 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000, testing=Fal
     else:
         if not Path("results//simulation_data.csv").exists():
             generate_train_data.main(training_time=3600 * 24 * 1, plot_results=False, step_size=300)
+    ##################################################################################
 
-    # Load CSV file, remove first and third row, and rename column to 'time'
-    csv_path = "results//simulation_data.csv"
-    df = pd.read_csv(csv_path, skiprows=[0, 2])
-    df = df.rename(columns={df.columns[0]: 'time'})  # Rename first column to 'time'
-    df.to_csv(csv_path.replace('.csv', '_raw.csv'), index=False)
-
+    ##################################################################################
+    # Main interface between physXAI and agentlib_mpc to generate the ML model
     files = generate_physxai_model(
-        ['example'], 
-        os.path.dirname(physXAI_plugin.__file__), 
-        'results//simulation_data_raw.csv', 
-        '001', 
-        300
+        models=['example'],  # Call example model
+        physXAI_scripts_path=os.path.dirname(physXAI_plugin.__file__), # Get path of physXAI example scripts
+        training_data_path='results//simulation_data.csv', # Generated training data
+        run_id='001', # Model ID
+        time_step=300  # Synchronize with MPC time step
     )
-    os.remove('results//simulation_data_raw.csv')
+    ##################################################################################
 
     mas = LocalMASAgency(
-        agent_configs=agent_configs(ml_model_path=files[0]),
+        agent_configs=agent_configs(ml_model_path=files[0]),  # Paste generated model path (only one model here)
         env=ENV_CONFIG,
         variable_logging=False,
     )

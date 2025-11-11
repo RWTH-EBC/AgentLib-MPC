@@ -1,4 +1,6 @@
+"""Example to show interplay of physXAI and agentlib_mpc"""
 import logging
+import os
 import random
 import agentlib as al
 import matplotlib.pyplot as plt
@@ -71,8 +73,6 @@ def plot(results):
 def configs(
     step_size: float = 60,
 ):
-
-    # sample rate is at least 1, and maximum 10
     t_sample_sim = min(max(1, int(step_size) // 30), 10)
     simulator_config = {
         "id": "Simulator",
@@ -87,7 +87,7 @@ def configs(
                     },
                 },
                 "t_sample": t_sample_sim,
-                "save_results": True,
+                "save_results": False,
                 "result_filename": "results//simulation_data.csv",
                 "result_causalities": ["local", "input", "output"],
                 "overwrite_result_file": True,
@@ -104,7 +104,6 @@ def configs(
                 "t_sample": step_size * 10,
                 "model": {"type": {"file": __file__, "class_name": "InputGenerator"}},
                 "outputs": [
-                    # {"name": "mDot"},
                     {"name": "load", "ub": 150, "lb": 150},
                     {"name": "T_in"},
                 ],
@@ -141,7 +140,7 @@ def configs(
             {
                 "type": "AgentLogger",
                 "values_only": True,
-                "t_sample": 3600,
+                "t_sample": 300,
                 "overwrite_log": True,
             },
             {"type": "local", "subscriptions": ["Simulator"]},
@@ -165,10 +164,19 @@ def main(
         variable_logging=False,
     )
     mas.run(until=training_time + 100)
+
+    ##################################################################################
+    # Save training data for physXAI
+    results = mas.get_results(cleanup=True)
+    df = results['PID']['AgentLogger']
+    df = df.ffill().bfill()
+    os.makedirs('results', exist_ok=True)
+    df.to_csv('results//simulation_data.csv')
+    ##################################################################################
+    
     if plot_results:
-        results = mas.get_results(cleanup=True)
         plot(results)
 
 
 if __name__ == "__main__":
-    main(training_time=3600 * 24 * 1, plot_results=True, step_size=300, epochs=10)
+    main(training_time=3600 * 24 * 1, plot_results=True, step_size=300)
