@@ -69,7 +69,6 @@ def plot(results):
 
 
 def configs(
-    plot_results: bool = False,
     step_size: float = 60,
 ):
 
@@ -160,7 +159,6 @@ def main(
     logging.basicConfig(level=logging.INFO)
     mas = LocalMASAgency(
         agent_configs=configs(
-            plot_results=plot_results,
             step_size=step_size,
         ),
         env=env_config,
