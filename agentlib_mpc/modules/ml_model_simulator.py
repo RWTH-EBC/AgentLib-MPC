@@ -18,9 +18,8 @@ class MLModelSimulatorConfig(SimulatorConfig):
         """Check if t_sample is smaller than stop-start time"""
         if not "model" in info.data.keys():
             raise ConfigurationError(
-                f"There is an Error in the model. Most likely it is raised in the "
-                f"'check_model' method of the SimulatorConfig class of the core Agentlib. "
-                f"Please check your model for any mistakes."
+                "Model validation failed: the 'model' field is missing or invalid in the configuration. "
+                "Please verify your model configuration."
             )
         dt = info.data["model"].dt
         if t_sample % dt != 0:
