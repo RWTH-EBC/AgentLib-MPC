@@ -78,7 +78,11 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation</span><span class="w"> </span><span class="kn">import</span> <span class="n">physXAI_2_agentlib_json</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">physXAI</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>  <span class="c1"># Keep this import to ensure physXAI models are registered</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptionalDependencyError</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">physXAI</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span>  <span class="c1"># Keep this import to ensure physXAI models are registered</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="n">OptionalDependencyError</span><span class="p">(</span><span class="n">dependency_name</span><span class="o">=</span><span class="s2">&quot;physXAI&quot;</span><span class="p">,</span> <span class="n">dependency_install</span><span class="o">=</span><span class="s2">&quot;git+https://github.com/RWTH-EBC/physXAI.git&quot;</span><span class="p">,</span> <span class="n">used_object</span><span class="o">=</span><span class="s2">&quot;physXAI&quot;</span><span class="p">)</span>
 
 
 <span class="n">model_save_path_rel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;models&#39;</span>  <span class="c1"># Relative path in agentlib_mpc to save machine learning models</span>

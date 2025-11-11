@@ -3,8 +3,8 @@ agentlib_mpc/__init__.py:5:21: F401 [*] `.models.MODEL_TYPES` imported but unuse
 agentlib_mpc/data_structures/coordinator_datatypes.py:7:27: F401 [*] `agentlib.core.Source` imported but unused
 agentlib_mpc/data_structures/mpc_datamodels.py:3:72: F401 [*] `typing.Optional` imported but unused
 agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py:43:30: F541 [*] f-string without any placeholders
-agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:8:21: F401 [*] `physXAI.models` imported but unused
-agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:40:28: F811 Redefinition of unused `models` from line 8
+agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:10:25: F401 `physXAI.models` imported but unused; consider using `importlib.util.find_spec` to test for availability
+agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:44:28: F811 Redefinition of unused `models` from line 10
 agentlib_mpc/models/casadi_ml_model.py:30:5: F401 [*] `agentlib_mpc.models.casadi_model.CasadiTypes` imported but unused
 agentlib_mpc/models/casadi_predictor.py:670:35: F541 [*] f-string without any placeholders
 agentlib_mpc/modules/deactivate_mpc/fallback_pid.py:1:8: F401 [*] `logging` imported but unused
@@ -61,4 +61,4 @@ agentlib_mpc/utils/plotting/mpc_dashboard.py:510:29: F541 [*] f-string without a
 agentlib_mpc/utils/sampling.py:127:13: F541 [*] f-string without any placeholders
 agentlib_mpc/utils/sampling.py:128:13: F541 [*] f-string without any placeholders
 Found 62 errors.
-[*] 54 fixable with the `--fix` option (6 hidden fixes can be enabled with the `--unsafe-fixes` option).
+[*] 53 fixable with the `--fix` option (6 hidden fixes can be enabled with the `--unsafe-fixes` option).
