@@ -20,14 +20,6 @@ from agentlib_mpc.data_structures.ml_model_datatypes import OutputFeature, Featu
 logger = logging.getLogger(__name__)
 
 
-def get_git_revision_short_hash() -> str:
-    return (
-        subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
-        .decode("ascii")
-        .strip()
-    )
-
-
 class MLModels(str, Enum):
     ANN = "ANN"
     GPR = "GPR"
@@ -49,10 +41,6 @@ class SerializedMLModel(BaseModel, abc.ABC):
         title="output",
         description="Model output variables (which are automatically also inputs, as "
         "we need them recursively in MPC.) with their lag order.",
-    )
-    agentlib_mpc_hash: str = Field(
-        default_factory=get_git_revision_short_hash,
-        description="The commit hash of the agentlib_mpc version this was created with.",
     )
     training_info: Optional[dict] = Field(
         default=None,
@@ -279,7 +267,7 @@ class CustomGPR(GaussianProcessRegressor):
         normalize_y=False,
         copy_X_train=True,
         random_state=None,
-        data_handling=GPRDataHandlingParameters(),
+        data_handling=None,
     ):
         super().__init__(
             kernel=kernel,
@@ -290,6 +278,8 @@ class CustomGPR(GaussianProcessRegressor):
             copy_X_train=copy_X_train,
             random_state=random_state,
         )
+        if data_handling is None:
+            data_handling = GPRDataHandlingParameters()
         self.data_handling: GPRDataHandlingParameters = data_handling
 
     def predict(self, X, return_std=False, return_cov=False):

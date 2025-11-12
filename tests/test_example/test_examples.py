@@ -2,11 +2,12 @@
 
 import unittest
 import os
-import subprocess
 import logging
 import pathlib
 import pandas as pd
 import pytest
+import tempfile
+import shutil
 
 from agentlib.utils import custom_injection
 from agentlib.utils.local_broadcast_broker import LocalBroadcastBroker
@@ -28,7 +29,7 @@ class TestExamples(unittest.TestCase):
     def _run_example_with_return(
         self, file: str, func_name: str, **kwargs
     ) -> dict[str, dict[str, pd.DataFrame]]:
-        file = pathlib.Path(__file__).absolute().parents[1].joinpath("examples", file)
+        file = pathlib.Path(__file__).absolute().parents[2].joinpath("examples", file)
 
         # Custom file import
         test_func = custom_injection({"file": file, "class_name": func_name})
@@ -83,7 +84,6 @@ class TestExamples(unittest.TestCase):
             testing=True,
         )
 
-    def test_admm_coordinated(self):
         self._run_example_with_return(
             file="admm//admm_example_coordinator.py",
             func_name="run_example",
@@ -91,8 +91,22 @@ class TestExamples(unittest.TestCase):
             until=1000,
             log_level=logging.FATAL,
         )
+        self._run_example_with_return(
+            file="admm//admm_example_multiprocessing.py",
+            func_name="run_example",
+            with_plots=False,
+            until=600,
+            log_level=logging.FATAL,
+            TESTING=True,
+        )
+        self._run_example_with_return(
+            file="admm//admm_example_coordinator_multiprocessing.py",
+            func_name="run_example",
+            with_plots=False,
+            until=600,
+            log_level=logging.FATAL,
+        )
 
-    @pytest.mark.skip
     def test_exchange_admm(self):
         self._run_example_with_return(
             file="exchange_admm//admm_4rooms_main.py",
@@ -107,16 +121,6 @@ class TestExamples(unittest.TestCase):
             with_plots=False,
             until=1000,
             log_level=logging.FATAL,
-        )
-
-    def test_admm_mp_broadcast(self):
-        self._run_example_with_return(
-            file="admm//admm_example_multiprocessing.py",
-            func_name="run_example",
-            with_plots=False,
-            until=600,
-            log_level=logging.FATAL,
-            TESTING=True,
         )
 
     def test_ann_mpc(self):

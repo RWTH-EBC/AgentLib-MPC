@@ -29,7 +29,7 @@ MODULE_TYPES = {
         module_path="agentlib_mpc.modules.mpc.mpc_full", class_name="MPC"
     ),
     "minlp_mpc": ModuleImport(
-        module_path="agentlib_mpc.modules.minlp_mpc", class_name="MINLPMPC"
+        module_path="agentlib_mpc.modules.mpc.minlp_mpc", class_name="MINLPMPC"
     ),
     "admm": ModuleImport(
         module_path="agentlib_mpc.modules.dmpc.admm.admm", class_name="ADMM"
