@@ -182,4 +182,4 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000, testing=Fal
 
 
 if __name__ == "__main__":
-    run_example(with_plots=True, until=3600)
+    run_example(with_plots=True, until=3600, testing=False)

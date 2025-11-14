@@ -87,8 +87,8 @@ def configs(
                     },
                 },
                 "t_sample": t_sample_sim,
-                "save_results": False,
-                "result_filename": "results//simulation_data.csv",
+                "save_results": True,
+                "result_filename": "results//simulator.csv",
                 "result_causalities": ["local", "input", "output"],
                 "overwrite_result_file": True,
                 "inputs": [
