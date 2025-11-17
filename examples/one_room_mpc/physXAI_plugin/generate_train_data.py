@@ -1,10 +1,11 @@
+"""Example to show interplay of physXAI and agentlib_mpc"""
 import logging
+import os
 import random
-
 import agentlib as al
 import matplotlib.pyplot as plt
-
 from agentlib.utils.multi_agent_system import LocalMASAgency
+import model
 
 
 logger = logging.getLogger(__name__)
@@ -63,48 +64,15 @@ def plot(results):
 
     df["mDot"].plot(ax=ax_mDot, label="mDot", color="black")
     ax_T_out.set_ylabel("$T_{room}$ / °C")
-    ax_mDot.set_ylabel(r"$\dot{m}_{air}$ / kg/s")
+    ax_mDot.set_ylabel("$\dot{m}_{air}$ / kg/s")
     ax_mDot.set_xlabel("Simulation time / s")
 
     plt.show()
 
 
 def configs(
-    training_time: float = 1000, plot_results: bool = False, step_size: float = 60
+    step_size: float = 60,
 ):
-    trainer_config = {
-        "id": "Trainer",
-        "modules": [
-            {
-                "step_size": 300,
-                "module_id": "trainer",
-                "type": "agentlib_mpc.linreg_trainer",
-                "inputs": [
-                    {"name": "mDot", "value": 0.0225, "source": "PID"},
-                    {"name": "load", "value": 30, "source": "Simulator"},
-                    {"name": "T_in", "value": 290.15},
-                ],
-                "outputs": [{"name": "T", "value": 273.15 + 22}],
-                # the lags here are not needed, but we have them to validate the code
-                "lags": {"load": 2, "T": 2, "mDot": 3},
-                "output_types": {"T": "difference"},
-                "interpolations": {"mDot": "mean_over_interval"},
-                "train_share": 0.6,
-                "validation_share": 0.2,
-                "test_share": 0.2,
-                "retrain_delay": training_time,
-                "save_directory": "linregs",
-                "use_values_for_incomplete_data": True,
-                "data_sources": ["results//simulation_data_14days.csv"],
-                "save_data": True,
-                "save_ml_model": True,
-                "save_plots": True,
-            },
-            {"type": "local", "subscriptions": ["Simulator", "PID"]},
-        ],
-    }
-
-    # sample rate is at least 1, and maximum 10
     t_sample_sim = min(max(1, int(step_size) // 30), 10)
     simulator_config = {
         "id": "Simulator",
@@ -114,13 +82,13 @@ def configs(
                 "type": "simulator",
                 "model": {
                     "type": {
-                        "file": "model.py",
-                        "class_name": "PhysicalModel",
+                        "file": model.__file__,
+                        "class_name": model.PhysicalModel.__name__,
                     },
                 },
                 "t_sample": t_sample_sim,
-                "save_results": plot_results,
-                "result_filename": "results//simulation_data.csv",
+                "save_results": True,
+                "result_filename": "results//simulator.csv",
                 "result_causalities": ["local", "input", "output"],
                 "overwrite_result_file": True,
                 "inputs": [
@@ -136,7 +104,6 @@ def configs(
                 "t_sample": step_size * 10,
                 "model": {"type": {"file": __file__, "class_name": "InputGenerator"}},
                 "outputs": [
-                    # {"name": "mDot"},
                     {"name": "load", "ub": 150, "lb": 150},
                     {"name": "T_in"},
                 ],
@@ -170,28 +137,46 @@ def configs(
                 "interval": 60 * 10,
                 "target_variable": {"name": "T_set", "alias": "T_set"},
             },
-            {"type": "AgentLogger", "values_only": True, "t_sample": 10},
+            {
+                "type": "AgentLogger",
+                "values_only": True,
+                "t_sample": 300,
+                "overwrite_log": True,
+            },
             {"type": "local", "subscriptions": ["Simulator"]},
         ],
     }
-    return [simulator_config, trainer_config, pid_controller]
+    return [simulator_config, pid_controller]
 
 
-def main(training_time: float = 1000, plot_results=False, step_size: float = 300):
-    env_config = {"rt": False, "t_sample": 60}
+def main(
+    training_time: float = 3600 * 24 * 0.2,
+    plot_results=False,
+    step_size: float = 300,
+):
+    env_config = {"rt": False, "t_sample": 3600}
     logging.basicConfig(level=logging.INFO)
     mas = LocalMASAgency(
         agent_configs=configs(
-            training_time=training_time, plot_results=plot_results, step_size=step_size
+            step_size=step_size,
         ),
         env=env_config,
         variable_logging=False,
     )
     mas.run(until=training_time + 100)
+
+    ##################################################################################
+    # Save training data for physXAI
+    results = mas.get_results(cleanup=True)
+    df = results['PID']['AgentLogger']
+    df = df.ffill().bfill()
+    os.makedirs('results', exist_ok=True)
+    df.to_csv('results//simulation_data.csv')
+    ##################################################################################
+    
     if plot_results:
-        results = mas.get_results(cleanup=True)
         plot(results)
 
 
 if __name__ == "__main__":
-    main(training_time=3600 * 24 * 0.9, plot_results=True, step_size=300)
+    main(training_time=3600 * 24 * 1, plot_results=True, step_size=300)

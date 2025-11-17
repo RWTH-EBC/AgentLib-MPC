@@ -3,6 +3,7 @@ from Max Berktold"""
 
 import datetime
 import random
+from typing import Union
 
 from agentlib.core import BaseModuleConfig, BaseModule, Agent, AgentVariable
 
@@ -21,6 +22,7 @@ class SetPointGeneratorConfig(BaseModuleConfig):
     night_ub: float = 273.15 + 24
     interval: int = 60 * 60 * 4
     shared_variable_fields: list[str] = ["target_variable"]
+    t_offset: Union[int, float] = 0.0
 
 
 class SetPointGenerator(BaseModule):
@@ -80,13 +82,13 @@ class SetPointGenerator(BaseModule):
     def _is_daytime(self) -> bool:
         """Returns True if the given time is during day"""
 
-        time = datetime.datetime.fromtimestamp(self.env.time)
+        time = datetime.datetime.fromtimestamp(self.env.time + self.config.t_offset)
 
-        return self.config.day_start <= time.hour <= self.config.day_end
+        return self.config.day_start <= time.hour < self.config.day_end
 
     def _is_weekend(self) -> bool:
         """returns True if the given time is during weekend"""
 
-        time = datetime.datetime.fromtimestamp(self.env.time)
+        time = datetime.datetime.fromtimestamp(self.env.time + self.config.t_offset)
 
         return 5 <= time.weekday()

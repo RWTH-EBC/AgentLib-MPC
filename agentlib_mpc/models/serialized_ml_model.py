@@ -7,6 +7,7 @@ import numpy as np
 from enum import Enum
 from copy import deepcopy
 from keras import Sequential
+from keras.src import Functional
 from pathlib import Path
 from pydantic import ConfigDict, Field, BaseModel
 from sklearn.gaussian_process import GaussianProcessRegressor
@@ -23,6 +24,7 @@ class MLModels(str, Enum):
     ANN = "ANN"
     GPR = "GPR"
     LINREG = "LinReg"
+    KerasANN = "KerasANN"
 
 
 class SerializedMLModel(BaseModel, abc.ABC):
@@ -657,8 +659,59 @@ class SerializedLinReg(SerializedMLModel):
         return linear_model
 
 
+class SerializedKerasANN(SerializedMLModel):
+    """
+    Allows using a saved Keras ANN model (Sequential or Functional) in agentlib_mpc directly without serialization.
+
+    attributes:
+        model_path: Path to saved Keras ANN model.
+    """
+
+    model_path: Path = Field(
+        default=None, description="Path, where the Keras ANN model is saved."
+    )
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_type: MLModels = MLModels.KerasANN
+
+    @classmethod
+    def serialize(
+        cls,
+        model: Union[Sequential, Functional],
+        dt: Union[float, int],
+        input: dict[str, Feature],
+        output: dict[str, OutputFeature],
+        training_info: Optional[dict] = None,
+    ):
+        """Serializes path to Keras Sequential or Functional ANN and returns SerializedKerasANN object"""
+
+        try:
+            model_path = model.save_path
+        except AttributeError:
+            model_path = Path("stored_models/model.keras")  # default value
+
+        directory = Path(model_path).parent
+        directory.mkdir(exist_ok=True)
+        model.save(model_path)
+
+        return cls(
+            model_path=model_path,
+            dt=dt,
+            input=input,
+            output=output,
+            training_info=training_info,
+        )
+
+    def deserialize(self) -> Union[Sequential, Functional]:
+        """Deserializes SerializedKerasANN object and returns a Keras Sequential ANN."""
+        import keras
+
+        ann = keras.saving.load_model(self.model_path)
+        return ann
+
+
 serialized_models = {
     MLModels.ANN: SerializedANN,
     MLModels.GPR: SerializedGPR,
     MLModels.LINREG: SerializedLinReg,
+    MLModels.KerasANN: SerializedKerasANN,
 }

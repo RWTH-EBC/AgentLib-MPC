@@ -57,8 +57,8 @@ MODULE_TYPES = {
         module_path="agentlib_mpc.modules.ml_model_training.ml_model_trainer",
         class_name="LinRegTrainer",
     ),
-    "ann_simulator": ModuleImport(
-        module_path="agentlib_mpc.modules.ann_simulator",
+    "ml_simulator": ModuleImport(
+        module_path="agentlib_mpc.modules.ml_model_simulator",
         class_name="MLModelSimulator",
     ),
     "set_point_generator": ModuleImport(
