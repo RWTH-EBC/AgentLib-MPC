@@ -800,7 +800,7 @@
             "column": 0,
             "path": "agentlib_mpc/utils/plotting/basic.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/utils/plotting/basic.py: Fatal error while checking 'agentlib_mpc/utils/plotting/basic.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-07-59.txt'.",
+            "message": "agentlib_mpc/utils/plotting/basic.py: Fatal error while checking 'agentlib_mpc/utils/plotting/basic.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-19.txt'.",
             "message-id": "F0002"
         },
         {
@@ -811,7 +811,7 @@
             "column": 0,
             "path": "agentlib_mpc/data_structures/mpc_datamodels.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/data_structures/mpc_datamodels.py: Fatal error while checking 'agentlib_mpc/data_structures/mpc_datamodels.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-07-59.txt'.",
+            "message": "agentlib_mpc/data_structures/mpc_datamodels.py: Fatal error while checking 'agentlib_mpc/data_structures/mpc_datamodels.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-19.txt'.",
             "message-id": "F0002"
         },
         {
@@ -822,7 +822,7 @@
             "column": 0,
             "path": "agentlib_mpc/data_structures/admm_datatypes.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/data_structures/admm_datatypes.py: Fatal error while checking 'agentlib_mpc/data_structures/admm_datatypes.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-00.txt'.",
+            "message": "agentlib_mpc/data_structures/admm_datatypes.py: Fatal error while checking 'agentlib_mpc/data_structures/admm_datatypes.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-19.txt'.",
             "message-id": "F0002"
         },
         {
@@ -833,8 +833,261 @@
             "column": 0,
             "path": "agentlib_mpc/data_structures/casadi_utils.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/data_structures/casadi_utils.py: Fatal error while checking 'agentlib_mpc/data_structures/casadi_utils.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-00.txt'.",
+            "message": "agentlib_mpc/data_structures/casadi_utils.py: Fatal error while checking 'agentlib_mpc/data_structures/casadi_utils.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-19.txt'.",
             "message-id": "F0002"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 284,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (106/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 287,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (113/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 296,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (119/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 297,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (103/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 392,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (110/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 421,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (102/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 451,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 462,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 478,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 501,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 502,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 511,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 547,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 583,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (118/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 585,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (103/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 586,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (110/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 587,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (114/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 588,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (113/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 596,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (108/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 599,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 637,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (107/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 652,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (106/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 670,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (102/100)",
+            "message-id": "C0301"
         },
         {
             "type": "convention",
@@ -881,6 +1134,28 @@
             "message-id": "E0401"
         },
         {
+            "type": "error",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 8,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "import-error",
+            "message": "Unable to import 'keras.src'",
+            "message-id": "E0401"
+        },
+        {
+            "type": "error",
+            "module": "agentlib_mpc.models.casadi_predictor",
+            "obj": "",
+            "line": 9,
+            "column": 0,
+            "path": "agentlib_mpc/models/casadi_predictor.py",
+            "symbol": "import-error",
+            "message": "Unable to import 'keras'",
+            "message-id": "E0401"
+        },
+        {
             "type": "fatal",
             "module": "agentlib_mpc.models.casadi_predictor",
             "obj": "",
@@ -888,14 +1163,14 @@
             "column": 0,
             "path": "agentlib_mpc/models/casadi_predictor.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/models/casadi_predictor.py: Fatal error while checking 'agentlib_mpc/models/casadi_predictor.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-00.txt'.",
+            "message": "agentlib_mpc/models/casadi_predictor.py: Fatal error while checking 'agentlib_mpc/models/casadi_predictor.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-20.txt'.",
             "message-id": "F0002"
         },
         {
             "type": "convention",
             "module": "agentlib_mpc.models.serialized_ml_model",
             "obj": "",
-            "line": 47,
+            "line": 49,
             "column": 0,
             "path": "agentlib_mpc/models/serialized_ml_model.py",
             "symbol": "line-too-long",
@@ -906,7 +1181,7 @@
             "type": "convention",
             "module": "agentlib_mpc.models.serialized_ml_model",
             "obj": "",
-            "line": 102,
+            "line": 104,
             "column": 0,
             "path": "agentlib_mpc/models/serialized_ml_model.py",
             "symbol": "line-too-long",
@@ -917,7 +1192,7 @@
             "type": "convention",
             "module": "agentlib_mpc.models.serialized_ml_model",
             "obj": "",
-            "line": 117,
+            "line": 119,
             "column": 0,
             "path": "agentlib_mpc/models/serialized_ml_model.py",
             "symbol": "line-too-long",
@@ -928,7 +1203,7 @@
             "type": "convention",
             "module": "agentlib_mpc.models.serialized_ml_model",
             "obj": "",
-            "line": 131,
+            "line": 133,
             "column": 0,
             "path": "agentlib_mpc/models/serialized_ml_model.py",
             "symbol": "line-too-long",
@@ -939,7 +1214,7 @@
             "type": "convention",
             "module": "agentlib_mpc.models.serialized_ml_model",
             "obj": "",
-            "line": 238,
+            "line": 240,
             "column": 0,
             "path": "agentlib_mpc/models/serialized_ml_model.py",
             "symbol": "line-too-long",
@@ -950,7 +1225,7 @@
             "type": "convention",
             "module": "agentlib_mpc.models.serialized_ml_model",
             "obj": "",
-            "line": 243,
+            "line": 245,
             "column": 0,
             "path": "agentlib_mpc/models/serialized_ml_model.py",
             "symbol": "line-too-long",
@@ -961,7 +1236,7 @@
             "type": "convention",
             "module": "agentlib_mpc.models.serialized_ml_model",
             "obj": "",
-            "line": 248,
+            "line": 250,
             "column": 0,
             "path": "agentlib_mpc/models/serialized_ml_model.py",
             "symbol": "line-too-long",
@@ -972,7 +1247,7 @@
             "type": "convention",
             "module": "agentlib_mpc.models.serialized_ml_model",
             "obj": "",
-            "line": 306,
+            "line": 308,
             "column": 0,
             "path": "agentlib_mpc/models/serialized_ml_model.py",
             "symbol": "line-too-long",
@@ -983,7 +1258,7 @@
             "type": "convention",
             "module": "agentlib_mpc.models.serialized_ml_model",
             "obj": "",
-            "line": 410,
+            "line": 412,
             "column": 0,
             "path": "agentlib_mpc/models/serialized_ml_model.py",
             "symbol": "line-too-long",
@@ -994,11 +1269,33 @@
             "type": "convention",
             "module": "agentlib_mpc.models.serialized_ml_model",
             "obj": "",
-            "line": 544,
+            "line": 546,
             "column": 0,
             "path": "agentlib_mpc/models/serialized_ml_model.py",
             "symbol": "line-too-long",
             "message": "Line too long (264/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.serialized_ml_model",
+            "obj": "",
+            "line": 664,
+            "column": 0,
+            "path": "agentlib_mpc/models/serialized_ml_model.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (115/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.models.serialized_ml_model",
+            "obj": "",
+            "line": 685,
+            "column": 0,
+            "path": "agentlib_mpc/models/serialized_ml_model.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (105/100)",
             "message-id": "C0301"
         },
         {
@@ -1038,11 +1335,11 @@
             "type": "error",
             "module": "agentlib_mpc.models.serialized_ml_model",
             "obj": "",
-            "line": 11,
+            "line": 10,
             "column": 0,
             "path": "agentlib_mpc/models/serialized_ml_model.py",
             "symbol": "import-error",
-            "message": "Unable to import 'pydantic'",
+            "message": "Unable to import 'keras.src'",
             "message-id": "E0401"
         },
         {
@@ -1053,7 +1350,7 @@
             "column": 0,
             "path": "agentlib_mpc/models/serialized_ml_model.py",
             "symbol": "import-error",
-            "message": "Unable to import 'sklearn.gaussian_process'",
+            "message": "Unable to import 'pydantic'",
             "message-id": "E0401"
         },
         {
@@ -1064,7 +1361,7 @@
             "column": 0,
             "path": "agentlib_mpc/models/serialized_ml_model.py",
             "symbol": "import-error",
-            "message": "Unable to import 'sklearn.gaussian_process.kernels'",
+            "message": "Unable to import 'sklearn.gaussian_process'",
             "message-id": "E0401"
         },
         {
@@ -1072,6 +1369,17 @@
             "module": "agentlib_mpc.models.serialized_ml_model",
             "obj": "",
             "line": 14,
+            "column": 0,
+            "path": "agentlib_mpc/models/serialized_ml_model.py",
+            "symbol": "import-error",
+            "message": "Unable to import 'sklearn.gaussian_process.kernels'",
+            "message-id": "E0401"
+        },
+        {
+            "type": "error",
+            "module": "agentlib_mpc.models.serialized_ml_model",
+            "obj": "",
+            "line": 15,
             "column": 0,
             "path": "agentlib_mpc/models/serialized_ml_model.py",
             "symbol": "import-error",
@@ -1086,7 +1394,7 @@
             "column": 0,
             "path": "agentlib_mpc/models/serialized_ml_model.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/models/serialized_ml_model.py: Fatal error while checking 'agentlib_mpc/models/serialized_ml_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-01.txt'.",
+            "message": "agentlib_mpc/models/serialized_ml_model.py: Fatal error while checking 'agentlib_mpc/models/serialized_ml_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-21.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1108,7 +1416,7 @@
             "column": 0,
             "path": "agentlib_mpc/models/casadi_ml_model.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/models/casadi_ml_model.py: Fatal error while checking 'agentlib_mpc/models/casadi_ml_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-01.txt'.",
+            "message": "agentlib_mpc/models/casadi_ml_model.py: Fatal error while checking 'agentlib_mpc/models/casadi_ml_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-21.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1130,7 +1438,7 @@
             "column": 0,
             "path": "agentlib_mpc/models/casadi_model.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/models/casadi_model.py: Fatal error while checking 'agentlib_mpc/models/casadi_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-01.txt'.",
+            "message": "agentlib_mpc/models/casadi_model.py: Fatal error while checking 'agentlib_mpc/models/casadi_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-21.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1214,7 +1522,7 @@
             "type": "convention",
             "module": "agentlib_mpc.models.serialized_ml_model",
             "obj": "",
-            "line": 10,
+            "line": 11,
             "column": 0,
             "path": "agentlib_mpc/models/serialized_ml_model.py",
             "symbol": "wrong-import-order",
@@ -1438,7 +1746,7 @@
             "column": 0,
             "path": "agentlib_mpc/utils/sampling.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/utils/sampling.py: Fatal error while checking 'agentlib_mpc/utils/sampling.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-01.txt'.",
+            "message": "agentlib_mpc/utils/sampling.py: Fatal error while checking 'agentlib_mpc/utils/sampling.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-21.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1460,7 +1768,7 @@
             "column": 0,
             "path": "agentlib_mpc/utils/analysis.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/utils/analysis.py: Fatal error while checking 'agentlib_mpc/utils/analysis.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-01.txt'.",
+            "message": "agentlib_mpc/utils/analysis.py: Fatal error while checking 'agentlib_mpc/utils/analysis.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-22.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1471,7 +1779,7 @@
             "column": 0,
             "path": "agentlib_mpc/utils/__init__.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/utils/__init__.py: Fatal error while checking 'agentlib_mpc/utils/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-02.txt'.",
+            "message": "agentlib_mpc/utils/__init__.py: Fatal error while checking 'agentlib_mpc/utils/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-22.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1504,7 +1812,7 @@
             "column": 0,
             "path": "agentlib_mpc/utils/plotting/interactive.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/utils/plotting/interactive.py: Fatal error while checking 'agentlib_mpc/utils/plotting/interactive.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-02.txt'.",
+            "message": "agentlib_mpc/utils/plotting/interactive.py: Fatal error while checking 'agentlib_mpc/utils/plotting/interactive.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-22.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1647,7 +1955,7 @@
             "column": 0,
             "path": "agentlib_mpc/utils/plotting/mpc.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/utils/plotting/mpc.py: Fatal error while checking 'agentlib_mpc/utils/plotting/mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-02.txt'.",
+            "message": "agentlib_mpc/utils/plotting/mpc.py: Fatal error while checking 'agentlib_mpc/utils/plotting/mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-22.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1669,7 +1977,7 @@
             "column": 0,
             "path": "agentlib_mpc/utils/plotting/mpc_dashboard.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/utils/plotting/mpc_dashboard.py: Fatal error while checking 'agentlib_mpc/utils/plotting/mpc_dashboard.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-02.txt'.",
+            "message": "agentlib_mpc/utils/plotting/mpc_dashboard.py: Fatal error while checking 'agentlib_mpc/utils/plotting/mpc_dashboard.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-22.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1724,7 +2032,7 @@
             "column": 0,
             "path": "agentlib_mpc/utils/plotting/discretization_structure.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/utils/plotting/discretization_structure.py: Fatal error while checking 'agentlib_mpc/utils/plotting/discretization_structure.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-02.txt'.",
+            "message": "agentlib_mpc/utils/plotting/discretization_structure.py: Fatal error while checking 'agentlib_mpc/utils/plotting/discretization_structure.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-22.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1757,7 +2065,7 @@
             "column": 0,
             "path": "agentlib_mpc/utils/plotting/ml_model_test.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/utils/plotting/ml_model_test.py: Fatal error while checking 'agentlib_mpc/utils/plotting/ml_model_test.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-02.txt'.",
+            "message": "agentlib_mpc/utils/plotting/ml_model_test.py: Fatal error while checking 'agentlib_mpc/utils/plotting/ml_model_test.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-22.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1801,7 +2109,7 @@
             "column": 0,
             "path": "agentlib_mpc/utils/plotting/admm_dashboard.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/utils/plotting/admm_dashboard.py: Fatal error while checking 'agentlib_mpc/utils/plotting/admm_dashboard.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-02.txt'.",
+            "message": "agentlib_mpc/utils/plotting/admm_dashboard.py: Fatal error while checking 'agentlib_mpc/utils/plotting/admm_dashboard.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-23.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1834,7 +2142,7 @@
             "column": 0,
             "path": "agentlib_mpc/utils/plotting/admm_residuals.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/utils/plotting/admm_residuals.py: Fatal error while checking 'agentlib_mpc/utils/plotting/admm_residuals.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-02.txt'.",
+            "message": "agentlib_mpc/utils/plotting/admm_residuals.py: Fatal error while checking 'agentlib_mpc/utils/plotting/admm_residuals.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-23.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1845,7 +2153,7 @@
             "column": 0,
             "path": "agentlib_mpc/utils/plotting/admm_animation.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/utils/plotting/admm_animation.py: Fatal error while checking 'agentlib_mpc/utils/plotting/admm_animation.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-03.txt'.",
+            "message": "agentlib_mpc/utils/plotting/admm_animation.py: Fatal error while checking 'agentlib_mpc/utils/plotting/admm_animation.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-23.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1999,7 +2307,7 @@
             "column": 0,
             "path": "agentlib_mpc/data_structures/ml_model_datatypes.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/data_structures/ml_model_datatypes.py: Fatal error while checking 'agentlib_mpc/data_structures/ml_model_datatypes.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-03.txt'.",
+            "message": "agentlib_mpc/data_structures/ml_model_datatypes.py: Fatal error while checking 'agentlib_mpc/data_structures/ml_model_datatypes.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-23.txt'.",
             "message-id": "F0002"
         },
         {
@@ -2246,6 +2554,424 @@
         },
         {
             "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "",
+            "line": 6,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (111/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "",
+            "line": 8,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (114/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "",
+            "line": 24,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (119/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "warning",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "",
+            "line": 54,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "bad-indentation",
+            "message": "Bad indentation. Found 12 spaces, expected 8",
+            "message-id": "W0311"
+        },
+        {
+            "type": "warning",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "",
+            "line": 58,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "bad-indentation",
+            "message": "Bad indentation. Found 12 spaces, expected 8",
+            "message-id": "W0311"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "",
+            "line": 63,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (120/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "",
+            "line": 64,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (104/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "",
+            "line": 101,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (111/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "",
+            "line": 102,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (109/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "",
+            "line": 108,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (104/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "",
+            "line": 133,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (122/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "",
+            "line": 148,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (118/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "",
+            "line": 165,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "missing-final-newline",
+            "message": "Final newline missing",
+            "message-id": "C0304"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "",
+            "line": 1,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "missing-module-docstring",
+            "message": "Missing module docstring",
+            "message-id": "C0114"
+        },
+        {
+            "type": "error",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "",
+            "line": 3,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "import-error",
+            "message": "Unable to import 'joblib'",
+            "message-id": "E0401"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "",
+            "line": 6,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "invalid-name",
+            "message": "Constant name \"output_type_pattern\" doesn't conform to UPPER_CASE naming style",
+            "message-id": "C0103"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "",
+            "line": 7,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "invalid-name",
+            "message": "Constant name \"lag_pattern\" doesn't conform to UPPER_CASE naming style",
+            "message-id": "C0103"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "physXAI_2_agentlib_json",
+            "line": 24,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "invalid-name",
+            "message": "Function name \"physXAI_2_agentlib_json\" doesn't conform to snake_case naming style",
+            "message-id": "C0103"
+        },
+        {
+            "type": "refactor",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "physXAI_2_agentlib_json",
+            "line": 24,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "too-many-locals",
+            "message": "Too many local variables (34/15)",
+            "message-id": "R0914"
+        },
+        {
+            "type": "warning",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "physXAI_2_agentlib_json",
+            "line": 43,
+            "column": 29,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "f-string-without-interpolation",
+            "message": "Using an f-string that does not have any interpolated variables",
+            "message-id": "W1309"
+        },
+        {
+            "type": "refactor",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "physXAI_2_agentlib_json",
+            "line": 24,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "too-many-branches",
+            "message": "Too many branches (19/12)",
+            "message-id": "R0912"
+        },
+        {
+            "type": "refactor",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation",
+            "obj": "physXAI_2_agentlib_json",
+            "line": 24,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py",
+            "symbol": "too-many-statements",
+            "message": "Too many statements (62/50)",
+            "message-id": "R0915"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_generation",
+            "obj": "",
+            "line": 7,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (103/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_generation",
+            "obj": "",
+            "line": 12,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (149/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_generation",
+            "obj": "",
+            "line": 33,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (161/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_generation",
+            "obj": "",
+            "line": 50,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (183/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_generation",
+            "obj": "",
+            "line": 51,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (227/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_generation",
+            "obj": "",
+            "line": 52,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (184/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_generation",
+            "obj": "",
+            "line": 62,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (177/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_generation",
+            "obj": "",
+            "line": 68,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (221/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_generation",
+            "obj": "",
+            "line": 74,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (115/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_generation",
+            "obj": "",
+            "line": 78,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (161/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_generation",
+            "obj": "",
+            "line": 81,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (178/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_generation",
+            "obj": "",
+            "line": 87,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (120/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_generation",
+            "obj": "",
+            "line": 91,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (133/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_generation",
+            "obj": "",
+            "line": 1,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py",
+            "symbol": "missing-module-docstring",
+            "message": "Missing module docstring",
+            "message-id": "C0114"
+        },
+        {
+            "type": "fatal",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI.model_generation",
+            "obj": "",
+            "line": 1,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py",
+            "symbol": "astroid-error",
+            "message": "agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py: Fatal error while checking 'agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-24.txt'.",
+            "message-id": "F0002"
+        },
+        {
+            "type": "convention",
+            "module": "agentlib_mpc.machine_learning_plugins.physXAI",
+            "obj": "",
+            "line": 1,
+            "column": 0,
+            "path": "agentlib_mpc/machine_learning_plugins/physXAI/__init__.py",
+            "symbol": "invalid-name",
+            "message": "Module name \"physXAI\" doesn't conform to snake_case naming style",
+            "message-id": "C0103"
+        },
+        {
+            "type": "convention",
             "module": "agentlib_mpc.optimization_backends.backend",
             "obj": "",
             "line": 1,
@@ -2263,7 +2989,7 @@
             "column": 0,
             "path": "agentlib_mpc/optimization_backends/backend.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/optimization_backends/backend.py: Fatal error while checking 'agentlib_mpc/optimization_backends/backend.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-03.txt'.",
+            "message": "agentlib_mpc/optimization_backends/backend.py: Fatal error while checking 'agentlib_mpc/optimization_backends/backend.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-24.txt'.",
             "message-id": "F0002"
         },
         {
@@ -2802,7 +3528,7 @@
             "column": 0,
             "path": "agentlib_mpc/optimization_backends/casadi_/casadi_ml.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/optimization_backends/casadi_/casadi_ml.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/casadi_ml.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-04.txt'.",
+            "message": "agentlib_mpc/optimization_backends/casadi_/casadi_ml.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/casadi_ml.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-24.txt'.",
             "message-id": "F0002"
         },
         {
@@ -3605,7 +4331,7 @@
             "column": 0,
             "path": "agentlib_mpc/optimization_backends/casadi_/minlp_cia.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/optimization_backends/casadi_/minlp_cia.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/minlp_cia.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-04.txt'.",
+            "message": "agentlib_mpc/optimization_backends/casadi_/minlp_cia.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/minlp_cia.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-25.txt'.",
             "message-id": "F0002"
         },
         {
@@ -3627,7 +4353,7 @@
             "column": 0,
             "path": "agentlib_mpc/optimization_backends/casadi_/mhe.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/optimization_backends/casadi_/mhe.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/mhe.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-04.txt'.",
+            "message": "agentlib_mpc/optimization_backends/casadi_/mhe.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/mhe.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-25.txt'.",
             "message-id": "F0002"
         },
         {
@@ -3649,7 +4375,7 @@
             "column": 0,
             "path": "agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-05.txt'.",
+            "message": "agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-25.txt'.",
             "message-id": "F0002"
         },
         {
@@ -3770,7 +4496,7 @@
             "column": 0,
             "path": "agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-05.txt'.",
+            "message": "agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-25.txt'.",
             "message-id": "F0002"
         },
         {
@@ -3781,7 +4507,7 @@
             "column": 0,
             "path": "agentlib_mpc/optimization_backends/casadi_/core/system.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/optimization_backends/casadi_/core/system.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/core/system.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-05.txt'.",
+            "message": "agentlib_mpc/optimization_backends/casadi_/core/system.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/core/system.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-26.txt'.",
             "message-id": "F0002"
         },
         {
@@ -3792,7 +4518,7 @@
             "column": 0,
             "path": "agentlib_mpc/optimization_backends/casadi_/core/discretization.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/optimization_backends/casadi_/core/discretization.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/core/discretization.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-05.txt'.",
+            "message": "agentlib_mpc/optimization_backends/casadi_/core/discretization.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/core/discretization.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-26.txt'.",
             "message-id": "F0002"
         },
         {
@@ -3880,25 +4606,25 @@
             "column": 0,
             "path": "agentlib_mpc/modules/data_source.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/modules/data_source.py: Fatal error while checking 'agentlib_mpc/modules/data_source.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-05.txt'.",
+            "message": "agentlib_mpc/modules/data_source.py: Fatal error while checking 'agentlib_mpc/modules/data_source.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-26.txt'.",
             "message-id": "F0002"
         },
         {
             "type": "convention",
             "module": "agentlib_mpc.modules.ml_model_simulator",
             "obj": "",
-            "line": 1,
+            "line": 26,
             "column": 0,
             "path": "agentlib_mpc/modules/ml_model_simulator.py",
-            "symbol": "missing-module-docstring",
-            "message": "Missing module docstring",
-            "message-id": "C0114"
+            "symbol": "line-too-long",
+            "message": "Line too long (105/100)",
+            "message-id": "C0301"
         },
         {
             "type": "error",
             "module": "agentlib_mpc.modules.ml_model_simulator",
             "obj": "",
-            "line": 1,
+            "line": 6,
             "column": 0,
             "path": "agentlib_mpc/modules/ml_model_simulator.py",
             "symbol": "import-error",
@@ -3909,7 +4635,7 @@
             "type": "error",
             "module": "agentlib_mpc.modules.ml_model_simulator",
             "obj": "",
-            "line": 2,
+            "line": 7,
             "column": 0,
             "path": "agentlib_mpc/modules/ml_model_simulator.py",
             "symbol": "import-error",
@@ -3920,7 +4646,7 @@
             "type": "error",
             "module": "agentlib_mpc.modules.ml_model_simulator",
             "obj": "",
-            "line": 3,
+            "line": 8,
             "column": 0,
             "path": "agentlib_mpc/modules/ml_model_simulator.py",
             "symbol": "import-error",
@@ -3931,18 +4657,18 @@
             "type": "error",
             "module": "agentlib_mpc.modules.ml_model_simulator",
             "obj": "",
-            "line": 4,
+            "line": 9,
             "column": 0,
             "path": "agentlib_mpc/modules/ml_model_simulator.py",
             "symbol": "import-error",
-            "message": "Unable to import 'agentlib.modules.simulator'",
+            "message": "Unable to import 'agentlib.modules.simulation.simulator'",
             "message-id": "E0401"
         },
         {
             "type": "error",
             "module": "agentlib_mpc.modules.ml_model_simulator",
             "obj": "",
-            "line": 5,
+            "line": 10,
             "column": 0,
             "path": "agentlib_mpc/modules/ml_model_simulator.py",
             "symbol": "import-error",
@@ -3953,7 +4679,7 @@
             "type": "error",
             "module": "agentlib_mpc.modules.ml_model_simulator",
             "obj": "",
-            "line": 9,
+            "line": 14,
             "column": 0,
             "path": "agentlib_mpc/modules/ml_model_simulator.py",
             "symbol": "import-error",
@@ -3964,7 +4690,7 @@
             "type": "convention",
             "module": "agentlib_mpc.modules.ml_model_simulator",
             "obj": "MLModelSimulatorConfig",
-            "line": 12,
+            "line": 17,
             "column": 0,
             "path": "agentlib_mpc/modules/ml_model_simulator.py",
             "symbol": "missing-class-docstring",
@@ -3975,7 +4701,7 @@
             "type": "convention",
             "module": "agentlib_mpc.modules.ml_model_simulator",
             "obj": "MLModelSimulator",
-            "line": 28,
+            "line": 38,
             "column": 0,
             "path": "agentlib_mpc/modules/ml_model_simulator.py",
             "symbol": "missing-class-docstring",
@@ -3986,7 +4712,7 @@
             "type": "convention",
             "module": "agentlib_mpc.modules.ml_model_simulator",
             "obj": "MLModelSimulator.register_callbacks",
-            "line": 39,
+            "line": 49,
             "column": 4,
             "path": "agentlib_mpc/modules/ml_model_simulator.py",
             "symbol": "missing-function-docstring",
@@ -4008,7 +4734,7 @@
             "type": "convention",
             "module": "agentlib_mpc.modules.ml_model_simulator",
             "obj": "",
-            "line": 9,
+            "line": 14,
             "column": 0,
             "path": "agentlib_mpc/modules/ml_model_simulator.py",
             "symbol": "wrong-import-order",
@@ -4019,7 +4745,7 @@
             "type": "convention",
             "module": "agentlib_mpc.modules.ml_model_simulator",
             "obj": "",
-            "line": 9,
+            "line": 14,
             "column": 0,
             "path": "agentlib_mpc/modules/ml_model_simulator.py",
             "symbol": "ungrouped-imports",
@@ -4089,7 +4815,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/deactivate_mpc/fallback_pid.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/modules/deactivate_mpc/fallback_pid.py: Fatal error while checking 'agentlib_mpc/modules/deactivate_mpc/fallback_pid.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-05.txt'.",
+            "message": "agentlib_mpc/modules/deactivate_mpc/fallback_pid.py: Fatal error while checking 'agentlib_mpc/modules/deactivate_mpc/fallback_pid.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-26.txt'.",
             "message-id": "F0002"
         },
         {
@@ -4166,7 +4892,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py: Fatal error while checking 'agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-05.txt'.",
+            "message": "agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py: Fatal error while checking 'agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-26.txt'.",
             "message-id": "F0002"
         },
         {
@@ -4177,7 +4903,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/mpc/mpc.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/modules/mpc/mpc.py: Fatal error while checking 'agentlib_mpc/modules/mpc/mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-06.txt'.",
+            "message": "agentlib_mpc/modules/mpc/mpc.py: Fatal error while checking 'agentlib_mpc/modules/mpc/mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-26.txt'.",
             "message-id": "F0002"
         },
         {
@@ -4408,7 +5134,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/mpc/skippable_mixin.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/modules/mpc/skippable_mixin.py: Fatal error while checking 'agentlib_mpc/modules/mpc/skippable_mixin.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-06.txt'.",
+            "message": "agentlib_mpc/modules/mpc/skippable_mixin.py: Fatal error while checking 'agentlib_mpc/modules/mpc/skippable_mixin.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-27.txt'.",
             "message-id": "F0002"
         },
         {
@@ -4430,7 +5156,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/estimation/mhe.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/modules/estimation/mhe.py: Fatal error while checking 'agentlib_mpc/modules/estimation/mhe.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-06.txt'.",
+            "message": "agentlib_mpc/modules/estimation/mhe.py: Fatal error while checking 'agentlib_mpc/modules/estimation/mhe.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-27.txt'.",
             "message-id": "F0002"
         },
         {
@@ -4452,7 +5178,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/dmpc/coordinator.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/modules/dmpc/coordinator.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/coordinator.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-06.txt'.",
+            "message": "agentlib_mpc/modules/dmpc/coordinator.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/coordinator.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-27.txt'.",
             "message-id": "F0002"
         },
         {
@@ -4661,7 +5387,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/dmpc/admm/admm_coordinated.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/modules/dmpc/admm/admm_coordinated.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/admm/admm_coordinated.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-06.txt'.",
+            "message": "agentlib_mpc/modules/dmpc/admm/admm_coordinated.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/admm/admm_coordinated.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-27.txt'.",
             "message-id": "F0002"
         },
         {
@@ -4672,7 +5398,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/dmpc/admm/admm.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/modules/dmpc/admm/admm.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/admm/admm.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-07.txt'.",
+            "message": "agentlib_mpc/modules/dmpc/admm/admm.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/admm/admm.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-27.txt'.",
             "message-id": "F0002"
         },
         {
@@ -4683,7 +5409,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/dmpc/admm/admm_coordinator.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/modules/dmpc/admm/admm_coordinator.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/admm/admm_coordinator.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-07.txt'.",
+            "message": "agentlib_mpc/modules/dmpc/admm/admm_coordinator.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/admm/admm_coordinator.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-28.txt'.",
             "message-id": "F0002"
         },
         {
@@ -4896,37 +5622,15 @@
             "message-id": "C0411"
         },
         {
-            "type": "error",
+            "type": "fatal",
             "module": "agentlib_mpc.modules.ml_model_training.setpoint_generator",
             "obj": "",
-            "line": 7,
+            "line": 1,
             "column": 0,
             "path": "agentlib_mpc/modules/ml_model_training/setpoint_generator.py",
-            "symbol": "import-error",
-            "message": "Unable to import 'agentlib.core'",
-            "message-id": "E0401"
-        },
-        {
-            "type": "convention",
-            "module": "agentlib_mpc.modules.ml_model_training.setpoint_generator",
-            "obj": "SetPointGenerator.register_callbacks",
-            "line": 42,
-            "column": 4,
-            "path": "agentlib_mpc/modules/ml_model_training/setpoint_generator.py",
-            "symbol": "missing-function-docstring",
-            "message": "Missing function or method docstring",
-            "message-id": "C0116"
-        },
-        {
-            "type": "convention",
-            "module": "agentlib_mpc.modules.ml_model_training.setpoint_generator",
-            "obj": "SetPointGenerator.process",
-            "line": 44,
-            "column": 4,
-            "path": "agentlib_mpc/modules/ml_model_training/setpoint_generator.py",
-            "symbol": "missing-function-docstring",
-            "message": "Missing function or method docstring",
-            "message-id": "C0116"
+            "symbol": "astroid-error",
+            "message": "agentlib_mpc/modules/ml_model_training/setpoint_generator.py: Fatal error while checking 'agentlib_mpc/modules/ml_model_training/setpoint_generator.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-28.txt'.",
+            "message-id": "F0002"
         },
         {
             "type": "convention",
@@ -4969,7 +5673,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/ml_model_training/ml_model_trainer.py",
             "symbol": "astroid-error",
-            "message": "agentlib_mpc/modules/ml_model_training/ml_model_trainer.py: Fatal error while checking 'agentlib_mpc/modules/ml_model_training/ml_model_trainer.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-08-07.txt'.",
+            "message": "agentlib_mpc/modules/ml_model_training/ml_model_trainer.py: Fatal error while checking 'agentlib_mpc/modules/ml_model_training/ml_model_trainer.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-11-17-14-21-28.txt'.",
             "message-id": "F0002"
         },
         {
@@ -5189,7 +5893,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.mhe:[484:518]\n==agentlib_mpc.utils.sampling:[118:152]\n        if (target_grid.shape == source_grid.shape) and all(target_grid == source_grid):\n            return list(values)\n        values = np.array(values)\n\n        # check requested portion of trajectory, whether the most recent value in the\n        # source grid is older than the first value in the MHE trajectory\n        if target_grid[0] >= source_grid[-1]:\n            # return the last value of the trajectory if requested sample\n            # starts out of range\n            logger.warning(\n                \"Latest value of source grid %s is older than \"\n                \"current time (%s. Returning latest value anyway.\",\n                source_grid[-1],\n                current,\n            )\n            return [values[-1]] * target_grid_length\n\n        # determine whether the target grid lies within the available source grid, and\n        # how many entries to extrapolate on either side\n        source_grid_oldest_time: float = source_grid[0]\n        source_grid_newest_time: float = source_grid[-1]\n        source_is_recent_enough: np.ndarray = target_grid < source_grid_newest_time\n        source_is_old_enough: np.ndarray = target_grid > source_grid_oldest_time\n        number_of_missing_old_entries: int = target_grid_length - np.count_nonzero(\n            source_is_old_enough\n        )\n        number_of_missing_new_entries: int = target_grid_length - np.count_nonzero(\n            source_is_recent_enough\n        )\n        # shorten target interpolation grid by extra points that go above or below\n        # available data range\n        target_grid = target_grid[source_is_recent_enough * source_is_old_enough]\n\n        # interpolate data to match new grid",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.mhe:[484:518]\n==agentlib_mpc.utils.sampling:[118:152]\n    if (target_grid.shape == source_grid.shape) and all(target_grid == source_grid):\n        return list(values)\n    values = np.array(values)\n\n    # check requested portion of trajectory, whether the most recent value in the\n    # source grid is older than the first value in the MHE trajectory\n    if target_grid[0] >= source_grid[-1]:\n        # return the last value of the trajectory if requested sample\n        # starts out of range\n        logger.warning(\n            \"Latest value of source grid %s is older than \"\n            \"current time (%s. Returning latest value anyway.\",\n            source_grid[-1],\n            current,\n        )\n        return [values[-1]] * target_grid_length\n\n    # determine whether the target grid lies within the available source grid, and\n    # how many entries to extrapolate on either side\n    source_grid_oldest_time: float = source_grid[0]\n    source_grid_newest_time: float = source_grid[-1]\n    source_is_recent_enough: np.ndarray = target_grid < source_grid_newest_time\n    source_is_old_enough: np.ndarray = target_grid > source_grid_oldest_time\n    number_of_missing_old_entries: int = target_grid_length - np.count_nonzero(\n        source_is_old_enough\n    )\n    number_of_missing_new_entries: int = target_grid_length - np.count_nonzero(\n        source_is_recent_enough\n    )\n    # shorten target interpolation grid by extra points that go above or below\n    # available data range\n    target_grid = target_grid[source_is_recent_enough * source_is_old_enough]\n\n    # interpolate data to match new grid",
             "message-id": "R0801"
         },
         {
@@ -5244,7 +5948,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml:[406:428]\n==agentlib_mpc.optimization_backends.casadi_.mhe:[217:239]\n        constraints = {\"model_constraints\": system.model_constraints}\n\n        inputs = [\n            q.full_symbolic\n            for q in all_system_quantities.values()\n            if q.use_in_stage_function\n        ]\n        input_denotations = [\n            q.name\n            for denotation, q in all_system_quantities.items()\n            if q.use_in_stage_function\n        ]\n\n        # aggregate constraints\n        constraints_func = [c.function for c in constraints.values()]\n        constraints_lb = [c.lb for c in constraints.values()]\n        constraints_ub = [c.ub for c in constraints.values()]\n        constraint_denotations = list(constraints.keys())\n        constraint_lb_denotations = [LB_PREFIX + k for k in constraints]\n        constraint_ub_denotations = [UB_PREFIX + k for k in constraints]\n\n        # aggregate outputs",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml:[406:428]\n==agentlib_mpc.optimization_backends.casadi_.mhe:[217:239]\n        constraints = {\"model_constraints\": system.model_constraints}\n\n        inputs = [\n            q.full_symbolic\n            for q in all_system_quantities.values()\n            if q.use_in_stage_function\n        ]\n        input_denotations = [\n            q.name\n            for denotation, q in all_system_quantities.items()\n            if q.use_in_stage_function\n        ]\n\n        # aggregate constraints\n        constraints_func = [c.function for c in constraints.values()]\n        constraints_lb = [c.lb for c in constraints.values()]\n        constraints_ub = [c.ub for c in constraints.values()]\n        constraint_denotations = list(constraints.keys())\n        constraint_lb_denotations = [LB_PREFIX + k for k in constraints]\n        constraint_ub_denotations = [UB_PREFIX + k for k in constraints]\n\n        # create a dictionary which holds all the inputs for the sim step of the model",
             "message-id": "R0801"
         },
         {
@@ -5277,7 +5981,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.admm:[158:182]\n==agentlib_mpc.optimization_backends.casadi_.full:[78:102]\n            xk_end, constraints = self._collocation_inner_loop(\n                collocation=collocation_matrices,\n                state_at_beginning=xk,\n                states=sys.states,\n                opt_vars=opt_vars_inside_inner,\n                opt_pars=opt_pars_inside_inner,\n                const=constant_over_inner,\n            )\n\n            # increment loop counter and time\n            self.k += 1\n            self.pred_time = ts * self.k\n\n            # New NLP variables at end of interval\n            xk = self.add_opt_var(sys.states)\n\n            # Add continuity constraint\n            self.add_constraint(xk - xk_end, gap_closing=True)\n\n            # add collocation constraints later for fatrop\n            for constraint in constraints:\n                self.add_constraint(*constraint)\n\n",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.admm:[158:182]\n==agentlib_mpc.optimization_backends.casadi_.full:[78:102]\n            xk_end, constraints = self._collocation_inner_loop(\n                collocation=collocation_matrices,\n                state_at_beginning=xk,\n                states=sys.states,\n                opt_vars=opt_vars_inside_inner,\n                opt_pars=opt_pars_inside_inner,\n                const=constant_over_inner,\n            )\n\n            # increment loop counter and time\n            self.k += 1\n            self.pred_time = ts * self.k\n\n            # New NLP variable for differential state at end of interval\n            xk = self.add_opt_var(sys.states)\n\n            # Add continuity constraint\n            self.add_constraint(xk - xk_end, gap_closing=True)\n\n            # add collocation constraints later for fatrop\n            for constraint in constraints:\n                self.add_constraint(*constraint)\n\n",
             "message-id": "R0801"
         },
         {
@@ -5299,7 +6003,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.full:[151:168]\n==agentlib_mpc.optimization_backends.casadi_.minlp:[168:184]\n            )\n            xk_end = fk[\"xf\"]\n            self.k += 1\n            self.pred_time = ts * self.k\n            xk = self.add_opt_var(sys.states)\n            vars_dict[sys.states.name][self.k] = xk\n            self.add_constraint(xk - xk_end, gap_closing=True)\n\n            # add model constraints last due to fatrop\n            self.add_constraint(\n                stage[\"model_constraints\"],\n                lb=stage[\"lb_model_constraints\"],\n                ub=stage[\"ub_model_constraints\"],\n            )\n            self.objective_function += stage[\"cost_function\"] * ts\n\n",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.full:[151:168]\n==agentlib_mpc.optimization_backends.casadi_.minlp:[168:184]\n            )\n            xk_end = fk[\"xf\"]\n            # calculate model constraint\n            self.k += 1\n            self.pred_time = ts * self.k\n            xk = self.add_opt_var(sys.states)\n            vars_dict[sys.states.name][self.k] = xk\n            self.add_constraint(xk - xk_end, gap_closing=True)\n            self.add_constraint(\n                stage[\"model_constraints\"],\n                lb=stage[\"lb_model_constraints\"],\n                ub=stage[\"ub_model_constraints\"],\n            )\n            self.objective_function += stage[\"cost_function\"] * ts\n\n",
             "message-id": "R0801"
         },
         {
@@ -5310,7 +6014,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==agentlib_mpc.utils.plotting.interactive:[340:359]\n==agentlib_mpc.utils.plotting.mpc_dashboard:[327:353]\n        )  # Add the \"obj\" plot\n\n    return html.Div(\n        components,\n        style={\n            \"display\": \"grid\",\n            \"grid-template-columns\": \"repeat(auto-fit, minmax(600px, 1fr))\",\n            \"grid-gap\": \"20px\",\n            \"padding\": \"20px\",\n            \"min-width\": \"600px\",\n            \"min-height\": \"200px\",\n        },\n        id=\"plot-container\",\n    )\n\n\ndef obj_plot(\n    data, convert_to: Literal[\"seconds\", \"minutes\", \"hours\", \"days\"] = \"seconds\"\n) -> dcc.Graph:",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.utils.plotting.interactive:[340:359]\n==agentlib_mpc.utils.plotting.mpc_dashboard:[327:353]\n                )\n\n    return html.Div(\n        components,\n        style={\n            \"display\": \"grid\",\n            \"grid-template-columns\": \"repeat(auto-fit, minmax(600px, 1fr))\",\n            \"grid-gap\": \"20px\",\n            \"padding\": \"20px\",\n            \"min-width\": \"600px\",\n            \"min-height\": \"200px\",\n        },\n        id=\"plot-container\",\n    )\n\n\ndef detect_index_type(data: pd.DataFrame) -> Tuple[bool, bool]:\n    \"\"\"\n    Detect the type of index in the DataFrame.\n\n    Args:\n        data: DataFrame to check\n\n    Returns:\n        Tuple of (is_multi_index, is_datetime)\n    \"\"\"",
             "message-id": "R0801"
         },
         {
@@ -5343,7 +6047,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==agentlib_mpc.utils.plotting.interactive:[169:205]\n==agentlib_mpc.utils.plotting.mpc_dashboard:[223:258]\n    fig.update_layout(\n        showlegend=True,\n        legend=dict(\n            groupclick=\"toggleitem\",\n            itemclick=\"toggle\",\n            itemdoubleclick=\"toggleothers\",\n        ),\n        xaxis_title=x_axis_label,\n        yaxis_title=y_axis_label,\n        uirevision=\"same\",\n    )\n\n    return fig\n\n\ndef make_components(\n    data: pd.DataFrame,\n    convert_to: str,\n    stats: Optional[pd.DataFrame] = None,\n    use_datetime: bool = False,\n    step: bool = False,\n) -> html.Div:\n    \"\"\"\n    Create dashboard components from MPC data and stats.\n\n    Args:\n        data: DataFrame with MPC data\n        convert_to: Time unit for plotting\n        stats: Optional DataFrame with MPC statistics\n        use_datetime: Whether to interpret timestamps as datetime\n        step: Whether to use step plots\n\n    Returns:\n        Dash HTML Div containing all components\n    \"\"\"",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.utils.plotting.interactive:[169:205]\n==agentlib_mpc.utils.plotting.mpc_dashboard:[223:258]\n    fig.update_layout(\n        showlegend=True,\n        legend=dict(\n            groupclick=\"toggleitem\",\n            itemclick=\"toggle\",\n            itemdoubleclick=\"toggleothers\",\n        ),\n        xaxis_title=x_axis_label,\n        yaxis_title=y_axis_label,\n        uirevision=\"same\",  # Add this line\n    )\n\n    return fig\n\n\ndef plot_admm_plotly(\n    series: pd.Series,\n    plot_actual_values: bool = True,\n    plot_predictions: bool = False,\n    step: bool = False,\n    convert_to: Literal[\"seconds\", \"minutes\", \"hours\", \"days\"] = \"seconds\",\n):\n    \"\"\"\n    Args:\n        series: A column of the MPC results Dataframe\n        fig: Plotly figure to plot on\n        plot_actual_values: whether the closed loop actual values at the start of each\n         optimization should be plotted (default True)\n        plot_predictions: whether all predicted trajectories should be plotted\n        step: whether to use a step plot or a line plot\n        convert_to: Will convert the index of the returned series to the specified unit\n         (seconds, minutes, hours, days)\n\n    Returns:\n        None\n    \"\"\"",
             "message-id": "R0801"
         },
         {
@@ -5354,7 +6058,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml:[202:224]\n==agentlib_mpc.optimization_backends.casadi_.core.system:[57:76]\n        return [\n            var\n            for var in self.__dict__.values()\n            if isinstance(var, OptimizationVariable)\n        ]\n\n    @property\n    def parameters(self) -> list[OptimizationParameter]:\n        return [\n            var\n            for var in self.__dict__.values()\n            if isinstance(var, OptimizationParameter)\n        ]\n\n    @property\n    def quantities(self) -> list[Union[OptimizationParameter, OptimizationVariable]]:\n        return self.variables + self.parameters\n\n    @property\n    def sim_step_quantities(\n        self,\n    ) -> dict[str, Union[OptimizationParameter, OptimizationVariable]]:",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml:[202:224]\n==agentlib_mpc.optimization_backends.casadi_.core.system:[57:76]\n        return [\n            var\n            for var in self.__dict__.values()\n            if isinstance(var, OptimizationVariable)\n        ]\n\n    @property\n    def parameters(self) -> list[OptimizationParameter]:\n        return [\n            var\n            for var in self.__dict__.values()\n            if isinstance(var, OptimizationParameter)\n        ]\n\n    @property\n    def quantities(self) -> list[Union[OptimizationParameter, OptimizationVariable]]:\n        return self.variables + self.parameters\n\n",
             "message-id": "R0801"
         },
         {
@@ -5420,7 +6124,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.basic:[411:424]\n==agentlib_mpc.optimization_backends.casadi_.full:[129:143]\n            dk = self.add_opt_par(sys.non_controlled_inputs)\n            zk = self.add_opt_var(sys.algebraics)\n            yk = self.add_opt_var(sys.outputs)\n            # get stage\n            stage_arguments = {\n                # variables\n                sys.states.name: xk,\n                sys.algebraics.name: zk,\n                sys.outputs.name: yk,\n                # parameters\n                sys.controls.name: uk,\n                sys.non_controlled_inputs.name: dk,\n                sys.model_parameters.name: const_par,",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.basic:[411:424]\n==agentlib_mpc.optimization_backends.casadi_.full:[129:143]\n            dk = self.add_opt_par(sys.non_controlled_inputs)\n            zk = self.add_opt_var(sys.algebraics)\n            yk = self.add_opt_var(sys.outputs)\n\n            # get path constraints and objective values (stage)\n            stage_arguments = {\n                # variables\n                sys.states.name: xk,\n                sys.algebraics.name: zk,\n                sys.outputs.name: yk,\n                # parameters\n                sys.controls.name: uk,\n                sys.non_controlled_inputs.name: dk,\n                sys.model_parameters.name: const_par,",
             "message-id": "R0801"
         },
         {
@@ -5442,7 +6146,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.mhe:[458:470]\n==agentlib_mpc.utils.sampling:[79:91]\n        target_grid_length = len(grid)\n        if isinstance(trajectory, (float, int)):\n            # return constant trajectory for scalars\n            return [trajectory] * target_grid_length\n        if isinstance(trajectory, list):\n            # return lists of matching length without timestamps\n            if len(trajectory) == target_grid_length:\n                return trajectory\n            raise ValueError(\n                f\"Passed list with length {len(trajectory)} \"\n                f\"does not match target ({target_grid_length}).\"\n            )",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.mhe:[458:470]\n==agentlib_mpc.utils.sampling:[79:91]\n    target_grid_length = len(grid)\n    if isinstance(trajectory, (float, int)):\n        # return constant trajectory for scalars\n        return [trajectory] * target_grid_length\n    if isinstance(trajectory, list):\n        # return lists of matching length without timestamps\n        if len(trajectory) == target_grid_length:\n            return trajectory\n        raise ValueError(\n            f\"Passed list with length {len(trajectory)} \"\n            f\"does not match target ({target_grid_length}).\"\n        )",
             "message-id": "R0801"
         },
         {
@@ -5486,7 +6190,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.basic:[434:444]\n==agentlib_mpc.optimization_backends.casadi_.full:[148:157]\n            fk = opt_integrator(\n                x0=xk,\n                p=ca.vertcat(uk, dk, const_par, zk, yk),\n            )\n            xk_end = fk[\"xf\"]\n            self.k += 1\n            self.pred_time = ts * self.k\n            xk = self.add_opt_var(sys.states)\n            vars_dict[sys.states.name][self.k] = xk",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.basic:[434:444]\n==agentlib_mpc.optimization_backends.casadi_.full:[148:157]\n            fk = opt_integrator(\n                x0=xk,\n                p=ca.vertcat(uk, dk, const_par, zk, yk),\n            )\n            xk_end = fk[\"xf\"]\n            # calculate model constraint\n            self.k += 1\n            self.pred_time = ts * self.k\n            xk = self.add_opt_var(sys.states)\n            vars_dict[sys.states.name][self.k] = xk",
             "message-id": "R0801"
         },
         {
@@ -5552,7 +6256,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.admm:[114:128]\n==agentlib_mpc.optimization_backends.casadi_.full:[49:66]\n        collocation_matrices = self._collocation_polynomial()\n\n        # shorthands\n        n = self.options.prediction_horizon\n        ts = self.options.time_step\n\n        # Initial State\n        x0 = self.add_opt_par(sys.initial_state)\n        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)\n        uk = self.add_opt_par(sys.last_control)\n\n        # Parameters that are constant over the horizon\n        const_par = self.add_opt_par(sys.model_parameters)\n        du_weights = self.add_opt_par(sys.r_del_u)",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.admm:[114:128]\n==agentlib_mpc.optimization_backends.casadi_.full:[49:66]\n        collocation_matrices = self._collocation_polynomial()\n\n        # shorthands\n        n = self.options.prediction_horizon\n        ts = self.options.time_step\n\n        # Initial State\n        x0 = self.add_opt_par(sys.initial_state)\n        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)\n        uk = self.add_opt_par(sys.last_control)\n\n        # Parameters that are constant over the horizon\n        const_par = self.add_opt_par(sys.model_parameters)\n        du_weights = self.add_opt_par(sys.r_del_u)\n\n        # Formulate the NLP\n        # loop over prediction horizon",
             "message-id": "R0801"
         },
         {
@@ -5574,7 +6278,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml:[298:308]\n==agentlib_mpc.optimization_backends.casadi_.casadi_ml:[163:175]\n        for time in prediction_grid:\n            self.pred_time = time\n            mx_dict[time][sys.controls.name] = self.add_opt_var(sys.controls)\n            mx_dict[time][sys.non_controlled_inputs.name] = self.add_opt_par(\n                sys.non_controlled_inputs\n            )\n            mx_dict[time][sys.algebraics.name] = self.add_opt_var(sys.algebraics)\n            mx_dict[time][sys.outputs.name] = self.add_opt_var(sys.outputs)\n\n        # create the state grid\n        # x0 will always be the state at time 0 since the loop it is defined in starts\n        # in the past and finishes at 0",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml:[298:308]\n==agentlib_mpc.optimization_backends.casadi_.casadi_ml:[163:175]\n        for time in prediction_grid:\n            self.pred_time = time\n            mx_dict[time][sys.controls.name] = self.add_opt_var(sys.controls)\n            mx_dict[time][sys.non_controlled_inputs.name] = self.add_opt_par(\n                sys.non_controlled_inputs\n            )\n            mx_dict[time][sys.algebraics.name] = self.add_opt_var(sys.algebraics)\n            mx_dict[time][sys.outputs.name] = self.add_opt_var(sys.outputs)\n\n            # admm related quantities",
             "message-id": "R0801"
         },
         {
@@ -5585,7 +6289,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.basic:[101:118]\n==agentlib_mpc.optimization_backends.casadi_.mhe:[125:135]\n@dataclasses.dataclass\nclass CollocationMatrices:\n    order: int\n    root: np.ndarray\n    B: np.ndarray\n    C: np.ndarray\n    D: np.ndarray\n\n\nclass DirectCollocation(Discretization):\n    def _discretize(self, sys: BaseSystem):\n        \"\"\"\n        Defines a direct collocation discretization.\n        # pylint: disable=invalid-name\n        \"\"\"\n\n        # setup the polynomial base",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.basic:[101:118]\n==agentlib_mpc.optimization_backends.casadi_.mhe:[125:135]\n@dataclasses.dataclass\nclass CollocationMatrices:\n    order: int\n    root: np.ndarray\n    B: np.ndarray\n    C: np.ndarray\n    D: np.ndarray\n\n\nclass DirectCollocation(Discretization):",
             "message-id": "R0801"
         },
         {
@@ -5684,7 +6388,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.mhe:[532:542]\n==agentlib_mpc.utils.sampling:[154:168]\n            )\n\n        # extrapolate sequence with last available value if necessary\n        interpolated_trajectory = (\n            [values[0]] * number_of_missing_old_entries\n            + sequence_new\n            + [values[-1]] * number_of_missing_new_entries\n        )\n\n        return interpolated_trajectory",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.mhe:[532:542]\n==agentlib_mpc.utils.sampling:[154:168]\n    )\n\n    # extrapolate sequence with last available value if necessary\n    interpolated_trajectory = (\n        [values[0]] * number_of_missing_old_entries\n        + sequence_new\n        + [values[-1]] * number_of_missing_new_entries\n    )\n\n    return interpolated_trajectory\n\n\ndef pairwise(iterable: Iterable):\n    \"s -> (s0,s1), (s1,s2), (s2, s3), ...\"",
             "message-id": "R0801"
         },
         {
@@ -5695,7 +6399,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==agentlib_mpc.modules.estimation.mhe:[219:229]\n==agentlib_mpc.modules.mpc.mpc_full:[117:125]\n            self.agent.data_broker.register_callback(\n                alias=var.alias,\n                source=var.source,\n                callback=self._callback_hist_vars,\n                name=var.name,\n            )\n\n    def _after_config_update(self):",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.modules.estimation.mhe:[219:229]\n==agentlib_mpc.modules.mpc.mpc_full:[117:125]\n            self.agent.data_broker.register_callback(\n                alias=var.alias,\n                source=var.source,\n                callback=self._callback_hist_vars,\n                name=var.name,\n            )\n\n        # registers callback which listens to alias/source of the state variable, but\n        # gets the name of the measured state as parameter, to correctly save it in the\n        # history",
             "message-id": "R0801"
         },
         {
@@ -5728,7 +6432,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.full:[41:58]\n==agentlib_mpc.optimization_backends.casadi_.minlp:[62:81]\nclass DirectCollocation(basic.DirectCollocation):\n    def _discretize(self, sys: FullSystem):\n        \"\"\"\n        Defines a direct collocation discretization.\n        # pylint: disable=invalid-name\n        \"\"\"\n\n        # setup the polynomial base\n        collocation_matrices = self._collocation_polynomial()\n\n        # shorthands\n        n = self.options.prediction_horizon\n        ts = self.options.time_step\n\n        # Initial State\n        x0 = self.add_opt_par(sys.initial_state)\n        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.full:[41:58]\n==agentlib_mpc.optimization_backends.casadi_.minlp:[62:81]\nclass DirectCollocation(basic.DirectCollocation):\n    def _discretize(self, sys: CasadiMINLPSystem):\n        \"\"\"\n        Defines a direct collocation discretization.\n        # pylint: disable=invalid-name\n        \"\"\"\n\n        # setup the polynomial base\n        collocation_matrices = self._collocation_polynomial()\n\n        # shorthands\n        n = self.options.prediction_horizon\n        ts = self.options.time_step\n\n        # Initial State\n        x0 = self.add_opt_par(sys.initial_state)\n        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)\n\n        # Parameters that are constant over the horizon",
             "message-id": "R0801"
         },
         {
@@ -5904,6 +6608,17 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation:[153:160]\n==agentlib_mpc.models.serialized_ml_model:[612:618]\n            \"coef\": model.coef_.tolist(),\n            \"intercept\": model.intercept_.tolist(),\n            \"n_features_in\": model.n_features_in_,\n            \"rank\": model.rank_,\n            \"singular\": model.singular_.tolist(),\n        }\n",
+            "message-id": "R0801"
+        },
+        {
+            "type": "refactor",
+            "module": "agentlib_mpc.modules.InputPrediction.__init__",
+            "obj": "",
+            "line": 1,
+            "column": 0,
+            "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
+            "symbol": "duplicate-code",
             "message": "Similar lines in 2 files\n==agentlib_mpc.modules.dmpc.admm.admm:[832:841]\n==agentlib_mpc.modules.mpc.mpc_full:[143:152]\n        for hist_var in self._lags_dict_seconds:\n            past_values = self.history[hist_var]\n            if not past_values:\n                # if the history of a variable is empty, fallback to the scalar value\n                continue\n\n            # create copy to not mess up scalar value of original variable in case\n            # fallback is needed\n            updated_var = variables[hist_var].copy(",
             "message-id": "R0801"
         },
@@ -5926,7 +6641,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==agentlib_mpc.modules.mpc.minlp_mpc:[103:109]\n==agentlib_mpc.modules.mpc.mpc:[407:412]\n        results_file = self.optimization_backend.config.results_file\n        if not results_file:\n            return\n        os.remove(results_file)\n        os.remove(mpc_datamodels.stats_path(results_file))",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.modules.mpc.minlp_mpc:[103:109]\n==agentlib_mpc.modules.mpc.mpc:[407:412]\n        results_file = self.optimization_backend.config.results_file\n        if not results_file:\n            return\n        os.remove(results_file)\n        os.remove(mpc_datamodels.stats_path(results_file))\n",
             "message-id": "R0801"
         },
         {
@@ -5948,7 +6663,7 @@
             "column": 0,
             "path": "agentlib_mpc/modules/InputPrediction/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.basic:[118:129]\n==agentlib_mpc.optimization_backends.casadi_.full:[49:58]\n        collocation_matrices = self._collocation_polynomial()\n\n        # shorthands\n        n = self.options.prediction_horizon\n        ts = self.options.time_step\n\n        # Initial State\n        x0 = self.add_opt_par(sys.initial_state)\n        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)",
+            "message": "Similar lines in 2 files\n==agentlib_mpc.optimization_backends.casadi_.basic:[118:129]\n==agentlib_mpc.optimization_backends.casadi_.full:[49:58]\n        collocation_matrices = self._collocation_polynomial()\n\n        # shorthands\n        n = self.options.prediction_horizon\n        ts = self.options.time_step\n\n        # Initial State\n        x0 = self.add_opt_par(sys.initial_state)\n        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)\n\n        # Parameters that are constant over the horizon",
             "message-id": "R0801"
         },
         {
@@ -5992,11 +6707,11 @@
             "klass": 0,
             "class_attribute": 0,
             "class_const": 13,
-            "const": 3,
+            "const": 5,
             "inlinevar": 0,
-            "function": 1,
+            "function": 2,
             "method": 0,
-            "module": 2,
+            "module": 3,
             "variable": 72,
             "typevar": 0,
             "typealias": 0
@@ -6012,8 +6727,8 @@
                 "warning": 0
             },
             "agentlib_mpc.models.casadi_predictor": {
-                "convention": 1,
-                "error": 3,
+                "convention": 24,
+                "error": 5,
                 "fatal": 1,
                 "info": 0,
                 "refactor": 0,
@@ -6021,8 +6736,8 @@
                 "warning": 0
             },
             "agentlib_mpc.models.serialized_ml_model": {
-                "convention": 11,
-                "error": 6,
+                "convention": 13,
+                "error": 7,
                 "fatal": 1,
                 "info": 0,
                 "refactor": 0,
@@ -6245,6 +6960,42 @@
                 "statement": 0,
                 "warning": 0
             },
+            "agentlib_mpc.machine_learning_plugins.__init__": {
+                "convention": 0,
+                "error": 0,
+                "fatal": 0,
+                "info": 0,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
+            "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation": {
+                "convention": 15,
+                "error": 1,
+                "fatal": 0,
+                "info": 0,
+                "refactor": 3,
+                "statement": 75,
+                "warning": 3
+            },
+            "agentlib_mpc.machine_learning_plugins.physXAI.model_generation": {
+                "convention": 14,
+                "error": 0,
+                "fatal": 1,
+                "info": 0,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
+            "agentlib_mpc.machine_learning_plugins.physXAI.__init__": {
+                "convention": 1,
+                "error": 0,
+                "fatal": 0,
+                "info": 0,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
             "agentlib_mpc.optimization_backends.backend": {
                 "convention": 1,
                 "error": 0,
@@ -6404,7 +7155,7 @@
                 "fatal": 0,
                 "info": 0,
                 "refactor": 0,
-                "statement": 41,
+                "statement": 37,
                 "warning": 0
             },
             "agentlib_mpc.modules.__init__": {
@@ -6588,12 +7339,12 @@
                 "warning": 0
             },
             "agentlib_mpc.modules.ml_model_training.setpoint_generator": {
-                "convention": 2,
-                "error": 1,
-                "fatal": 0,
+                "convention": 0,
+                "error": 0,
+                "fatal": 1,
                 "info": 0,
                 "refactor": 0,
-                "statement": 46,
+                "statement": 0,
                 "warning": 0
             },
             "agentlib_mpc.modules.ml_model_training.ml_model_trainer": {
@@ -6619,26 +7370,32 @@
                 "error": 0,
                 "fatal": 0,
                 "info": 0,
-                "refactor": 81,
+                "refactor": 82,
                 "statement": 0,
                 "warning": 0
             }
         },
         "by_msg": {
-            "astroid-error": 39,
-            "missing-module-docstring": 39,
-            "import-error": 56,
-            "line-too-long": 27,
+            "astroid-error": 41,
+            "line-too-long": 68,
+            "trailing-whitespace": 8,
+            "missing-module-docstring": 40,
+            "import-error": 59,
             "wrong-import-order": 28,
             "ungrouped-imports": 20,
-            "too-many-locals": 11,
+            "too-many-locals": 12,
             "undefined-variable": 1,
             "unused-argument": 1,
             "unused-variable": 6,
-            "invalid-name": 96,
+            "invalid-name": 100,
             "missing-class-docstring": 26,
-            "missing-function-docstring": 13,
+            "missing-function-docstring": 11,
             "trailing-newlines": 1,
+            "bad-indentation": 2,
+            "missing-final-newline": 1,
+            "f-string-without-interpolation": 1,
+            "too-many-branches": 1,
+            "too-many-statements": 1,
             "too-many-instance-attributes": 2,
             "attribute-defined-outside-init": 6,
             "too-many-arguments": 3,
@@ -6653,7 +7410,7 @@
             "redefined-outer-name": 3,
             "super-with-arguments": 1,
             "use-list-literal": 1,
-            "duplicate-code": 81
+            "duplicate-code": 82
         },
         "code_type_count": {
             "code": 0,
@@ -6670,40 +7427,40 @@
                 "agentlib_mpc"
             ],
             "agentlib_mpc.data_structures.admm_datatypes": [
-                "agentlib_mpc.utils.plotting.admm_consensus_shades",
-                "agentlib_mpc.optimization_backends.casadi_.admm"
+                "agentlib_mpc.optimization_backends.casadi_.admm",
+                "agentlib_mpc.utils.plotting.admm_consensus_shades"
             ],
             "agentlib_mpc.utils.analysis": [
-                "agentlib_mpc.utils.plotting.admm_consensus_shades",
-                "agentlib_mpc.utils.plotting.discretization_structure"
+                "agentlib_mpc.utils.plotting.discretization_structure",
+                "agentlib_mpc.utils.plotting.admm_consensus_shades"
             ],
             "agentlib_mpc.utils.plotting.basic": [
-                "agentlib_mpc.utils.plotting.admm_consensus_shades",
-                "agentlib_mpc.utils.plotting.discretization_structure"
+                "agentlib_mpc.utils.plotting.discretization_structure",
+                "agentlib_mpc.utils.plotting.admm_consensus_shades"
             ],
             "agentlib_mpc.utils.plotting.mpc": [
                 "agentlib_mpc.utils.plotting.admm_consensus_shades"
             ],
             "agentlib_mpc.data_structures.casadi_utils": [
-                "agentlib_mpc.optimization_backends.casadi_.admm",
                 "agentlib_mpc.optimization_backends.casadi_.minlp",
+                "agentlib_mpc.optimization_backends.casadi_.admm",
                 "agentlib_mpc.optimization_backends.casadi_.full",
                 "agentlib_mpc.optimization_backends.casadi_.basic"
             ],
             "agentlib_mpc.data_structures.mpc_datamodels": [
-                "agentlib_mpc.modules.mpc.minlp_mpc",
-                "agentlib_mpc.optimization_backends.casadi_.basic",
+                "agentlib_mpc.optimization_backends.casadi_.full",
                 "agentlib_mpc.modules.mpc.mpc_full",
-                "agentlib_mpc.optimization_backends.casadi_.admm",
+                "agentlib_mpc.modules.mpc.minlp_mpc",
                 "agentlib_mpc.optimization_backends.casadi_.minlp",
-                "agentlib_mpc.optimization_backends.casadi_.full"
+                "agentlib_mpc.optimization_backends.casadi_.basic",
+                "agentlib_mpc.optimization_backends.casadi_.admm"
             ],
             "agentlib_mpc.models.casadi_model": [
-                "agentlib_mpc.optimization_backends.casadi_.basic",
-                "agentlib_mpc.optimization_backends.casadi_.admm",
-                "agentlib_mpc.optimization_backends.casadi_.minlp",
                 "agentlib_mpc.optimization_backends.casadi_.core.VariableGroup",
-                "agentlib_mpc.optimization_backends.casadi_.full"
+                "agentlib_mpc.optimization_backends.casadi_.full",
+                "agentlib_mpc.optimization_backends.casadi_.minlp",
+                "agentlib_mpc.optimization_backends.casadi_.basic",
+                "agentlib_mpc.optimization_backends.casadi_.admm"
             ],
             "agentlib_mpc.optimization_backends.casadi_.core.casadi_backend": [
                 "agentlib_mpc.optimization_backends.casadi_.minlp",
@@ -6711,8 +7468,8 @@
                 "agentlib_mpc.optimization_backends.casadi_.basic"
             ],
             "agentlib_mpc.optimization_backends.casadi_.core.VariableGroup": [
-                "agentlib_mpc.optimization_backends.casadi_.admm",
                 "agentlib_mpc.optimization_backends.casadi_.minlp",
+                "agentlib_mpc.optimization_backends.casadi_.admm",
                 "agentlib_mpc.optimization_backends.casadi_.full",
                 "agentlib_mpc.optimization_backends.casadi_.basic"
             ],
@@ -6724,8 +7481,8 @@
                 "agentlib_mpc.optimization_backends.casadi_.basic"
             ],
             "agentlib_mpc.optimization_backends.casadi_.basic": [
-                "agentlib_mpc.optimization_backends.casadi_.admm",
                 "agentlib_mpc.optimization_backends.casadi_.minlp",
+                "agentlib_mpc.optimization_backends.casadi_.admm",
                 "agentlib_mpc.optimization_backends.casadi_.full"
             ],
             "agentlib_mpc.optimization_backends.backend": [
@@ -6741,15 +7498,15 @@
                 "agentlib_mpc.modules.ml_model_simulator"
             ],
             "agentlib_mpc.modules.mpc.mpc": [
-                "agentlib_mpc.modules.mpc.mpc_full",
-                "agentlib_mpc.modules.mpc.minlp_mpc"
+                "agentlib_mpc.modules.mpc.minlp_mpc",
+                "agentlib_mpc.modules.mpc.mpc_full"
             ],
             "agentlib_mpc.optimization_backends.casadi_.minlp_cia": [
                 "agentlib_mpc.modules.mpc.minlp_mpc"
             ],
             "agentlib_mpc.modules.mpc.skippable_mixin": [
-                "agentlib_mpc.modules.mpc.mpc_full",
-                "agentlib_mpc.modules.dmpc.employee"
+                "agentlib_mpc.modules.dmpc.employee",
+                "agentlib_mpc.modules.mpc.mpc_full"
             ],
             "agentlib_mpc.data_structures.coordinator_datatypes": [
                 "agentlib_mpc.modules.dmpc.employee"
@@ -6763,27 +7520,27 @@
             "percent_duplicated_lines": 0.0
         },
         "node_count": {
-            "function": 7,
-            "klass": 44,
-            "method": 79,
-            "module": 65
+            "function": 9,
+            "klass": 42,
+            "method": 71,
+            "module": 69
         },
         "undocumented": {
             "function": 1,
             "klass": 26,
-            "method": 12,
-            "module": 39
+            "method": 10,
+            "module": 40
         },
-        "convention": 253,
-        "error": 58,
-        "fatal": 39,
+        "convention": 306,
+        "error": 61,
+        "fatal": 41,
         "info": 0,
-        "refactor": 99,
-        "statement": 1198,
-        "warning": 23,
+        "refactor": 103,
+        "statement": 1236,
+        "warning": 26,
         "global_note": 0,
-        "nb_duplicated_lines": 946,
-        "percent_duplicated_lines": 6.175740958349654
+        "nb_duplicated_lines": 952,
+        "percent_duplicated_lines": 5.978397387591057
     },
     "previous": {
         "bad_names": {
@@ -6792,11 +7549,11 @@
             "klass": 0,
             "class_attribute": 0,
             "class_const": 13,
-            "const": 3,
+            "const": 5,
             "inlinevar": 0,
-            "function": 1,
+            "function": 2,
             "method": 0,
-            "module": 2,
+            "module": 3,
             "variable": 72,
             "typevar": 0,
             "typealias": 0
@@ -6812,8 +7569,8 @@
                 "warning": 0
             },
             "agentlib_mpc.models.casadi_predictor": {
-                "convention": 1,
-                "error": 3,
+                "convention": 24,
+                "error": 5,
                 "fatal": 1,
                 "info": 0,
                 "refactor": 0,
@@ -6821,8 +7578,8 @@
                 "warning": 0
             },
             "agentlib_mpc.models.serialized_ml_model": {
-                "convention": 11,
-                "error": 6,
+                "convention": 13,
+                "error": 7,
                 "fatal": 1,
                 "info": 0,
                 "refactor": 0,
@@ -7045,6 +7802,42 @@
                 "statement": 0,
                 "warning": 0
             },
+            "agentlib_mpc.machine_learning_plugins.__init__": {
+                "convention": 0,
+                "error": 0,
+                "fatal": 0,
+                "info": 0,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
+            "agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation": {
+                "convention": 15,
+                "error": 1,
+                "fatal": 0,
+                "info": 0,
+                "refactor": 3,
+                "statement": 75,
+                "warning": 3
+            },
+            "agentlib_mpc.machine_learning_plugins.physXAI.model_generation": {
+                "convention": 14,
+                "error": 0,
+                "fatal": 1,
+                "info": 0,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
+            "agentlib_mpc.machine_learning_plugins.physXAI.__init__": {
+                "convention": 1,
+                "error": 0,
+                "fatal": 0,
+                "info": 0,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
             "agentlib_mpc.optimization_backends.backend": {
                 "convention": 1,
                 "error": 0,
@@ -7204,7 +7997,7 @@
                 "fatal": 0,
                 "info": 0,
                 "refactor": 0,
-                "statement": 41,
+                "statement": 37,
                 "warning": 0
             },
             "agentlib_mpc.modules.__init__": {
@@ -7388,12 +8181,12 @@
                 "warning": 0
             },
             "agentlib_mpc.modules.ml_model_training.setpoint_generator": {
-                "convention": 2,
-                "error": 1,
-                "fatal": 0,
+                "convention": 0,
+                "error": 0,
+                "fatal": 1,
                 "info": 0,
                 "refactor": 0,
-                "statement": 46,
+                "statement": 0,
                 "warning": 0
             },
             "agentlib_mpc.modules.ml_model_training.ml_model_trainer": {
@@ -7419,26 +8212,32 @@
                 "error": 0,
                 "fatal": 0,
                 "info": 0,
-                "refactor": 81,
+                "refactor": 82,
                 "statement": 0,
                 "warning": 0
             }
         },
         "by_msg": {
-            "astroid-error": 39,
-            "missing-module-docstring": 39,
-            "import-error": 56,
-            "line-too-long": 27,
+            "astroid-error": 41,
+            "line-too-long": 68,
+            "trailing-whitespace": 8,
+            "missing-module-docstring": 40,
+            "import-error": 59,
             "wrong-import-order": 28,
             "ungrouped-imports": 20,
-            "too-many-locals": 11,
+            "too-many-locals": 12,
             "undefined-variable": 1,
             "unused-argument": 1,
             "unused-variable": 6,
-            "invalid-name": 96,
+            "invalid-name": 100,
             "missing-class-docstring": 26,
-            "missing-function-docstring": 13,
+            "missing-function-docstring": 11,
             "trailing-newlines": 1,
+            "bad-indentation": 2,
+            "missing-final-newline": 1,
+            "f-string-without-interpolation": 1,
+            "too-many-branches": 1,
+            "too-many-statements": 1,
             "too-many-instance-attributes": 2,
             "attribute-defined-outside-init": 6,
             "too-many-arguments": 3,
@@ -7453,7 +8252,7 @@
             "redefined-outer-name": 3,
             "super-with-arguments": 1,
             "use-list-literal": 1,
-            "duplicate-code": 81
+            "duplicate-code": 82
         },
         "code_type_count": {
             "code": 0,
@@ -7470,50 +8269,50 @@
                 "agentlib_mpc"
             ],
             "agentlib_mpc.data_structures.admm_datatypes": [
-                "agentlib_mpc.utils.plotting.admm_consensus_shades",
-                "agentlib_mpc.optimization_backends.casadi_.admm"
+                "agentlib_mpc.optimization_backends.casadi_.admm",
+                "agentlib_mpc.utils.plotting.admm_consensus_shades"
             ],
             "agentlib_mpc.utils.analysis": [
-                "agentlib_mpc.utils.plotting.admm_consensus_shades",
-                "agentlib_mpc.utils.plotting.discretization_structure"
+                "agentlib_mpc.utils.plotting.discretization_structure",
+                "agentlib_mpc.utils.plotting.admm_consensus_shades"
             ],
             "agentlib_mpc.utils.plotting.basic": [
-                "agentlib_mpc.utils.plotting.admm_consensus_shades",
-                "agentlib_mpc.utils.plotting.discretization_structure"
+                "agentlib_mpc.utils.plotting.discretization_structure",
+                "agentlib_mpc.utils.plotting.admm_consensus_shades"
             ],
             "agentlib_mpc.utils.plotting.mpc": [
                 "agentlib_mpc.utils.plotting.admm_consensus_shades"
             ],
             "agentlib_mpc.data_structures.casadi_utils": [
+                "agentlib_mpc.optimization_backends.casadi_.full",
                 "agentlib_mpc.optimization_backends.casadi_.admm",
                 "agentlib_mpc.optimization_backends.casadi_.minlp",
-                "agentlib_mpc.optimization_backends.casadi_.full",
                 "agentlib_mpc.optimization_backends.casadi_.basic"
             ],
             "agentlib_mpc.data_structures.mpc_datamodels": [
-                "agentlib_mpc.modules.mpc.minlp_mpc",
-                "agentlib_mpc.optimization_backends.casadi_.basic",
+                "agentlib_mpc.optimization_backends.casadi_.full",
                 "agentlib_mpc.modules.mpc.mpc_full",
-                "agentlib_mpc.optimization_backends.casadi_.admm",
+                "agentlib_mpc.modules.mpc.minlp_mpc",
                 "agentlib_mpc.optimization_backends.casadi_.minlp",
-                "agentlib_mpc.optimization_backends.casadi_.full"
+                "agentlib_mpc.optimization_backends.casadi_.basic",
+                "agentlib_mpc.optimization_backends.casadi_.admm"
             ],
             "agentlib_mpc.models.casadi_model": [
-                "agentlib_mpc.optimization_backends.casadi_.basic",
-                "agentlib_mpc.optimization_backends.casadi_.admm",
-                "agentlib_mpc.optimization_backends.casadi_.minlp",
                 "agentlib_mpc.optimization_backends.casadi_.core.VariableGroup",
-                "agentlib_mpc.optimization_backends.casadi_.full"
+                "agentlib_mpc.optimization_backends.casadi_.full",
+                "agentlib_mpc.optimization_backends.casadi_.minlp",
+                "agentlib_mpc.optimization_backends.casadi_.basic",
+                "agentlib_mpc.optimization_backends.casadi_.admm"
             ],
             "agentlib_mpc.optimization_backends.casadi_.core.casadi_backend": [
-                "agentlib_mpc.optimization_backends.casadi_.minlp",
                 "agentlib_mpc.optimization_backends.casadi_.full",
+                "agentlib_mpc.optimization_backends.casadi_.minlp",
                 "agentlib_mpc.optimization_backends.casadi_.basic"
             ],
             "agentlib_mpc.optimization_backends.casadi_.core.VariableGroup": [
+                "agentlib_mpc.optimization_backends.casadi_.full",
                 "agentlib_mpc.optimization_backends.casadi_.admm",
                 "agentlib_mpc.optimization_backends.casadi_.minlp",
-                "agentlib_mpc.optimization_backends.casadi_.full",
                 "agentlib_mpc.optimization_backends.casadi_.basic"
             ],
             "agentlib_mpc.optimization_backends.casadi_.core.discretization": [
@@ -7524,9 +8323,9 @@
                 "agentlib_mpc.optimization_backends.casadi_.basic"
             ],
             "agentlib_mpc.optimization_backends.casadi_.basic": [
+                "agentlib_mpc.optimization_backends.casadi_.full",
                 "agentlib_mpc.optimization_backends.casadi_.admm",
-                "agentlib_mpc.optimization_backends.casadi_.minlp",
-                "agentlib_mpc.optimization_backends.casadi_.full"
+                "agentlib_mpc.optimization_backends.casadi_.minlp"
             ],
             "agentlib_mpc.optimization_backends.backend": [
                 "agentlib_mpc.optimization_backends.casadi_.admm"
@@ -7541,15 +8340,15 @@
                 "agentlib_mpc.modules.ml_model_simulator"
             ],
             "agentlib_mpc.modules.mpc.mpc": [
-                "agentlib_mpc.modules.mpc.mpc_full",
-                "agentlib_mpc.modules.mpc.minlp_mpc"
+                "agentlib_mpc.modules.mpc.minlp_mpc",
+                "agentlib_mpc.modules.mpc.mpc_full"
             ],
             "agentlib_mpc.optimization_backends.casadi_.minlp_cia": [
                 "agentlib_mpc.modules.mpc.minlp_mpc"
             ],
             "agentlib_mpc.modules.mpc.skippable_mixin": [
-                "agentlib_mpc.modules.mpc.mpc_full",
-                "agentlib_mpc.modules.dmpc.employee"
+                "agentlib_mpc.modules.dmpc.employee",
+                "agentlib_mpc.modules.mpc.mpc_full"
             ],
             "agentlib_mpc.data_structures.coordinator_datatypes": [
                 "agentlib_mpc.modules.dmpc.employee"
@@ -7563,26 +8362,26 @@
             "percent_duplicated_lines": 0.0
         },
         "node_count": {
-            "function": 7,
-            "klass": 44,
-            "method": 79,
-            "module": 65
+            "function": 9,
+            "klass": 42,
+            "method": 71,
+            "module": 69
         },
         "undocumented": {
             "function": 1,
             "klass": 26,
-            "method": 12,
-            "module": 39
+            "method": 10,
+            "module": 40
         },
-        "convention": 253,
-        "error": 58,
-        "fatal": 39,
+        "convention": 306,
+        "error": 61,
+        "fatal": 41,
         "info": 0,
-        "refactor": 99,
-        "statement": 1198,
-        "warning": 23,
-        "global_note": 4.449081803005008,
-        "nb_duplicated_lines": 946,
-        "percent_duplicated_lines": 6.175740958349654
+        "refactor": 103,
+        "statement": 1236,
+        "warning": 26,
+        "global_note": 4.0129449838187705,
+        "nb_duplicated_lines": 952,
+        "percent_duplicated_lines": 5.978397387591057
     }
 }

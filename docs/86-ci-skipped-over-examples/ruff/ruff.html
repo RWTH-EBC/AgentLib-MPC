@@ -1,6 +1,10 @@
 <html><body><pre>
 agentlib_mpc/__init__.py:4:22: F401 [*] `.modules.MODULE_TYPES` imported but unused
 agentlib_mpc/__init__.py:5:21: F401 [*] `.models.MODEL_TYPES` imported but unused
+agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py:43:30: F541 [*] f-string without any placeholders
+agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:10:25: F401 `physXAI.models` imported but unused; consider using `importlib.util.find_spec` to test for availability
+agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:44:28: F811 Redefinition of unused `models` from line 10
+agentlib_mpc/models/casadi_predictor.py:670:35: F541 [*] f-string without any placeholders
 agentlib_mpc/modules/mpc/skippable_mixin.py:50:28: E712 Comparison to `True` should be `cond is True` or `if cond:`
 agentlib_mpc/utils/plotting/admm_consensus_shades.py:41:5: F841 Local variable `a_trajectory` is assigned to but never used
 agentlib_mpc/utils/plotting/admm_consensus_shades.py:42:5: F841 Local variable `number_of_iterations` is assigned to but never used
@@ -8,6 +12,6 @@ agentlib_mpc/utils/plotting/admm_consensus_shades.py:52:44: F821 Undefined name 
 agentlib_mpc/utils/plotting/admm_consensus_shades.py:57:9: F841 Local variable `prediction_color` is assigned to but never used
 agentlib_mpc/utils/plotting/ml_model_test.py:66:9: E731 Do not assign a `lambda` expression, use a `def`
 agentlib_mpc/utils/plotting/mpc_dashboard.py:34:5: F841 Local variable `sub_idx` is assigned to but never used
-Found 9 errors.
-[*] 2 fixable with the `--fix` option (6 hidden fixes can be enabled with the `--unsafe-fixes` option).
+Found 13 errors.
+[*] 4 fixable with the `--fix` option (6 hidden fixes can be enabled with the `--unsafe-fixes` option).
 </pre></body></html>
