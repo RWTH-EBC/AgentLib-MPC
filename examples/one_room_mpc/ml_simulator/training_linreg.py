@@ -3,6 +3,7 @@ Trainer config for linregs to train models the simple_mpc_ml_sim.
 """
 
 import logging
+from pathlib import Path
 import random
 
 import agentlib as al
@@ -106,6 +107,8 @@ def configs(
             {"type": "local", "subscriptions": ["Simulator", "PID"]},
         ],
     }
+    
+    model_file = Path(__file__).parent / "model.py"
 
     # sample rate is at least 1, and maximum 10
     t_sample_sim = min(max(1, int(step_size) // 30), 10)
@@ -117,7 +120,7 @@ def configs(
                 "type": "simulator",
                 "model": {
                     "type": {
-                        "file": "model.py",
+                        "file": model_file.absolute(),
                         "class_name": "PhysicalModel",
                     },
                 },
