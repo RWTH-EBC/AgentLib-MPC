@@ -5,7 +5,6 @@ import random
 import agentlib as al
 import matplotlib.pyplot as plt
 from agentlib.utils.multi_agent_system import LocalMASAgency
-import model
 
 
 logger = logging.getLogger(__name__)
@@ -82,8 +81,8 @@ def configs(
                 "type": "simulator",
                 "model": {
                     "type": {
-                        "file": model.__file__,
-                        "class_name": model.PhysicalModel.__name__,
+                        "file": "model.py",
+                        "class_name": "PhysicalModel",
                     },
                 },
                 "t_sample": t_sample_sim,
@@ -168,12 +167,12 @@ def main(
     ##################################################################################
     # Save training data for physXAI
     results = mas.get_results(cleanup=True)
-    df = results['PID']['AgentLogger']
+    df = results["PID"]["AgentLogger"]
     df = df.ffill().bfill()
-    os.makedirs('results', exist_ok=True)
-    df.to_csv('results//simulation_data.csv')
+    os.makedirs("results", exist_ok=True)
+    df.to_csv("results//simulation_data.csv")
     ##################################################################################
-    
+
     if plot_results:
         plot(results)
 

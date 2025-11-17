@@ -1,3 +1,4 @@
+import importlib
 import logging
 import sys
 from pathlib import Path
@@ -101,7 +102,10 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000):
         ml_model_path = list(Path.cwd().glob("linregs/*/ml_model.json"))[-1]
     except IndexError:
         # if there is none, we have to perform the training first
-        import training_linreg
+        if "training_linreg" in sys.modules:
+            training_linreg = importlib.reload(sys.modules["training_linreg"])
+        else:
+            import training_linreg
 
         training_linreg.main(
             training_time=3600 * 24 * 1, plot_results=False, step_size=300

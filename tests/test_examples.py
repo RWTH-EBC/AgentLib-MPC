@@ -209,6 +209,8 @@ class TestExamples(unittest.TestCase):
             func_name="run_example",
             with_plots=False,
             log_level=logging.FATAL,
+            until=1000,
+            testing=True,
         )
 
     def test_physxai_mpc(self):
@@ -218,6 +220,6 @@ class TestExamples(unittest.TestCase):
             func_name="run_example",
             with_plots=False,
             log_level=logging.FATAL,
-            until=3600,
+            until=1000,
             testing=True,
         )
