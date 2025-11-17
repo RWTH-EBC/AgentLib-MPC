@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for agentlib_mpc/utils/plotting/ml_model_test.py: 95%</title>
+    <title>Coverage for agentlib_mpc/utils/plotting/ml_model_test.py: 90%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="coverage_html.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>agentlib_mpc/utils/plotting/ml_model_test.py</b>:
-            <span class="pc_cov">95%</span>
+            <span class="pc_cov">90%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -26,6 +26,7 @@
                         <kbd>r</kbd>
                         <kbd>m</kbd>
                         <kbd>x</kbd>
+                        <kbd>p</kbd>
                         &nbsp; toggle line displays
                     </p>
                     <p>
@@ -58,14 +59,15 @@
             <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">62<span class="text"> run</span></button>
             <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">3<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
+            <button type="button" class="par run show_par button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">6<span class="text"> partial</span></button>
         </h2>
         <p class="text">
-            <a id="prevFileLink" class="nav" href="d_da9eb8a62195563a_basic_py.html">&#xab; prev</a> &nbsp; &nbsp;
+            <a id="prevFileLink" class="nav" href="d_da9eb8a62195563a_interactive_py.html">&#xab; prev</a> &nbsp; &nbsp;
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="d_da9eb8a62195563a_mpc_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.4">coverage.py v7.4.4</a>,
-            created at 2025-11-17 08:27 +0000
+            created at 2025-11-17 16:10 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -94,7 +96,7 @@
     <p class="pln"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t13" href="#t13">13</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t"><span class="key">def</span> <span class="nam">calc_scores</span><span class="op">(</span><span class="nam">errors</span><span class="op">:</span> <span class="nam">np</span><span class="op">.</span><span class="nam">ndarray</span><span class="op">,</span> <span class="nam">metric</span><span class="op">:</span> <span class="nam">Callable</span><span class="op">)</span> <span class="op">-></span> <span class="nam">float</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t">    <span class="key">if</span> <span class="nam">all</span><span class="op">(</span><span class="nam">np</span><span class="op">.</span><span class="nam">isnan</span><span class="op">(</span><span class="nam">errors</span><span class="op">)</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="par run show_par"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t">    <span class="key">if</span> <span class="nam">all</span><span class="op">(</span><span class="nam">np</span><span class="op">.</span><span class="nam">isnan</span><span class="op">(</span><span class="nam">errors</span><span class="op">)</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">15&#x202F;&#x219B;&#x202F;16</span><span class="annotate long">line 15 didn't jump to line 16, because the condition on line 15 was never true</span></span></p>
     <p class="mis show_mis"><span class="n"><a id="t16" href="#t16">16</a></span><span class="t">        <span class="key">return</span> <span class="num">0</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t17" href="#t17">17</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t18" href="#t18">18</a></span><span class="t">    <span class="key">return</span> <span class="nam">float</span><span class="op">(</span><span class="nam">np</span><span class="op">.</span><span class="nam">mean</span><span class="op">(</span><span class="nam">metric</span><span class="op">(</span><span class="nam">errors</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -144,11 +146,11 @@
     <p class="pln"><span class="n"><a id="t62" href="#t62">62</a></span><span class="t"><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t63" href="#t63">63</a></span><span class="t">    <span class="str">"""Tests the Model on test data"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t64" href="#t64">64</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t65" href="#t65">65</a></span><span class="t">    <span class="key">if</span> <span class="nam">metric</span> <span class="key">is</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="par run show_par"><span class="n"><a id="t65" href="#t65">65</a></span><span class="t">    <span class="key">if</span> <span class="nam">metric</span> <span class="key">is</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">65&#x202F;&#x219B;&#x202F;69</span><span class="annotate long">line 65 didn't jump to line 69, because the condition on line 65 was never false</span></span></p>
     <p class="run"><span class="n"><a id="t66" href="#t66">66</a></span><span class="t">        <span class="nam">metric</span> <span class="op">=</span> <span class="key">lambda</span> <span class="nam">x</span><span class="op">:</span> <span class="nam">x</span> <span class="op">*</span> <span class="nam">x</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t67" href="#t67">67</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t68" href="#t68">68</a></span><span class="t">    <span class="com"># make model executable</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t69" href="#t69">69</a></span><span class="t">    <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">model</span><span class="op">,</span> <span class="nam">SerializedMLModel</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="par run show_par"><span class="n"><a id="t69" href="#t69">69</a></span><span class="t">    <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">model</span><span class="op">,</span> <span class="nam">SerializedMLModel</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">69&#x202F;&#x219B;&#x202F;70</span><span class="annotate long">line 69 didn't jump to line 70, because the condition on line 69 was never true</span></span></p>
     <p class="mis show_mis"><span class="n"><a id="t70" href="#t70">70</a></span><span class="t">        <span class="nam">model_</span> <span class="op">=</span> <span class="nam">casadi_predictors</span><span class="op">[</span><span class="nam">model</span><span class="op">.</span><span class="nam">model_type</span><span class="op">]</span><span class="op">(</span><span class="nam">model</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t71" href="#t71">71</a></span><span class="t">    <span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t72" href="#t72">72</a></span><span class="t">        <span class="nam">model_</span> <span class="op">=</span> <span class="nam">model</span>&nbsp;</span><span class="r"></span></p>
@@ -192,7 +194,7 @@
     <p class="pln"><span class="n"><a id="t110" href="#t110">110</a></span><span class="t">                <span class="op">[</span><span class="nam">basic</span><span class="op">.</span><span class="nam">EBCColors</span><span class="op">.</span><span class="nam">red</span><span class="op">,</span> <span class="nam">basic</span><span class="op">.</span><span class="nam">EBCColors</span><span class="op">.</span><span class="nam">green</span><span class="op">,</span> <span class="nam">basic</span><span class="op">.</span><span class="nam">EBCColors</span><span class="op">.</span><span class="nam">blue</span><span class="op">]</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t111" href="#t111">111</a></span><span class="t">                <span class="op">[</span><span class="str">"Train"</span><span class="op">,</span> <span class="str">"Valid"</span><span class="op">,</span> <span class="str">"Test"</span><span class="op">]</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t112" href="#t112">112</a></span><span class="t">            <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t113" href="#t113">113</a></span><span class="t">                <span class="key">if</span> <span class="key">not</span> <span class="nam">all</span><span class="op">(</span><span class="nam">np</span><span class="op">.</span><span class="nam">isnan</span><span class="op">(</span><span class="nam">y</span><span class="op">)</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="par run show_par"><span class="n"><a id="t113" href="#t113">113</a></span><span class="t">                <span class="key">if</span> <span class="key">not</span> <span class="nam">all</span><span class="op">(</span><span class="nam">np</span><span class="op">.</span><span class="nam">isnan</span><span class="op">(</span><span class="nam">y</span><span class="op">)</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">113&#x202F;&#x219B;&#x202F;108</span><span class="annotate long">line 113 didn't jump to line 108, because the condition on line 113 was never false</span></span></p>
     <p class="run"><span class="n"><a id="t114" href="#t114">114</a></span><span class="t">                    <span class="nam">ax</span><span class="op">.</span><span class="nam">scatter</span><span class="op">(</span><span class="nam">scale</span><span class="op">,</span> <span class="nam">y</span><span class="op">,</span> <span class="nam">s</span><span class="op">=</span><span class="num">0.6</span><span class="op">,</span> <span class="nam">color</span><span class="op">=</span><span class="nam">c</span><span class="op">,</span> <span class="nam">label</span><span class="op">=</span><span class="nam">label</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t115" href="#t115">115</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t116" href="#t116">116</a></span><span class="t">            <span class="nam">ax</span><span class="op">.</span><span class="nam">scatter</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
@@ -208,20 +210,20 @@
     <p class="run"><span class="n"><a id="t126" href="#t126">126</a></span><span class="t">            <span class="nam">ax</span><span class="op">.</span><span class="nam">set_title</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t127" href="#t127">127</a></span><span class="t">                <span class="fst">f"</span><span class="op">{</span><span class="nam">name</span><span class="op">}</span><span class="fst">\ntest_score=</span><span class="op">{</span><span class="nam">test_score</span><span class="op">.</span><span class="nam">__round__</span><span class="op">(</span><span class="num">4</span><span class="op">)</span><span class="op">}</span><span class="fst">\ntotal_score=</span><span class="op">{</span><span class="nam">total_score</span><span class="op">.</span><span class="nam">__round__</span><span class="op">(</span><span class="num">4</span><span class="op">)</span><span class="op">}</span><span class="fst">"</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t128" href="#t128">128</a></span><span class="t">            <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t129" href="#t129">129</a></span><span class="t">            <span class="key">if</span> <span class="nam">show_plot</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="par run show_par"><span class="n"><a id="t129" href="#t129">129</a></span><span class="t">            <span class="key">if</span> <span class="nam">show_plot</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">129&#x202F;&#x219B;&#x202F;130</span><span class="annotate long">line 129 didn't jump to line 130, because the condition on line 129 was never true</span></span></p>
     <p class="mis show_mis"><span class="n"><a id="t130" href="#t130">130</a></span><span class="t">                <span class="nam">fig</span><span class="op">.</span><span class="nam">show</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t131" href="#t131">131</a></span><span class="t">            <span class="key">if</span> <span class="nam">save_path</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="par run show_par"><span class="n"><a id="t131" href="#t131">131</a></span><span class="t">            <span class="key">if</span> <span class="nam">save_path</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">131&#x202F;&#x219B;&#x202F;105</span><span class="annotate long">line 131 didn't jump to line 105</span></span></p>
     <p class="run"><span class="n"><a id="t132" href="#t132">132</a></span><span class="t">                <span class="nam">fig</span><span class="op">.</span><span class="nam">savefig</span><span class="op">(</span><span class="nam">fname</span><span class="op">=</span><span class="nam">Path</span><span class="op">(</span><span class="nam">save_path</span><span class="op">,</span> <span class="fst">f"</span><span class="fst">evaluation_</span><span class="op">{</span><span class="nam">name</span><span class="op">}</span><span class="fst">.png</span><span class="fst">"</span><span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
         <p>
-            <a id="prevFileLink" class="nav" href="d_da9eb8a62195563a_basic_py.html">&#xab; prev</a> &nbsp; &nbsp;
+            <a id="prevFileLink" class="nav" href="d_da9eb8a62195563a_interactive_py.html">&#xab; prev</a> &nbsp; &nbsp;
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="d_da9eb8a62195563a_mpc_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.4">coverage.py v7.4.4</a>,
-            created at 2025-11-17 08:27 +0000
+            created at 2025-11-17 16:10 +0000
         </p>
     </div>
 </footer>

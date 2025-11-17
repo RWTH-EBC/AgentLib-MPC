@@ -76,6 +76,98 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
+<section id="module-agentlib_mpc.modules.mpc.minlp_mpc">
+<span id="agentlib-mpc-modules-mpc-minlp-mpc-module"></span><h2>agentlib_mpc.modules.mpc.minlp_mpc module<a class="headerlink" href="#module-agentlib_mpc.modules.mpc.minlp_mpc" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.mpc.minlp_mpc.</span></span><span class="sig-name descname"><span class="pre">MINLPMPC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Agent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/mpc/minlp_mpc.html#MINLPMPC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPC" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.modules.mpc.mpc.BaseMPC" title="agentlib_mpc.modules.mpc.mpc.BaseMPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMPC</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPC.assert_mpc_variables_are_in_model">
+<span class="sig-name descname"><span class="pre">assert_mpc_variables_are_in_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/mpc/minlp_mpc.html#MINLPMPC.assert_mpc_variables_are_in_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPC.assert_mpc_variables_are_in_model" title="Permalink to this definition"></a></dt>
+<dd><p>Checks whether all variables of var_ref are contained in the model.
+Returns names of model variables not contained in the var_ref,
+sorted by keys: ‘states’, ‘inputs’, ‘outputs’, ‘parameters’.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPC.cleanup_results">
+<span class="sig-name descname"><span class="pre">cleanup_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/mpc/minlp_mpc.html#MINLPMPC.cleanup_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPC.cleanup_results" title="Permalink to this definition"></a></dt>
+<dd><p>Deletes all files this module created.</p>
+<p>Override this method, if your module creates e.g. results files etc.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPC.set_actuation">
+<span class="sig-name descname"><span class="pre">set_actuation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solution</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/mpc/minlp_mpc.html#MINLPMPC.set_actuation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPC.set_actuation" title="Permalink to this definition"></a></dt>
+<dd><p>Takes the solution from optimization backend and sends the first
+step to AgentVariables.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.mpc.minlp_mpc.</span></span><span class="sig-name descname"><span class="pre">MINLPMPCConfig</span></span><a class="reference internal" href="../_modules/agentlib_mpc/modules/mpc/minlp_mpc.html#MINLPMPCConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.modules.mpc.mpc.BaseMPCConfig" title="agentlib_mpc.modules.mpc.mpc.BaseMPCConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseMPCConfig</span></code></a></p>
+<p>Pydantic data model for MPC configuration parser</p>
+<dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arbitrary_types_allowed</strong>: <em>bool = True</em></p></li>
+<li><p><strong>validate_assignment</strong>: <em>bool = True</em></p></li>
+<li><p><strong>extra</strong>: <em>str = forbid</em></p></li>
+<li><p><strong>frozen</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig.binary_controls" title="agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig.binary_controls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">binary_controls</span> <span class="pre">(List[agentlib_mpc.data_structures.mpc_datamodels.MPCVariable])</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-odd">Validators<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig.validate_binary_bounds" title="agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig.validate_binary_bounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_binary_bounds</span></code></a> » <a class="reference internal" href="#agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig.binary_controls" title="agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig.binary_controls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">binary_controls</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig.binary_controls">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">binary_controls</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MPCVariable" title="agentlib_mpc.data_structures.mpc_datamodels.MPCVariable"><span class="pre">MPCVariable</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig.binary_controls" title="Permalink to this definition"></a></dt>
+<dd><p>List of all binary control variables of the MPC.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Validated by<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig.validate_binary_bounds" title="agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig.validate_binary_bounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_binary_bounds</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig.model_post_init">
+<span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig.model_post_init" title="Permalink to this definition"></a></dt>
+<dd><p>This function is meant to behave like a BaseModel method to initialise private attributes.</p>
+<p>It takes context as an argument since that’s what pydantic-core passes when calling it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – The BaseModel instance.</p></li>
+<li><p><strong>context</strong> – The context.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method pydantic_validator">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig.validate_binary_bounds">
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validate_binary_bounds</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><a class="reference internal" href="#agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig.binary_controls" title="agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig.binary_controls"><em class="xref py py-obj"><span class="pre">binary_controls</span></em></a><a class="reference internal" href="../_modules/agentlib_mpc/modules/mpc/minlp_mpc.html#MINLPMPCConfig.validate_binary_bounds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig.validate_binary_bounds" title="Permalink to this definition"></a></dt>
+<dd><p>Assures all binary variables have 0 and 1 as boundaries.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="module-agentlib_mpc.modules.mpc.mpc">
 <span id="agentlib-mpc-modules-mpc-mpc-module"></span><h2>agentlib_mpc.modules.mpc.mpc module<a class="headerlink" href="#module-agentlib_mpc.modules.mpc.mpc" title="Permalink to this heading"></a></h2>
 <p>Holds the base class for MPCs.</p>
