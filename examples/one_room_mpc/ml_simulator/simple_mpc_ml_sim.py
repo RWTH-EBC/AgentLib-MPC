@@ -20,6 +20,8 @@ ENV_CONFIG = {"rt": False, "factor": 0.01, "t_sample": 60}
 
 
 def agent_configs(ml_model_mpc_path: str, ml_model_sim_path: str) -> list[dict]:
+    model_file = Path(__file__).parent / "model.py"
+    
     agent_mpc = {
         "id": "myMPCAgent",
         "modules": [
@@ -31,7 +33,7 @@ def agent_configs(ml_model_mpc_path: str, ml_model_sim_path: str) -> list[dict]:
                     "type": "casadi_ml",
                     "model": {
                         "type": {
-                            "file": "model.py",
+                            "file": model_file.absolute(),
                             "class_name": "DataDrivenModel",
                         },
                         "ml_model_sources": [ml_model_mpc_path],
@@ -59,7 +61,6 @@ def agent_configs(ml_model_mpc_path: str, ml_model_sim_path: str) -> list[dict]:
             },
         ],
     }
-    model_file = Path(__file__).parent / "model.py"
 
     agent_sim = {
         "id": "SimAgent",
