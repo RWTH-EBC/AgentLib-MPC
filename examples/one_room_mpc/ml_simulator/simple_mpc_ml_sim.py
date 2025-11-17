@@ -22,7 +22,7 @@ ENV_CONFIG = {"rt": False, "factor": 0.01, "t_sample": 60}
 
 def agent_configs(ml_model_mpc_path: str, ml_model_sim_path: str) -> list[dict]:
     model_file = Path(__file__).parent / "model.py"
-    
+
     agent_mpc = {
         "id": "myMPCAgent",
         "modules": [
@@ -44,7 +44,7 @@ def agent_configs(ml_model_mpc_path: str, ml_model_sim_path: str) -> list[dict]:
                     },
                     "results_file": "results//opt.csv",
                     "overwrite_result_file": True,
-                    "solver": {"name": "qpoases"},
+                    "solver": {"name": "ipopt"},
                 },
                 "time_step": 300,
                 "prediction_horizon": 15,
