@@ -90,7 +90,9 @@ def sample(
             f"does not match target ({target_grid_length})."
         )
     if isinstance(trajectory, str):
-        trajectory = pd.read_json(StringIO(trajectory), typ="series", convert_axes=False)
+        trajectory = pd.read_json(
+            StringIO(trajectory), typ="series", convert_axes=False
+        )
         trajectory.index = trajectory.index.astype(float)
     if isinstance(trajectory, pd.Series):
         trajectory = trajectory.dropna()
@@ -124,8 +126,8 @@ def sample(
         # return the last value of the trajectory if requested sample
         # starts out of range
         logger.warning(
-            f"Latest value of source grid %s is older than "
-            f"current time (%s. Returning latest value anyway.",
+            "Latest value of source grid %s is older than "
+            "current time (%s. Returning latest value anyway.",
             source_grid[-1],
             current,
         )

@@ -94,7 +94,7 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000):
         sys.path.insert(0, script_dir)
     logging.basicConfig(level=log_level)
 
-    # gets the subdirectory of anns with the highest number, i.e. the longest training
+    # gets the subdirectory of gprs with the highest number, i.e. the longest training
     # time
     try:
         ml_model_path = list(Path.cwd().glob("gprs/*/ml_model.json"))[-1]

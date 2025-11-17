@@ -73,7 +73,6 @@ def run_example(
     for conf in agent_configs:
         with open(conf) as f:
             conf_dict = json.load(f)
-        conf_dict["use_direct_callback_databroker"] = True
         modules = conf_dict["modules"]
         for i, mod in enumerate(modules):
             if isinstance(mod, str):

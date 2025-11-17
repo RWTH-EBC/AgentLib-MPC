@@ -166,11 +166,11 @@ class MyCasadiModelConfig(CasadiModelConfig):
     states: List[CasadiState] = [
         # differential
         CasadiState(
-            name=f"T", value=293.15, unit="K", description="Temperature of zone 0"
+            name="T", value=293.15, unit="K", description="Temperature of zone 0"
         ),
         # slack variables
         CasadiState(
-            name=f"T_slack",
+            name="T_slack",
             value=0,
             unit="K",
             description="Slack variable of temperature of zone 0",

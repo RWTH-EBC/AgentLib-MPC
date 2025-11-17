@@ -4,8 +4,6 @@ from typing import Dict, Optional, Tuple
 import pandas as pd
 import pydantic
 from agentlib.core import (
-    BaseModuleConfig,
-    BaseModule,
     Agent,
     AgentVariable,
     Source,

@@ -3,7 +3,7 @@ ADMM convergence"""
 
 import functools
 from pathlib import Path
-from typing import NewType, Iterable, Union, Callable
+from typing import Iterable, Union, Callable
 
 import matplotlib.pyplot as plt
 import pandas as pd

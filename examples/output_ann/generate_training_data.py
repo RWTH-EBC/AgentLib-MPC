@@ -7,8 +7,6 @@ from agentlib import Agent, Environment
 
 from agentlib_mpc.models.casadi_model import (
     CasadiInput,
-    CasadiModel,
-    CasadiModelConfig,
     CasadiOutput,
 )
 from agentlib_mpc.models.casadi_ml_model import CasadiMLModelConfig, CasadiMLModel

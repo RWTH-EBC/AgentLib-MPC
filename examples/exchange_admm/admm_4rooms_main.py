@@ -50,7 +50,6 @@ def run_example(
 
     if with_plots:
         import matplotlib.pyplot as plt
-        from agentlib_mpc.utils.analysis import admm_at_time_step
 
         fig, ax = plt.subplots(2, 1)
         ax[1].set_ylim([0, 0.05])

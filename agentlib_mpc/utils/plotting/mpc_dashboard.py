@@ -1,11 +1,8 @@
-import re
 import webbrowser
 from pathlib import Path
-from typing import Dict, Union, Optional, Literal, Any, List, Tuple
+from typing import Dict, Optional, Literal, Any, Tuple
 
 import dash
-import h5py
-import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 from dash import html, dcc
@@ -13,7 +10,6 @@ from dash.dependencies import Input, Output, State
 
 # Keep existing imports
 from agentlib_mpc.utils import TIME_CONVERSION
-from agentlib_mpc.utils.analysis import load_mpc, load_mpc_stats
 from agentlib_mpc.utils.plotting.basic import EBCColors
 from agentlib_mpc.utils.plotting.interactive import get_port, obj_plot, solver_return
 from agentlib_mpc.utils.plotting.mpc import interpolate_colors
@@ -507,7 +503,7 @@ def show_multi_room_dashboard(
         data = results[selected_agent][selected_module]
 
         if not isinstance(data, pd.DataFrame):
-            return html.Div(f"Selected module does not contain valid MPC data")
+            return html.Div("Selected module does not contain valid MPC data")
 
         # Reduce triple index to double index if needed
         if isinstance(data.index, pd.MultiIndex) and len(data.index.levels) > 2:

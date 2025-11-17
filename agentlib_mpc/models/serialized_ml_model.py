@@ -1,7 +1,6 @@
 import abc
 import json
 import logging
-import subprocess
 
 import numpy as np
 
