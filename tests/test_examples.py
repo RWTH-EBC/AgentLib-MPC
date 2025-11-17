@@ -49,3 +49,14 @@ class TestExamples(unittest.TestCase):
             with_plots=False,
             log_level=logging.FATAL,
         )
+
+    def test_physxai_mpc(self):
+        """Test physXAI plugin for one room mpc"""
+        self._run_example_with_return(
+            file="one_room_mpc//physXAI_plugin//simple_mpc_nn_physXAI.py",
+            func_name="run_example",
+            with_plots=False,
+            log_level=logging.FATAL,
+            until=3600,
+            testing=True,
+        )
