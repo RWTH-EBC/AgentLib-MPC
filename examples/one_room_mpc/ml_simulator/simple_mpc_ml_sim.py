@@ -1,6 +1,7 @@
 """
 Example for a MPC with ML-Model as Simulator.
 """
+
 import importlib
 import logging
 import sys
@@ -108,9 +109,7 @@ def run_example(
     # time
     training_time = 3600 * 24 if not testing else 3600
     try:
-        linreg_mpc_path = list(Path.cwd().glob("linregs/Trainer_mpc_*/ml_model.json"))[
-            -1
-        ]
+        ml_mpc_path = list(Path.cwd().glob("linregs/Trainer_mpc_*/ml_model.json"))[-1]
     except IndexError:
         # if there is none, we have to perform the training first
         if "training_linreg" in sys.modules:
@@ -124,14 +123,10 @@ def run_example(
             step_size=300,
             module_id="mpc",
         )
-        linreg_mpc_path = list(Path.cwd().glob("linregs/Trainer_mpc_*/ml_model.json"))[
-            -1
-        ]
+        ml_mpc_path = list(Path.cwd().glob("linregs/Trainer_mpc_*/ml_model.json"))[-1]
 
     try:
-        linreg_sim_path = list(Path.cwd().glob("linregs/Trainer_sim_*/ml_model.json"))[
-            -1
-        ]
+        ml_sim_path = list(Path.cwd().glob("linregs/Trainer_sim_*/ml_model.json"))[-1]
     except IndexError:
         # if there is none, we have to perform the training first
         if "training_linreg" in sys.modules:
@@ -145,15 +140,13 @@ def run_example(
             step_size=50,
             module_id="sim",
         )
-        linreg_sim_path = list(Path.cwd().glob("linregs/Trainer_sim_*/ml_model.json"))[
-            -1
-        ]
+        ml_sim_path = list(Path.cwd().glob("linregs/Trainer_sim_*/ml_model.json"))[-1]
 
     # model.sim_step(mDot=0.02, load=30, T_in=290.15, cp=1000, C=100_000, T=298)
     mas = LocalMASAgency(
         agent_configs=agent_configs(
-            ml_model_mpc_path=str(linreg_mpc_path),
-            ml_model_sim_path=str(linreg_sim_path),
+            ml_model_mpc_path=str(ml_mpc_path),
+            ml_model_sim_path=str(ml_sim_path),
         ),
         env=ENV_CONFIG,
         variable_logging=True,
