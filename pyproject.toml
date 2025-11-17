@@ -48,3 +48,30 @@ full = ['agentlib_mpc[fmu,ml,interactive]', 'agentlib[full]']
 [package.urls]
 homepage = "https://github.com/RWTH-EBC/AgentLib_MPC"
 documentation = "https://github.com/RWTH-EBC/AgentLib_MPC"
+
+[tool.coverage.run]
+source = ["agentlib_mpc", "examples"]
+branch = true
+
+[tool.coverage.paths]
+# Map temporary test directories back to actual examples directory
+# All examples are copied to paths ending in /ci_testing/
+examples = [
+    "examples/",
+    "*/ci_testing",
+]
+
+source = [
+    "agentlib_mpc/",
+    "*/agentlib_mpc",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
