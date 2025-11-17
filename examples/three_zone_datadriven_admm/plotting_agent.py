@@ -1,11 +1,7 @@
-import os
-import json
-import time
-import logging
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-from typing import List, Dict
+from typing import List
 
 
 dark_red = [172 / 255, 43 / 255, 28 / 255]
@@ -256,7 +252,7 @@ class Plotter:
         rho = admm_res[:, 5]
         ln1 = ax7.plot(
             primal_res,
-            label=f"Primal residual",
+            label="Primal residual",
             marker="o",
             markerfacecolor="None",
             color=red,
@@ -265,7 +261,7 @@ class Plotter:
         )
         ln2 = ax7.plot(
             dual_res,
-            label=f"Dual residual",
+            label="Dual residual",
             marker="o",
             markerfacecolor="None",
             color=blue,
@@ -275,7 +271,7 @@ class Plotter:
         ax_right1 = ax7.twinx()
         ln3 = ax_right1.plot(
             rho,
-            label=f"Penalty factor",
+            label="Penalty factor",
             marker="x",
             color=green,
             markersize=1,

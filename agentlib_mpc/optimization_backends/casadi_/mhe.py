@@ -492,8 +492,8 @@ class MHEBackend(CasADiBackend):
             # return the last value of the trajectory if requested sample
             # starts out of range
             logger.warning(
-                f"Latest value of source grid %s is older than "
-                f"current time (%s. Returning latest value anyway.",
+                "Latest value of source grid %s is older than "
+                "current time (%s. Returning latest value anyway.",
                 source_grid[-1],
                 current,
             )

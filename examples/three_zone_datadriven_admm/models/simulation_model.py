@@ -53,10 +53,10 @@ class FullModelConfig(CasadiModelConfig):
             name="T_CCA_0", value=295.15, unit="K", description="Temperatur der BKA"
         ),
         CasadiState(
-            name=f"T_air", value=296, unit="K", description="Temperature of zone"
+            name="T_air", value=296, unit="K", description="Temperature of zone"
         ),
         CasadiState(
-            name=f"T_wall",
+            name="T_wall",
             value=294.15,
             unit="K",
             description="Temperature of the wall",

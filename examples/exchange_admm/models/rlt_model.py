@@ -16,7 +16,7 @@ class RLTConfig(CasadiModelConfig):
             lb=0,
             ub=0.05,
             unit="kg/s",
-            description=f"Air mass flow out of cooler.",
+            description="Air mass flow out of cooler.",
         )
     ]
 
@@ -26,7 +26,7 @@ class RLTConfig(CasadiModelConfig):
         CasadiParameter(
             name="penalty",
             value=1,
-            description=f"Penalty for air mass flow out of cooler.",
+            description="Penalty for air mass flow out of cooler.",
         )
     ]
 
@@ -37,7 +37,7 @@ class RLTConfig(CasadiModelConfig):
             lb=0,
             ub=0.05,
             unit="kg/s",
-            description=f"Air mass flow out of cooler.",
+            description="Air mass flow out of cooler.",
         )
     ]
 

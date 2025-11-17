@@ -260,7 +260,6 @@ def run_example(
 
 def plot(sim_res: pd.DataFrame, until: float, results=None):
     import matplotlib.pyplot as plt
-    import numpy as np
 
     # Calculate performance metrics
     t_sim = sim_res["T_out"]

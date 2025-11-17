@@ -94,10 +94,10 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000):
         sys.path.insert(0, script_dir)
     logging.basicConfig(level=log_level)
 
-    # gets the subdirectory of anns with the highest number, i.e. the longest training
+    # gets the subdirectory of gprs with the highest number, i.e. the longest training
     # time
     try:
-        ann_path = list(Path.cwd().glob("gprs/*/ml_model.json"))[-1]
+        ml_model_path = list(Path.cwd().glob("gprs/*/ml_model.json"))[-1]
     except IndexError:
         # if there is none, we have to perform the training first
         import training_gpr
@@ -105,11 +105,11 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000):
         training_gpr.main(
             training_time=3600 * 24 * 1, plot_results=False, step_size=300
         )
-        ann_path = list(Path.cwd().glob("gprs/*/ml_model.json"))[-1]
+        ml_model_path = list(Path.cwd().glob("gprs/*/ml_model.json"))[-1]
 
     # model.sim_step(mDot=0.02, load=30, T_in=290.15, cp=1000, C=100_000, T=298)
     mas = LocalMASAgency(
-        agent_configs=agent_configs(ml_model_path=str(ann_path)),
+        agent_configs=agent_configs(ml_model_path=str(ml_model_path)),
         env=ENV_CONFIG,
         variable_logging=False,
     )

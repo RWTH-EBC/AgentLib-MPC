@@ -5,8 +5,6 @@ import abc
 from pydantic import Field
 
 from agentlib.core import (
-    BaseModule,
-    BaseModuleConfig,
     AgentVariable,
     Agent,
     AgentVariables,

@@ -65,7 +65,7 @@ def plot_mpc_plotly(
     series: pd.Series,
     step: bool = False,
     convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds",
-    y_axis_label: str = ""
+    y_axis_label: str = "",
 ) -> go.Figure:
     """
     Args:
@@ -113,8 +113,8 @@ def plot_mpc_plotly(
                     mode="lines",
                     line=dict(color=f"rgb{prediction_color}", width=0.7),
                     name=f"{time_converted} {convert_to[0]}",
-                    legendgroup=f"Prediction",
-                    legendgrouptitle_text=f"Predictions",
+                    legendgroup="Prediction",
+                    legendgrouptitle_text="Predictions",
                     visible=True,
                     legendrank=i + 2,
                     # id=f"trace-{y_axis_label}-{i}",
@@ -132,8 +132,8 @@ def plot_mpc_plotly(
                         shape="hv",
                     ),
                     name=f"{time_converted} {convert_to[0]}",
-                    legendgroup=f"Prediction",
-                    legendgrouptitle_text=f"Predictions",
+                    legendgroup="Prediction",
+                    legendgrouptitle_text="Predictions",
                     visible=True,
                     legendrank=i + 2,
                     # id=f"trace-{y_axis_label}-{i}",

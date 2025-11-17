@@ -1,6 +1,6 @@
 import dataclasses
 from pathlib import Path
-from typing import List, Union, TypeVar, Protocol, Sequence, Iterable, Optional
+from typing import List, Union, TypeVar, Protocol, Sequence, Iterable
 from itertools import chain
 
 import attrs

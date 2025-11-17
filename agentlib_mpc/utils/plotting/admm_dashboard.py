@@ -40,7 +40,7 @@ def load_agent_data(directory: str) -> Dict[str, pd.DataFrame]:
         if (
             "admm" in filename.casefold()
             and filename.endswith(".csv")
-            and not "stats" in filename.casefold()
+            and "stats" not in filename.casefold()
         ):
             file_path = os.path.join(directory, filename)
             agent_name = f"Agent_{len(agent_data) + 1}"

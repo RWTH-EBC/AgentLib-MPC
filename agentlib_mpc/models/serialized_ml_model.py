@@ -1,8 +1,6 @@
 import abc
 import json
 import logging
-import os
-import subprocess
 
 import numpy as np
 
@@ -20,14 +18,6 @@ from typing import Union, Optional
 from agentlib_mpc.data_structures.ml_model_datatypes import OutputFeature, Feature
 
 logger = logging.getLogger(__name__)
-
-
-def get_git_revision_short_hash() -> str:
-    return (
-        subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
-        .decode("ascii")
-        .strip()
-    )
 
 
 class MLModels(str, Enum):
@@ -52,10 +42,6 @@ class SerializedMLModel(BaseModel, abc.ABC):
         title="output",
         description="Model output variables (which are automatically also inputs, as "
         "we need them recursively in MPC.) with their lag order.",
-    )
-    agentlib_mpc_hash: str = Field(
-        default_factory=get_git_revision_short_hash,
-        description="The commit hash of the agentlib_mpc version this was created with.",
     )
     training_info: Optional[dict] = Field(
         default=None,
@@ -282,7 +268,7 @@ class CustomGPR(GaussianProcessRegressor):
         normalize_y=False,
         copy_X_train=True,
         random_state=None,
-        data_handling=GPRDataHandlingParameters(),
+        data_handling=None,
     ):
         super().__init__(
             kernel=kernel,
@@ -293,6 +279,8 @@ class CustomGPR(GaussianProcessRegressor):
             copy_X_train=copy_X_train,
             random_state=random_state,
         )
+        if data_handling is None:
+            data_handling = GPRDataHandlingParameters()
         self.data_handling: GPRDataHandlingParameters = data_handling
 
     def predict(self, X, return_std=False, return_cov=False):
@@ -673,11 +661,12 @@ class SerializedLinReg(SerializedMLModel):
 
 class SerializedKerasANN(SerializedMLModel):
     """
-       Allows using a saved Keras ANN model (Sequential or Functional) in agentlib_mpc directly without serialization.
+    Allows using a saved Keras ANN model (Sequential or Functional) in agentlib_mpc directly without serialization.
 
-       attributes:
-           model_path: Path to saved Keras ANN model.
-       """
+    attributes:
+        model_path: Path to saved Keras ANN model.
+    """
+
     model_path: Path = Field(
         default=None, description="Path, where the Keras ANN model is saved."
     )
@@ -686,12 +675,12 @@ class SerializedKerasANN(SerializedMLModel):
 
     @classmethod
     def serialize(
-            cls,
-            model: Union[Sequential, Functional],
-            dt: Union[float, int],
-            input: dict[str, Feature],
-            output: dict[str, OutputFeature],
-            training_info: Optional[dict] = None,
+        cls,
+        model: Union[Sequential, Functional],
+        dt: Union[float, int],
+        input: dict[str, Feature],
+        output: dict[str, OutputFeature],
+        training_info: Optional[dict] = None,
     ):
         """Serializes path to Keras Sequential or Functional ANN and returns SerializedKerasANN object"""
 
@@ -700,8 +689,8 @@ class SerializedKerasANN(SerializedMLModel):
         except AttributeError:
             model_path = Path("stored_models/model.keras")  # default value
 
-        directory = os.path.dirname(model_path)
-        os.makedirs(directory, exist_ok=True)
+        directory = Path(model_path).parent
+        directory.mkdir(exist_ok=True)
         model.save(model_path)
 
         return cls(
@@ -715,6 +704,7 @@ class SerializedKerasANN(SerializedMLModel):
     def deserialize(self) -> Union[Sequential, Functional]:
         """Deserializes SerializedKerasANN object and returns a Keras Sequential ANN."""
         import keras
+
         ann = keras.saving.load_model(self.model_path)
         return ann
 

@@ -232,7 +232,7 @@ class CasadiADMMNNSystem(CasadiADMMSystem, CasadiMLSystem):
         return {
             var.name: var
             for var in self.quantities
-            if not var.name in omit_in_blackbox_function
+            if var.name not in omit_in_blackbox_function
         }
 
 

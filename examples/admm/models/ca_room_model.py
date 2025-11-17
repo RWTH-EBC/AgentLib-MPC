@@ -3,7 +3,6 @@ from agentlib_mpc.models.casadi_model import (
     CasadiInput,
     CasadiState,
     CasadiParameter,
-    CasadiOutput,
     CasadiModelConfig,
 )
 
@@ -42,12 +41,12 @@ class CaCooledRoomConfig(CasadiModelConfig):
     states: list[CasadiState] = [
         # differential
         CasadiState(
-            name=f"T_0", value=293.15, unit="K", description="Temperature of zone 0"
+            name="T_0", value=293.15, unit="K", description="Temperature of zone 0"
         ),
         # algebraic
         # slack variables
         CasadiState(
-            name=f"T_0_slack",
+            name="T_0_slack",
             value=0,
             unit="K",
             description="Slack variable of temperature of zone 0",

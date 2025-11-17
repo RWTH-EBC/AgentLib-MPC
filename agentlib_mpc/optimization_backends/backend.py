@@ -5,7 +5,6 @@ import logging
 from pathlib import Path
 from typing import Dict, Union, Callable, TypeVar, Optional
 
-import pandas as pd
 import pydantic
 from agentlib.core.errors import ConfigurationError
 from pydantic import ConfigDict

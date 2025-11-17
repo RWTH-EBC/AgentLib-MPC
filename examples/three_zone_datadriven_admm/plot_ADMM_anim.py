@@ -4,9 +4,7 @@ from agentlib_mpc.utils.analysis import admm_at_time_step, load_admm
 import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.animation import FuncAnimation
-from matplotlib.font_manager import FontProperties
-from matplotlib.ticker import MultipleLocator, FormatStrFormatter, AutoMinorLocator
-import pandas as pd
+from matplotlib.ticker import AutoMinorLocator
 
 
 ############################## PARAMETERS ##################################
@@ -118,23 +116,33 @@ def animate(i=0):  # Upper plot: Temperatures
     # mpc_log.plot(y='T_0', ax=ax, label='temperature')
     room_mDot1 = admm_at_time_step(data=room_results1, time_step=time_step, iteration=i)
     x_time = room_mDot1.index
-    x_time = x_time[3:,]
+    x_time = x_time[
+        3:,
+    ]
     room_mDot_var1 = room_mDot1["variable"]["T_v"]
-    room_mDot_var1 = room_mDot_var1.iloc[3:,]
+    room_mDot_var1 = room_mDot_var1.iloc[
+        3:,
+    ]
     line_room.set_data(x_time.values / 3600, room_mDot_var1.values - 273.15)
     room_mDot2 = admm_at_time_step(data=room_results2, time_step=time_step, iteration=i)
     room_mDot_var2 = room_mDot2["variable"]["T_v"]
-    room_mDot_var2 = room_mDot_var2.iloc[3:,]
+    room_mDot_var2 = room_mDot_var2.iloc[
+        3:,
+    ]
     line_room2.set_data(x_time.values / 3600, room_mDot_var2.values - 273.15)
     room_mDot3 = admm_at_time_step(data=room_results2, time_step=time_step, iteration=i)
     room_mDot_var3 = room_mDot3["variable"][["T_v"]]
-    room_mDot_var3 = room_mDot_var3.iloc[3:,]
+    room_mDot_var3 = room_mDot_var3.iloc[
+        3:,
+    ]
     line_room3.set_data(x_time.values / 3600, room_mDot_var3.values - 273.15)
     cooler_mDot = admm_at_time_step(
         data=cooler_results, time_step=time_step, iteration=i
     )
     cooler_mDot_var = cooler_mDot["variable"]["T_v_out"]
-    cooler_mDot_var = cooler_mDot_var.iloc[1:,]
+    cooler_mDot_var = cooler_mDot_var.iloc[
+        1:,
+    ]
     line_cooler.set_data(x_time.values / 3600, cooler_mDot_var.values - 273.15)
 
     # annotation

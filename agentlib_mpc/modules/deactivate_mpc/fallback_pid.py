@@ -1,13 +1,9 @@
-import logging
-from math import inf, isclose
-from typing import Union, Optional
+from typing import Optional
 
 # Assuming agentlib components are available
 from agentlib.core import Agent, AgentVariable
-from agentlib.core.errors import ConfigurationError
-from agentlib.modules.controller import SISOController, SISOControllerConfig
 from agentlib.modules.controller.pid import PIDConfig, PID
-from pydantic import Field, field_validator
+from pydantic import Field
 
 from agentlib_mpc.data_structures import mpc_datamodels
 

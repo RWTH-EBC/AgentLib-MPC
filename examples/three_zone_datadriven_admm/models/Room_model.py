@@ -48,7 +48,7 @@ class RoomCCAConfig(CasadiMLModelConfig):
     states: List[CasadiState] = [
         # differential
         CasadiState(
-            name=f"T_air", value=290.15, unit="K", description="Temperature of zone"
+            name="T_air", value=290.15, unit="K", description="Temperature of zone"
         ),
         CasadiState(
             name="T_CCA_0", value=293.15, unit="K", description="Temperatur der BKA"

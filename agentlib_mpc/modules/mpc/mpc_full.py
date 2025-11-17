@@ -1,9 +1,6 @@
 """Holds the class for full featured MPCs."""
 
-from typing import Dict, Union, Optional
 
-import agentlib
-import numpy as np
 import pandas as pd
 from agentlib.core import AgentVariable
 
