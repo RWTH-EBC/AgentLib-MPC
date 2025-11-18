@@ -30,7 +30,7 @@ class CaCooledRoomConfig(CasadiModelConfig):
     states: List[CasadiState] = [
         # differential
         CasadiState(
-            name=f"T", value=293.15, unit="K", description="Temperature of zone"
+            name="T", value=293.15, unit="K", description="Temperature of zone"
         ),
         # algebraic
         # slack variables

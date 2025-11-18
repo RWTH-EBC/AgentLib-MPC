@@ -183,13 +183,15 @@ class OptimizationBackend(abc.ABC):
         variables"""
         return {}
 
-    def results_file_exists(self) -> bool:
-        """Checks if the results file already exists, and if not, creates it with
-        headers."""
+    def results_folder_exists(self) -> bool:
+        """
+        Checks if the results folder already exists, and if not, creates it with
+        headers.
+        """
         if self._created_file:
             return True
 
-        if self.config.results_file.is_file():
+        if self.results_file_exists():
             # todo, this case is weird, as it is the mistake-append
             self._created_file = True
             return True
@@ -198,6 +200,12 @@ class OptimizationBackend(abc.ABC):
         self.config.results_file.parent.mkdir(parents=True, exist_ok=True)
         self._created_file = True
         return False
+
+    def results_file_exists(self) -> bool:
+        """
+        Checks if the results file already exists.
+        """
+        return self.config.results_file.is_file()
 
     def update_model_variables(self, current_vars: Dict[str, AgentVariable]):
         """

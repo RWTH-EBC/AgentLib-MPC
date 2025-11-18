@@ -7,8 +7,6 @@ import matplotlib.pyplot as plt
 from agentlib.utils.multi_agent_system import LocalMASAgency
 
 
-from examples.one_room_mpc.linreg import model
-
 logger = logging.getLogger(__name__)
 
 
@@ -65,7 +63,7 @@ def plot(results):
 
     df["mDot"].plot(ax=ax_mDot, label="mDot", color="black")
     ax_T_out.set_ylabel("$T_{room}$ / °C")
-    ax_mDot.set_ylabel("$\dot{m}_{air}$ / kg/s")
+    ax_mDot.set_ylabel(r"$\dot{m}_{air}$ / kg/s")
     ax_mDot.set_xlabel("Simulation time / s")
 
     plt.show()
@@ -116,15 +114,15 @@ def configs(
                 "type": "simulator",
                 "model": {
                     "type": {
-                        "file": model.__file__,
-                        "class_name": model.PhysicalModel.__name__,
+                        "file": "model.py",
+                        "class_name": "PhysicalModel",
                     },
                 },
                 "t_sample": t_sample_sim,
                 "save_results": plot_results,
                 "result_filename": "results//simulation_data.csv",
                 "result_causalities": ["local", "input", "output"],
-                "overwrite_result_file": False,
+                "overwrite_result_file": True,
                 "inputs": [
                     {"name": "mDot", "value": 0.0225, "source": "PID"},
                     {"name": "load", "value": 30},

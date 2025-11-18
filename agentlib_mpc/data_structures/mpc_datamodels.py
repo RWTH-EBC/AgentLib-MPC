@@ -15,6 +15,9 @@ from agentlib_mpc.data_structures.interpolation import InterpolationMethods
 from pydantic import ConfigDict
 
 
+MPC_FLAG_ACTIVE = "MPC_FLAG_ACTIVE"
+
+
 class InitStatus(str, Enum):
     """Keep track of the readyness status of the MPC."""
 
@@ -44,7 +47,8 @@ class DiscretizationOptions(pydantic.BaseModel):
 class Results(Protocol):
     df: pd.DataFrame
 
-    def __getitem__(self, item: str) -> Sequence[float]: ...
+    def __getitem__(self, item: str) -> Sequence[float]:
+        ...
 
 
 @dataclasses.dataclass
@@ -71,6 +75,7 @@ class BaseVariableReference:
         all_variables = set(chain.from_iterable(self.__dict__.values()))
         return item in all_variables
 
+
 VariableReferenceT = TypeVar("VariableReferenceT", bound=BaseVariableReference)
 
 
@@ -81,7 +86,6 @@ class VariableReference(BaseVariableReference):
     inputs: List[str] = dataclasses.field(default_factory=list)
     parameters: List[str] = dataclasses.field(default_factory=list)
     outputs: List[str] = dataclasses.field(default_factory=list)
-
 
 
 @dataclasses.dataclass
@@ -130,6 +134,7 @@ MPCVariables = List[MPCVariable]
 def stats_path(path: Union[Path, str]) -> Path:
     res_file = Path(path)
     return Path(res_file.parent, "stats_" + res_file.name)
+
 
 def cia_relaxed_results_path(path: Union[Path, str]) -> Path:
     res_file = Path(path)

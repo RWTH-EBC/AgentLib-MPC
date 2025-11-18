@@ -28,9 +28,7 @@ import logging
 from agentlib.utils import MultiProcessingBroker
 from agentlib.utils.multi_agent_system import LocalMASAgency
 
-from agentlib_mpc.utils.plotting import admm_dashboard
 from agentlib_mpc.utils.plotting.admm_dashboard import show_admm_dashboard
-from agentlib_mpc.utils.plotting.interactive import show_dashboard
 
 agent_configs = [
     # use MS discretization method
@@ -122,6 +120,6 @@ if __name__ == "__main__":
         until=1800,
         start_pred=0,
         show_dashboard=False,
-        cleanup=True,
+        cleanup=False,
         log_level=logging.INFO,
     )

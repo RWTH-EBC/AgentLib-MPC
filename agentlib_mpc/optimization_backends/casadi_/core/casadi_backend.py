@@ -51,6 +51,12 @@ class CasadiBackendConfig(BackendConfig):
         description="Boolean to turn JIT of the optimization problems on or off.",
         validate_default=True,
     )
+    save_only_stats: bool = pydantic.Field(
+        default=False,
+        description="If results should be saved, setting this to True will only save"
+        "the optimization statistics. May be useful for longer timespans,"
+        "if the results with all predictions gets too large.",
+    )
 
     @pydantic.field_validator("do_jit")
     @classmethod
@@ -287,16 +293,18 @@ class CasADiBackend(OptimizationBackend):
         objective_names, objective_values = self.approximate_objective(df)
 
         if not self.results_file_exists():
-            results.write_columns(res_file)
+            if not self.config.save_only_stats:
+                results.write_columns(res_file)
             results.write_combined_stats_columns(stats_path(res_file), objective_names)
-
-        df.index = list(map(lambda x: str((now, x)), df.index))
-        df.to_csv(res_file, mode="a", header=False)
 
         with open(stats_path(res_file), "a") as f:
             f.writelines(
                 results.combined_stats_line(str(now), objective_values, objective_names)
             )
+        if self.config.save_only_stats:
+            return
+        df.index = list(map(lambda x: str((now, x)), df.index))
+        df.to_csv(res_file, mode="a", header=False)
 
     def approximate_objective(self, results_df: pd.DataFrame):
         """Returns the approximate objective value of this MPC step."""

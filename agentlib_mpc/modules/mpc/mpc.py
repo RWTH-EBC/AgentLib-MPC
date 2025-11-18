@@ -90,7 +90,7 @@ class BaseMPCConfig(BaseModuleConfig):
 
     @field_validator("r_del_u")
     def check_r_del_u_in_controls(
-            cls, r_del_u: dict[str, float], info: FieldValidationInfo
+        cls, r_del_u: dict[str, float], info: FieldValidationInfo
     ):
         """Ensures r_del_u is only set for control variables."""
         if r_del_u:
@@ -184,7 +184,6 @@ class BaseMPC(BaseModule):
         disc_opts.prediction_horizon = self.config.prediction_horizon
         disc_opts.time_step = self.config.time_step
         return opti_back
-
 
     def _setup_var_ref(self) -> mpc_datamodels.VariableReferenceT:
         return VariableReference.from_config(self.config)

@@ -6,12 +6,12 @@ from agentlib.utils.multi_agent_system import LocalMASAgency
 
 def configs() -> list[dict]:
     agent_configs = [
-        "configs\\rlt_admm.json",
-        "configs\\room_1_admm.json",
-        "configs\\room_2_admm.json",
-        "configs\\room_3_admm.json",
-        "configs\\room_4_admm.json",
-        "configs\\simulation\\simulator_agent.json",
+        "configs//rlt_admm.json",
+        "configs//room_1_admm.json",
+        "configs//room_2_admm.json",
+        "configs//room_3_admm.json",
+        "configs//room_4_admm.json",
+        "configs//simulation//simulator_agent.json",
     ]
     conf_dicts = []
     for conf in agent_configs:
@@ -50,7 +50,6 @@ def run_example(
 
     if with_plots:
         import matplotlib.pyplot as plt
-        from agentlib_mpc.utils.analysis import admm_at_time_step
 
         fig, ax = plt.subplots(2, 1)
         ax[1].set_ylim([0, 0.05])

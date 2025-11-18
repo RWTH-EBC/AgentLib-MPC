@@ -1,9 +1,14 @@
 # Changelog
 
+
 ## 0.7.0
 - New objective handling: Introduce subobjective classes for more intuitive parameterization of weights. As well as for reading out the solved subobjective functions.
 - Update Dashboard to visualize subobjectives
 - Original notation of the objective function still supported. ``r_del_u`` notation no longer supported.
+
+## 0.6.9
+- Add option to skip MPC calculation in given time intervals, e.g. during summer period
+- Add a fallback pid module that listens to the same deactivation module and switches on
 
 ## 0.6.8
 - #55 improved numerics of casadi model simulation by adding initial guess for outputs

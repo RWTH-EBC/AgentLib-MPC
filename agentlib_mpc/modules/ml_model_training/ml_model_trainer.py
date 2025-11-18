@@ -420,7 +420,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
         sampled = {}
         for name, sg in source_grids.items():
             single_sampled = sample_values_to_target_grid(
-                values=self.time_series_data[name].dropna(),
+                values=self.time_series_data[name].dropna().values,
                 original_grid=sg,
                 target_grid=target_grid,
                 method=self.config.interpolations[name],

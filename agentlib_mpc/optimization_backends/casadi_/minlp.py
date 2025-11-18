@@ -32,7 +32,6 @@ class CasadiMINLPSystem(basic.BaseSystem):
         self.is_linear = self._is_minlp()
         self.objective = model.objective
 
-
     def _is_minlp(self) -> bool:
         inputs = ca.vertcat(*(v.full_symbolic for v in self.variables))
         parameters = ca.vertcat(
@@ -96,14 +95,16 @@ class DirectCollocation(basic.DirectCollocation):
 
             for delta_obj in delta_u_objectives:
                 self.objective_function += delta_u.get_objective(
-                    sys, delta_obj, u_prev, uk, const_par)
+                    sys, delta_obj, u_prev, uk, const_par
+                )
 
             # perform inner collocation loop
             opt_vars_inside_inner = [sys.algebraics, sys.outputs]
-            opt_pars_inside_inner = [sys.non_controlled_inputs]
+            opt_pars_inside_inner = []
 
             constant_over_inner = {
                 sys.controls: uk,
+                sys.non_controlled_inputs: dk,
                 sys.model_parameters: const_par,
                 sys.binary_controls: wk,
             }
