@@ -656,8 +656,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">t_sample</span><span class="p">:</span>
-            <span class="o">...</span>
-            <span class="k">assert</span> <span class="n">t_sample</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
+            <span class="k">if</span> <span class="n">t_sample</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="ow">or</span> <span class="n">t_sample</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Sampling Time of Model must be multiple of MLModel time step. Current&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot; MLModel time step is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="si">}</span><span class="s2"> and chosen sampling time is </span><span class="si">{</span><span class="n">t_sample</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
 
         <span class="n">ml_model_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ml_model_values</span><span class="p">(</span><span class="n">t_start</span><span class="p">)</span>
         <span class="n">full_input</span> <span class="o">=</span> <span class="p">{</span>

@@ -315,6 +315,23 @@ time value.</p>
 <section id="module-agentlib_mpc.utils">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-agentlib_mpc.utils" title="Permalink to this heading"></a></h2>
 <p>Package containing utils for agentlib_mpc.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.is_time_in_intervals">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.</span></span><span class="sig-name descname"><span class="pre">is_time_in_intervals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intervals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/agentlib_mpc/utils.html#is_time_in_intervals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.is_time_in_intervals" title="Permalink to this definition"></a></dt>
+<dd><p>Check if given time is within any of the provided intervals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>time</strong> – The time value to check</p></li>
+<li><p><strong>intervals</strong> – List of tuples, each containing (start_time, end_time)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if time falls within any interval, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 

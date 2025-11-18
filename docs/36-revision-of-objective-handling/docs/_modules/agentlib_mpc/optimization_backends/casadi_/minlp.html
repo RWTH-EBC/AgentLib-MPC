@@ -106,7 +106,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_linear</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_minlp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">objective</span></div>
 
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_is_minlp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">inputs</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">full_symbolic</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">))</span>
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span>
@@ -170,14 +169,16 @@
 
             <span class="k">for</span> <span class="n">delta_obj</span> <span class="ow">in</span> <span class="n">delta_u_objectives</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_objective</span><span class="p">(</span>
-                    <span class="n">sys</span><span class="p">,</span> <span class="n">delta_obj</span><span class="p">,</span> <span class="n">u_prev</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">const_par</span><span class="p">)</span>
+                    <span class="n">sys</span><span class="p">,</span> <span class="n">delta_obj</span><span class="p">,</span> <span class="n">u_prev</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">const_par</span>
+                <span class="p">)</span>
 
             <span class="c1"># perform inner collocation loop</span>
             <span class="n">opt_vars_inside_inner</span> <span class="o">=</span> <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">algebraics</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span>
-            <span class="n">opt_pars_inside_inner</span> <span class="o">=</span> <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="p">]</span>
+            <span class="n">opt_pars_inside_inner</span> <span class="o">=</span> <span class="p">[]</span>
 
             <span class="n">constant_over_inner</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span> <span class="n">uk</span><span class="p">,</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="p">:</span> <span class="n">dk</span><span class="p">,</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">:</span> <span class="n">const_par</span><span class="p">,</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">binary_controls</span><span class="p">:</span> <span class="n">wk</span><span class="p">,</span>
             <span class="p">}</span>
