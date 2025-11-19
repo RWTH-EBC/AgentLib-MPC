@@ -174,11 +174,10 @@
 
             <span class="c1"># perform inner collocation loop</span>
             <span class="n">opt_vars_inside_inner</span> <span class="o">=</span> <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">algebraics</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span>
-            <span class="n">opt_pars_inside_inner</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">opt_pars_inside_inner</span> <span class="o">=</span> <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="p">]</span>
 
             <span class="n">constant_over_inner</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span> <span class="n">uk</span><span class="p">,</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="p">:</span> <span class="n">dk</span><span class="p">,</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">:</span> <span class="n">const_par</span><span class="p">,</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">binary_controls</span><span class="p">:</span> <span class="n">wk</span><span class="p">,</span>
             <span class="p">}</span>
