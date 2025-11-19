@@ -82,6 +82,7 @@ class TestExamples(unittest.TestCase):
             func_name="run_example",
             with_plots=False,
             log_level=logging.FATAL,
+            with_dashboard=False,
         )
 
     def test_mpc_time_variant_inputs(self):
@@ -94,12 +95,23 @@ class TestExamples(unittest.TestCase):
             log_level=logging.FATAL,
         )
 
+    def test_mpc_time_dependent_obj(self):
+        """Test the mpc agent example: with_change_control_penalty"""
+        self._run_example_with_return(
+            file="one_room_mpc//physical//simple_mpc_time_dependent_obj.py",
+            func_name="run_example",
+            with_plots=False,
+            with_dashboard=False,
+            log_level=logging.FATAL,
+        )
+
     def test_mpc_control_change(self):
         """Test the mpc agent example: with_change_control_penalty"""
         self._run_example_with_return(
             file="one_room_mpc//physical//with_change_control_penalty.py",
             func_name="run_example",
             with_plots=False,
+            with_dashboard=False,
             log_level=logging.FATAL,
         )
 

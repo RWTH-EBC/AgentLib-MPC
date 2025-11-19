@@ -100,11 +100,10 @@ class DirectCollocation(basic.DirectCollocation):
 
             # perform inner collocation loop
             opt_vars_inside_inner = [sys.algebraics, sys.outputs]
-            opt_pars_inside_inner = []
+            opt_pars_inside_inner = [sys.non_controlled_inputs]
 
             constant_over_inner = {
                 sys.controls: uk,
-                sys.non_controlled_inputs: dk,
                 sys.model_parameters: const_par,
                 sys.binary_controls: wk,
             }
