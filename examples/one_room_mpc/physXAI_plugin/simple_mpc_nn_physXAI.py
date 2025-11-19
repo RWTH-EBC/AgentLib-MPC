@@ -119,8 +119,12 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000, testing=Fal
 
     ##################################################################################
     # Main interface between physXAI and agentlib_mpc to generate the ML model
+    if testing:
+        models = ['example_ci']  # Use faster training for testing
+    else:
+        models = ['example']  # Use full training otherwise
     files = generate_physxai_model(
-        models=['example'],  # Call example model
+        models=models,  # Call example model
         physXAI_scripts_path=os.path.dirname(physXAI_plugin.__file__), # Get path of physXAI example scripts
         training_data_path='results//simulation_data.csv', # Generated training data
         run_id='001', # Model ID
