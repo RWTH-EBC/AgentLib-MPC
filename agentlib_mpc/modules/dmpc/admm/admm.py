@@ -843,7 +843,7 @@ class ADMM(DistributedMPC):
             )
             variables[hist_var] = updated_var
 
-        return {**variables, **self._internal_variables}
+        return variables
 
 
 class LocalADMMConfig(ADMMConfig):

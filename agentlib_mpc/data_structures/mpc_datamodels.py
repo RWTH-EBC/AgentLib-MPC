@@ -88,18 +88,6 @@ class VariableReference(BaseVariableReference):
     outputs: List[str] = dataclasses.field(default_factory=list)
 
 
-def r_del_u_convention(name: str) -> str:
-    """Turns the name of a control variable into its weight via convention"""
-    return f"r_del_u_{name}"
-
-
-@dataclasses.dataclass
-class FullVariableReference(VariableReference):
-    @property
-    def r_del_u(self) -> List[str]:
-        return [r_del_u_convention(cont) for cont in self.controls]
-
-
 @dataclasses.dataclass
 class MINLPVariableReference(VariableReference):
     binary_controls: List[str] = dataclasses.field(default_factory=list)

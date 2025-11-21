@@ -7,7 +7,6 @@ import webbrowser
 from agentlib.core.errors import OptionalDependencyError
 
 from agentlib_mpc.utils import TIME_CONVERSION
-from agentlib_mpc.utils.analysis import load_mpc
 from agentlib_mpc.utils.plotting.basic import EBCColors
 from agentlib_mpc.utils.plotting.mpc import interpolate_colors
 
@@ -22,6 +21,92 @@ except ImportError as e:
         dependency_install="plotly, dash",
         used_object="interactive",
     ) from e
+
+
+def plot_obj_data_stacked(
+    data: pd.DataFrame,
+    convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds",
+) -> dcc.Graph:
+    """Create a stacked area chart for objective data components."""
+    fig = go.Figure()
+
+    if data is None or data.empty:
+        # Create an empty figure with a note
+        fig.add_annotation(
+            text="No objective component data available",
+            xref="paper",
+            yref="paper",
+            x=0.5,
+            y=0.5,
+            showarrow=False,
+            font=dict(size=16),
+        )
+        fig.update_layout(
+            title="Approximate Objective Values",
+            xaxis_title=f"Time in {convert_to}",
+            yaxis_title="Objective Value",
+        )
+        return dcc.Graph(
+            id="plot-obj-stacked",
+            figure=fig,
+            style={
+                "min-width": "600px",
+                "min-height": "400px",
+                "max-width": "900px",
+                "max-height": "450px",
+            },
+        )
+
+    index = data.index.values / TIME_CONVERSION[convert_to]
+
+    # Create a copy of the data for manipulation
+    plot_data = data.copy()
+
+    # Remove 'total' column if it exists as we'll create our own stacked visualization
+    if "total" in plot_data.columns:
+        plot_data = plot_data.drop(columns=["total"])
+
+    # Create a stacked area chart
+    for column in plot_data.columns:
+        # Skip columns with all NaN or zero values
+        if plot_data[column].isna().all() or (plot_data[column] == 0).all():
+            continue
+
+        fig.add_trace(
+            go.Scatter(
+                x=index,
+                y=plot_data[column],
+                mode="lines",
+                line=dict(width=0),
+                stackgroup="one",  # This creates the stacking effect
+                name=column,
+                fillcolor=None,  # Auto-assign colors
+            )
+        )
+
+    fig.update_layout(
+        title="Approximate Objective Values",
+        xaxis_title=f"Time in {convert_to}",
+        yaxis_title="Objective Value",
+        showlegend=True,
+        legend=dict(
+            groupclick="toggleitem",
+            itemclick="toggle",
+            itemdoubleclick="toggleothers",
+        ),
+        uirevision="same",  # To maintain state when interacting
+    )
+
+    return dcc.Graph(
+        id="plot-obj-stacked",
+        figure=fig,
+        style={
+            "min-width": "600px",
+            "min-height": "400px",
+            "max-width": "900px",
+            "max-height": "450px",
+        },
+    )
 
 
 def make_figure_plotly() -> go.Figure:
@@ -90,7 +175,6 @@ def plot_mpc_plotly(
 
     for i, (time_seconds, prediction) in enumerate(series.groupby(level=0)):
         prediction: pd.Series = prediction.dropna().droplevel(0)
-
         try:
             time_converted = time_seconds / TIME_CONVERSION[convert_to]
             actual_values[time_converted] = prediction.loc[0]
@@ -239,6 +323,11 @@ def show_dashboard(
         except Exception:
             pass
 
+    # Extract objective data from stats if available
+    obj_data = None
+    if stats is not None:
+        obj_data = extract_objective_data_from_stats(stats)
+
     # Store initial figures
     initial_figures = {}
     for column in columns_okay:
@@ -257,7 +346,9 @@ def show_dashboard(
             html.H1("MPC Results"),
             # Store for keeping track of trace visibility
             dcc.Store(id="trace-visibility", data={}),
-            make_components(columns_okay, data, stats=stats, convert_to=scale),
+            make_components(
+                columns_okay, data, obj_data=obj_data, stats=stats, convert_to=scale
+            ),
         ]
     )
 
@@ -308,37 +399,70 @@ def show_dashboard(
     app.run(debug=False, port=port)
 
 
+def extract_objective_data_from_stats(stats: pd.DataFrame) -> Optional[pd.DataFrame]:
+    """Extract objective component data from the combined stats dataframe using column prefixes."""
+    if stats is None or stats.empty:
+        return None
+
+    # Find columns that start with "obj_"
+    objective_columns = [col for col in stats.columns if col.startswith("obj_")]
+
+    if not objective_columns:
+        return None
+
+    # Create dataframe with objective columns, removing the "obj_" prefix
+    obj_data = stats[objective_columns].copy()
+    obj_data.columns = [col.replace("obj_", "") for col in obj_data.columns]
+
+    # Remove rows where all objective values are NaN or empty
+    obj_data = obj_data.dropna(how="all")
+
+    return obj_data if not obj_data.empty else None
+
+
 def make_components(
-    columns, data, convert_to, stats: Optional[pd.DataFrame] = None
+    columns,
+    data,
+    convert_to,
+    stats: Optional[pd.DataFrame] = None,
+    obj_data: Optional[pd.DataFrame] = None,
 ) -> [html.Div]:
-    components = [
-        html.Div(
-            [
-                # html.H3(column),
-                dcc.Graph(
-                    id=f"plot-{column}",
-                    figure=plot_mpc_plotly(
-                        data["variable"][column],
-                        convert_to=convert_to,
-                        y_axis_label=column,
-                    ),
-                    style={
-                        "min-width": "600px",
-                        "min-height": "400px",
-                        "max-width": "900px",
-                        "max-height": "450px",
-                    },
-                ),
-            ],
-            className="draggable",
-        )
-        for column in columns
-    ]
+    components = []
+
     if stats is not None:
-        components.insert(0, html.Div([solver_return(stats, convert_to)]))
-        components.insert(
-            1, html.Div([obj_plot(stats, convert_to)])
-        )  # Add the "obj" plot
+        components.append(html.Div([solver_return(stats, convert_to)]))
+        if "stats_obj" in stats.columns:
+            components.append(html.Div([obj_plot(stats, convert_to)]))
+
+    if obj_data is not None and not obj_data.empty:
+        components.append(
+            html.Div(
+                [plot_obj_data_stacked(obj_data, convert_to)], className="draggable"
+            )
+        )
+
+    for column in columns:
+        components.append(
+            html.Div(
+                [
+                    dcc.Graph(
+                        id=f"plot-{column}",
+                        figure=plot_mpc_plotly(
+                            data["variable"][column],
+                            convert_to=convert_to,
+                            y_axis_label=column,
+                        ),
+                        style={
+                            "min-width": "600px",
+                            "min-height": "400px",
+                            "max-width": "900px",
+                            "max-height": "450px",
+                        },
+                    ),
+                ],
+                className="draggable",
+            )
+        )
 
     return html.Div(
         components,
@@ -360,21 +484,34 @@ def obj_plot(
     df = data.copy()
     index = df.index.values / TIME_CONVERSION[convert_to]
 
-    trace = go.Scatter(
-        x=index,
-        y=df["obj"],
-        mode="lines",
-        name="Objective Value",
-    )
+    # Check if 'obj' column exists
+    if "stats_obj" not in df.columns:
+        # Create an empty figure with a note
+        fig = go.Figure()
+        fig.add_annotation(
+            text="Objective data not available",
+            xref="paper",
+            yref="paper",
+            x=0.5,
+            y=0.5,
+            showarrow=False,
+            font=dict(size=16),
+        )
+    else:
+        trace = go.Scatter(
+            x=index,
+            y=df["stats_obj"],
+            mode="lines",
+            name="Objective Value",
+        )
+        fig = go.Figure(data=[trace])
 
-    layout = go.Layout(
+    fig.update_layout(
         title="Objective Value",
         xaxis_title=f"Time in {convert_to}",
         yaxis_title="Objective Value",
         showlegend=True,
     )
-
-    fig = go.Figure(data=[trace], layout=layout)
 
     return dcc.Graph(
         id="plot-obj",
@@ -404,9 +541,9 @@ def solver_return(
     df = df.iloc[::-1]
 
     return_status = {}
-    for idx, success in df.success.items():
+    for idx, success in df.stats_success.items():
         if success:
-            solver_return = df.return_status[idx]
+            solver_return = df.stats_return_status[idx]
         else:
             solver_return = "Solve_Not_Succeeded"
         return_status[idx] = solver_return
@@ -431,7 +568,7 @@ def solver_return(
         if mask.any():
             trace = go.Scatter(
                 x=index[mask],
-                y=df.loc[solver_returns.index[mask], "iter_count"],
+                y=df.loc[solver_returns.index[mask], "stats_iter_count"],
                 mode="markers",
                 marker=dict(
                     color=colors[status],
@@ -507,17 +644,3 @@ def get_port():
             return port
         else:
             port += 1
-
-
-if __name__ == "__main__":
-    data_ = load_mpc(
-        r"D:\repos\agentlib_mpc\examples\one_room_mpc\physical\results\mpc.csv"
-    )
-    show_dashboard(data_)
-    # fig = plot_mpc_plotly(
-    #     data["variable"]["T"] - 273.15,
-    #     y_axis_label="Room temperature",
-    #     convert_to="minutes",
-    #     step=False,
-    # )
-    # fig.show()

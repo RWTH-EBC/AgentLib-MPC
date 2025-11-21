@@ -14,14 +14,14 @@ from agentlib_mpc.models.casadi_model import (
     CasadiModelConfig,
 )
 from agentlib.utils.multi_agent_system import LocalMASAgency
-
-from agentlib_mpc.utils.analysis import load_mpc_stats
 from agentlib_mpc.utils.plotting.interactive import show_dashboard
+
 
 logger = logging.getLogger(__name__)
 
 # script variables
 ub = 295.15
+prediction_horizon = 300 * 15
 
 
 class MyCasadiModelConfig(CasadiModelConfig):
@@ -109,14 +109,31 @@ class MyCasadiModel(CasadiModel):
             # soft constraints
             (0, self.T + self.T_slack, self.T_upper),
         ]
-
-        # Objective function
-        objective = sum(
-            [
-                self.r_mDot * self.mDot,
-                self.s_T * self.T_slack**2,
-            ]
+        obj1 = self.create_sub_objective(
+            expressions=self.mDot,
+            weight=self.r_mDot,
+            name="control_costs",
         )
+
+        obj2 = self.create_sub_objective(
+            expressions=self.T_slack**2, weight=1000, name="temp_slack"
+        )
+
+        objective = self.create_combined_objective(obj1, obj2, normalization=1)
+
+        # Outdated notation
+        # objective = sum(
+        #     [
+        #         self.r_mDot * self.mDot,
+        #         self.s_T * self.T_slack**2,
+        #     ]
+        # )
+
+        # Also supported:
+        # return obj1 + obj2
+        # return obj1 + obj2 * 0.5
+        # return objective + objective
+        # return objective + objective * 3
 
         return objective
 
@@ -138,7 +155,7 @@ AGENT_MPC = {
                     "collocation_method": "legendre",
                 },
                 "solver": {
-                    "name": "fatrop",  # use fatrop with casadi 3.6.6 for speedup
+                    "name": "ipopt",  # use fatrop with casadi 3.6.6 for speedup
                 },
                 "results_file": "results//mpc.csv",
                 "save_results": True,
@@ -147,8 +164,8 @@ AGENT_MPC = {
             "time_step": 300,
             "prediction_horizon": 15,
             "parameters": [
-                {"name": "s_T", "value": 3},
-                {"name": "r_mDot", "value": 1},
+                {"name": "s_T", "value": 0.01},
+                {"name": "r_mDot", "value": 0.001},
             ],
             "inputs": [
                 {"name": "T_in", "value": 290.15},
@@ -207,15 +224,20 @@ def run_example(
         agent_configs=[AGENT_MPC, AGENT_SIM], env=ENV_CONFIG, variable_logging=False
     )
     mas.run(until=until)
-    try:
-        stats = load_mpc_stats("results/__mpc.csv")
-    except Exception:
-        stats = None
     results = mas.get_results(cleanup=False)
     mpc_results = results["myMPCAgent"]["myMPC"]
     sim_res = results["SimAgent"]["room"]
 
     if with_dashboard:
+        from agentlib_mpc.utils.analysis import load_mpc_stats
+
+        mpc_result_file = "results//mpc.csv"
+
+        try:
+            stats = load_mpc_stats(mpc_result_file)
+        except Exception:
+            stats = None
+
         show_dashboard(mpc_results, stats)
 
     if with_plots:

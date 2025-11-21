@@ -110,15 +110,27 @@ class MyCasadiModel(CasadiModel):
             (0, self.T + self.T_slack, self.T_upper),
         ]
 
-        # Objective function
-        objective = sum(
-            [
-                self.r_mDot * self.mDot,
-                self.s_T * self.T_slack**2,
-            ]
+        obj1 = self.create_sub_objective(
+            expressions=self.mDot,
+            weight=self.r_mDot,
+            name="control_costs",
         )
 
-        return objective
+        obj2 = self.create_sub_objective(
+            expressions=self.T_slack ** 2,
+            weight=self.s_T,
+            name="temp_slack"
+        )
+
+        # Outdated notation
+        # objective = sum(
+        #     [
+        #         self.r_mDot * self.mDot,
+        #         self.s_T * self.T_slack**2,
+        #     ]
+        # )
+
+        return obj1 + obj2*0.5
 
 
 ENV_CONFIG = {"rt": False, "factor": 0.01, "t_sample": 60}
@@ -208,7 +220,7 @@ def run_example(
     )
     mas.run(until=until)
     try:
-        stats = load_mpc_stats("results/stats_mpc_fatropfull.csv")
+        stats = load_mpc_stats("results/mpc.csv")
     except Exception:
         stats = None
     results = mas.get_results(cleanup=False)
@@ -267,5 +279,5 @@ def plot(mpc_results: pd.DataFrame, sim_res: pd.DataFrame, until: float):
 
 if __name__ == "__main__":
     run_example(
-        with_plots=True, with_dashboard=False, until=7200, log_level=logging.CRITICAL
+        with_plots=True, with_dashboard=True, until=7200, log_level=logging.CRITICAL
     )
