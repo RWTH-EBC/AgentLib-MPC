@@ -176,22 +176,30 @@ class CasadiADMMNNSystem(CasadiADMMSystem, CasadiMLSystem):
         )
 
         # add admm terms to objective function
-        admm_objective = 0
         rho = self.penalty_factor.full_symbolic[0]
-        for i in range(len(var_ref.couplings)):
+        admm_terms = {}
+        for i, coupling in enumerate(var_ref.couplings):
             admm_in = self.global_couplings.full_symbolic[i]
             admm_out = self.local_couplings.full_symbolic[i]
             admm_lam = self.multipliers.full_symbolic[i]
-            admm_objective += admm_lam * admm_out + rho / 2 * (admm_in - admm_out) ** 2
+            admm_terms[f"admm_multiplier_{coupling.name}"] = admm_lam * admm_out
+            admm_terms[f"admm_augmentation_{coupling.name}"] = (
+                rho / 2 * (admm_in - admm_out) ** 2
+            )
 
-        for i in range(len(var_ref.exchange)):
+        for i, coupling in enumerate(var_ref.exchange):
             admm_in = self.exchange_diff.full_symbolic[i]
             admm_out = self.local_exchange.full_symbolic[i]
             admm_lam = self.exchange_multipliers.full_symbolic[i]
-            admm_objective += admm_lam * admm_out + rho / 2 * (admm_in - admm_out) ** 2
+            admm_terms[f"admm_multiplier_{coupling.name}"] = admm_lam * admm_out
+            admm_terms[f"admm_augmentation_{coupling.name}"] = (
+                rho / 2 * (admm_in - admm_out) ** 2
+            )
 
-        # todo this part needs cleanup. should add actual admm objective components
-        self.objective += admm_objective
+        for name, term in admm_terms.items():
+            self.objective.objectives += [
+                SubObjective(term, name="admm_augmentation_term")
+            ]
 
     @property
     def variables(self) -> list[OptimizationVariable]:
