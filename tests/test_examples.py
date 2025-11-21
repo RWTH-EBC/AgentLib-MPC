@@ -85,6 +85,15 @@ class TestExamples(unittest.TestCase):
             with_dashboard=False,
         )
 
+    def test_mpc_multiple_shooting(self):
+        """Test the mpc agent example"""
+        self._run_example_with_return(
+            file="one_room_mpc//physical//simple_mpc_multiple_shooting.py",
+            func_name="run_example",
+            with_plots=False,
+            log_level=logging.FATAL,
+            with_dashboard=False,
+        )
     def test_mpc_time_variant_inputs(self):
         """Test the mpc agent example: simple_mpc_with_time_variant_inputs"""
 
@@ -124,7 +133,7 @@ class TestExamples(unittest.TestCase):
             log_level=logging.FATAL,
         )
 
-    def test_ml_models(self):
+	def test_ml_models(self):
         self._run_example_with_return(
             file="one_room_mpc//ann//simple_mpc_nn.py",
             func_name="run_example",
