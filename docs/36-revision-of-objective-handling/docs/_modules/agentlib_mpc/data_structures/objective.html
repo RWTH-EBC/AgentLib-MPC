@@ -79,11 +79,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiParameter</span><span class="p">,</span> <span class="n">CasadiInput</span>
 
 
-<div class="viewcode-block" id="is_casadi_expression"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.is_casadi_expression">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">is_casadi_expression</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks if the object is specifically a CasADi expression (not a pure, symbolic casadi variable)&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">SX</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">obj</span><span class="o">.</span><span class="n">is_symbolic</span><span class="p">()</span></div>
-
-
 <div class="viewcode-block" id="SubObjective"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.SubObjective">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SubObjective</span><span class="p">:</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -107,32 +102,20 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add two objectives together to create a CombinedObjective&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">SubObjective</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">CombinedObjective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">CombinedObjective</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">CombinedObjective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">other</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="n">other</span><span class="o">.</span><span class="n">normalization</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot add SubObjective with </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Scale objective by a factor&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">):</span>
-                <span class="n">new_expression</span> <span class="o">=</span> <span class="n">other</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">expression</span>
-                <span class="n">new_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">new_expression</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expression</span>
-                <span class="n">new_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">*</span> <span class="n">other</span>
-
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">)):</span>
+            <span class="n">new_expression</span> <span class="o">=</span> <span class="n">other</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">expression</span>
+            <span class="n">new_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span>
             <span class="k">return</span> <span class="n">SubObjective</span><span class="p">(</span><span class="n">new_expression</span><span class="p">,</span> <span class="n">new_weight</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;scaled_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot multiply SubObjective with </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SubObjective.get_weighted_expression"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.SubObjective.get_weighted_expression">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_weighted_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the final weighted expression&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">is_casadi_expression</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Objective </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> contains expression </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="si">}</span><span class="s2"> in weight but only &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;original variables are allowed.&quot;</span>
-            <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">expression</span></div>
 
 <div class="viewcode-block" id="SubObjective.calculate_value"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.SubObjective.calculate_value">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
@@ -192,12 +175,6 @@
         <span class="n">var_names</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[a-zA-Z][a-zA-Z0-9_]*&quot;</span><span class="p">,</span> <span class="n">expr_str</span><span class="p">)</span>
         <span class="n">var_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">var_names</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">casadi_functions</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">var_names</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">const_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">expr_str</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;()&quot;</span><span class="p">))</span>
-                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">const_val</span><span class="p">)</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="k">pass</span>
 
         <span class="n">values_found</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="n">var_names</span><span class="p">:</span>
@@ -205,9 +182,6 @@
                 <span class="k">if</span> <span class="p">(</span><span class="n">col_type</span><span class="p">,</span> <span class="n">var_name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                     <span class="n">values_found</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="n">col_type</span><span class="p">,</span> <span class="n">var_name</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
                     <span class="k">break</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">values_found</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No variables found in dataframe for expression: </span><span class="si">{</span><span class="n">expr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">safe_dict</span> <span class="o">=</span> <span class="n">values_found</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -228,18 +202,7 @@
 
             <span class="c1"># Remove outer parentheses if they wrap the entire expression</span>
             <span class="k">if</span> <span class="n">eval_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">eval_str</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;)&quot;</span><span class="p">):</span>
-                <span class="n">paren_count</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="n">is_outermost</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">char</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">eval_str</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="n">char</span> <span class="o">==</span> <span class="s2">&quot;(&quot;</span><span class="p">:</span>
-                        <span class="n">paren_count</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="k">elif</span> <span class="n">char</span> <span class="o">==</span> <span class="s2">&quot;)&quot;</span><span class="p">:</span>
-                        <span class="n">paren_count</span> <span class="o">-=</span> <span class="mi">1</span>
-                        <span class="k">if</span> <span class="n">paren_count</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                            <span class="n">is_outermost</span> <span class="o">=</span> <span class="kc">False</span>
-                            <span class="k">break</span>
-                <span class="k">if</span> <span class="n">is_outermost</span> <span class="ow">and</span> <span class="n">paren_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">eval_str</span> <span class="o">=</span> <span class="n">eval_str</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">eval_str</span> <span class="o">=</span> <span class="n">eval_str</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
             <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">eval_str</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;__builtins__&quot;</span><span class="p">:</span> <span class="p">{}},</span> <span class="n">safe_dict</span><span class="p">)</span>
 
@@ -247,24 +210,9 @@
             <span class="k">if</span> <span class="n">is_square</span><span class="p">:</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">**</span><span class="mi">2</span>
 
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">result</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
 
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="c1"># If evaluation fails, try simple pattern matching as fallback</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values_found</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">var_name</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">values_found</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">expr_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;(-&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">expr_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">):</span>
-                    <span class="k">return</span> <span class="o">-</span><span class="n">values_found</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span>
-                <span class="k">elif</span> <span class="n">is_square</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">values_found</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">values_found</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span>
-
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to evaluate expression: </span><span class="si">{</span><span class="n">expr</span><span class="si">}</span><span class="s2">. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
@@ -294,19 +242,15 @@
             <span class="n">name</span><span class="o">=</span><span class="n">name</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;delta_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_control_name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mul</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Scale change penalty objective by a factor&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">):</span>
-                <span class="n">new_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span>
-                <span class="n">scaled_obj</span> <span class="o">=</span> <span class="n">ChangePenaltyObjective</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">,</span> <span class="n">new_weight</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;scaled_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">scaled_obj</span><span class="o">.</span><span class="n">_scale_factor</span> <span class="o">=</span> <span class="n">other</span>
-                <span class="k">return</span> <span class="n">scaled_obj</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">new_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">*</span> <span class="n">other</span>
-                <span class="k">return</span> <span class="n">ChangePenaltyObjective</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">,</span> <span class="n">new_weight</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;scaled_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mul</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">)):</span>
+            <span class="n">new_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span>
+            <span class="n">scaled_obj</span> <span class="o">=</span> <span class="n">ChangePenaltyObjective</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">,</span> <span class="n">new_weight</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;scaled_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">scaled_obj</span><span class="o">.</span><span class="n">_scale_factor</span> <span class="o">=</span> <span class="n">mul</span>
+            <span class="k">return</span> <span class="n">scaled_obj</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot multiply ChangePenaltyObjective with </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot multiply ChangePenaltyObjective with </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">mul</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <div class="viewcode-block" id="ChangePenaltyObjective.get_control_name"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.ChangePenaltyObjective.get_control_name">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_control_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the name of the associated control variable&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="o">.</span><span class="n">name</span></div>
@@ -323,7 +267,7 @@
         <span class="n">diff_values</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span>
         <span class="n">diff</span> <span class="o">=</span> <span class="n">diff_values</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
         <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="n">weight</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">diff</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ts</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">weight</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">diff</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ts</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">dropna</span><span class="p">())</span></div></div>
 
 
@@ -342,16 +286,14 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add another objective to this CombinedObjective&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">SubObjective</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">CombinedObjective</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">normalization</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">CombinedObjective</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">CombinedObjective</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">CombinedObjective</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span> <span class="o">*</span><span class="n">other</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">normalization</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot add CombinedObjective with </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Scale all objectives in the combination&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">)):</span>
             <span class="n">scaled_objectives</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="o">*</span> <span class="n">other</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">CombinedObjective</span><span class="p">(</span><span class="o">*</span><span class="n">scaled_objectives</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">normalization</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -361,18 +303,12 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of all ChangePenaltyObjective instances&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ChangePenaltyObjective</span><span class="p">)]</span></div>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_casadi_expression</span><span class="p">()</span>
-
 <div class="viewcode-block" id="CombinedObjective.get_casadi_expression"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.CombinedObjective.get_casadi_expression">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_casadi_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Combine all objectives into a single CasADi expression&quot;&quot;&quot;</span>
         <span class="n">terms</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
             <span class="n">terms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">get_weighted_expression</span><span class="p">())</span>
-        <span class="k">if</span> <span class="n">terms</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">terms</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization</span>
-        <span class="k">return</span> <span class="mi">0</span></div>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">terms</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization</span></div>
 
 <div class="viewcode-block" id="CombinedObjective.calculate_values"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.CombinedObjective.calculate_values">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_df</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate values for each objective component using the result dataframe&quot;&quot;&quot;</span>
@@ -385,10 +321,7 @@
             <span class="c1"># Handle symbolic or numeric weights</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="s2">&quot;sym&quot;</span><span class="p">):</span>
                 <span class="n">weight_name</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">name</span>
-                <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;parameter&quot;</span><span class="p">,</span> <span class="n">weight_name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-                    <span class="n">weight</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="s2">&quot;parameter&quot;</span><span class="p">,</span> <span class="n">weight_name</span><span class="p">)]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">weight</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">weight</span>
+                <span class="n">weight</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="s2">&quot;parameter&quot;</span><span class="p">,</span> <span class="n">weight_name</span><span class="p">)]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">weight</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">weight</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ChangePenaltyObjective</span><span class="p">):</span>
@@ -418,16 +351,6 @@
 <span class="sd">            The time value from the first element of tuple index</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">new_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;(&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-            <span class="n">new_indices</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">parts</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;()&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                    <span class="n">new_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()))</span>
-                <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
-                    <span class="n">new_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-            <span class="n">new_df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">new_indices</span>
 
         <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">new_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">col</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;upper&quot;</span><span class="p">,</span> <span class="s2">&quot;lower&quot;</span><span class="p">]:</span>
@@ -530,9 +453,6 @@
         <span class="n">active_objectives</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_active_objectives</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">objective</span><span class="p">,</span> <span class="n">active_mask</span> <span class="ow">in</span> <span class="n">active_objectives</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">active_mask</span><span class="p">):</span>
-                <span class="k">continue</span>
-                
             <span class="n">active_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">active_mask</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">active_df</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">obj_values</span> <span class="o">=</span> <span class="n">objective</span><span class="o">.</span><span class="n">calculate_values</span><span class="p">(</span><span class="n">active_df</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -602,19 +522,10 @@
                 <span class="n">values_dict</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
                 <span class="k">continue</span>
 
-            <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">for</span> <span class="n">col_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;variable&quot;</span><span class="p">,</span> <span class="s2">&quot;parameter&quot;</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="p">(</span><span class="n">col_type</span><span class="p">,</span> <span class="n">var_name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                     <span class="n">values_dict</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="n">col_type</span><span class="p">,</span> <span class="n">var_name</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
-                    <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="k">break</span>
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="nb">float</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Variable &#39;</span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2">&#39; not found in DataFrame&quot;</span><span class="p">)</span>
-                    <span class="n">values_dict</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">))</span>
 
         <span class="n">n_rows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_rows</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
@@ -622,20 +533,9 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rows</span><span class="p">):</span>
             <span class="n">local_vars</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">for</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">values_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-                    <span class="n">local_vars</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">local_vars</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
-
+                <span class="n">local_vars</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">eval_str</span> <span class="o">=</span> <span class="n">condition_str</span>
-
-                <span class="n">replacements</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="p">}</span>
-
-                <span class="k">for</span> <span class="n">casadi_op</span><span class="p">,</span> <span class="n">python_op</span> <span class="ow">in</span> <span class="n">replacements</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">eval_str</span> <span class="o">=</span> <span class="n">eval_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">casadi_op</span><span class="p">,</span> <span class="n">python_op</span><span class="p">)</span>
-
                 <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">eval_str</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;__builtins__&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;abs&quot;</span><span class="p">:</span> <span class="nb">abs</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="nb">min</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="nb">max</span><span class="p">},</span> <span class="n">local_vars</span><span class="p">)</span>
                 <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
