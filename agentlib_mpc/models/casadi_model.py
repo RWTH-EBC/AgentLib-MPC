@@ -522,13 +522,13 @@ class CasadiModel(Model):
     def get_differential_values(self):
         return ca.vertcat(*[sta.value for sta in self.differentials])
 
-    def create_sub_objective(self, expressions, weight, name=None):
+    def create_sub_objective(self, expressions, weight=1, name=None):
         """Create a SubObjective without requiring imports"""
         from agentlib_mpc.data_structures.objective import SubObjective
 
         return SubObjective(expressions=expressions, weight=weight, name=name)
 
-    def create_change_penalty(self, expressions, weight, name=None):
+    def create_change_penalty(self, expressions, weight=1, name=None):
         """Create a ChangePenaltyObjective without requiring imports"""
         from agentlib_mpc.data_structures.objective import ChangePenaltyObjective
 

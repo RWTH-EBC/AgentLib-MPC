@@ -116,7 +116,7 @@ class MyCasadiModel(CasadiModel):
         )
 
         obj2 = self.create_sub_objective(
-            expressions=self.T_slack**2, weight=self.s_T, name="temp_slack"
+            expressions=self.T_slack**2, weight=1000, name="temp_slack"
         )
 
         objective = self.create_combined_objective(obj1, obj2, normalization=1)

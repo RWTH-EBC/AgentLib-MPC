@@ -122,12 +122,11 @@ class MyCasadiModel(CasadiModel):
 
         obj3 = self.create_change_penalty(
             expressions=self.mDot,
-            weight=self.r_delta_mDot,
             name="delta_control_penalty",
         )
 
         objective = self.create_combined_objective(
-            obj1, obj2, obj3, normalization=1
+            obj1, obj2, obj3*self.r_delta_mDot, normalization=1
         )
 
         return objective

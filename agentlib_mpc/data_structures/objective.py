@@ -6,11 +6,6 @@ from typing import Union
 from agentlib_mpc.models.casadi_model import CasadiParameter, CasadiInput
 
 
-def is_casadi_expression(obj) -> bool:
-    """Checks if the object is specifically a CasADi expression (not a pure, symbolic casadi variable)"""
-    return isinstance(obj, (ca.MX, ca.SX)) and not obj.is_symbolic()
-
-
 class SubObjective:
     def __init__(
         self,
@@ -34,32 +29,20 @@ class SubObjective:
         """Add two objectives together to create a CombinedObjective"""
         if isinstance(other, SubObjective):
             return CombinedObjective(self, other)
-        elif isinstance(other, CombinedObjective):
-            return CombinedObjective(self, *other.objectives, normalization=other.normalization)
         else:
             raise TypeError(f"Cannot add SubObjective with {type(other)}")
 
     def __mul__(self, other):
         """Scale objective by a factor"""
-        if isinstance(other, (int, float)):
-            if isinstance(self.weight, CasadiParameter):
-                new_expression = other * self.expression
-                new_weight = self.weight
-            else:
-                new_expression = self.expression
-                new_weight = self.weight * other
-
+        if isinstance(other, (int, float, CasadiParameter)):
+            new_expression = other * self.expression
+            new_weight = self.weight
             return SubObjective(new_expression, new_weight, f"scaled_{self.name}")
         else:
             raise TypeError(f"Cannot multiply SubObjective with {type(other)}")
 
     def get_weighted_expression(self):
         """Returns the final weighted expression"""
-        if is_casadi_expression(self.weight):
-            raise ValueError(
-                f"Objective {self.name} contains expression {self.weight} in weight but only "
-                f"original variables are allowed."
-            )
         return self.weight * self.expression
 
     def calculate_value(self, data, weight):
@@ -119,12 +102,6 @@ class SubObjective:
         var_names = re.findall(r"[a-zA-Z][a-zA-Z0-9_]*", expr_str)
         var_names = [name for name in var_names if name not in casadi_functions]
 
-        if not var_names:
-            try:
-                const_val = float(expr_str.strip("()"))
-                return np.full(len(df.index) - 1, const_val)
-            except:
-                pass
 
         values_found = {}
         for var_name in var_names:
@@ -132,9 +109,6 @@ class SubObjective:
                 if (col_type, var_name) in df.columns:
                     values_found[var_name] = df.loc[:, (col_type, var_name)].values[:-1]
                     break
-
-        if not values_found:
-            raise ValueError(f"No variables found in dataframe for expression: {expr}")
 
         try:
             safe_dict = values_found.copy()
@@ -155,18 +129,7 @@ class SubObjective:
 
             # Remove outer parentheses if they wrap the entire expression
             if eval_str.startswith("(") and eval_str.endswith(")"):
-                paren_count = 0
-                is_outermost = True
-                for i, char in enumerate(eval_str[1:-1], 1):
-                    if char == "(":
-                        paren_count += 1
-                    elif char == ")":
-                        paren_count -= 1
-                        if paren_count < 0:
-                            is_outermost = False
-                            break
-                if is_outermost and paren_count == 0:
-                    eval_str = eval_str[1:-1]
+                eval_str = eval_str[1:-1]
 
             result = eval(eval_str, {"__builtins__": {}}, safe_dict)
 
@@ -174,24 +137,9 @@ class SubObjective:
             if is_square:
                 result = result**2
 
-            if isinstance(result, np.ndarray):
-                return result
-            elif isinstance(result, (int, float)):
-                return np.full(len(df.index) - 1, result)
-            else:
-                return np.array(result)
+            return result
 
         except Exception as e:
-            # If evaluation fails, try simple pattern matching as fallback
-            if len(values_found) == 1:
-                var_name = list(values_found.keys())[0]
-                if expr_str.startswith("(-") or expr_str.startswith("-"):
-                    return -values_found[var_name]
-                elif is_square:
-                    return values_found[var_name] ** 2
-                else:
-                    return values_found[var_name]
-
             raise ValueError(f"Unable to evaluate expression: {expr}. Error: {e}")
 
 
@@ -221,19 +169,15 @@ class ChangePenaltyObjective(SubObjective):
             name=name or f"delta_{self.get_control_name()}",
         )
 
-    def __mul__(self, other):
+    def __mul__(self, mul):
         """Scale change penalty objective by a factor"""
-        if isinstance(other, (int, float)):
-            if isinstance(self.weight, CasadiParameter):
-                new_weight = self.weight
-                scaled_obj = ChangePenaltyObjective(self.control, new_weight, f"scaled_{self.name}")
-                scaled_obj._scale_factor = other
-                return scaled_obj
-            else:
-                new_weight = self.weight * other
-                return ChangePenaltyObjective(self.control, new_weight, f"scaled_{self.name}")
+        if isinstance(mul, (int, float, CasadiParameter)):
+            new_weight = self.weight
+            scaled_obj = ChangePenaltyObjective(self.control, new_weight, f"scaled_{self.name}")
+            scaled_obj._scale_factor = mul
+            return scaled_obj
         else:
-            raise TypeError(f"Cannot multiply ChangePenaltyObjective with {type(other)}")
+            raise TypeError(f"Cannot multiply ChangePenaltyObjective with {type(mul)}")
     def get_control_name(self):
         """Return the name of the associated control variable"""
         return self.control.name
@@ -250,7 +194,7 @@ class ChangePenaltyObjective(SubObjective):
         diff_values = series.diff()
         diff = diff_values.values[1:]
         ts = np.diff(series.index)
-        results = weight**2 * diff**2 * ts
+        results = pd.Series(weight**2 * diff**2 * ts, index=series.index[1:])
         return sum(results.dropna())
 
 
@@ -269,16 +213,14 @@ class CombinedObjective:
 
     def __add__(self, other):
         """Add another objective to this CombinedObjective"""
-        if isinstance(other, SubObjective):
-            return CombinedObjective(*self.objectives, other, normalization=self.normalization)
-        elif isinstance(other, CombinedObjective):
+        if isinstance(other, CombinedObjective):
             return CombinedObjective(*self.objectives, *other.objectives, normalization=self.normalization)
         else:
             raise TypeError(f"Cannot add CombinedObjective with {type(other)}")
 
     def __mul__(self, other):
         """Scale all objectives in the combination"""
-        if isinstance(other, (int, float)):
+        if isinstance(other, (int, float, CasadiParameter)):
             scaled_objectives = [obj * other for obj in self.objectives]
             return CombinedObjective(*scaled_objectives, normalization=self.normalization)
         else:
@@ -288,18 +230,12 @@ class CombinedObjective:
         """Returns a list of all ChangePenaltyObjective instances"""
         return [obj for obj in self.objectives if isinstance(obj, ChangePenaltyObjective)]
 
-    @property
-    def expression(self):
-        return self.get_casadi_expression()
-
     def get_casadi_expression(self):
         """Combine all objectives into a single CasADi expression"""
         terms = []
         for obj in self.objectives:
             terms.append(obj.get_weighted_expression())
-        if terms:
-            return sum(terms) / self.normalization
-        return 0
+        return sum(terms) / self.normalization
 
     def calculate_values(self, result_df, grid):
         """Calculate values for each objective component using the result dataframe"""
@@ -312,10 +248,7 @@ class CombinedObjective:
             # Handle symbolic or numeric weights
             if hasattr(obj.weight, "sym"):
                 weight_name = obj.weight.name
-                if ("parameter", weight_name) in df.columns:
-                    weight = df.loc[:, ("parameter", weight_name)].iloc[:-1]
-                else:
-                    weight = obj.weight
+                weight = df.loc[:, ("parameter", weight_name)].iloc[:-1]
             else:
                 weight = obj.weight
             if isinstance(obj, ChangePenaltyObjective):
@@ -345,16 +278,6 @@ class CombinedObjective:
             The time value from the first element of tuple index
         """
         new_df = df.copy()
-
-        if len(df.index) > 0 and isinstance(df.index[0], str) and "(" in df.index[0]:
-            new_indices = []
-            for idx in df.index:
-                try:
-                    parts = idx.strip("()").split(",", 1)
-                    new_indices.append(float(parts[1].strip()))
-                except (ValueError, IndexError):
-                    new_indices.append(idx)
-            new_df.index = new_indices
 
         for col in new_df.columns:
             if col[0] in ["upper", "lower"]:
@@ -457,9 +380,6 @@ class ConditionalObjective:
         active_objectives = self._determine_active_objectives(df)
 
         for objective, active_mask in active_objectives.items():
-            if not np.any(active_mask):
-                continue
-                
             active_df = df.loc[active_mask].copy()
             if len(active_df) > 0:
                 obj_values = objective.calculate_values(active_df, None)
@@ -529,19 +449,10 @@ class ConditionalObjective:
                 values_dict["time"] = df.index.to_numpy()
                 continue
 
-            found = False
             for col_type in ["variable", "parameter"]:
                 if (col_type, var_name) in df.columns:
                     values_dict[var_name] = df.loc[:, (col_type, var_name)].values
-                    found = True
                     break
-
-            if not found:
-                try:
-                    float(var_name)
-                except ValueError:
-                    print(f"Warning: Variable '{var_name}' not found in DataFrame")
-                    values_dict[var_name] = np.zeros(len(df))
 
         n_rows = len(df)
         mask = np.zeros(n_rows, dtype=bool)
@@ -549,20 +460,9 @@ class ConditionalObjective:
         for i in range(n_rows):
             local_vars = {}
             for var_name, values in values_dict.items():
-                if isinstance(values, np.ndarray):
-                    local_vars[var_name] = values[i]
-                else:
-                    local_vars[var_name] = values
-
+                local_vars[var_name] = values[i]
             try:
                 eval_str = condition_str
-
-                replacements = {
-                }
-
-                for casadi_op, python_op in replacements.items():
-                    eval_str = eval_str.replace(casadi_op, python_op)
-
                 result = eval(eval_str, {"__builtins__": {}, "abs": abs, "min": min, "max": max}, local_vars)
                 mask[i] = bool(result)
 

@@ -146,10 +146,12 @@ class MyCasadiModel(CasadiModel):
         )
         obj2_slack = self.create_sub_objective(
             expressions=self.T_slack**2,
-            weight=self.s_T,
             name="temperature_slack_2"
         )
-        objective2 = self.create_combined_objective(obj2_mDot, obj2_slack, normalization=1)
+        objective2_1 = self.create_combined_objective(obj2_mDot)
+        objective2_2 = self.create_combined_objective(obj2_slack)
+
+        objective2 = objective2_1 + objective2_2*self.s_T
 
         # Conditional objective based on time
         condition = self.time < self.switch.sym

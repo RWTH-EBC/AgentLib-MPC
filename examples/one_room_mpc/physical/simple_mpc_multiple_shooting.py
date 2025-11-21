@@ -122,8 +122,6 @@ class MyCasadiModel(CasadiModel):
             name="temp_slack"
         )
 
-        objective = self.create_combined_objective(obj1, obj2, normalization=1)
-
         # Outdated notation
         # objective = sum(
         #     [
@@ -132,7 +130,7 @@ class MyCasadiModel(CasadiModel):
         #     ]
         # )
 
-        return objective
+        return obj1 + obj2*0.5
 
 
 ENV_CONFIG = {"rt": False, "factor": 0.01, "t_sample": 60}
