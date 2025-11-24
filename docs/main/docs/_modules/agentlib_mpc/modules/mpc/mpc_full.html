@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules.mpc.mpc_full &mdash; agentlib_mpc 0.6.9 documentation</title>
+  <title>agentlib_mpc.modules.mpc.mpc_full &mdash; agentlib_mpc 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -79,8 +79,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentVariable</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures</span><span class="w"> </span><span class="kn">import</span> <span class="n">mpc_datamodels</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">FieldValidationInfo</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">rapidfuzz</span><span class="w"> </span><span class="kn">import</span> <span class="n">process</span><span class="p">,</span> <span class="n">fuzz</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.modules.mpc.mpc</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseMPCConfig</span><span class="p">,</span> <span class="n">BaseMPC</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.modules.mpc.skippable_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -92,33 +90,7 @@
 <div class="viewcode-block" id="MPCConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.mpc_full.MPCConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MPCConfig</span><span class="p">(</span><span class="n">BaseMPCConfig</span><span class="p">,</span> <span class="n">SkippableMixinConfig</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pydantic data model for MPC configuration parser</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">r_del_u</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Weights that are applied to the change in control variables.&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-
-<div class="viewcode-block" id="MPCConfig.check_r_del_u_in_controls"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.mpc_full.MPCConfig.check_r_del_u_in_controls">[docs]</a>    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;r_del_u&quot;</span><span class="p">)</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">check_r_del_u_in_controls</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span> <span class="n">r_del_u</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensures r_del_u is only set for control variables.&quot;&quot;&quot;</span>
-        <span class="n">controls</span> <span class="o">=</span> <span class="p">{</span><span class="n">ctrl</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">ctrl</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;controls&quot;</span><span class="p">]}</span>
-        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">r_del_u</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">controls</span><span class="p">:</span>
-                <span class="c1"># everything is fine</span>
-                <span class="k">continue</span>
-
-            <span class="c1"># raise error</span>
-            <span class="n">matches</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">controls</span><span class="p">,</span> <span class="n">scorer</span><span class="o">=</span><span class="n">fuzz</span><span class="o">.</span><span class="n">WRatio</span><span class="p">)</span>
-            <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">]</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Tried to specify control change weight for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">. However, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not in the set of control variables. Did you mean one &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;of these? </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="n">r_del_u</span></div></div>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="MPC"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.mpc_full.MPC">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MPC</span><span class="p">(</span><span class="n">BaseMPC</span><span class="p">,</span> <span class="n">SkippableMixin</span><span class="p">):</span>
@@ -196,12 +168,8 @@
                 <span class="n">name</span><span class="o">=</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="p">)</span></div>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_after_config_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_internal_variables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_internal_variables</span><span class="p">()</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_after_config_update</span><span class="p">()</span>
-
     <span class="k">def</span><span class="w"> </span><span class="nf">_setup_var_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">VariableReferenceT</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">FullVariableReference</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">VariableReference</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MPC.collect_variables_for_optimization"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.mpc_full.MPC.collect_variables_for_optimization">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">collect_variables_for_optimization</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">VariableReference</span> <span class="o">=</span> <span class="kc">None</span>
@@ -228,32 +196,7 @@
             <span class="p">)</span>
             <span class="n">variables</span><span class="p">[</span><span class="n">hist_var</span><span class="p">]</span> <span class="o">=</span> <span class="n">updated_var</span>
 
-        <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">variables</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_internal_variables</span><span class="p">}</span></div>
-
-        <span class="c1"># class AgVarDropin:</span>
-        <span class="c1">#     ub: float</span>
-        <span class="c1">#     lb: float</span>
-        <span class="c1">#     value: Union[float, list, pd.Series]</span>
-        <span class="c1">#     interpolation_method: InterpolationMethod</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_create_internal_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AgentVariable</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a reference of all internal variables that are used for the MPC,</span>
-<span class="sd">        but not shared as AgentVariables.</span>
-
-<span class="sd">        Currently, this includes:</span>
-<span class="sd">           - Weights for control change (r_del_u)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">r_del_u</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MPCVariable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">control</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span>
-            <span class="n">r_del_u_name</span> <span class="o">=</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">r_del_u_convention</span><span class="p">(</span><span class="n">control</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="n">var</span> <span class="o">=</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MPCVariable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">r_del_u_name</span><span class="p">)</span>
-            <span class="n">r_del_u</span><span class="p">[</span><span class="n">r_del_u_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">var</span>
-            <span class="k">if</span> <span class="n">control</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">r_del_u</span><span class="p">:</span>
-                <span class="n">var</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">r_del_u</span><span class="p">[</span><span class="n">control</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">var</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="k">return</span> <span class="n">r_del_u</span></div>
+        <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">variables</span><span class="p">}</span></div></div>
 </pre></div>
 
            </div>

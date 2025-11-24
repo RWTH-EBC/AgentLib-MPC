@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.optimization_backends.casadi_.full &mdash; agentlib_mpc 0.6.9 documentation</title>
+  <title>agentlib_mpc.optimization_backends.casadi_.full &mdash; agentlib_mpc 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -79,20 +79,20 @@
     <span class="n">DiscretizationMethod</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">FullVariableReference</span><span class="p">,</span>
+    <span class="n">VariableReference</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiModel</span><span class="p">,</span> <span class="n">CasadiParameter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.casadi_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasADiBackend</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.VariableGroup</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">OptimizationParameter</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">delta_u</span>
 
 
 <div class="viewcode-block" id="FullSystem"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.full.FullSystem">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">FullSystem</span><span class="p">(</span><span class="n">basic</span><span class="o">.</span><span class="n">BaseSystem</span><span class="p">):</span>
     <span class="n">last_control</span><span class="p">:</span> <span class="n">OptimizationParameter</span>
-    <span class="n">r_del_u</span><span class="p">:</span> <span class="n">OptimizationParameter</span>  <span class="c1"># penalty on change of control between time steps</span>
 
-<div class="viewcode-block" id="FullSystem.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.full.FullSystem.initialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">CasadiModel</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">FullVariableReference</span><span class="p">):</span>
+<div class="viewcode-block" id="FullSystem.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.full.FullSystem.initialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">CasadiModel</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">VariableReference</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">var_ref</span><span class="o">=</span><span class="n">var_ref</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">last_control</span> <span class="o">=</span> <span class="n">OptimizationParameter</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
@@ -102,15 +102,9 @@
             <span class="n">use_in_stage_function</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">assert_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">r_del_u</span> <span class="o">=</span> <span class="n">OptimizationParameter</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
-            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;r_del_u&quot;</span><span class="p">,</span>
-            <span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="n">CasadiParameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">r_del_u</span><span class="p">)</span> <span class="k">for</span> <span class="n">r_del_u</span> <span class="ow">in</span> <span class="n">var_ref</span><span class="o">.</span><span class="n">r_del_u</span><span class="p">],</span>
-            <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">r_del_u</span><span class="p">,</span>
-            <span class="n">use_in_stage_function</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">assert_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">time</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">objective</span></div></div>
 
 
 <div class="viewcode-block" id="DirectCollocation"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.full.DirectCollocation">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DirectCollocation</span><span class="p">(</span><span class="n">basic</span><span class="o">.</span><span class="n">DirectCollocation</span><span class="p">):</span>
@@ -134,7 +128,8 @@
 
         <span class="c1"># Parameters that are constant over the horizon</span>
         <span class="n">const_par</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">)</span>
-        <span class="n">du_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">r_del_u</span><span class="p">)</span>
+
+        <span class="n">delta_u_objectives</span> <span class="o">=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_delta_u_objectives</span><span class="p">(</span><span class="n">sys</span><span class="p">)</span>
 
         <span class="c1"># Formulate the NLP</span>
         <span class="c1"># loop over prediction horizon</span>
@@ -142,8 +137,11 @@
             <span class="c1"># New NLP variable for the control</span>
             <span class="n">u_prev</span> <span class="o">=</span> <span class="n">uk</span>
             <span class="n">uk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="p">)</span>
-            <span class="c1"># penalty for control change between time steps</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">ts</span> <span class="o">*</span> <span class="n">ca</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">du_weights</span><span class="p">,</span> <span class="p">(</span><span class="n">u_prev</span> <span class="o">-</span> <span class="n">uk</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">delta_obj</span> <span class="ow">in</span> <span class="n">delta_u_objectives</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_objective</span><span class="p">(</span>
+                    <span class="n">sys</span><span class="p">,</span> <span class="n">delta_obj</span><span class="p">,</span> <span class="n">u_prev</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">const_par</span>
+                <span class="p">)</span>
 
             <span class="c1"># perform inner collocation loop</span>
             <span class="n">opt_vars_inside_inner</span> <span class="o">=</span> <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">algebraics</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span>
@@ -190,8 +188,9 @@
         <span class="n">uk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">last_control</span><span class="p">)</span>
 
         <span class="c1"># Parameters that are constant over the horizon</span>
-        <span class="n">du_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">r_del_u</span><span class="p">)</span>
         <span class="n">const_par</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">)</span>
+
+        <span class="n">delta_u_objectives</span> <span class="o">=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_delta_u_objectives</span><span class="p">(</span><span class="n">sys</span><span class="p">)</span>
 
         <span class="c1"># ODE is used here because the algebraics can be calculated with the stage function</span>
         <span class="n">opt_integrator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_ode</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">integrator</span><span class="p">)</span>
@@ -199,8 +198,12 @@
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
             <span class="n">u_prev</span> <span class="o">=</span> <span class="n">uk</span>
             <span class="n">uk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="p">)</span>
-            <span class="c1"># penalty for control change between time steps</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">ts</span> <span class="o">*</span> <span class="n">ca</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">du_weights</span><span class="p">,</span> <span class="p">(</span><span class="n">u_prev</span> <span class="o">-</span> <span class="n">uk</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">delta_obj</span> <span class="ow">in</span> <span class="n">delta_u_objectives</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_objective</span><span class="p">(</span>
+                    <span class="n">sys</span><span class="p">,</span> <span class="n">delta_obj</span><span class="p">,</span> <span class="n">u_prev</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">const_par</span>
+                <span class="p">)</span>
+
             <span class="n">dk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="p">)</span>
             <span class="n">zk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">algebraics</span><span class="p">)</span>
             <span class="n">yk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span>

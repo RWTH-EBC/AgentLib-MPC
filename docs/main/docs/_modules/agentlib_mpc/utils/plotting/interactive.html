@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.utils.plotting.interactive &mdash; agentlib_mpc 0.6.9 documentation</title>
+  <title>agentlib_mpc.utils.plotting.interactive &mdash; agentlib_mpc 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -81,7 +81,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">OptionalDependencyError</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">TIME_CONVERSION</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.utils.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_mpc</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.utils.plotting.basic</span><span class="w"> </span><span class="kn">import</span> <span class="n">EBCColors</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.utils.plotting.mpc</span><span class="w"> </span><span class="kn">import</span> <span class="n">interpolate_colors</span>
 
@@ -96,6 +95,92 @@
         <span class="n">dependency_install</span><span class="o">=</span><span class="s2">&quot;plotly, dash&quot;</span><span class="p">,</span>
         <span class="n">used_object</span><span class="o">=</span><span class="s2">&quot;interactive&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+
+<div class="viewcode-block" id="plot_obj_data_stacked"><a class="viewcode-back" href="../../../../code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.interactive.plot_obj_data_stacked">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">plot_obj_data_stacked</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">convert_to</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;minutes&quot;</span><span class="p">,</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span> <span class="s2">&quot;days&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;seconds&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dcc</span><span class="o">.</span><span class="n">Graph</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a stacked area chart for objective data components.&quot;&quot;&quot;</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">data</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="c1"># Create an empty figure with a note</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">add_annotation</span><span class="p">(</span>
+            <span class="n">text</span><span class="o">=</span><span class="s2">&quot;No objective component data available&quot;</span><span class="p">,</span>
+            <span class="n">xref</span><span class="o">=</span><span class="s2">&quot;paper&quot;</span><span class="p">,</span>
+            <span class="n">yref</span><span class="o">=</span><span class="s2">&quot;paper&quot;</span><span class="p">,</span>
+            <span class="n">x</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">showarrow</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">font</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Approximate Objective Values&quot;</span><span class="p">,</span>
+            <span class="n">xaxis_title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Time in </span><span class="si">{</span><span class="n">convert_to</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">yaxis_title</span><span class="o">=</span><span class="s2">&quot;Objective Value&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">dcc</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;plot-obj-stacked&quot;</span><span class="p">,</span>
+            <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span>
+            <span class="n">style</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;min-width&quot;</span><span class="p">:</span> <span class="s2">&quot;600px&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;min-height&quot;</span><span class="p">:</span> <span class="s2">&quot;400px&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;max-width&quot;</span><span class="p">:</span> <span class="s2">&quot;900px&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;max-height&quot;</span><span class="p">:</span> <span class="s2">&quot;450px&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+
+    <span class="n">index</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span> <span class="o">/</span> <span class="n">TIME_CONVERSION</span><span class="p">[</span><span class="n">convert_to</span><span class="p">]</span>
+
+    <span class="c1"># Create a copy of the data for manipulation</span>
+    <span class="n">plot_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># Remove &#39;total&#39; column if it exists as we&#39;ll create our own stacked visualization</span>
+    <span class="k">if</span> <span class="s2">&quot;total&quot;</span> <span class="ow">in</span> <span class="n">plot_data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">plot_data</span> <span class="o">=</span> <span class="n">plot_data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Create a stacked area chart</span>
+    <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">plot_data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="c1"># Skip columns with all NaN or zero values</span>
+        <span class="k">if</span> <span class="n">plot_data</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">or</span> <span class="p">(</span><span class="n">plot_data</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">continue</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
+            <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">plot_data</span><span class="p">[</span><span class="n">column</span><span class="p">],</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;lines&quot;</span><span class="p">,</span>
+                <span class="n">line</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+                <span class="n">stackgroup</span><span class="o">=</span><span class="s2">&quot;one&quot;</span><span class="p">,</span>  <span class="c1"># This creates the stacking effect</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">column</span><span class="p">,</span>
+                <span class="n">fillcolor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># Auto-assign colors</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Approximate Objective Values&quot;</span><span class="p">,</span>
+        <span class="n">xaxis_title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Time in </span><span class="si">{</span><span class="n">convert_to</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">yaxis_title</span><span class="o">=</span><span class="s2">&quot;Objective Value&quot;</span><span class="p">,</span>
+        <span class="n">showlegend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">legend</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">groupclick</span><span class="o">=</span><span class="s2">&quot;toggleitem&quot;</span><span class="p">,</span>
+            <span class="n">itemclick</span><span class="o">=</span><span class="s2">&quot;toggle&quot;</span><span class="p">,</span>
+            <span class="n">itemdoubleclick</span><span class="o">=</span><span class="s2">&quot;toggleothers&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">uirevision</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">,</span>  <span class="c1"># To maintain state when interacting</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dcc</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;plot-obj-stacked&quot;</span><span class="p">,</span>
+        <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">,</span>
+        <span class="n">style</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;min-width&quot;</span><span class="p">:</span> <span class="s2">&quot;600px&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;min-height&quot;</span><span class="p">:</span> <span class="s2">&quot;400px&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;max-width&quot;</span><span class="p">:</span> <span class="s2">&quot;900px&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;max-height&quot;</span><span class="p">:</span> <span class="s2">&quot;450px&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="make_figure_plotly"><a class="viewcode-back" href="../../../../code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.interactive.make_figure_plotly">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">make_figure_plotly</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">:</span>
@@ -164,7 +249,6 @@
 
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">time_seconds</span><span class="p">,</span> <span class="n">prediction</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)):</span>
         <span class="n">prediction</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span> <span class="o">=</span> <span class="n">prediction</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">droplevel</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-
         <span class="k">try</span><span class="p">:</span>
             <span class="n">time_converted</span> <span class="o">=</span> <span class="n">time_seconds</span> <span class="o">/</span> <span class="n">TIME_CONVERSION</span><span class="p">[</span><span class="n">convert_to</span><span class="p">]</span>
             <span class="n">actual_values</span><span class="p">[</span><span class="n">time_converted</span><span class="p">]</span> <span class="o">=</span> <span class="n">prediction</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -313,6 +397,11 @@
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
             <span class="k">pass</span>
 
+    <span class="c1"># Extract objective data from stats if available</span>
+    <span class="n">obj_data</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">stats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">obj_data</span> <span class="o">=</span> <span class="n">extract_objective_data_from_stats</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
+
     <span class="c1"># Store initial figures</span>
     <span class="n">initial_figures</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns_okay</span><span class="p">:</span>
@@ -331,7 +420,9 @@
             <span class="n">html</span><span class="o">.</span><span class="n">H1</span><span class="p">(</span><span class="s2">&quot;MPC Results&quot;</span><span class="p">),</span>
             <span class="c1"># Store for keeping track of trace visibility</span>
             <span class="n">dcc</span><span class="o">.</span><span class="n">Store</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;trace-visibility&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{}),</span>
-            <span class="n">make_components</span><span class="p">(</span><span class="n">columns_okay</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">stats</span><span class="o">=</span><span class="n">stats</span><span class="p">,</span> <span class="n">convert_to</span><span class="o">=</span><span class="n">scale</span><span class="p">),</span>
+            <span class="n">make_components</span><span class="p">(</span>
+                <span class="n">columns_okay</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">obj_data</span><span class="o">=</span><span class="n">obj_data</span><span class="p">,</span> <span class="n">stats</span><span class="o">=</span><span class="n">stats</span><span class="p">,</span> <span class="n">convert_to</span><span class="o">=</span><span class="n">scale</span>
+            <span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
 
@@ -382,37 +473,70 @@
     <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="extract_objective_data_from_stats"><a class="viewcode-back" href="../../../../code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.interactive.extract_objective_data_from_stats">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">extract_objective_data_from_stats</span><span class="p">(</span><span class="n">stats</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract objective component data from the combined stats dataframe using column prefixes.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">stats</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">stats</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Find columns that start with &quot;obj_&quot;</span>
+    <span class="n">objective_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">stats</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">col</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;obj_&quot;</span><span class="p">)]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">objective_columns</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Create dataframe with objective columns, removing the &quot;obj_&quot; prefix</span>
+    <span class="n">obj_data</span> <span class="o">=</span> <span class="n">stats</span><span class="p">[</span><span class="n">objective_columns</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">obj_data</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;obj_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">obj_data</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+
+    <span class="c1"># Remove rows where all objective values are NaN or empty</span>
+    <span class="n">obj_data</span> <span class="o">=</span> <span class="n">obj_data</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">obj_data</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">obj_data</span><span class="o">.</span><span class="n">empty</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
 <div class="viewcode-block" id="make_components"><a class="viewcode-back" href="../../../../code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.interactive.make_components">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">make_components</span><span class="p">(</span>
-    <span class="n">columns</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">convert_to</span><span class="p">,</span> <span class="n">stats</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">columns</span><span class="p">,</span>
+    <span class="n">data</span><span class="p">,</span>
+    <span class="n">convert_to</span><span class="p">,</span>
+    <span class="n">stats</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">obj_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">]:</span>
-    <span class="n">components</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">(</span>
-            <span class="p">[</span>
-                <span class="c1"># html.H3(column),</span>
-                <span class="n">dcc</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span>
-                    <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;plot-</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="n">figure</span><span class="o">=</span><span class="n">plot_mpc_plotly</span><span class="p">(</span>
-                        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;variable&quot;</span><span class="p">][</span><span class="n">column</span><span class="p">],</span>
-                        <span class="n">convert_to</span><span class="o">=</span><span class="n">convert_to</span><span class="p">,</span>
-                        <span class="n">y_axis_label</span><span class="o">=</span><span class="n">column</span><span class="p">,</span>
-                    <span class="p">),</span>
-                    <span class="n">style</span><span class="o">=</span><span class="p">{</span>
-                        <span class="s2">&quot;min-width&quot;</span><span class="p">:</span> <span class="s2">&quot;600px&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;min-height&quot;</span><span class="p">:</span> <span class="s2">&quot;400px&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;max-width&quot;</span><span class="p">:</span> <span class="s2">&quot;900px&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;max-height&quot;</span><span class="p">:</span> <span class="s2">&quot;450px&quot;</span><span class="p">,</span>
-                    <span class="p">},</span>
-                <span class="p">),</span>
-            <span class="p">],</span>
-            <span class="n">className</span><span class="o">=</span><span class="s2">&quot;draggable&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span>
-    <span class="p">]</span>
+    <span class="n">components</span> <span class="o">=</span> <span class="p">[]</span>
+
     <span class="k">if</span> <span class="n">stats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">components</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">([</span><span class="n">solver_return</span><span class="p">(</span><span class="n">stats</span><span class="p">,</span> <span class="n">convert_to</span><span class="p">)]))</span>
-        <span class="n">components</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
-            <span class="mi">1</span><span class="p">,</span> <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">([</span><span class="n">obj_plot</span><span class="p">(</span><span class="n">stats</span><span class="p">,</span> <span class="n">convert_to</span><span class="p">)])</span>
-        <span class="p">)</span>  <span class="c1"># Add the &quot;obj&quot; plot</span>
+        <span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">([</span><span class="n">solver_return</span><span class="p">(</span><span class="n">stats</span><span class="p">,</span> <span class="n">convert_to</span><span class="p">)]))</span>
+        <span class="k">if</span> <span class="s2">&quot;stats_obj&quot;</span> <span class="ow">in</span> <span class="n">stats</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">([</span><span class="n">obj_plot</span><span class="p">(</span><span class="n">stats</span><span class="p">,</span> <span class="n">convert_to</span><span class="p">)]))</span>
+
+    <span class="k">if</span> <span class="n">obj_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">obj_data</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">plot_obj_data_stacked</span><span class="p">(</span><span class="n">obj_data</span><span class="p">,</span> <span class="n">convert_to</span><span class="p">)],</span> <span class="n">className</span><span class="o">=</span><span class="s2">&quot;draggable&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">:</span>
+        <span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">dcc</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span>
+                        <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;plot-</span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">figure</span><span class="o">=</span><span class="n">plot_mpc_plotly</span><span class="p">(</span>
+                            <span class="n">data</span><span class="p">[</span><span class="s2">&quot;variable&quot;</span><span class="p">][</span><span class="n">column</span><span class="p">],</span>
+                            <span class="n">convert_to</span><span class="o">=</span><span class="n">convert_to</span><span class="p">,</span>
+                            <span class="n">y_axis_label</span><span class="o">=</span><span class="n">column</span><span class="p">,</span>
+                        <span class="p">),</span>
+                        <span class="n">style</span><span class="o">=</span><span class="p">{</span>
+                            <span class="s2">&quot;min-width&quot;</span><span class="p">:</span> <span class="s2">&quot;600px&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;min-height&quot;</span><span class="p">:</span> <span class="s2">&quot;400px&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;max-width&quot;</span><span class="p">:</span> <span class="s2">&quot;900px&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;max-height&quot;</span><span class="p">:</span> <span class="s2">&quot;450px&quot;</span><span class="p">,</span>
+                        <span class="p">},</span>
+                    <span class="p">),</span>
+                <span class="p">],</span>
+                <span class="n">className</span><span class="o">=</span><span class="s2">&quot;draggable&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">(</span>
         <span class="n">components</span><span class="p">,</span>
@@ -434,21 +558,34 @@
     <span class="n">df</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">index</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span> <span class="o">/</span> <span class="n">TIME_CONVERSION</span><span class="p">[</span><span class="n">convert_to</span><span class="p">]</span>
 
-    <span class="n">trace</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
-        <span class="n">x</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
-        <span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;obj&quot;</span><span class="p">],</span>
-        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;lines&quot;</span><span class="p">,</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Objective Value&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="c1"># Check if &#39;obj&#39; column exists</span>
+    <span class="k">if</span> <span class="s2">&quot;stats_obj&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="c1"># Create an empty figure with a note</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">()</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">add_annotation</span><span class="p">(</span>
+            <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Objective data not available&quot;</span><span class="p">,</span>
+            <span class="n">xref</span><span class="o">=</span><span class="s2">&quot;paper&quot;</span><span class="p">,</span>
+            <span class="n">yref</span><span class="o">=</span><span class="s2">&quot;paper&quot;</span><span class="p">,</span>
+            <span class="n">x</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">showarrow</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">font</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">trace</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;stats_obj&quot;</span><span class="p">],</span>
+            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;lines&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Objective Value&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">trace</span><span class="p">])</span>
 
-    <span class="n">layout</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Layout</span><span class="p">(</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
         <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Objective Value&quot;</span><span class="p">,</span>
         <span class="n">xaxis_title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Time in </span><span class="si">{</span><span class="n">convert_to</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
         <span class="n">yaxis_title</span><span class="o">=</span><span class="s2">&quot;Objective Value&quot;</span><span class="p">,</span>
         <span class="n">showlegend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
-
-    <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">trace</span><span class="p">],</span> <span class="n">layout</span><span class="o">=</span><span class="n">layout</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dcc</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span>
         <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;plot-obj&quot;</span><span class="p">,</span>
@@ -478,9 +615,9 @@
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="n">return_status</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">success</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">success</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">success</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">stats_success</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
-            <span class="n">solver_return</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">return_status</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="n">solver_return</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">stats_return_status</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">solver_return</span> <span class="o">=</span> <span class="s2">&quot;Solve_Not_Succeeded&quot;</span>
         <span class="n">return_status</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">solver_return</span>
@@ -505,7 +642,7 @@
         <span class="k">if</span> <span class="n">mask</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="n">trace</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
                 <span class="n">x</span><span class="o">=</span><span class="n">index</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span>
-                <span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">solver_returns</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="s2">&quot;iter_count&quot;</span><span class="p">],</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">solver_returns</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">mask</span><span class="p">],</span> <span class="s2">&quot;stats_iter_count&quot;</span><span class="p">],</span>
                 <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;markers&quot;</span><span class="p">,</span>
                 <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
                     <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">status</span><span class="p">],</span>
@@ -581,20 +718,6 @@
             <span class="k">return</span> <span class="n">port</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">port</span> <span class="o">+=</span> <span class="mi">1</span></div>
-
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="n">data_</span> <span class="o">=</span> <span class="n">load_mpc</span><span class="p">(</span>
-        <span class="sa">r</span><span class="s2">&quot;D:\repos\agentlib_mpc\examples\one_room_mpc\physical\results\mpc.csv&quot;</span>
-    <span class="p">)</span>
-    <span class="n">show_dashboard</span><span class="p">(</span><span class="n">data_</span><span class="p">)</span>
-    <span class="c1"># fig = plot_mpc_plotly(</span>
-    <span class="c1">#     data[&quot;variable&quot;][&quot;T&quot;] - 273.15,</span>
-    <span class="c1">#     y_axis_label=&quot;Room temperature&quot;,</span>
-    <span class="c1">#     convert_to=&quot;minutes&quot;,</span>
-    <span class="c1">#     step=False,</span>
-    <span class="c1"># )</span>
-    <span class="c1"># fig.show()</span>
 </pre></div>
 
            </div>

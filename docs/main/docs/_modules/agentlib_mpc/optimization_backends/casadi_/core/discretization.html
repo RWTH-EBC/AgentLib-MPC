@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.optimization_backends.casadi_.core.discretization &mdash; agentlib_mpc 0.6.9 documentation</title>
+  <title>agentlib_mpc.optimization_backends.casadi_.core.discretization &mdash; agentlib_mpc 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/autodoc_pydantic.css" />
@@ -99,7 +99,6 @@
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.system</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span>
 
-
 <span class="n">CasadiVariableList</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">],</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">]</span>
 
 
@@ -111,6 +110,7 @@
     <span class="n">stats</span><span class="p">:</span> <span class="nb">dict</span>
     <span class="n">variable_grid_indices</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span>
     <span class="n">_variable_name_to_index</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">objective_values</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_variable_name_to_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable_lookup</span><span class="p">()</span>
@@ -145,6 +145,26 @@
 <div class="viewcode-block" id="Results.write_columns"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.write_columns">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
         <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Results.write_combined_stats_columns"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.write_combined_stats_columns">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_combined_stats_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">objective_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write headers for combined stats and objective data with prefixes&quot;&quot;&quot;</span>
+        <span class="c1"># Add prefixes to distinguish objective from stats columns</span>
+        <span class="n">tagged_obj_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;obj_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">objective_names</span><span class="p">]</span>
+        <span class="n">tagged_stats_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;stats_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+        <span class="n">combined_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">tagged_obj_names</span> <span class="o">+</span> <span class="n">tagged_stats_names</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;,</span><span class="si">{</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">combined_names</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Results.combined_stats_line"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.combined_stats_line">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">combined_stats_line</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">objective_values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">objective_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a line with both objective and stats values&quot;&quot;&quot;</span>
+        <span class="c1"># Use the same order as in the headers</span>
+        <span class="n">obj_values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">objective_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">objective_names</span><span class="p">]</span>
+        <span class="n">stats_values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+        <span class="n">combined_values</span> <span class="o">=</span> <span class="n">obj_values</span> <span class="o">+</span> <span class="n">stats_values</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">&quot;,</span><span class="si">{</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">combined_values</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span></div>
 
 <div class="viewcode-block" id="Results.write_stats_columns"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.write_stats_columns">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_stats_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
         <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;,</span><span class="si">{</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span>
@@ -259,6 +279,7 @@
         <span class="c1"># format and return solution</span>
         <span class="n">mpc_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nlp_outputs_to_mpc_outputs</span><span class="p">(</span><span class="n">vars_at_optimum</span><span class="o">=</span><span class="n">nlp_output</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_remember_solution</span><span class="p">(</span><span class="n">mpc_output</span><span class="p">)</span>
+
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_solution</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">mpc_inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">mpc_output</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
@@ -321,7 +342,11 @@
 
         <span class="n">result_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_map</span><span class="p">(</span><span class="o">**</span><span class="n">inputs</span><span class="p">)[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_results</span><span class="p">(</span><span class="n">result_matrix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">stats</span><span class="p">())</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_results</span><span class="p">(</span>
+            <span class="n">result_matrix</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">stats</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
 
 <div class="viewcode-block" id="Discretization.create_nlp_in_out_mapping"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.create_nlp_in_out_mapping">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_nlp_in_out_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -411,7 +436,10 @@
             <span class="s2">&quot;result_map&quot;</span><span class="p">,</span> <span class="n">mpc_inputs</span><span class="p">,</span> <span class="p">[</span><span class="n">matrix</span><span class="p">],</span> <span class="n">mpc_input_denotations</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
         <span class="p">)</span>
 
-        <span class="k">def</span><span class="w"> </span><span class="nf">make_results_view</span><span class="p">(</span><span class="n">result_matrix</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">,</span> <span class="n">stats</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Results</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">make_results_view</span><span class="p">(</span>
+            <span class="n">result_matrix</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">,</span>
+            <span class="n">stats</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Results</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Results</span><span class="p">(</span>
                 <span class="n">matrix</span><span class="o">=</span><span class="n">result_matrix</span><span class="p">,</span>
                 <span class="n">columns</span><span class="o">=</span><span class="n">col_index</span><span class="p">,</span>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc package &mdash; agentlib_mpc 0.6.9 documentation</title>
+  <title>agentlib_mpc package &mdash; agentlib_mpc 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
@@ -297,10 +297,6 @@
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.DiscretizationOptions.time_step"><code class="docutils literal notranslate"><span class="pre">DiscretizationOptions.time_step</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.FullVariableReference"><code class="docutils literal notranslate"><span class="pre">FullVariableReference</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.FullVariableReference.r_del_u"><code class="docutils literal notranslate"><span class="pre">FullVariableReference.r_del_u</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.InitStatus"><code class="docutils literal notranslate"><span class="pre">InitStatus</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.InitStatus.during_update"><code class="docutils literal notranslate"><span class="pre">InitStatus.during_update</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.InitStatus.pre_module_init"><code class="docutils literal notranslate"><span class="pre">InitStatus.pre_module_init</span></code></a></li>
@@ -340,7 +336,6 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.cia_relaxed_results_path"><code class="docutils literal notranslate"><span class="pre">cia_relaxed_results_path()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.r_del_u_convention"><code class="docutils literal notranslate"><span class="pre">r_del_u_convention()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.stats_path"><code class="docutils literal notranslate"><span class="pre">stats_path()</span></code></a></li>
 </ul>
 </li>
@@ -357,6 +352,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel"><code class="docutils literal notranslate"><span class="pre">CasadiModel</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.auxiliaries"><code class="docutils literal notranslate"><span class="pre">CasadiModel.auxiliaries</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.create_change_penalty"><code class="docutils literal notranslate"><span class="pre">CasadiModel.create_change_penalty()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.create_combined_objective"><code class="docutils literal notranslate"><span class="pre">CasadiModel.create_combined_objective()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.create_conditional_objective"><code class="docutils literal notranslate"><span class="pre">CasadiModel.create_conditional_objective()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.create_sub_objective"><code class="docutils literal notranslate"><span class="pre">CasadiModel.create_sub_objective()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.differentials"><code class="docutils literal notranslate"><span class="pre">CasadiModel.differentials</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.do_step"><code class="docutils literal notranslate"><span class="pre">CasadiModel.do_step()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.get"><code class="docutils literal notranslate"><span class="pre">CasadiModel.get()</span></code></a></li>
@@ -376,8 +375,8 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig"><code class="docutils literal notranslate"><span class="pre">CasadiModelConfig</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.cost_function"><code class="docutils literal notranslate"><span class="pre">CasadiModelConfig.cost_function</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.inputs"><code class="docutils literal notranslate"><span class="pre">CasadiModelConfig.inputs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.objective"><code class="docutils literal notranslate"><span class="pre">CasadiModelConfig.objective</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.outputs"><code class="docutils literal notranslate"><span class="pre">CasadiModelConfig.outputs</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.parameters"><code class="docutils literal notranslate"><span class="pre">CasadiModelConfig.parameters</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.states"><code class="docutils literal notranslate"><span class="pre">CasadiModelConfig.states</span></code></a></li>
