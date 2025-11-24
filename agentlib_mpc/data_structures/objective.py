@@ -3,15 +3,14 @@ import numpy as np
 import re
 import casadi as ca
 from typing import Union
-# from agentlib_mpc.models.casadi_model import CasadiParameter, casadi_model.CasadiInput
-from agentlib_mpc.models import casadi_model
+from agentlib_mpc.models.casadi_model import CasadiParameter, CasadiInput
 
 
 class SubObjective:
     def __init__(
         self,
         expressions: ca.MX,
-        weight: Union[float, int, casadi_model.CasadiParameter] = 1,
+        weight: Union[float, int, CasadiParameter] = 1,
         name: str = None,
     ):
         """
@@ -35,7 +34,7 @@ class SubObjective:
 
     def __mul__(self, other):
         """Scale objective by a factor"""
-        if isinstance(other, (int, float, casadi_model.CasadiParameter)):
+        if isinstance(other, (int, float, CasadiParameter)):
             new_expression = other * self.expression
             new_weight = self.weight
             return SubObjective(new_expression, new_weight, f"scaled_{self.name}")
@@ -147,8 +146,8 @@ class SubObjective:
 class ChangePenaltyObjective(SubObjective):
     def __init__(
         self,
-        expressions: casadi_model.CasadiInput,
-        weight: Union[float, int, casadi_model.CasadiParameter],
+        expressions: CasadiInput,
+        weight: Union[float, int, CasadiParameter],
         name: str = None,
     ):
         """
@@ -157,12 +156,12 @@ class ChangePenaltyObjective(SubObjective):
             weight: Weight factor for this objective
             name: Optional name for identification/reporting
         """
-        self.control: casadi_model.CasadiInput = expressions
-        if not isinstance(expressions, casadi_model.CasadiInput):
+        self.control: CasadiInput = expressions
+        if not isinstance(expressions, CasadiInput):
             raise TypeError(
                 "Tried to create a control change objective with an "
                 "expression or different type of CasadiVariable. "
-                "Currently, only raw casadi_model.CasadiInputs are supported."
+                "Currently, only raw CasadiInputs are supported."
             )
         super().__init__(
             expressions=expressions,
@@ -172,7 +171,7 @@ class ChangePenaltyObjective(SubObjective):
 
     def __mul__(self, mul):
         """Scale change penalty objective by a factor"""
-        if isinstance(mul, (int, float, casadi_model.CasadiParameter)):
+        if isinstance(mul, (int, float, CasadiParameter)):
             new_weight = self.weight
             scaled_obj = ChangePenaltyObjective(self.control, new_weight, f"scaled_{self.name}")
             scaled_obj._scale_factor = mul
@@ -221,7 +220,7 @@ class CombinedObjective:
 
     def __mul__(self, other):
         """Scale all objectives in the combination"""
-        if isinstance(other, (int, float, casadi_model.CasadiParameter)):
+        if isinstance(other, (int, float, CasadiParameter)):
             scaled_objectives = [obj * other for obj in self.objectives]
             return CombinedObjective(*scaled_objectives, normalization=self.normalization)
         else:
