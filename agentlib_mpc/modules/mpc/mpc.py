@@ -94,7 +94,7 @@ class BaseMPCConfig(BaseModuleConfig):
     ):
         """Ensures r_del_u is only set for control variables."""
         if r_del_u:
-            raise DeprecationWarning(
+            raise RuntimeError(
                 "The 'r_del_u' parameter is no longer supported. "
                 "Please use delta_u objectives in the new ChangePenaltyObjective/CombinedObjective formulation instead. "
             )

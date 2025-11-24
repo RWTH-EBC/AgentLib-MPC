@@ -20,6 +20,8 @@ from agentlib.core.datamodels import (
     Causality,
 )
 from agentlib_mpc.data_structures.casadi_utils import ModelConstraint
+from agentlib_mpc.data_structures import objective
+
 import warnings
 
 
@@ -522,27 +524,29 @@ class CasadiModel(Model):
     def get_differential_values(self):
         return ca.vertcat(*[sta.value for sta in self.differentials])
 
-    def create_sub_objective(self, expressions, weight=1, name=None):
+    def create_sub_objective(self, expressions: ca.MX, weight: Union[float, int, CasadiParameter] = 1, name: str = None):
         """Create a SubObjective without requiring imports"""
         from agentlib_mpc.data_structures.objective import SubObjective
 
         return SubObjective(expressions=expressions, weight=weight, name=name)
 
-    def create_change_penalty(self, expressions, weight=1, name=None):
+    def create_change_penalty(self, expressions: CasadiInput, weight: Union[float, int, CasadiParameter] = 1, name: str = None):
         """Create a ChangePenaltyObjective without requiring imports"""
         from agentlib_mpc.data_structures.objective import ChangePenaltyObjective
 
         return ChangePenaltyObjective(expressions=expressions, weight=weight, name=name)
 
-    def create_combined_objective(self, *objectives, normalization=1.0):
+    def create_combined_objective(self,
+                                  *objectives: Union[objective.SubObjective, objective.ChangePenaltyObjective],
+                                  normalization: Union[float, int] = 1.0):
         """Create a CombinedObjective without requiring imports"""
         from agentlib_mpc.data_structures.objective import CombinedObjective
 
         return CombinedObjective(*objectives, normalization=normalization)
 
-    def create_conditional_objective(
-        self, *condition_objective_pairs, default_objective=None
-    ):
+    def create_conditional_objective(self,
+                                     *condition_objective_pairs, #[CombinedObjective]
+                                     default_objective=None):
         """Create a ConditionalObjective without requiring imports"""
         from agentlib_mpc.data_structures.objective import ConditionalObjective
 
