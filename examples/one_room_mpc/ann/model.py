@@ -95,12 +95,19 @@ class PhysicalModel(CasadiModel):
         ]
 
         # Objective function
-        objective = sum(
-            [
-                self.r_mDot * self.mDot,
-                self.s_T * self.T_slack**2,
-            ]
+        obj1 = self.create_sub_objective(
+            expressions=self.mDot,
+            weight=self.r_mDot,
+            name="control_costs",
         )
+
+        obj2 = self.create_sub_objective(
+            expressions=self.T_slack ** 2,
+            weight=self.s_T,
+            name="temp_slack"
+        )
+
+        objective = self.create_combined_objective(obj1, obj2, normalization=1)
         return objective
 
 
@@ -186,11 +193,18 @@ class DataDrivenModel(CasadiMLModel):
         ]
 
         # Objective function
-        objective = sum(
-            [
-                self.r_mDot * self.mDot,
-                self.s_T * self.T_slack**2,
-            ]
+        obj1 = self.create_sub_objective(
+            expressions=self.mDot,
+            weight=self.r_mDot,
+            name="control_costs",
         )
+
+        obj2 = self.create_sub_objective(
+            expressions=self.T_slack ** 2,
+            weight=self.s_T,
+            name="temp_slack"
+        )
+
+        objective = self.create_combined_objective(obj1, obj2, normalization=1)
 
         return objective

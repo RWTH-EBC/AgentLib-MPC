@@ -83,6 +83,22 @@ class BaseMPCConfig(BaseModuleConfig):
     )
     shared_variable_fields: list[str] = ["outputs", "controls"]
 
+    r_del_u: dict[str, float] = Field(
+        default={},
+        description="Weights that are applied to the change in control variables.",
+    )
+
+    @field_validator("r_del_u")
+    def check_r_del_u_in_controls(
+        cls, r_del_u: dict[str, float], info: FieldValidationInfo
+    ):
+        """Ensures r_del_u is only set for control variables."""
+        if r_del_u:
+            raise RuntimeError(
+                "The 'r_del_u' parameter is no longer supported. "
+                "Please use delta_u objectives in the new ChangePenaltyObjective/CombinedObjective formulation instead. "
+            )
+
     @field_validator("sampling_time")
     @classmethod
     def default_sampling_time(cls, samp_time, info: FieldValidationInfo):
@@ -377,9 +393,9 @@ class BaseMPC(BaseModule):
         """
         if stats is None:
             return
-        if stats["success"].all():
+        if stats["stats_success"].all():
             return
-        failures = ~stats["success"]
+        failures = ~stats["stats_success"]
         failure_indices = failures[failures].index.tolist()
         self.logger.warning(
             f"Warning: There were failed optimizations at the following times: "

@@ -82,8 +82,18 @@ class TestExamples(unittest.TestCase):
             func_name="run_example",
             with_plots=False,
             log_level=logging.FATAL,
+            with_dashboard=False,
         )
 
+    def test_mpc_multiple_shooting(self):
+        """Test the mpc agent example"""
+        self._run_example_with_return(
+            file="one_room_mpc//physical//simple_mpc_multiple_shooting.py",
+            func_name="run_example",
+            with_plots=False,
+            log_level=logging.FATAL,
+            with_dashboard=False,
+        )
     def test_mpc_time_variant_inputs(self):
         """Test the mpc agent example: simple_mpc_with_time_variant_inputs"""
 
@@ -94,12 +104,23 @@ class TestExamples(unittest.TestCase):
             log_level=logging.FATAL,
         )
 
+    def test_mpc_time_dependent_obj(self):
+        """Test the mpc agent example: with_change_control_penalty"""
+        self._run_example_with_return(
+            file="one_room_mpc//physical//simple_mpc_time_dependent_obj.py",
+            func_name="run_example",
+            with_plots=False,
+            with_dashboard=False,
+            log_level=logging.FATAL,
+        )
+
     def test_mpc_control_change(self):
         """Test the mpc agent example: with_change_control_penalty"""
         self._run_example_with_return(
             file="one_room_mpc//physical//with_change_control_penalty.py",
             func_name="run_example",
             with_plots=False,
+            with_dashboard=False,
             log_level=logging.FATAL,
         )
 
@@ -111,6 +132,20 @@ class TestExamples(unittest.TestCase):
             with_plots=False,
             log_level=logging.FATAL,
         )
+
+    def test_ml_models(self):
+            self._run_example_with_return(
+                file="one_room_mpc//ann//simple_mpc_nn.py",
+                func_name="run_example",
+                with_plots=False,
+                log_level=logging.FATAL,
+            )
+            self._run_example_with_return(
+                file="one_room_mpc//linreg//simple_mpc_linreg.py",
+                func_name="run_example",
+                with_plots=False,
+                log_level=logging.FATAL,
+            )
 
     def test_admm_local(self):
         self._run_example_with_return(

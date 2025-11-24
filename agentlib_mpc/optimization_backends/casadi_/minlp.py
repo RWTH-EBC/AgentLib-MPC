@@ -10,8 +10,7 @@ from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
 
 from agentlib_mpc.optimization_backends.casadi_ import basic
 from agentlib_mpc.optimization_backends.casadi_.core.casadi_backend import CasADiBackend
-
-# todo: All the names are minlp, but this is actually minlp capable
+from agentlib_mpc.optimization_backends.casadi_.core import delta_u
 
 
 class CasadiMINLPSystem(basic.BaseSystem):
@@ -31,6 +30,7 @@ class CasadiMINLPSystem(basic.BaseSystem):
         )
         super().initialize(model=model, var_ref=var_ref)
         self.is_linear = self._is_minlp()
+        self.objective = model.objective
 
     def _is_minlp(self) -> bool:
         inputs = ca.vertcat(*(v.full_symbolic for v in self.variables))
@@ -78,26 +78,32 @@ class DirectCollocation(basic.DirectCollocation):
         x0 = self.add_opt_par(sys.initial_state)
         xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)
 
+        uk = self.add_opt_var(sys.controls)
+
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
+
+        delta_u_objectives = delta_u.get_delta_u_objectives(sys)
 
         # Formulate the NLP
         # loop over prediction horizon
         while self.k < n:
             # New NLP variable for the control
+            u_prev = uk
             uk = self.add_opt_var(sys.controls)
             wk = self.add_opt_var(sys.binary_controls)
 
-            # New parameter for inputs
-            dk = self.add_opt_par(sys.non_controlled_inputs)
+            for delta_obj in delta_u_objectives:
+                self.objective_function += delta_u.get_objective(
+                    sys, delta_obj, u_prev, uk, const_par
+                )
 
             # perform inner collocation loop
             opt_vars_inside_inner = [sys.algebraics, sys.outputs]
-            opt_pars_inside_inner = []
+            opt_pars_inside_inner = [sys.non_controlled_inputs]
 
             constant_over_inner = {
                 sys.controls: uk,
-                sys.non_controlled_inputs: dk,
                 sys.model_parameters: const_par,
                 sys.binary_controls: wk,
             }

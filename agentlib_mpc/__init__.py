@@ -4,4 +4,4 @@ and data-driven modeling."""
 from .modules import MODULE_TYPES
 from .models import MODEL_TYPES
 
-__version__ = "0.6.9"
+__version__ = "1.0.0"

@@ -21,6 +21,9 @@ from agentlib.core.datamodels import (
 )
 from agentlib_mpc.data_structures.casadi_utils import ModelConstraint
 
+import warnings
+
+
 CasadiTypes = Union[ca.MX, ca.SX, ca.DM, ca.Sparsity]
 
 logger = logging.getLogger(__name__)
@@ -271,9 +274,10 @@ class CasadiOutput(CasadiVariable):
         json.dumps(data)
 
 
+from agentlib_mpc.data_structures.objective import SubObjective, ChangePenaltyObjective, CombinedObjective, ConditionalObjective
 class CasadiModelConfig(ModelConfig):
     system: CasadiTypes = None
-    cost_function: CasadiTypes = None
+    objective: CasadiTypes = None
 
     inputs: List[CasadiInput] = Field(default=list())
     outputs: List[CasadiOutput] = Field(default=list())
@@ -318,8 +322,24 @@ class CasadiModel(Model):
         self.time = ca.MX.sym("time", 1, 1)
 
         # read constraints, assign ode's and return cost function
-        self.cost_func = self.setup_system()
+        objective_result = self.setup_system()
         self._assert_outputs_are_defined()
+        self.objective = objective_result
+
+        # Handle both new and old objective formats
+        if not hasattr(objective_result, "get_casadi_expression"):
+            # Old objective system - backwards compatibility
+            from agentlib_mpc.data_structures import objective
+
+            self.objective = objective.CombinedObjective(
+                objective.SubObjective(
+                    expressions=self.objective, name=str(self.objective)
+                )
+            )
+            warnings.warn(
+                "\033[93mWARNING:\033[0m Model uses the deprecated objective formulation. "
+                "Consider migrating to the new CombinedObjective formulation.\n"
+            )
 
         # save system equations as a single casadi vector
         system = ca.vertcat(*[sta.ode for sta in self.differentials])
@@ -503,6 +523,32 @@ class CasadiModel(Model):
 
     def get_differential_values(self):
         return ca.vertcat(*[sta.value for sta in self.differentials])
+
+    def create_sub_objective(self, expressions: ca.MX, weight: Union[float, int, CasadiParameter] = 1, name: str = None):
+        """Create a SubObjective without requiring imports"""
+
+        return SubObjective(expressions=expressions, weight=weight, name=name)
+
+    def create_change_penalty(self, expressions: CasadiInput, weight: Union[float, int, CasadiParameter] = 1, name: str = None):
+        """Create a ChangePenaltyObjective without requiring imports"""
+
+        return ChangePenaltyObjective(expressions=expressions, weight=weight, name=name)
+
+    def create_combined_objective(self,
+                                  *objectives: Union[SubObjective, ChangePenaltyObjective],
+                                  normalization: Union[float, int] = 1.0):
+        """Create a CombinedObjective without requiring imports"""
+
+        return CombinedObjective(*objectives, normalization=normalization)
+
+    def create_conditional_objective(self,
+                                     *condition_objective_pairs: Union[CombinedObjective],
+                                     default_objective=None):
+        """Create a ConditionalObjective without requiring imports"""
+
+        return ConditionalObjective(
+            *condition_objective_pairs, default_objective=default_objective
+        )
 
     def set_differential_values(self, values: Union[List, np.ndarray]):
         """Sets the values for all differential variables. Provided values list MUST
