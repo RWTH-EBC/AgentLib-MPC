@@ -22,7 +22,8 @@
             "ipopt.print_level": 0
           }
         },
-        "results_file": "results//cooler_res.csv"
+        "results_file": "results//cooler_res.csv",
+        "overwrite_result_file": true
       },
       "coordinator": {
         "agent_id": "Coordinator",
@@ -55,8 +56,7 @@
           "alias": "mDotCoolAir",
           "value": 0.05
         }
-      ],
-      "r_del_u": {"mDot":  10}
+      ]
     },
     "configs/communicators/cooler_mqtt.json"
   ]

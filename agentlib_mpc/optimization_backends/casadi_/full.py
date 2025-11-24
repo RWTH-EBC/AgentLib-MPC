@@ -5,20 +5,20 @@ from agentlib_mpc.data_structures.casadi_utils import (
     DiscretizationMethod,
 )
 from agentlib_mpc.data_structures.mpc_datamodels import (
-    FullVariableReference,
+    VariableReference,
 )
-from agentlib_mpc.models.casadi_model import CasadiModel, CasadiParameter
+from agentlib_mpc.models.casadi_model import CasadiModel
 from agentlib_mpc.optimization_backends.casadi_.core.casadi_backend import CasADiBackend
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
-    OptimizationParameter
+    OptimizationParameter,
 )
+from agentlib_mpc.optimization_backends.casadi_.core import delta_u
 
 
 class FullSystem(basic.BaseSystem):
     last_control: OptimizationParameter
-    r_del_u: OptimizationParameter  # penalty on change of control between time steps
 
-    def initialize(self, model: CasadiModel, var_ref: FullVariableReference):
+    def initialize(self, model: CasadiModel, var_ref: VariableReference):
         super().initialize(model=model, var_ref=var_ref)
 
         self.last_control = OptimizationParameter.declare(
@@ -28,15 +28,9 @@ class FullSystem(basic.BaseSystem):
             use_in_stage_function=False,
             assert_complete=True,
         )
-        self.r_del_u = OptimizationParameter.declare(
-            denotation="r_del_u",
-            variables=[CasadiParameter(name=r_del_u) for r_del_u in var_ref.r_del_u],
-            ref_list=var_ref.r_del_u,
-            use_in_stage_function=False,
-            assert_complete=True,
-        )
 
         self.time = model.time
+        self.objective = model.objective
 
 
 class DirectCollocation(basic.DirectCollocation):
@@ -60,7 +54,8 @@ class DirectCollocation(basic.DirectCollocation):
 
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
-        du_weights = self.add_opt_par(sys.r_del_u)
+
+        delta_u_objectives = delta_u.get_delta_u_objectives(sys)
 
         # Formulate the NLP
         # loop over prediction horizon
@@ -68,28 +63,24 @@ class DirectCollocation(basic.DirectCollocation):
             # New NLP variable for the control
             u_prev = uk
             uk = self.add_opt_var(sys.controls)
-            # penalty for control change between time steps
-            self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
 
-            # New parameter for inputs
-            dk = self.add_opt_par(sys.non_controlled_inputs)
+            for delta_obj in delta_u_objectives:
+                self.objective_function += delta_u.get_objective(
+                    sys, delta_obj, u_prev, uk, const_par
+                )
 
             # perform inner collocation loop
             opt_vars_inside_inner = [sys.algebraics, sys.outputs]
-            opt_pars_inside_inner = []
+            opt_pars_inside_inner = [sys.non_controlled_inputs]
 
-            constant_over_inner = {
-                sys.controls: uk,
-                sys.non_controlled_inputs: dk,
-                sys.model_parameters: const_par
-            }
+            constant_over_inner = {sys.controls: uk, sys.model_parameters: const_par}
             xk_end, constraints = self._collocation_inner_loop(
                 collocation=collocation_matrices,
                 state_at_beginning=xk,
                 states=sys.states,
                 opt_vars=opt_vars_inside_inner,
                 opt_pars=opt_pars_inside_inner,
-                const=constant_over_inner
+                const=constant_over_inner,
             )
 
             # increment loop counter and time
@@ -123,8 +114,9 @@ class MultipleShooting(basic.MultipleShooting):
         uk = self.add_opt_par(sys.last_control)
 
         # Parameters that are constant over the horizon
-        du_weights = self.add_opt_par(sys.r_del_u)
         const_par = self.add_opt_par(sys.model_parameters)
+
+        delta_u_objectives = delta_u.get_delta_u_objectives(sys)
 
         # ODE is used here because the algebraics can be calculated with the stage function
         opt_integrator = self._create_ode(sys, opts, self.options.integrator)
@@ -132,8 +124,12 @@ class MultipleShooting(basic.MultipleShooting):
         while self.k < n:
             u_prev = uk
             uk = self.add_opt_var(sys.controls)
-            # penalty for control change between time steps
-            self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
+
+            for delta_obj in delta_u_objectives:
+                self.objective_function += delta_u.get_objective(
+                    sys, delta_obj, u_prev, uk, const_par
+                )
+
             dk = self.add_opt_par(sys.non_controlled_inputs)
             zk = self.add_opt_var(sys.algebraics)
             yk = self.add_opt_var(sys.outputs)

@@ -22,7 +22,8 @@
         "discretization_options": {
           "method":"multiple_shooting"
         },
-        "results_file": "admm_opt.csv"
+        "results_file": "admm_opt.csv",
+        "overwrite_result_file": true
       },
       "time_step": 240,
       "prediction_horizon": 10,

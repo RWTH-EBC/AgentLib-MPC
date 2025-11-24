@@ -1,4 +1,5 @@
 import logging
+import sys
 from pathlib import Path
 import matplotlib.pyplot as plt
 import os
@@ -35,6 +36,7 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                         "method": "multiple_shooting",
                     },
                     "results_file": "results//opt.csv",
+                    "overwrite_result_file": True,
                     "solver": {"name": "ipopt", "options": {"ipopt.print_level": 0}},
                 },
                 "time_step": 300,
@@ -83,14 +85,19 @@ def agent_configs(ml_model_path: str) -> list[dict]:
 
 
 def run_example(with_plots=True, log_level=logging.INFO, until=8000):
-    # Change the working directly so that relative paths work
-    os.chdir(os.path.abspath(os.path.dirname(__file__)))
+    # Change the working directory so that relative paths work
+    script_dir = os.path.abspath(os.path.dirname(__file__))
+    os.chdir(script_dir)
+
+    # Add the script directory to Python path for imports
+    if script_dir not in sys.path:
+        sys.path.insert(0, script_dir)
     logging.basicConfig(level=log_level)
 
-    # gets the subdirectory of anns with the highest number, i.e. the longest training
+    # gets the subdirectory of gprs with the highest number, i.e. the longest training
     # time
     try:
-        ann_path = list(Path.cwd().glob("gprs/*/ml_model.json"))[-1]
+        ml_model_path = list(Path.cwd().glob("gprs/*/ml_model.json"))[-1]
     except IndexError:
         # if there is none, we have to perform the training first
         import training_gpr
@@ -98,11 +105,11 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000):
         training_gpr.main(
             training_time=3600 * 24 * 1, plot_results=False, step_size=300
         )
-        ann_path = list(Path.cwd().glob("gprs/*/ml_model.json"))[-1]
+        ml_model_path = list(Path.cwd().glob("gprs/*/ml_model.json"))[-1]
 
     # model.sim_step(mDot=0.02, load=30, T_in=290.15, cp=1000, C=100_000, T=298)
     mas = LocalMASAgency(
-        agent_configs=agent_configs(ml_model_path=str(ann_path)),
+        agent_configs=agent_configs(ml_model_path=str(ml_model_path)),
         env=ENV_CONFIG,
         variable_logging=False,
     )

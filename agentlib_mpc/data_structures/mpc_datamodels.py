@@ -15,6 +15,9 @@ from agentlib_mpc.data_structures.interpolation import InterpolationMethods
 from pydantic import ConfigDict
 
 
+MPC_FLAG_ACTIVE = "MPC_FLAG_ACTIVE"
+
+
 class InitStatus(str, Enum):
     """Keep track of the readyness status of the MPC."""
 
@@ -44,7 +47,8 @@ class DiscretizationOptions(pydantic.BaseModel):
 class Results(Protocol):
     df: pd.DataFrame
 
-    def __getitem__(self, item: str) -> Sequence[float]: ...
+    def __getitem__(self, item: str) -> Sequence[float]:
+        ...
 
 
 @dataclasses.dataclass
@@ -71,6 +75,7 @@ class BaseVariableReference:
         all_variables = set(chain.from_iterable(self.__dict__.values()))
         return item in all_variables
 
+
 VariableReferenceT = TypeVar("VariableReferenceT", bound=BaseVariableReference)
 
 
@@ -81,18 +86,6 @@ class VariableReference(BaseVariableReference):
     inputs: List[str] = dataclasses.field(default_factory=list)
     parameters: List[str] = dataclasses.field(default_factory=list)
     outputs: List[str] = dataclasses.field(default_factory=list)
-
-
-def r_del_u_convention(name: str) -> str:
-    """Turns the name of a control variable into its weight via convention"""
-    return f"r_del_u_{name}"
-
-
-@dataclasses.dataclass
-class FullVariableReference(VariableReference):
-    @property
-    def r_del_u(self) -> List[str]:
-        return [r_del_u_convention(cont) for cont in self.controls]
 
 
 @dataclasses.dataclass

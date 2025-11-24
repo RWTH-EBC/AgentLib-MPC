@@ -27,7 +27,6 @@ from agentlib_mpc.models.casadi_model import (
     CasadiModelConfig,
     CasadiState,
     CasadiOutput,
-    CasadiTypes,
 )
 from agentlib_mpc.models.serialized_ml_model import (
     SerializedMLModel,
@@ -182,6 +181,23 @@ class CasadiMLModel(CasadiModel):
 
         # construct a stage function for optimization and simulation
         self.sim_step = self._make_unified_predict_function()
+
+    def _get_forbidden_variable_names(self) -> set[str]:
+        return (
+            super()
+            ._get_forbidden_variable_names()
+            .union(
+                {
+                    "sim_step",
+                    "past_value",
+                    "lags_mx_store",
+                    "max_lag",
+                    "lags_dict",
+                    "ml_model_dict",
+                    "casadi_ml_model_dict",
+                }
+            )
+        )
 
     def setup_system(self):
         return 0
@@ -567,15 +583,17 @@ class CasadiMLModel(CasadiModel):
         """
 
         if t_sample:
-            ...
-            assert t_sample == self.dt
+            if t_sample < self.dt or t_sample % self.dt != 0:
+                raise ConfigurationError(
+                    f"Sampling Time of Model must be multiple of MLModel time step. Current"
+                    f" MLModel time step is {self.dt} and chosen sampling time is {t_sample}."
+                )
 
         ml_model_input = self.get_ml_model_values(t_start)
         full_input = {
             var.name: var.value for var in self.variables if var.value is not None
         }
         full_input.update(ml_model_input)
-
 
         result = self.sim_step(**full_input)
         end_time = t_start + self.dt

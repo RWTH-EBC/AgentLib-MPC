@@ -216,10 +216,8 @@ def run_example(with_plots=True, log_level=logging.INFO, until=10000):
         agent_configs=[AGENT_MPC, AGENT_SIM], env=ENV_CONFIG, variable_logging=True
     )
     mas.run(until=until)
-    results = mas.get_results()
+    results = mas.get_results(cleanup=True)
     if with_plots:
-        # show_dashboard(results["myMPCAgent"]["myMPC"])
-
         import matplotlib.pyplot as plt
         from agentlib_mpc.utils.plotting.mpc import plot_mpc
 

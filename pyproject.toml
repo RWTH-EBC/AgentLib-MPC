@@ -22,7 +22,7 @@ classifiers = [
     'Programming Language :: Python :: 3.12',
 ]
 dependencies = [
-    "numpy>=1.17.4, <2.0",
+    "numpy>=1.17.4",
     "pandas>=1.1.0",
     "scipy>=1.5.2",
     "simpy>=4.0.1",
@@ -39,13 +39,40 @@ dependencies = [
 dynamic = ["version"]
 
 [project.optional-dependencies]
-
-
 fmu = ['FMPy>=0.3.6']
 ml = ["keras>=2.6.0", "tensorflow>=2.6.0", "scikit-learn"]
+physXAI = ['agentlib_mpc[ml]', "physXAI @ git+https://github.com/RWTH-EBC/physXAI.git"]
 interactive = ['plotly>=5.20.0', 'dash>=2.16.1', 'dash_daq']
+cia = ["pycombina @ git+https://github.com/adbuerger/pycombina.git"]
 full = ['agentlib_mpc[fmu,ml,interactive]', 'agentlib[full]']
 
 [package.urls]
 homepage = "https://github.com/RWTH-EBC/AgentLib_MPC"
 documentation = "https://github.com/RWTH-EBC/AgentLib_MPC"
+
+[tool.coverage.run]
+source = ["agentlib_mpc", "examples"]
+branch = true
+
+[tool.coverage.paths]
+# Map temporary test directories back to actual examples directory
+# All examples are copied to paths ending in /ci_testing/
+examples = [
+    "examples/",
+    "*/ci_testing",
+]
+
+source = [
+    "agentlib_mpc/",
+    "*/agentlib_mpc",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]

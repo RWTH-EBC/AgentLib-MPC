@@ -19,7 +19,6 @@ from agentlib_mpc.data_structures.mpc_datamodels import (
     InitStatus,
     Results,
 )
-from agentlib_mpc.models.serialized_ml_model import SerializedMLModel
 from agentlib_mpc.optimization_backends import backend_types, uninstalled_backend_types
 from agentlib_mpc.optimization_backends.backend import (
     OptimizationBackend,
@@ -84,6 +83,22 @@ class BaseMPCConfig(BaseModuleConfig):
     )
     shared_variable_fields: list[str] = ["outputs", "controls"]
 
+    r_del_u: dict[str, float] = Field(
+        default={},
+        description="Weights that are applied to the change in control variables.",
+    )
+
+    @field_validator("r_del_u")
+    def check_r_del_u_in_controls(
+        cls, r_del_u: dict[str, float], info: FieldValidationInfo
+    ):
+        """Ensures r_del_u is only set for control variables."""
+        if r_del_u:
+            raise RuntimeError(
+                "The 'r_del_u' parameter is no longer supported. "
+                "Please use delta_u objectives in the new ChangePenaltyObjective/CombinedObjective formulation instead. "
+            )
+
     @field_validator("sampling_time")
     @classmethod
     def default_sampling_time(cls, samp_time, info: FieldValidationInfo):
@@ -103,7 +118,7 @@ def create_optimization_backend(optimization_backend, agent_id):
     optimization_backend["name"] = agent_id
     if isinstance(_type, dict):
         custom_cls = custom_injection(config=_type)
-        backend = custom_cls(**optimization_backend)
+        backend = custom_cls(config=optimization_backend)
     elif isinstance(_type, str):
         if _type in uninstalled_backend_types:
             raise OptionalDependencyError(
@@ -169,20 +184,6 @@ class BaseMPC(BaseModule):
         disc_opts.prediction_horizon = self.config.prediction_horizon
         disc_opts.time_step = self.config.time_step
         return opti_back
-
-    def _update_ml_model(self, variable: AgentVariable):
-        #todo: check if var is a model or path --> both possible
-        value = variable.value
-        opti_back = self.config.optimization_backend['model']
-        # if isinstance(value, dict):
-        #     opti_back['ml_model_sources'] = [value]
-        # elif isinstance(value, str):
-        #     opti_back['ml_model_sources'] = [value]
-        opti_back['ml_model_sources'] = [value]
-        self.init_status = mpc_datamodels.InitStatus.during_update
-        self._init_optimization()
-        self.init_status = mpc_datamodels.InitStatus.ready
-
 
     def _setup_var_ref(self) -> mpc_datamodels.VariableReferenceT:
         return VariableReference.from_config(self.config)
@@ -346,7 +347,7 @@ class BaseMPC(BaseModule):
             ub = self.get(control).ub
             lb = self.get(control).lb
             # take the first entry of the control trajectory
-            actuation = solution[control][0]
+            actuation = float(solution[control][0])
             # if variables only slightly breach boundaries, clip
             if ub < actuation < ub + tolerance:
                 actuation = ub
@@ -392,9 +393,9 @@ class BaseMPC(BaseModule):
         """
         if stats is None:
             return
-        if stats["success"].all():
+        if stats["stats_success"].all():
             return
-        failures = ~stats["success"]
+        failures = ~stats["stats_success"]
         failure_indices = failures[failures].index.tolist()
         self.logger.warning(
             f"Warning: There were failed optimizations at the following times: "

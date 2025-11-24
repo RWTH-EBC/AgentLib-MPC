@@ -7,7 +7,7 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 
 from agentlib_mpc.data_structures import ml_model_datatypes
 from agentlib_mpc.models.casadi_predictor import CasadiGPR
-from agentlib_mpc.models.serialized_ml_model import SerializedGPR, CustomGPR, MLModels
+from agentlib_mpc.models.serialized_ml_model import SerializedGPR, CustomGPR
 from fixtures.gpr import GPRTrainer
 from fixtures.data_generator import DataGenerator
 

@@ -21,6 +21,9 @@ from agentlib.core.datamodels import (
 )
 from agentlib_mpc.data_structures.casadi_utils import ModelConstraint
 
+import warnings
+
+
 CasadiTypes = Union[ca.MX, ca.SX, ca.DM, ca.Sparsity]
 
 logger = logging.getLogger(__name__)
@@ -271,9 +274,10 @@ class CasadiOutput(CasadiVariable):
         json.dumps(data)
 
 
+from agentlib_mpc.data_structures.objective import SubObjective, ChangePenaltyObjective, CombinedObjective, ConditionalObjective
 class CasadiModelConfig(ModelConfig):
     system: CasadiTypes = None
-    cost_function: CasadiTypes = None
+    objective: CasadiTypes = None
 
     inputs: List[CasadiInput] = Field(default=list())
     outputs: List[CasadiOutput] = Field(default=list())
@@ -296,17 +300,46 @@ class CasadiModel(Model):
     parameters and override the setup_system() method."""
 
     config: CasadiModelConfig
+    # Disable __setattr__ checks during initialization as self.config does not exists at first
+    _is_initialized = False
 
     def __init__(self, **kwargs):
         # Initializes the config
         super().__init__(**kwargs)
+        self._is_initialized = True
+        # Check forbidden names
+        bad_variable_names = self._get_forbidden_variable_names().intersection(
+            self.config.get_variable_names()
+        )
+        if bad_variable_names:
+            raise NameError(
+                "The following variable names are not allowed as the intersect "
+                f"with internal names of {self.__class__.__name__}: "
+                f"{' ,'.join(bad_variable_names)}"
+            )
 
         self.constraints = []  # constraint functions
         self.time = ca.MX.sym("time", 1, 1)
 
         # read constraints, assign ode's and return cost function
-        self.cost_func = self.setup_system()
+        objective_result = self.setup_system()
         self._assert_outputs_are_defined()
+        self.objective = objective_result
+
+        # Handle both new and old objective formats
+        if not hasattr(objective_result, "get_casadi_expression"):
+            # Old objective system - backwards compatibility
+            from agentlib_mpc.data_structures import objective
+
+            self.objective = objective.CombinedObjective(
+                objective.SubObjective(
+                    expressions=self.objective, name=str(self.objective)
+                )
+            )
+            warnings.warn(
+                "\033[93mWARNING:\033[0m Model uses the deprecated objective formulation. "
+                "Consider migrating to the new CombinedObjective formulation.\n"
+            )
 
         # save system equations as a single casadi vector
         system = ca.vertcat(*[sta.ode for sta in self.differentials])
@@ -315,6 +348,26 @@ class CasadiModel(Model):
         self.integrator = None  # set in intitialize
         self.initialize()
 
+    def _get_forbidden_variable_names(self) -> set[str]:
+        """
+        Function gives all variable names which are forbidden
+        due to the fact that we override __setattr__ in order
+        to avoid users creating instance attributes for variable
+        names.
+        If a user names a variable, e.g. "constraints", the
+        error would not point to the variable name being a
+        bad choice.
+
+        Returns:
+            Set of forbidden names as str
+        """
+        return {
+            "constraints",
+            "cost_func",
+            "time",
+            "system",
+            "integrator",
+        }
 
     def _assert_outputs_are_defined(self):
         """Raises an Error, if the output variables are not defined with an equation"""
@@ -329,17 +382,18 @@ class CasadiModel(Model):
         if t_sample is None:
             t_sample = self.dt
         pars = self.get_input_values(t_start)
+        z0 = self.get_initial_guess_outputs()
         t_sim = 0
         if self.differentials:
             x0 = self.get_differential_values()
             curr_x = x0
             while t_sim < t_sample:
-                result = self.integrator(x0=curr_x, p=pars)
+                result = self.integrator(x0=curr_x, p=pars, z0=z0)
                 t_sim += self.dt
                 curr_x = result["xf"]
             self.set_differential_values(np.array(result["xf"]).flatten())
         else:
-            result = self.integrator(p=pars)
+            result = self.integrator(p=pars, z0=z0)
         if self.outputs:
             self.set_output_values(np.array(result["zf"]).flatten())
 
@@ -349,7 +403,8 @@ class CasadiModel(Model):
         algebraic values at the end of the interval."""
         opts = {"t0": 0, "tf": self.dt}
         par = ca.vertcat(
-            *[inp.sym for inp in chain.from_iterable([self.inputs, self.parameters])], self.time
+            *[inp.sym for inp in chain.from_iterable([self.inputs, self.parameters])],
+            self.time,
         )
         x = ca.vertcat(*[sta.sym for sta in self.differentials])
         z = ca.vertcat(*[var.sym for var in self.outputs])
@@ -381,7 +436,11 @@ class CasadiModel(Model):
             }
             integrator_ = ca.integrator("system", "idas", dae, opts)
             integrator = ca.Function(
-                "system", [par], [integrator_(x0=0, p=par)["zf"]], ["p"], ["zf"]
+                "system",
+                [par, z],
+                [integrator_(x0=0, p=par, z0=z)["zf"]],
+                ["p", "z0"],
+                ["zf"],
             )
         return integrator
 
@@ -451,11 +510,45 @@ class CasadiModel(Model):
 
     def get_input_values(self, t_start):
         return ca.vertcat(
-            *[inp.value for inp in chain.from_iterable([self.inputs, self.parameters])],t_start
+            *[inp.value for inp in chain.from_iterable([self.inputs, self.parameters])],
+            t_start,
         )
+
+    def get_initial_guess_outputs(self):
+        values = [
+            var.value if var.value is not None else 0
+            for var in chain.from_iterable([self.outputs])
+        ]
+        return ca.vertcat(*values)
 
     def get_differential_values(self):
         return ca.vertcat(*[sta.value for sta in self.differentials])
+
+    def create_sub_objective(self, expressions: ca.MX, weight: Union[float, int, CasadiParameter] = 1, name: str = None):
+        """Create a SubObjective without requiring imports"""
+
+        return SubObjective(expressions=expressions, weight=weight, name=name)
+
+    def create_change_penalty(self, expressions: CasadiInput, weight: Union[float, int, CasadiParameter] = 1, name: str = None):
+        """Create a ChangePenaltyObjective without requiring imports"""
+
+        return ChangePenaltyObjective(expressions=expressions, weight=weight, name=name)
+
+    def create_combined_objective(self,
+                                  *objectives: Union[SubObjective, ChangePenaltyObjective],
+                                  normalization: Union[float, int] = 1.0):
+        """Create a CombinedObjective without requiring imports"""
+
+        return CombinedObjective(*objectives, normalization=normalization)
+
+    def create_conditional_objective(self,
+                                     *condition_objective_pairs: Union[CombinedObjective],
+                                     default_objective=None):
+        """Create a ConditionalObjective without requiring imports"""
+
+        return ConditionalObjective(
+            *condition_objective_pairs, default_objective=default_objective
+        )
 
     def set_differential_values(self, values: Union[List, np.ndarray]):
         """Sets the values for all differential variables. Provided values list MUST
@@ -474,6 +567,14 @@ class CasadiModel(Model):
 
     def __setattr__(self, key, value):
         super().__setattr__(key, value)
+        if self._is_initialized and key in self.config.get_variable_names():
+            raise AttributeError(
+                f"You are trying to create an instance attribute with the name {key}, "
+                f"which is also in the variables of {self.__class__.__name__}. This can "
+                f"lead to unwanted behaviour. Assign variables or equations via .alg "
+                f"for CasadiOutputs and .ode for CasadiStates. To change other variable attributes, "
+                f"use .value, .lb or similar."
+            )
         # todo
 
 

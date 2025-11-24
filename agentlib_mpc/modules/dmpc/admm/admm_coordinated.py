@@ -166,6 +166,7 @@ class CoordinatedADMM(MiniEmployee, ADMM):
         self._result = self.optimization_backend.solve(
             now=self._start_optimization_at, current_vars=opt_inputs
         )
+        self._result_obtained = True
 
         # send optimizationData back to coordinator to signal finished
         # optimization. Select only trajectory where index is at least zero, to not
@@ -173,11 +174,9 @@ class CoordinatedADMM(MiniEmployee, ADMM):
         cons_traj = {}
         exchange_traj = {}
         for coup in self.config.couplings:
-            cons_traj[coup.alias] = self._result[
-                coup.name
-            ]  # we can serialize numpy now, maybe make this easier
+            cons_traj[coup.alias] = self._result[coup.name].ravel()
         for exchange in self.config.exchange:
-            exchange_traj[exchange.alias] = self._result[exchange.name]
+            exchange_traj[exchange.alias] = self._result[exchange.name].ravel()
 
         opt_return = adt.AgentToCoordinator(
             local_trajectory=cons_traj, local_exchange_trajectory=exchange_traj

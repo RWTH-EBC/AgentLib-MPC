@@ -27,6 +27,7 @@ from agentlib_mpc.optimization_backends.casadi_.admm import (
     CasadiADMMSystem,
     CasADiADMMBackend,
 )
+from agentlib_mpc.optimization_backends.casadi_.core import delta_u
 
 logger = logging.getLogger(__name__)
 
@@ -94,15 +95,8 @@ class CasadiADMMNNSystem(CasadiADMMSystem, CasadiMLSystem):
             use_in_stage_function=False,
             assert_complete=True,
         )
-        self.r_del_u = OptimizationParameter.declare(
-            denotation="r_del_u",
-            variables=[CasadiParameter(name=r_del_u) for r_del_u in var_ref.r_del_u],
-            ref_list=var_ref.r_del_u,
-            use_in_stage_function=False,
-            assert_complete=True,
-        )
 
-        self.cost_function = model.cost_func
+        self.objective = model.objective
         self.model_constraints = Constraint(
             function=ca.vertcat(*[c.function for c in model.get_constraints()]),
             lb=ca.vertcat(*[c.lb for c in model.get_constraints()]),
@@ -182,21 +176,30 @@ class CasadiADMMNNSystem(CasadiADMMSystem, CasadiMLSystem):
         )
 
         # add admm terms to objective function
-        admm_objective = 0
         rho = self.penalty_factor.full_symbolic[0]
-        for i in range(len(var_ref.couplings)):
+        admm_terms = {}
+        for i, coupling in enumerate(var_ref.couplings):
             admm_in = self.global_couplings.full_symbolic[i]
             admm_out = self.local_couplings.full_symbolic[i]
             admm_lam = self.multipliers.full_symbolic[i]
-            admm_objective += admm_lam * admm_out + rho / 2 * (admm_in - admm_out) ** 2
+            admm_terms[f"admm_multiplier_{coupling.name}"] = admm_lam * admm_out
+            admm_terms[f"admm_augmentation_{coupling.name}"] = (
+                rho / 2 * (admm_in - admm_out) ** 2
+            )
 
-        for i in range(len(var_ref.exchange)):
+        for i, coupling in enumerate(var_ref.exchange):
             admm_in = self.exchange_diff.full_symbolic[i]
             admm_out = self.local_exchange.full_symbolic[i]
             admm_lam = self.exchange_multipliers.full_symbolic[i]
-            admm_objective += admm_lam * admm_out + rho / 2 * (admm_in - admm_out) ** 2
+            admm_terms[f"admm_multiplier_{coupling.name}"] = admm_lam * admm_out
+            admm_terms[f"admm_augmentation_{coupling.name}"] = (
+                rho / 2 * (admm_in - admm_out) ** 2
+            )
 
-        self.cost_function += admm_objective
+        for name, term in admm_terms.items():
+            self.objective.objectives += [
+                SubObjective(term, name="admm_augmentation_term")
+            ]
 
     @property
     def variables(self) -> list[OptimizationVariable]:
@@ -232,7 +235,7 @@ class CasadiADMMNNSystem(CasadiADMMSystem, CasadiMLSystem):
         return {
             var.name: var
             for var in self.quantities
-            if not var.name in omit_in_blackbox_function
+            if var.name not in omit_in_blackbox_function
         }
 
 
@@ -240,13 +243,15 @@ class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_ML):
     max_lag: int
 
     def _discretize(self, sys: CasadiADMMNNSystem):
+
         n = self.options.prediction_horizon
         ts = self.options.time_step
 
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
         rho = self.add_opt_par(sys.penalty_factor)
-        du_weights = self.add_opt_par(sys.r_del_u)
+
+        delta_u_objectives = delta_u.get_delta_u_objectives(sys)
 
         pre_grid_states = [ts * i for i in range(-sys.max_lag + 1, 1)]
         inputs_lag = min(-2, -sys.max_lag)  # at least -2, to consider last control
@@ -336,10 +341,13 @@ class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_ML):
         for time in prediction_grid:
             stage_mx = mx_dict[time]
 
-            # add penalty on control change between intervals
-            u_prev = mx_dict[time - ts][sys.controls.name]
-            uk = stage_mx[sys.controls.name]
-            self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
+            if delta_u_objectives:
+                u_prev = mx_dict[time - ts][sys.controls.name]
+                uk = stage_mx[sys.controls.name]
+                for delta_obj in delta_u_objectives:
+                    self.objective_function += delta_u.get_objective(
+                        sys, delta_obj, u_prev, uk, const_par
+                    )
 
             # get stage arguments from current time step
             stage_arguments = {
@@ -470,7 +478,7 @@ class MultipleShootingADMMNN(ADMMMultipleShooting, MultipleShooting_ML):
         # aggregate outputs
         outputs = [
             state_output,
-            system.cost_function,
+            system.objective.get_casadi_expression(),
             *constraints_func,
             *constraints_lb,
             *constraints_ub,

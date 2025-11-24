@@ -4,8 +4,6 @@ from typing import Dict, Optional, Tuple
 import pandas as pd
 import pydantic
 from agentlib.core import (
-    BaseModuleConfig,
-    BaseModule,
     Agent,
     AgentVariable,
     Source,
@@ -15,7 +13,11 @@ from pydantic import Field
 
 from agentlib_mpc.data_structures import mpc_datamodels
 from agentlib_mpc.data_structures.mpc_datamodels import Results
-from agentlib_mpc.modules.mpc import create_optimization_backend
+from agentlib_mpc.modules.mpc.mpc import create_optimization_backend
+from agentlib_mpc.modules.mpc.skippable_mixin import (
+    SkippableMixinConfig,
+    SkippableMixin,
+)
 from agentlib_mpc.optimization_backends.backend import (
     OptimizationBackendT,
 )
@@ -24,7 +26,7 @@ from agentlib_mpc.utils.analysis import load_mpc, load_mpc_stats
 AG_VAR_DICT = dict[str, AgentVariable]
 
 
-class MHEConfig(BaseModuleConfig):
+class MHEConfig(SkippableMixinConfig):
     """
     Pydantic data model for MPC configuration parser
     """
@@ -92,7 +94,7 @@ class MHEConfig(BaseModuleConfig):
         return state_weights
 
 
-class MHE(BaseModule):
+class MHE(SkippableMixin):
     """
     A moving horizon estimator.
     """
@@ -147,6 +149,7 @@ class MHE(BaseModule):
         )
         opti_back.register_logger(self.logger)
         disc_opts = opti_back.config.discretization_options
+        disc_opts.prediction_horizon = self.config.horizon
         disc_opts.time_step = self.config.time_step
         return opti_back
 
@@ -172,13 +175,18 @@ class MHE(BaseModule):
 
     def process(self):
         while True:
-            current_vars = self.collect_variables_for_optimization()
-            solution = self.optimization_backend.solve(
-                now=self.env.now, current_vars=current_vars
-            )
-            self._set_estimation(solution)
-            self._remove_old_values_from_history()
+            self.do_step()
             yield self.env.timeout(self.config.time_step)
+
+    def do_step(self):
+        if self.check_if_should_be_skipped():
+            return
+        current_vars = self.collect_variables_for_optimization()
+        solution = self.optimization_backend.solve(
+            now=self.env.now, current_vars=current_vars
+        )
+        self._set_estimation(solution)
+        self._remove_old_values_from_history()
 
     def _remove_old_values_from_history(self):
         """Clears the history of all entries that are older than current time minus

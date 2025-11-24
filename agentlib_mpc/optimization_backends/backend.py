@@ -5,7 +5,6 @@ import logging
 from pathlib import Path
 from typing import Dict, Union, Callable, TypeVar, Optional
 
-import pandas as pd
 import pydantic
 from agentlib.core.errors import ConfigurationError
 from pydantic import ConfigDict
@@ -97,7 +96,6 @@ class OptimizationBackend(abc.ABC):
         self.config = self.config_type(**config)
         self.model: ModelT = self.model_from_config(self.config.model)
         self.var_ref: Optional[mpc_datamodels.VariableReference] = None
-        self.cost_function: Optional[Callable] = None
         self.stats = {}
         self._created_file: bool = False  # flag if we checked the file location
 
@@ -185,13 +183,15 @@ class OptimizationBackend(abc.ABC):
         variables"""
         return {}
 
-    def results_file_exists(self) -> bool:
-        """Checks if the results file already exists, and if not, creates it with
-        headers."""
+    def results_folder_exists(self) -> bool:
+        """
+        Checks if the results folder already exists, and if not, creates it with
+        headers.
+        """
         if self._created_file:
             return True
 
-        if self.config.results_file.is_file():
+        if self.results_file_exists():
             # todo, this case is weird, as it is the mistake-append
             self._created_file = True
             return True
@@ -200,6 +200,12 @@ class OptimizationBackend(abc.ABC):
         self.config.results_file.parent.mkdir(parents=True, exist_ok=True)
         self._created_file = True
         return False
+
+    def results_file_exists(self) -> bool:
+        """
+        Checks if the results file already exists.
+        """
+        return self.config.results_file.is_file()
 
     def update_model_variables(self, current_vars: Dict[str, AgentVariable]):
         """

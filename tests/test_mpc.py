@@ -10,7 +10,6 @@ from agentlib.core.agent import Agent
 from agentlib.core.errors import ConfigurationError
 
 from agentlib_mpc.data_structures.interpolation import InterpolationMethods
-from agentlib_mpc.optimization_backends.backend import OptimizationBackend
 from agentlib_mpc.utils import sampling
 
 model_file = pathlib.Path(__file__).parent.joinpath("fixtures//casadi_test_model.py")
@@ -168,6 +167,32 @@ class TestCasadiMPC(unittest.TestCase):
         _agent_config = self.agent_config
         _agent_config["modules"][0]["states"].pop(0)
         with self.assertRaises(ConfigurationError):
+            _ = Agent(config=_agent_config, env=env)
+
+    def test_bad_names(self):
+        env = Environment(config=env_config)
+        _agent_config = self.agent_config
+        _agent_config["modules"][0]["optimization_backend"]["model"]["type"][
+            "class_name"
+        ] = "BadNamesModel"
+        _agent_config["modules"][0]["states"] = []
+        _agent_config["modules"][0]["inputs"] = []
+        _agent_config["modules"][0]["controls"] = []
+
+        with self.assertRaises(NameError):
+            _ = Agent(config=_agent_config, env=env)
+
+    def test_instance_setter(self):
+        env = Environment(config=env_config)
+        _agent_config = self.agent_config
+        _agent_config["modules"][0]["optimization_backend"]["model"]["type"][
+            "class_name"
+        ] = "InstanceAttributeSetterTestModel"
+        _agent_config["modules"][0]["states"] = []
+        _agent_config["modules"][0]["inputs"] = []
+        _agent_config["modules"][0]["controls"] = []
+
+        with self.assertRaises(AttributeError):
             _ = Agent(config=_agent_config, env=env)
 
 

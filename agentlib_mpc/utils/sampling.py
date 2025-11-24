@@ -3,6 +3,7 @@ import logging
 from typing import Union, Iterable, Sequence, List
 from numbers import Real
 
+from io import StringIO
 import numpy as np
 import pandas as pd
 
@@ -51,10 +52,13 @@ def sample(
     Obtain the specified portion of the trajectory.
 
     Args:
-        trajectory:  The trajectory to be sampled. Scalars will be
-            expanded onto the grid. Lists need to exactly match the provided
-            grid. Otherwise, a pandas Series is accepted with the timestamp as index. A
-             dict with the keys as time stamps is also accepted.
+        trajectory:  The trajectory to be sampled. Accepted formats:
+            - Scalars will be expanded onto the grid.
+            - Lists need to exactly match the provided grid.
+            - A pandas Series is accepted with the timestamp as index.
+            - A dict with the keys as time stamps is also accepted.
+            - A pandas Series serialized as a json-str is accepted.
+                Any given string will be cast as Series.
         current: start time of requested trajectory
         grid: target interpolation grid in seconds in relative terms (i.e.
             starting from 0 usually)
@@ -85,6 +89,11 @@ def sample(
             f"Passed list with length {len(trajectory)} "
             f"does not match target ({target_grid_length})."
         )
+    if isinstance(trajectory, str):
+        trajectory = pd.read_json(
+            StringIO(trajectory), typ="series", convert_axes=False
+        )
+        trajectory.index = trajectory.index.astype(float)
     if isinstance(trajectory, pd.Series):
         trajectory = trajectory.dropna()
         source_grid = np.array(trajectory.index)
@@ -117,8 +126,8 @@ def sample(
         # return the last value of the trajectory if requested sample
         # starts out of range
         logger.warning(
-            f"Latest value of source grid %s is older than "
-            f"current time (%s. Returning latest value anyway.",
+            "Latest value of source grid %s is older than "
+            "current time (%s. Returning latest value anyway.",
             source_grid[-1],
             current,
         )

@@ -11,12 +11,13 @@ from agentlib_mpc.models.casadi_model import (
     CasadiModelConfig,
 )
 from agentlib.utils.multi_agent_system import LocalMASAgency
-
+from agentlib_mpc.utils.plotting.interactive import show_dashboard
 
 logger = logging.getLogger(__name__)
 
 # script variables
 ub = 295.15
+prediction_horizon = 300 * 15
 
 
 class MyCasadiModelConfig(CasadiModelConfig):
@@ -78,6 +79,12 @@ class MyCasadiModelConfig(CasadiModelConfig):
             unit="-",
             description="Weight for mDot in objective function",
         ),
+        CasadiParameter(
+            name="r_delta_mDot",
+            value=1,
+            unit="-",
+            description="Weight for delta mDot in objective function",
+        ),
     ]
     outputs: List[CasadiOutput] = [
         CasadiOutput(name="T_out", unit="K", description="Temperature of zone")
@@ -103,11 +110,23 @@ class MyCasadiModel(CasadiModel):
         ]
 
         # Objective function
-        objective = sum(
-            [
-                self.r_mDot * self.mDot,
-                self.s_T * self.T_slack**2,
-            ]
+        obj1 = self.create_sub_objective(
+            expressions=self.mDot,
+            weight=self.r_mDot,
+            name="control_costs",
+        )
+
+        obj2 = self.create_sub_objective(
+            expressions=self.T_slack**2, weight=self.s_T, name="temp_slack"
+        )
+
+        obj3 = self.create_change_penalty(
+            expressions=self.mDot,
+            name="delta_control_penalty",
+        )
+
+        objective = self.create_combined_objective(
+            obj1, obj2, obj3*self.r_delta_mDot, normalization=1
         )
 
         return objective
@@ -127,22 +146,19 @@ AGENT_MPC = {
                 "model": {"type": {"file": __file__, "class_name": "MyCasadiModel"}},
                 "discretization_options": {"method": "multiple_shooting"},
                 "solver": {
-                    "name": "sqpmethod",
-                    "options": {
-                        "print_header": False,
-                        "print_iteration": False,
-                        "qpsol": "qpoases",
-                        "qpsol_options": {"printLevel": "low"},
-                    },
+                    "name": "ipopt",
                 },
                 "results_file": "results//mpc.csv",
+                "overwrite_result_file": True,
                 "save_results": True,
+                "overwrite_result_file": True,
             },
             "time_step": 300,
             "prediction_horizon": 15,
             "parameters": [
-                {"name": "s_T", "value": 3},
+                {"name": "s_T", "value": 10},
                 {"name": "r_mDot", "value": 1},
+                {"name": "r_delta_mDot", "value": 1},
             ],
             "inputs": [
                 {"name": "load", "value": 150},
@@ -150,7 +166,6 @@ AGENT_MPC = {
                 {"name": "T_in", "value": 290.15},
             ],
             "controls": [{"name": "mDot", "value": 0.02, "ub": 0.05, "lb": 0}],
-            "r_del_u": {"mDot": 40},
             "states": [{"name": "T", "value": 298.16, "ub": 303.15, "lb": 288.15}],
         },
     ],
@@ -179,7 +194,9 @@ AGENT_SIM = {
 }
 
 
-def run_example(with_plots=True, log_level=logging.INFO, until=10000):
+def run_example(
+    with_plots=True, with_dashboard=True, log_level=logging.INFO, until=10000
+):
     # Change the working directly so that relative paths work
     os.chdir(Path(__file__).parent)
 
@@ -190,11 +207,11 @@ def run_example(with_plots=True, log_level=logging.INFO, until=10000):
     )
     mas.run(until=until)
     results = mas.get_results()
+    mpc_results = results["myMPCAgent"]["myMPC"]
     if with_plots:
         import matplotlib.pyplot as plt
         from agentlib_mpc.utils.plotting.mpc import plot_mpc
 
-        mpc_results = results["myMPCAgent"]["myMPC"]
         fig, ax = plt.subplots(2, 1, sharex=True)
         plot_mpc(
             series=mpc_results["variable"]["T"] - 273.15,
@@ -219,8 +236,20 @@ def run_example(with_plots=True, log_level=logging.INFO, until=10000):
         ax[1].set_xlim([0, until])
         plt.show()
 
+    if with_dashboard:
+        from agentlib_mpc.utils.analysis import load_mpc_stats
+
+        mpc_result_file = "results//mpc.csv"
+
+        try:
+            stats = load_mpc_stats(mpc_result_file)
+        except Exception:
+            stats = None
+
+        show_dashboard(mpc_results, stats)
+
     return results
 
 
 if __name__ == "__main__":
-    run_example(with_plots=True, until=3600)
+    run_example(with_plots=True, with_dashboard=True, until=3600)

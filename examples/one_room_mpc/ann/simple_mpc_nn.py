@@ -1,4 +1,5 @@
 import logging
+import sys
 from pathlib import Path
 import os
 
@@ -33,6 +34,7 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                         "method": "multiple_shooting",
                     },
                     "results_file": "results//opt.csv",
+                    "overwrite_result_file": True,
                     "solver": {"name": "ipopt", "options": {"ipopt.print_level": 0}},
                 },
                 "time_step": 300,
@@ -67,6 +69,7 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                 },
                 "t_sample": 10,
                 "save_results": True,
+                "overwrite_result_file": True,
                 "update_inputs_on_callback": False,
                 "outputs": [
                     {"name": "T_out", "value": 298, "alias": "T"},
@@ -80,22 +83,35 @@ def agent_configs(ml_model_path: str) -> list[dict]:
     return [agent_mpc, agent_sim]
 
 
-def run_example(with_plots=True, log_level=logging.INFO, until=8000):
-    # Change the working directly so that relative paths work
-    os.chdir(os.path.abspath(os.path.dirname(__file__)))
+def run_example(with_plots=True, log_level=logging.INFO, until=8000, testing=False):
+    # Change the working directory so that relative paths work
+    script_dir = os.path.abspath(os.path.dirname(__file__))
+    os.chdir(script_dir)
+
+    if script_dir not in sys.path:
+        sys.path.insert(0, script_dir)
+
     logging.basicConfig(level=log_level)
 
-    # gets the subdirectory of anns with the highest number, i.e. the longest training
-    # time
-    try:
-        ann_path = list(Path.cwd().glob("anns/best_model/*/ml_model.json"))[-1]
-    except IndexError:
-        # if there is none, we have to perform the training first
+    if testing:
         import training_nn
 
-        training_nn.main(initial_training_time=3600 * 24 * 1, plot_results=False, step_size=300)
-        ann_path = list(Path.cwd().glob("anns/best_model*/ml_model.json"))[1]
+        training_nn.main(
+            training_time=3600 * 2,  # Much shorter training time
+            plot_results=False,
+            step_size=300,
+            epochs=10,  # Very few epochs for testing
+        )
 
+    # gets the subdirectory of anns with the highest number, i.e. the longest training time
+    try:
+        ann_path = list(Path.cwd().glob("anns/*/ml_model.json"))[-1]
+    except IndexError:
+        # if there is none, we have to perform the training first
+        import examples.one_room_mpc.ann.training_nn as training
+
+        training.main(training_time=3600 * 24 * 1, plot_results=False, step_size=300)
+        ann_path = list(Path.cwd().glob("anns/*/ml_model.json"))[-1]
 
     mas = LocalMASAgency(
         agent_configs=agent_configs(ml_model_path=str(ann_path)),
@@ -151,4 +167,4 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000):
 
 
 if __name__ == "__main__":
-    run_example(with_plots=True, until=43200)
+    run_example(with_plots=True, until=3600)

@@ -3,6 +3,7 @@ import pandas as pd
 
 from agentlib_mpc.data_structures.casadi_utils import DiscretizationMethod, Integrators
 from agentlib_mpc.data_structures.mpc_datamodels import stats_path
+from agentlib_mpc.data_structures.objective import SubObjective
 from agentlib_mpc.models.casadi_model import CasadiModel, CasadiInput, CasadiParameter
 from agentlib_mpc.data_structures import admm_datatypes
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
@@ -17,6 +18,7 @@ from agentlib_mpc.optimization_backends.casadi_.basic import (
 from agentlib_mpc.optimization_backends.backend import ADMMBackend
 from agentlib_mpc.optimization_backends.casadi_.core.discretization import Results
 from agentlib_mpc.optimization_backends.casadi_.full import FullSystem
+from agentlib_mpc.optimization_backends.casadi_.core import delta_u
 
 
 class CasadiADMMSystem(FullSystem):
@@ -87,21 +89,30 @@ class CasadiADMMSystem(FullSystem):
         )
 
         # add admm terms to objective function
-        admm_objective = 0
         rho = self.penalty_factor.full_symbolic[0]
-        for i in range(len(var_ref.couplings)):
+        admm_terms = {}
+        for i, coupling in enumerate(var_ref.couplings):
             admm_in = self.global_couplings.full_symbolic[i]
             admm_out = self.local_couplings.full_symbolic[i]
             admm_lam = self.multipliers.full_symbolic[i]
-            admm_objective += admm_lam * admm_out + rho / 2 * (admm_in - admm_out) ** 2
+            admm_terms[f"admm_multiplier_{coupling.name}"] = admm_lam * admm_out
+            admm_terms[f"admm_augmentation_{coupling.name}"] = (
+                rho / 2 * (admm_in - admm_out) ** 2
+            )
 
-        for i in range(len(var_ref.exchange)):
+        for i, coupling in enumerate(var_ref.exchange):
             admm_in = self.exchange_diff.full_symbolic[i]
             admm_out = self.local_exchange.full_symbolic[i]
             admm_lam = self.exchange_multipliers.full_symbolic[i]
-            admm_objective += admm_lam * admm_out + rho / 2 * (admm_in - admm_out) ** 2
+            admm_terms[f"admm_multiplier_{coupling.name}"] = admm_lam * admm_out
+            admm_terms[f"admm_augmentation_{coupling.name}"] = (
+                rho / 2 * (admm_in - admm_out) ** 2
+            )
 
-        self.cost_function += admm_objective
+        for name, term in admm_terms.items():
+            self.objective.objectives += [
+                SubObjective(term, name="admm_augmentation_term")
+            ]
 
 
 class ADMMCollocation(DirectCollocation):
@@ -110,7 +121,6 @@ class ADMMCollocation(DirectCollocation):
         Perform a direct collocation discretization.
         # pylint: disable=invalid-name
         """
-
         # setup the polynomial base
         collocation_matrices = self._collocation_polynomial()
 
@@ -125,8 +135,9 @@ class ADMMCollocation(DirectCollocation):
 
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
-        du_weights = self.add_opt_par(sys.r_del_u)
         rho = self.add_opt_par(sys.penalty_factor)
+
+        delta_u_objectives = delta_u.get_delta_u_objectives(sys)
 
         # Formulate the NLP
         # loop over prediction horizon
@@ -134,13 +145,12 @@ class ADMMCollocation(DirectCollocation):
             # New NLP variable for the control
             u_prev = uk
             uk = self.add_opt_var(sys.controls)
-            # penalty for control change between time steps
-            self.objective_function += ts * ca.dot(du_weights, (u_prev - uk) ** 2)
 
-            # New parameter for inputs
-            dk = self.add_opt_par(sys.non_controlled_inputs)
+            for delta_obj in delta_u_objectives:
+                self.objective_function += delta_u.get_objective(
+                    sys, delta_obj, u_prev, uk, const_par
+                )
 
-            # perform inner collocation loop
             # perform inner collocation loop
             opt_vars_inside_inner = [
                 sys.algebraics,
@@ -153,10 +163,10 @@ class ADMMCollocation(DirectCollocation):
                 sys.multipliers,
                 sys.exchange_multipliers,
                 sys.exchange_diff,
+                sys.non_controlled_inputs,
             ]
             constant_over_inner = {
                 sys.controls: uk,
-                sys.non_controlled_inputs: dk,
                 sys.model_parameters: const_par,
                 sys.penalty_factor: rho,
             }
@@ -211,28 +221,28 @@ class ADMMMultipleShooting(MultipleShooting):
             sys.states, lb=initial_state, ub=initial_state, guess=initial_state
         )
 
-        # Initialize control input
-        previous_control = self.add_opt_par(sys.last_control)
+        current_control = self.add_opt_par(sys.last_control)
+        const_par = self.add_opt_par(sys.model_parameters)
 
         # Add time-invariant parameters
-        control_rate_weights = self.add_opt_par(sys.r_del_u)
         model_parameters = self.add_opt_par(sys.model_parameters)
         admm_penalty = self.add_opt_par(sys.penalty_factor)
+
+        delta_u_objectives = delta_u.get_delta_u_objectives(sys)
 
         # Create system integrator
         dynamics_integrator = self._create_ode(
             sys, integration_options, self.options.integrator
         )
 
-        # Perform multiple shooting discretization
         for k in range(prediction_horizon):
-            # 1. Handle control inputs and their rate penalties
-            current_control = self.add_opt_var(sys.controls)
-            control_rate_penalty = timestep * ca.dot(
-                control_rate_weights, (previous_control - current_control) ** 2
-            )
-            self.objective_function += control_rate_penalty
             previous_control = current_control
+            current_control = self.add_opt_var(sys.controls)
+
+            for delta_obj in delta_u_objectives:
+                self.objective_function += delta_u.get_objective(
+                    sys, delta_obj, previous_control, current_control, const_par
+                )
 
             # 2. Add optimization variables for current shooting interval
             disturbance = self.add_opt_par(sys.non_controlled_inputs)

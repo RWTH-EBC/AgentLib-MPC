@@ -21,7 +21,8 @@
         "discretization_options": {
           "method":"multiple_shooting"
         },
-        "results_file": "cooler_res.csv"
+        "results_file": "cooler_res.csv",
+        "overwrite_result_file": true
       },
       "coordinator": {
         "agent_id": "Coordinator",

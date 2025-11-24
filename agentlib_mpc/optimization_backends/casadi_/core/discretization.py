@@ -25,7 +25,6 @@ from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
 )
 from agentlib_mpc.optimization_backends.casadi_.core.system import System
 
-
 CasadiVariableList = Union[list[ca.MX], ca.MX]
 
 
@@ -37,6 +36,7 @@ class Results:
     stats: dict
     variable_grid_indices: dict[str, list[int]]
     _variable_name_to_index: dict[str, int] = None
+    objective_values: dict = dataclasses.field(default_factory=dict)
 
     def __post_init__(self):
         self._variable_name_to_index = self.variable_lookup()
@@ -54,7 +54,7 @@ class Results:
     def __getitem__(self, item: str) -> np.ndarray:
         return self.matrix[
             self.variable_grid_indices[item], self._variable_name_to_index[item]
-        ].toarray(simplify=True)
+        ].toarray(simplify=False)
 
     def variable_lookup(self) -> dict[str, int]:
         """Creates a mapping from variable names to the column index in the Matrix"""
@@ -71,6 +71,26 @@ class Results:
     def write_columns(self, file: Path):
         df = pd.DataFrame(columns=self.columns)
         df.to_csv(file)
+
+    def write_combined_stats_columns(self, file: Path, objective_names: list[str]):
+        """Write headers for combined stats and objective data with prefixes"""
+        # Add prefixes to distinguish objective from stats columns
+        tagged_obj_names = [f"obj_{name}" for name in objective_names]
+        tagged_stats_names = [f"stats_{name}" for name in self.stats.keys()]
+        combined_names = ["time"] + tagged_obj_names + tagged_stats_names
+        line = f""",{",".join(combined_names[1:])}\n"""
+        with open(file, "w") as f:
+            f.write(line)
+
+    def combined_stats_line(
+        self, index: str, objective_values: dict, objective_names: list[str]
+    ) -> str:
+        """Generate a line with both objective and stats values"""
+        # Use the same order as in the headers
+        obj_values = [str(objective_values.get(name, "")) for name in objective_names]
+        stats_values = [str(val) for val in self.stats.values()]
+        combined_values = obj_values + stats_values
+        return f'"{index}",{",".join(combined_values)}\n'
 
     def write_stats_columns(self, file: Path):
         line = f""",{",".join(self.stats)}\n"""
@@ -184,16 +204,8 @@ class Discretization(abc.ABC):
 
         # format and return solution
         mpc_output = self._nlp_outputs_to_mpc_outputs(vars_at_optimum=nlp_output["x"])
-        # clip binary values within tolerance
-        if "w" in mpc_output:
-            tolerance = 1e-5
-            bin_array = mpc_output["w"].full()
-            bin_array = np.where((-tolerance < bin_array) & (bin_array < 0), 0,
-                                 np.where((1 < bin_array) & (bin_array < 1 + tolerance),
-                                          1, bin_array))
-            mpc_output["w"] = bin_array
-
         self._remember_solution(mpc_output)
+
         result = self._process_solution(inputs=mpc_inputs, outputs=mpc_output)
         return result
 
@@ -227,9 +239,7 @@ class Discretization(abc.ABC):
                             + mpc_inputs[f"ub_{denotation}"]
                         )
                     )
-                    guess = np.nan_to_num(
-                        guess, posinf=100_000_000, neginf=-100_000_000
-                    )
+                    guess = np.nan_to_num(guess, posinf=0, neginf=-0)
             guesses.update({GUESS_PREFIX + denotation: guess})
 
         return guesses
@@ -253,12 +263,16 @@ class Discretization(abc.ABC):
         for key, value in inputs.items():
             key: str
             if key.startswith(GUESS_PREFIX):
-                out_key = key[len(GUESS_PREFIX):]
+                out_key = key[len(GUESS_PREFIX) :]
                 inputs[key] = outputs[out_key]
 
         result_matrix = self._result_map(**inputs)["result"]
 
-        return self._create_results(result_matrix, self._optimizer.stats())
+        result = self._create_results(
+            result_matrix,
+            self._optimizer.stats(),
+        )
+        return result
 
     def create_nlp_in_out_mapping(self, system: System):
         """
@@ -348,7 +362,10 @@ class Discretization(abc.ABC):
             "result_map", mpc_inputs, [matrix], mpc_input_denotations, ["result"]
         )
 
-        def make_results_view(result_matrix: ca.DM, stats: dict) -> Results:
+        def make_results_view(
+            result_matrix: ca.DM,
+            stats: dict,
+        ) -> Results:
             return Results(
                 matrix=result_matrix,
                 columns=col_index,

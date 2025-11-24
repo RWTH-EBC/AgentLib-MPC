@@ -1,7 +1,5 @@
 from sklearn.linear_model import LinearRegression
 
-from agentlib_mpc.models.serialized_ml_model import CustomGPR
-
 
 class LinRegTrainer:
     """

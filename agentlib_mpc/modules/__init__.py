@@ -23,11 +23,13 @@ MODULE_TYPES = {
         module_path="agentlib_mpc.modules.data_source", class_name="DataSource"
     ),
     "mpc_basic": ModuleImport(
-        module_path="agentlib_mpc.modules.mpc", class_name="BaseMPC"
+        module_path="agentlib_mpc.modules.mpc.mpc", class_name="BaseMPC"
     ),
-    "mpc": ModuleImport(module_path="agentlib_mpc.modules.mpc_full", class_name="MPC"),
+    "mpc": ModuleImport(
+        module_path="agentlib_mpc.modules.mpc.mpc_full", class_name="MPC"
+    ),
     "minlp_mpc": ModuleImport(
-        module_path="agentlib_mpc.modules.minlp_mpc", class_name="MINLPMPC"
+        module_path="agentlib_mpc.modules.mpc.minlp_mpc", class_name="MINLPMPC"
     ),
     "admm": ModuleImport(
         module_path="agentlib_mpc.modules.dmpc.admm.admm", class_name="ADMM"
@@ -55,8 +57,8 @@ MODULE_TYPES = {
         module_path="agentlib_mpc.modules.ml_model_training.ml_model_trainer",
         class_name="LinRegTrainer",
     ),
-    "ann_simulator": ModuleImport(
-        module_path="agentlib_mpc.modules.ann_simulator",
+    "ml_simulator": ModuleImport(
+        module_path="agentlib_mpc.modules.ml_model_simulator",
         class_name="MLModelSimulator",
     ),
     "set_point_generator": ModuleImport(
@@ -65,5 +67,13 @@ MODULE_TYPES = {
     ),
     "mhe": ModuleImport(
         module_path="agentlib_mpc.modules.estimation.mhe", class_name="MHE"
+    ),
+    "skip_mpc_intervals": ModuleImport(
+        module_path="agentlib_mpc.modules.deactivate_mpc.deactivate_mpc",
+        class_name="SkipMPCInIntervals",
+    ),
+    "fallback_pid": ModuleImport(
+        module_path="agentlib_mpc.modules.deactivate_mpc.fallback_pid",
+        class_name="FallbackPID",
     ),
 }
