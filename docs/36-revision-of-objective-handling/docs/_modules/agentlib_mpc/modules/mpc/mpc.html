@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules.mpc.mpc &mdash; agentlib_mpc 0.7.0 documentation</title>
+  <title>agentlib_mpc.modules.mpc.mpc &mdash; agentlib_mpc 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -168,7 +168,7 @@
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensures r_del_u is only set for control variables.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">r_del_u</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">DeprecationWarning</span><span class="p">(</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                 <span class="s2">&quot;The &#39;r_del_u&#39; parameter is no longer supported. &quot;</span>
                 <span class="s2">&quot;Please use delta_u objectives in the new ChangePenaltyObjective/CombinedObjective formulation instead. &quot;</span>
             <span class="p">)</span></div>
