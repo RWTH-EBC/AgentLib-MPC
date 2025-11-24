@@ -1,0 +1,284 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>agentlib_mpc.modules.ml_model_training package &mdash; agentlib_mpc 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../_static/jquery.js"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+      <script src="../_static/doctools.js"></script>
+      <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            agentlib_mpc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../PackageReference.html">Package Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">agentlib_mpc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">agentlib_mpc.modules.ml_model_training package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/agentlib_mpc.modules.ml_model_training.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-agentlib_mpc.modules.ml_model_training">
+<span id="agentlib-mpc-modules-ml-model-training-package"></span><h1>agentlib_mpc.modules.ml_model_training package<a class="headerlink" href="#module-agentlib_mpc.modules.ml_model_training" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-agentlib_mpc.modules.ml_model_training.data_reduction">
+<span id="agentlib-mpc-modules-ml-model-training-data-reduction-module"></span><h2>agentlib_mpc.modules.ml_model_training.data_reduction module<a class="headerlink" href="#module-agentlib_mpc.modules.ml_model_training.data_reduction" title="Permalink to this heading"></a></h2>
+<p>Code stolen from Max Berktold</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.data_reduction.InducingPoints">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.ml_model_training.data_reduction.</span></span><span class="sig-name descname"><span class="pre">InducingPoints</span></span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_training/data_reduction.html#InducingPoints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.data_reduction.InducingPoints" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>The idea is to reduce the effective number of input data points x to the GP
+from n to m, with m&lt;n, where the set of m points are called inducing points.</p>
+<blockquote>
+<div><p>Since this makes the effective covariance matrix K smaller,
+many inducing point approaches reduce the computational complexity from O(n3) to O(nm2).
+The smaller m is, the bigger the speed up.</p>
+<p>Source: <a class="reference external" href="https://bwengals.github.io/inducing-point-methods-to-speed-up-gps.html">https://bwengals.github.io/inducing-point-methods-to-speed-up-gps.html</a></p>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.data_reduction.InducingPoints.reduce">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reduce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_distance_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_training/data_reduction.html#InducingPoints.reduce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.data_reduction.InducingPoints.reduce" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.data_reduction.NystroemReducer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.ml_model_training.data_reduction.</span></span><span class="sig-name descname"><span class="pre">NystroemReducer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Kernel</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_training/data_reduction.html#NystroemReducer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.data_reduction.NystroemReducer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.modules.ml_model_training.data_reduction.InducingPoints" title="agentlib_mpc.modules.ml_model_training.data_reduction.InducingPoints"><code class="xref py py-class docutils literal notranslate"><span class="pre">InducingPoints</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.data_reduction.NystroemReducer.reduce">
+<span class="sig-name descname"><span class="pre">reduce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_distance_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_training/data_reduction.html#NystroemReducer.reduce"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.data_reduction.NystroemReducer.reduce" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="agentlib-mpc-modules-ml-model-training-ml-model-trainer-module">
+<h2>agentlib_mpc.modules.ml_model_training.ml_model_trainer module<a class="headerlink" href="#agentlib-mpc-modules-ml-model-training-ml-model-trainer-module" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-agentlib_mpc.modules.ml_model_training.setpoint_generator">
+<span id="agentlib-mpc-modules-ml-model-training-setpoint-generator-module"></span><h2>agentlib_mpc.modules.ml_model_training.setpoint_generator module<a class="headerlink" href="#module-agentlib_mpc.modules.ml_model_training.setpoint_generator" title="Permalink to this heading"></a></h2>
+<p>Module which generates random set points within a comfort zone. Code heavily stolen
+from Max Berktold</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.ml_model_training.setpoint_generator.</span></span><span class="sig-name descname"><span class="pre">SetPointGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Agent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_training/setpoint_generator.html#SetPointGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGenerator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModule</span></code></p>
+<p>Module that generates and sends random set points based on daytime and values.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGenerator.process">
+<span class="sig-name descname"><span class="pre">process</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_training/setpoint_generator.html#SetPointGenerator.process"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGenerator.process" title="Permalink to this definition"></a></dt>
+<dd><p>This abstract method must be implemented in order to sync the module
+with the other processes of the agent and the whole MAS.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGenerator.register_callbacks">
+<span class="sig-name descname"><span class="pre">register_callbacks</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_training/setpoint_generator.html#SetPointGenerator.register_callbacks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGenerator.register_callbacks" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGenerator.update_target">
+<span class="sig-name descname"><span class="pre">update_target</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_training/setpoint_generator.html#SetPointGenerator.update_target"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGenerator.update_target" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the control target for a given time</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.ml_model_training.setpoint_generator.</span></span><span class="sig-name descname"><span class="pre">SetPointGeneratorConfig</span></span><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_training/setpoint_generator.html#SetPointGeneratorConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModuleConfig</span></code></p>
+<p>Pydantic data model for ANNTrainer configuration parser</p>
+<dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arbitrary_types_allowed</strong>: <em>bool = True</em></p></li>
+<li><p><strong>validate_assignment</strong>: <em>bool = True</em></p></li>
+<li><p><strong>extra</strong>: <em>str = forbid</em></p></li>
+<li><p><strong>frozen</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.day_end" title="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.day_end"><code class="xref py py-obj docutils literal notranslate"><span class="pre">day_end</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.day_lb" title="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.day_lb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">day_lb</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.day_start" title="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.day_start"><code class="xref py py-obj docutils literal notranslate"><span class="pre">day_start</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.day_ub" title="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.day_ub"><code class="xref py py-obj docutils literal notranslate"><span class="pre">day_ub</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.interval" title="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.interval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interval</span> <span class="pre">(int)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.night_lb" title="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.night_lb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">night_lb</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.night_ub" title="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.night_ub"><code class="xref py py-obj docutils literal notranslate"><span class="pre">night_ub</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.shared_variable_fields" title="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.shared_variable_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_variable_fields</span> <span class="pre">(list[str])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.t_offset" title="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.t_offset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">t_offset</span> <span class="pre">(int</span> <span class="pre">|</span> <span class="pre">float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.target_variable" title="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.target_variable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">target_variable</span> <span class="pre">(agentlib.core.datamodels.AgentVariable)</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-odd">Validators<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_valid_fields</span></code> » <a class="reference internal" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.shared_variable_fields" title="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.shared_variable_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shared_variable_fields</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.day_end">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day_end</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">16</span></em><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.day_end" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.day_lb">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day_lb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">292.15</span></em><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.day_lb" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.day_start">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day_start</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.day_start" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.day_ub">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">day_ub</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">294.15</span></em><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.day_ub" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.interval">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">interval</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">14400</span></em><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.interval" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.night_lb">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">night_lb</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">289.15</span></em><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.night_lb" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.night_ub">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">night_ub</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">297.15</span></em><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.night_ub" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.shared_variable_fields">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shared_variable_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['target_variable']</span></em><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.shared_variable_fields" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Validated by<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_valid_fields</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.t_offset">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">t_offset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.t_offset" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.target_variable">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_variable</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AgentVariable</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">AgentVariable(name='target',</span> <span class="pre">type=None,</span> <span class="pre">timestamp=None,</span> <span class="pre">unit='Not</span> <span class="pre">defined',</span> <span class="pre">description='Not</span> <span class="pre">defined',</span> <span class="pre">ub=inf,</span> <span class="pre">lb=-inf,</span> <span class="pre">clip=False,</span> <span class="pre">allowed_values=[],</span> <span class="pre">value=None,</span> <span class="pre">alias='target',</span> <span class="pre">source=Source(agent_id=None,</span> <span class="pre">module_id=None),</span> <span class="pre">shared=None,</span> <span class="pre">rdf_class=None)</span></em><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.target_variable" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.model_post_init">
+<span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.model_post_init" title="Permalink to this definition"></a></dt>
+<dd><p>This function is meant to behave like a BaseModel method to initialise private attributes.</p>
+<p>It takes context as an argument since that’s what pydantic-core passes when calling it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – The BaseModel instance.</p></li>
+<li><p><strong>context</strong> – The context.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, AGENT-Project Associates.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
