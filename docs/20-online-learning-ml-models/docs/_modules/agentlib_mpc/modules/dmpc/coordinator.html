@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules.dmpc.coordinator &mdash; agentlib_mpc 1.0.0 documentation</title>
+  <title>agentlib_mpc.modules.dmpc.coordinator &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -276,7 +276,7 @@
         <span class="p">)</span>
         <span class="c1"># use information in message to set up coordinator</span>
 
-        <span class="k">if</span> <span class="n">variable</span><span class="o">.</span><span class="n">source</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_dict</span><span class="p">:</span>  <span class="c1"># add agent to dict</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_dict</span><span class="p">):</span>  <span class="c1"># add agent to dict</span>
             <span class="n">entry</span> <span class="o">=</span> <span class="n">cdt</span><span class="o">.</span><span class="n">AgentDictEntry</span><span class="p">(</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
                 <span class="n">status</span><span class="o">=</span><span class="n">AgentStatus</span><span class="o">.</span><span class="n">pending</span><span class="p">,</span>

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.models.casadi_ml_model &mdash; agentlib_mpc 1.0.0 documentation</title>
+  <title>agentlib_mpc.models.casadi_ml_model &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -100,6 +100,7 @@
     <span class="n">CasadiModelConfig</span><span class="p">,</span>
     <span class="n">CasadiState</span><span class="p">,</span>
     <span class="n">CasadiOutput</span><span class="p">,</span>
+    <span class="n">CasadiTypes</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.serialized_ml_model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">SerializedMLModel</span><span class="p">,</span>
@@ -254,23 +255,6 @@
 
         <span class="c1"># construct a stage function for optimization and simulation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sim_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_unified_predict_function</span><span class="p">()</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_forbidden_variable_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="nb">super</span><span class="p">()</span>
-            <span class="o">.</span><span class="n">_get_forbidden_variable_names</span><span class="p">()</span>
-            <span class="o">.</span><span class="n">union</span><span class="p">(</span>
-                <span class="p">{</span>
-                    <span class="s2">&quot;sim_step&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;past_value&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;lags_mx_store&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;max_lag&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;lags_dict&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;ml_model_dict&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;casadi_ml_model_dict&quot;</span><span class="p">,</span>
-                <span class="p">}</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
 
 <div class="viewcode-block" id="CasadiMLModel.setup_system"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.setup_system">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup_system</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="mi">0</span></div>
@@ -656,17 +640,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">t_sample</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">t_sample</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="ow">or</span> <span class="n">t_sample</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Sampling Time of Model must be multiple of MLModel time step. Current&quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot; MLModel time step is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="si">}</span><span class="s2"> and chosen sampling time is </span><span class="si">{</span><span class="n">t_sample</span><span class="si">}</span><span class="s2">.&quot;</span>
-                <span class="p">)</span>
+            <span class="o">...</span>
+            <span class="k">assert</span> <span class="n">t_sample</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
 
         <span class="n">ml_model_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ml_model_values</span><span class="p">(</span><span class="n">t_start</span><span class="p">)</span>
         <span class="n">full_input</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">var</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span> <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="p">}</span>
         <span class="n">full_input</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ml_model_input</span><span class="p">)</span>
+
 
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_step</span><span class="p">(</span><span class="o">**</span><span class="n">full_input</span><span class="p">)</span>
         <span class="n">end_time</span> <span class="o">=</span> <span class="n">t_start</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>

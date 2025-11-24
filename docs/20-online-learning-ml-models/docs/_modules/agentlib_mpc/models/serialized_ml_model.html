@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.models.serialized_ml_model &mdash; agentlib_mpc 1.0.0 documentation</title>
+  <title>agentlib_mpc.models.serialized_ml_model &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -74,13 +74,13 @@
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">copy</span><span class="w"> </span><span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequential</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">keras.src</span><span class="w"> </span><span class="kn">import</span> <span class="n">Functional</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BaseModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.gaussian_process</span><span class="w"> </span><span class="kn">import</span> <span class="n">GaussianProcessRegressor</span>
@@ -93,11 +93,18 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
+<div class="viewcode-block" id="get_git_revision_short_hash"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.get_git_revision_short_hash">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_git_revision_short_hash</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="s2">&quot;git&quot;</span><span class="p">,</span> <span class="s2">&quot;rev-parse&quot;</span><span class="p">,</span> <span class="s2">&quot;--short&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">])</span>
+        <span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="MLModels"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.MLModels">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MLModels</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
     <span class="n">ANN</span> <span class="o">=</span> <span class="s2">&quot;ANN&quot;</span>
     <span class="n">GPR</span> <span class="o">=</span> <span class="s2">&quot;GPR&quot;</span>
-    <span class="n">LINREG</span> <span class="o">=</span> <span class="s2">&quot;LinReg&quot;</span>
-    <span class="n">KerasANN</span> <span class="o">=</span> <span class="s2">&quot;KerasANN&quot;</span></div>
+    <span class="n">LINREG</span> <span class="o">=</span> <span class="s2">&quot;LinReg&quot;</span></div>
 
 
 <div class="viewcode-block" id="SerializedMLModel"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SerializedMLModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
@@ -116,11 +123,16 @@
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Model output variables (which are automatically also inputs, as &quot;</span>
         <span class="s2">&quot;we need them recursively in MPC.) with their lag order.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">agentlib_mpc_hash</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">get_git_revision_short_hash</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The commit hash of the agentlib_mpc version this was created with.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">training_info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Training Info&quot;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Config of Trainer class with all the meta data used for training of the Model.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
+
     <span class="n">model_type</span><span class="p">:</span> <span class="n">MLModels</span>
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">protected_namespaces</span><span class="o">=</span><span class="p">())</span>
 
@@ -245,6 +257,16 @@
         <span class="n">title</span><span class="o">=</span><span class="s2">&quot;structure&quot;</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The structure of the ANN as json string.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">optimizer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;optimizer&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The optimizer used for training the ANN.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">loss</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;loss&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The loss function used for training the ANN.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">model_type</span><span class="p">:</span> <span class="n">MLModels</span> <span class="o">=</span> <span class="n">MLModels</span><span class="o">.</span><span class="n">ANN</span>
 
@@ -266,6 +288,9 @@
                 <span class="n">weight_l</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight_l</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
             <span class="n">weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weight_l</span><span class="p">)</span>
 
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">loss</span>
+
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
             <span class="n">structure</span><span class="o">=</span><span class="n">structure</span><span class="p">,</span>
             <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span>
@@ -273,6 +298,8 @@
             <span class="nb">input</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span>
             <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
             <span class="n">trainer_config</span><span class="o">=</span><span class="n">training_info</span><span class="p">,</span>
+            <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
+            <span class="n">loss</span><span class="o">=</span><span class="n">loss</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="SerializedANN.deserialize"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedANN.deserialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequential</span><span class="p">:</span>
@@ -341,7 +368,7 @@
         <span class="n">normalize_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">copy_X_train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">data_handling</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">data_handling</span><span class="o">=</span><span class="n">GPRDataHandlingParameters</span><span class="p">(),</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span>
@@ -352,8 +379,6 @@
             <span class="n">copy_X_train</span><span class="o">=</span><span class="n">copy_X_train</span><span class="p">,</span>
             <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">data_handling</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">data_handling</span> <span class="o">=</span> <span class="n">GPRDataHandlingParameters</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_handling</span><span class="p">:</span> <span class="n">GPRDataHandlingParameters</span> <span class="o">=</span> <span class="n">data_handling</span>
 
 <div class="viewcode-block" id="CustomGPR.predict"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.CustomGPR.predict">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">return_std</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_cov</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -732,61 +757,10 @@
         <span class="k">return</span> <span class="n">linear_model</span></div>
 
 
-<div class="viewcode-block" id="SerializedKerasANN"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasANN">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SerializedKerasANN</span><span class="p">(</span><span class="n">SerializedMLModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Allows using a saved Keras ANN model (Sequential or Functional) in agentlib_mpc directly without serialization.</span>
-
-<span class="sd">    attributes:</span>
-<span class="sd">        model_path: Path to saved Keras ANN model.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">model_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path, where the Keras ANN model is saved.&quot;</span>
-    <span class="p">)</span>
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">model_type</span><span class="p">:</span> <span class="n">MLModels</span> <span class="o">=</span> <span class="n">MLModels</span><span class="o">.</span><span class="n">KerasANN</span>
-
-<div class="viewcode-block" id="SerializedKerasANN.serialize"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasANN.serialize">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span>
-        <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">Functional</span><span class="p">],</span>
-        <span class="n">dt</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="nb">input</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Feature</span><span class="p">],</span>
-        <span class="n">output</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">OutputFeature</span><span class="p">],</span>
-        <span class="n">training_info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serializes path to Keras Sequential or Functional ANN and returns SerializedKerasANN object&quot;&quot;&quot;</span>
-
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">model_path</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">save_path</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="n">model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;stored_models/model.keras&quot;</span><span class="p">)</span>  <span class="c1"># default value</span>
-
-        <span class="n">directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">model_path</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
-        <span class="n">directory</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model_path</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
-            <span class="n">model_path</span><span class="o">=</span><span class="n">model_path</span><span class="p">,</span>
-            <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
-            <span class="nb">input</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span>
-            <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
-            <span class="n">training_info</span><span class="o">=</span><span class="n">training_info</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="SerializedKerasANN.deserialize"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasANN.deserialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">Functional</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deserializes SerializedKerasANN object and returns a Keras Sequential ANN.&quot;&quot;&quot;</span>
-        <span class="kn">import</span><span class="w"> </span><span class="nn">keras</span>
-
-        <span class="n">ann</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">saving</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">ann</span></div></div>
-
-
 <span class="n">serialized_models</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">MLModels</span><span class="o">.</span><span class="n">ANN</span><span class="p">:</span> <span class="n">SerializedANN</span><span class="p">,</span>
     <span class="n">MLModels</span><span class="o">.</span><span class="n">GPR</span><span class="p">:</span> <span class="n">SerializedGPR</span><span class="p">,</span>
     <span class="n">MLModels</span><span class="o">.</span><span class="n">LINREG</span><span class="p">:</span> <span class="n">SerializedLinReg</span><span class="p">,</span>
-    <span class="n">MLModels</span><span class="o">.</span><span class="n">KerasANN</span><span class="p">:</span> <span class="n">SerializedKerasANN</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 

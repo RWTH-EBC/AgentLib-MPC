@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.optimization_backends.casadi_.mhe &mdash; agentlib_mpc 1.0.0 documentation</title>
+  <title>agentlib_mpc.optimization_backends.casadi_.mhe &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -566,8 +566,8 @@
             <span class="c1"># return the last value of the trajectory if requested sample</span>
             <span class="c1"># starts out of range</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s2">&quot;Latest value of source grid </span><span class="si">%s</span><span class="s2"> is older than &quot;</span>
-                <span class="s2">&quot;current time (</span><span class="si">%s</span><span class="s2">. Returning latest value anyway.&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;Latest value of source grid %s is older than &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;current time (%s. Returning latest value anyway.&quot;</span><span class="p">,</span>
                 <span class="n">source_grid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
                 <span class="n">current</span><span class="p">,</span>
             <span class="p">)</span>

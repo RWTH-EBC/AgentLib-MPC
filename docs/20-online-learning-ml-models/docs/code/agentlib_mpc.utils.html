@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.utils package &mdash; agentlib_mpc 1.0.0 documentation</title>
+  <title>agentlib_mpc.utils package &mdash; agentlib_mpc 0.6.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
@@ -74,23 +74,6 @@
   <section id="module-agentlib_mpc.utils">
 <span id="agentlib-mpc-utils-package"></span><h1>agentlib_mpc.utils package<a class="headerlink" href="#module-agentlib_mpc.utils" title="Permalink to this heading"></a></h1>
 <p>Package containing utils for agentlib_mpc.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="agentlib_mpc.utils.is_time_in_intervals">
-<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.</span></span><span class="sig-name descname"><span class="pre">is_time_in_intervals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intervals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils.html#is_time_in_intervals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.is_time_in_intervals" title="Permalink to this definition"></a></dt>
-<dd><p>Check if given time is within any of the provided intervals.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>time</strong> – The time value to check</p></li>
-<li><p><strong>intervals</strong> – List of tuples, each containing (start_time, end_time)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if time falls within any interval, False otherwise</p>
-</dd>
-</dl>
-</dd></dl>
-
 <section id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
 <div class="toctree-wrapper compound">
@@ -164,14 +147,12 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#module-agentlib_mpc.utils.plotting.interactive">agentlib_mpc.utils.plotting.interactive module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.interactive.draggable_script"><code class="docutils literal notranslate"><span class="pre">draggable_script()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.interactive.extract_objective_data_from_stats"><code class="docutils literal notranslate"><span class="pre">extract_objective_data_from_stats()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.interactive.get_port"><code class="docutils literal notranslate"><span class="pre">get_port()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.interactive.make_components"><code class="docutils literal notranslate"><span class="pre">make_components()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.interactive.make_figure_plotly"><code class="docutils literal notranslate"><span class="pre">make_figure_plotly()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.interactive.obj_plot"><code class="docutils literal notranslate"><span class="pre">obj_plot()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.interactive.plot_admm_plotly"><code class="docutils literal notranslate"><span class="pre">plot_admm_plotly()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.interactive.plot_mpc_plotly"><code class="docutils literal notranslate"><span class="pre">plot_mpc_plotly()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.interactive.plot_obj_data_stacked"><code class="docutils literal notranslate"><span class="pre">plot_obj_data_stacked()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.interactive.show_dashboard"><code class="docutils literal notranslate"><span class="pre">show_dashboard()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.interactive.solver_return"><code class="docutils literal notranslate"><span class="pre">solver_return()</span></code></a></li>
 </ul>
@@ -187,17 +168,6 @@
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc.interpolate_colors"><code class="docutils literal notranslate"><span class="pre">interpolate_colors()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc.plot_admm"><code class="docutils literal notranslate"><span class="pre">plot_admm()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc.plot_mpc"><code class="docutils literal notranslate"><span class="pre">plot_mpc()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#module-agentlib_mpc.utils.plotting.mpc_dashboard">agentlib_mpc.utils.plotting.mpc_dashboard module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.detect_index_type"><code class="docutils literal notranslate"><span class="pre">detect_index_type()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.is_mhe_data"><code class="docutils literal notranslate"><span class="pre">is_mhe_data()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.launch_dashboard_from_results"><code class="docutils literal notranslate"><span class="pre">launch_dashboard_from_results()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.make_components"><code class="docutils literal notranslate"><span class="pre">make_components()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.plot_mpc_plotly"><code class="docutils literal notranslate"><span class="pre">plot_mpc_plotly()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.process_mas_results"><code class="docutils literal notranslate"><span class="pre">process_mas_results()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.reduce_triple_index"><code class="docutils literal notranslate"><span class="pre">reduce_triple_index()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.show_multi_room_dashboard"><code class="docutils literal notranslate"><span class="pre">show_multi_room_dashboard()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -381,6 +351,36 @@ time value.</p>
 </dd></dl>
 
 </section>
+<section id="module-agentlib_mpc.utils.ml_model_eval_plotting">
+<span id="agentlib-mpc-utils-ml-model-eval-plotting-module"></span><h2>agentlib_mpc.utils.ml_model_eval_plotting module<a class="headerlink" href="#module-agentlib_mpc.utils.ml_model_eval_plotting" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.ml_model_eval_plotting.calc_scores">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.ml_model_eval_plotting.</span></span><span class="sig-name descname"><span class="pre">calc_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils/ml_model_eval_plotting.html#calc_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.ml_model_eval_plotting.calc_scores" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.ml_model_eval_plotting.evaluate_model">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.ml_model_eval_plotting.</span></span><span class="sig-name descname"><span class="pre">evaluate_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.ml_model_datatypes.TrainingData" title="agentlib_mpc.data_structures.ml_model_datatypes.TrainingData"><span class="pre">TrainingData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiPredictor" title="agentlib_mpc.models.casadi_predictor.CasadiPredictor"><span class="pre">CasadiPredictor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel" title="agentlib_mpc.models.serialized_ml_model.SerializedMLModel"><span class="pre">SerializedMLModel</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils/ml_model_eval_plotting.html#evaluate_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.ml_model_eval_plotting.evaluate_model" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluates the Model and returns primary score, metrics dict, and cross-check score</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.ml_model_eval_plotting.pairwise_sort">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.ml_model_eval_plotting.</span></span><span class="sig-name descname"><span class="pre">pairwise_sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arrays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/utils/ml_model_eval_plotting.html#pairwise_sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.ml_model_eval_plotting.pairwise_sort" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.ml_model_eval_plotting.plot_model_evaluation">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.ml_model_eval_plotting.</span></span><span class="sig-name descname"><span class="pre">plot_model_evaluation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">training_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.ml_model_datatypes.TrainingData" title="agentlib_mpc.data_structures.ml_model_datatypes.TrainingData"><span class="pre">TrainingData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cross_check_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiPredictor" title="agentlib_mpc.models.casadi_predictor.CasadiPredictor"><span class="pre">CasadiPredictor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel" title="agentlib_mpc.models.serialized_ml_model.SerializedMLModel"><span class="pre">SerializedMLModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/utils/ml_model_eval_plotting.html#plot_model_evaluation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.ml_model_eval_plotting.plot_model_evaluation" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the Model evaluation on test data</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.ml_model_eval_plotting.predict_array">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.ml_model_eval_plotting.</span></span><span class="sig-name descname"><span class="pre">predict_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ml_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiPredictor" title="agentlib_mpc.models.casadi_predictor.CasadiPredictor"><span class="pre">CasadiPredictor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Index</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils/ml_model_eval_plotting.html#predict_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.ml_model_eval_plotting.predict_array" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
 <section id="module-agentlib_mpc.utils.sampling">
 <span id="agentlib-mpc-utils-sampling-module"></span><h2>agentlib_mpc.utils.sampling module<a class="headerlink" href="#module-agentlib_mpc.utils.sampling" title="Permalink to this heading"></a></h2>
 <dl class="py function">
@@ -412,14 +412,11 @@ result = list(tck(target_grid))</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>trajectory</strong> – <p>The trajectory to be sampled. Accepted formats:
-- Scalars will be expanded onto the grid.
-- Lists need to exactly match the provided grid.
-- A pandas Series is accepted with the timestamp as index.
-- A dict with the keys as time stamps is also accepted.
-- A pandas Series serialized as a json-str is accepted.</p>
+<li><p><strong>trajectory</strong> – <p>The trajectory to be sampled. Scalars will be
+expanded onto the grid. Lists need to exactly match the provided
+grid. Otherwise, a pandas Series is accepted with the timestamp as index. A</p>
 <blockquote>
-<div><p>Any given string will be cast as Series.</p>
+<div><p>dict with the keys as time stamps is also accepted.</p>
 </div></blockquote>
 </p></li>
 <li><p><strong>current</strong> – start time of requested trajectory</p></li>
