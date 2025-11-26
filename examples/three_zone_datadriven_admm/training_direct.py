@@ -392,7 +392,7 @@ class Datagenerator:
         if len(self.output_value) > 0:
             for j in range(0, u.shape[0] - 1):
                 x_next = np.array(
-                    self.do_step(x=x[j], u=np.concatenate((u[j], p[j]), axis=0)).T
+                    self.do_step(x=x[j], u=np.concatenate((u[j], p[j], [0]), axis=0)).T
                 )
                 x = np.concatenate((x, x_next), axis=0)
         else:

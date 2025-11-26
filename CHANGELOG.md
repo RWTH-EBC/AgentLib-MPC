@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.0.1
+- Bugfixes
 
 ## 1.0.0
 - New objective handling: Introduce subobjective classes for more intuitive parameterization of weights. As well as for reading out the solved subobjective functions.

@@ -23,10 +23,6 @@ class TestExamples(unittest.TestCase):
         # Create a unique temporary directory for this test
         self.test_dir = tempfile.mkdtemp(prefix="agentlib_test_")
 
-        # Create results subdirectory
-        self.results_dir = os.path.join(self.test_dir, "results")
-        os.makedirs(self.results_dir, exist_ok=True)
-
     def tearDown(self) -> None:
         broker = LocalBroadcastBroker()
         broker.delete_all_clients()
@@ -94,6 +90,7 @@ class TestExamples(unittest.TestCase):
             log_level=logging.FATAL,
             with_dashboard=False,
         )
+
     def test_mpc_time_variant_inputs(self):
         """Test the mpc agent example: simple_mpc_with_time_variant_inputs"""
 
@@ -134,18 +131,18 @@ class TestExamples(unittest.TestCase):
         )
 
     def test_ml_models(self):
-            self._run_example_with_return(
-                file="one_room_mpc//ann//simple_mpc_nn.py",
-                func_name="run_example",
-                with_plots=False,
-                log_level=logging.FATAL,
-            )
-            self._run_example_with_return(
-                file="one_room_mpc//linreg//simple_mpc_linreg.py",
-                func_name="run_example",
-                with_plots=False,
-                log_level=logging.FATAL,
-            )
+        self._run_example_with_return(
+            file="one_room_mpc//ann//simple_mpc_nn.py",
+            func_name="run_example",
+            with_plots=False,
+            log_level=logging.FATAL,
+        )
+        self._run_example_with_return(
+            file="one_room_mpc//linreg//simple_mpc_linreg.py",
+            func_name="run_example",
+            with_plots=False,
+            log_level=logging.FATAL,
+        )
 
     def test_admm_local(self):
         self._run_example_with_return(
