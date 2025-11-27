@@ -97,7 +97,7 @@ class MINLPMPC(BaseMPC):
         super().set_actuation(solution)
         for b_control in self.var_ref.binary_controls:
             # take the first entry of the control trajectory
-            actuation = solution[b_control][0]
+            actuation = float(solution[b_control][0])
             self.set(b_control, actuation)
 
     def cleanup_results(self):
