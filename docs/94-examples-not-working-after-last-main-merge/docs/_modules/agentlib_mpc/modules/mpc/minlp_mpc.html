@@ -171,7 +171,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">set_actuation</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">b_control</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_ref</span><span class="o">.</span><span class="n">binary_controls</span><span class="p">:</span>
             <span class="c1"># take the first entry of the control trajectory</span>
-            <span class="n">actuation</span> <span class="o">=</span> <span class="n">solution</span><span class="p">[</span><span class="n">b_control</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">actuation</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">solution</span><span class="p">[</span><span class="n">b_control</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">b_control</span><span class="p">,</span> <span class="n">actuation</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MINLPMPC.cleanup_results"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPC.cleanup_results">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">cleanup_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
