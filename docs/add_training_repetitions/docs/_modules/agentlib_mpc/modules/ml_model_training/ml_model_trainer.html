@@ -104,8 +104,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.serialized_ml_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomGPR</span><span class="p">,</span> <span class="n">MLModels</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ml_model_datatypes</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">InterpolationMethods</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.utils.plotting.ml_model_test</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate_model</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.utils.sampling</span><span class="w"> </span><span class="kn">import</span> <span class="n">sample_values_to_target_grid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.utils.ml_model_eval</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate_model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.utils.plotting.ml_model_plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_model_evaluation</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequential</span>
 
@@ -160,6 +161,9 @@
     <span class="n">train_share</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span>
     <span class="n">validation_share</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.15</span>
     <span class="n">test_share</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.15</span>
+    <span class="n">number_of_training_repetitions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">despription</span><span class="o">=</span><span class="s2">&quot;Number of repeated trainings for the initial training with the same configuration to avoid random initialisation&quot;</span><span class="p">)</span>
     <span class="n">save_directory</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path, where created ML Models should be saved.&quot;</span>
     <span class="p">)</span>
@@ -330,7 +334,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_data_sources</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Source</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">var</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_series_data</span><span class="o">.</span><span class="n">columns</span>
         <span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ml_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_ml_model</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_features</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_define_features</span><span class="p">()</span>
 
     <span class="nd">@property</span>
@@ -370,9 +373,7 @@
             <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">loaded_time_series</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">feature_names</span><span class="p">:</span>
                     <span class="n">srs</span> <span class="o">=</span> <span class="n">loaded_time_series</span><span class="p">[</span><span class="n">column</span><span class="p">]</span>
-                    <span class="n">time_series_data</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
-                        <span class="p">[</span><span class="n">time_series_data</span><span class="p">[</span><span class="n">column</span><span class="p">],</span> <span class="n">srs</span><span class="p">]</span>
-                    <span class="p">)</span>
+                    <span class="n">time_series_data</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">time_series_data</span><span class="p">[</span><span class="n">column</span><span class="p">],</span> <span class="n">srs</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">time_series_data</span><span class="p">)</span>
 
@@ -381,10 +382,47 @@
         <span class="n">sampled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resample</span><span class="p">()</span>
         <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_inputs_and_outputs</span><span class="p">(</span><span class="n">sampled</span><span class="p">)</span>
         <span class="n">training_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">divide_in_tvt</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fit_ml_model</span><span class="p">(</span><span class="n">training_data</span><span class="p">)</span>
-        <span class="n">serialized_ml_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serialize_ml_model</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">save_all</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">,</span> <span class="n">training_data</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">serialized_ml_model</span></div>
+
+        <span class="n">best_serialized_ml_model</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">best_score</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">best_metrics</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_models</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_ml_model_sequence</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml_model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml_models</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fit_ml_model</span><span class="p">(</span><span class="n">training_data</span><span class="p">)</span>
+            <span class="n">serialized_ml_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">serialize_ml_model</span><span class="p">()</span>
+            <span class="n">outputs</span> <span class="o">=</span> <span class="n">training_data</span><span class="o">.</span><span class="n">training_outputs</span><span class="o">.</span><span class="n">columns</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">outputs</span><span class="p">:</span>
+                <span class="n">total_score_mse</span><span class="p">,</span> <span class="n">metrics_dict</span> <span class="o">=</span> <span class="n">evaluate_model</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">training_data</span><span class="p">,</span> <span class="n">CasadiPredictor</span><span class="o">.</span><span class="n">from_serialized_model</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">))</span>
+                <span class="n">train_r2</span> <span class="o">=</span> <span class="n">metrics_dict</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;train_score_r2&quot;</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">train_r2</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">abs</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">best_score</span><span class="p">):</span>
+                    <span class="n">best_score</span> <span class="o">=</span> <span class="n">train_r2</span>
+                    <span class="n">best_serialized_ml_model</span> <span class="o">=</span> <span class="n">serialized_ml_model</span>
+                    <span class="n">best_metrics</span> <span class="o">=</span> <span class="n">metrics_dict</span>
+                    <span class="n">best_cross_check</span> <span class="o">=</span> <span class="n">total_score_mse</span>
+
+                <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_directory</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_and_time</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Iteration_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_plots</span><span class="p">:</span>
+                    <span class="n">path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">plot_model_evaluation</span><span class="p">(</span>
+                        <span class="n">training_data</span><span class="p">,</span>
+                        <span class="n">name</span><span class="p">,</span>
+                        <span class="n">total_score_mse</span><span class="p">,</span>
+                        <span class="n">metrics_dict</span><span class="p">,</span>
+                        <span class="n">CasadiPredictor</span><span class="o">.</span><span class="n">from_serialized_model</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">),</span>
+                        <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">save_path</span><span class="o">=</span><span class="n">path</span>
+                    <span class="p">)</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">best_model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_directory</span><span class="p">,</span> <span class="s2">&quot;best_model&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_and_time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_all</span><span class="p">(</span><span class="n">best_serialized_ml_model</span><span class="p">,</span> <span class="n">training_data</span><span class="p">,</span> <span class="n">best_model_path</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">best_metrics</span><span class="p">,</span> <span class="n">best_cross_check</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ml_model_path</span> <span class="o">=</span> <span class="n">best_model_path</span>
+        <span class="k">return</span> <span class="n">best_serialized_ml_model</span><span class="p">,</span> <span class="n">best_model_path</span><span class="p">,</span> <span class="n">training_data</span></div>
+
 
 <div class="viewcode-block" id="MLModelTrainer.save_all"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.save_all">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_all</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -453,6 +491,18 @@
 <span class="sd">        Builds and returns an ann model</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="MLModelTrainer.build_ml_model_sequence"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.build_ml_model_sequence">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">build_ml_model_sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds and returns an ml model sequence</span>
+<span class="sd">        Build several trainer from same configuration and fit, to avoid bad results due to random initialisation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mls</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">number_of_training_repetitions</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">ml_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_ml_model</span><span class="p">()</span>
+            <span class="n">mls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ml_model</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mls</span></div>
 
 <div class="viewcode-block" id="MLModelTrainer.fit_ml_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.fit_ml_model">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">training_data</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">):</span>
