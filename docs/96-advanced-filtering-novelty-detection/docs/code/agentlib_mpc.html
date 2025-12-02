@@ -735,7 +735,9 @@ and data-driven modeling.</p>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedANN"><code class="docutils literal notranslate"><span class="pre">SerializedANN</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedANN.structure"><code class="docutils literal notranslate"><span class="pre">SerializedANN.structure</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedANN.weights"><code class="docutils literal notranslate"><span class="pre">SerializedANN.weights</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedANN.loss"><code class="docutils literal notranslate"><span class="pre">SerializedANN.loss</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedANN.model_type"><code class="docutils literal notranslate"><span class="pre">SerializedANN.model_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedANN.optimizer"><code class="docutils literal notranslate"><span class="pre">SerializedANN.optimizer</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#id0"><code class="docutils literal notranslate"><span class="pre">SerializedANN.structure</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#id1"><code class="docutils literal notranslate"><span class="pre">SerializedANN.weights</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedANN.deserialize"><code class="docutils literal notranslate"><span class="pre">SerializedANN.deserialize()</span></code></a></li>
@@ -768,6 +770,7 @@ and data-driven modeling.</p>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel"><code class="docutils literal notranslate"><span class="pre">SerializedMLModel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel.agentlib_mpc_hash"><code class="docutils literal notranslate"><span class="pre">SerializedMLModel.agentlib_mpc_hash</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel.dt"><code class="docutils literal notranslate"><span class="pre">SerializedMLModel.dt</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel.input"><code class="docutils literal notranslate"><span class="pre">SerializedMLModel.input</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel.model_type"><code class="docutils literal notranslate"><span class="pre">SerializedMLModel.model_type</span></code></a></li>
@@ -782,6 +785,7 @@ and data-driven modeling.</p>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel.serialize"><code class="docutils literal notranslate"><span class="pre">SerializedMLModel.serialize()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.get_git_revision_short_hash"><code class="docutils literal notranslate"><span class="pre">get_git_revision_short_hash()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -820,7 +824,7 @@ and data-driven modeling.</p>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.modules.ml_model_training.html">agentlib_mpc.modules.ml_model_training package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.ml_model_training.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.ml_model_training.html#module-agentlib_mpc.modules.ml_model_training.data_reduction">agentlib_mpc.modules.ml_model_training.data_reduction module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.ml_model_training.html#agentlib-mpc-modules-ml-model-training-ml-model-trainer-module">agentlib_mpc.modules.ml_model_training.ml_model_trainer module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.ml_model_training.html#module-agentlib_mpc.modules.ml_model_training.ml_model_trainer">agentlib_mpc.modules.ml_model_training.ml_model_trainer module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.modules.ml_model_training.html#module-agentlib_mpc.modules.ml_model_training.setpoint_generator">agentlib_mpc.modules.ml_model_training.setpoint_generator module</a></li>
 </ul>
 </li>
@@ -965,6 +969,33 @@ and data-driven modeling.</p>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.load_sim"><code class="docutils literal notranslate"><span class="pre">load_sim()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.mpc_at_time_step"><code class="docutils literal notranslate"><span class="pre">mpc_at_time_step()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.perform_index_update"><code class="docutils literal notranslate"><span class="pre">perform_index_update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.utils.html#module-agentlib_mpc.utils.balancing">agentlib_mpc.utils.balancing module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.balancing.FilteringMethodTimeSeries"><code class="docutils literal notranslate"><span class="pre">FilteringMethodTimeSeries</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.balancing.FilteringMethodTimeSeries.CaS"><code class="docutils literal notranslate"><span class="pre">FilteringMethodTimeSeries.CaS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.balancing.FilteringMethodTimeSeries.KNN"><code class="docutils literal notranslate"><span class="pre">FilteringMethodTimeSeries.KNN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.balancing.FilteringMethodTimeSeries.ROC"><code class="docutils literal notranslate"><span class="pre">FilteringMethodTimeSeries.ROC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.balancing.FilteringMethodTimeSeries.VOL"><code class="docutils literal notranslate"><span class="pre">FilteringMethodTimeSeries.VOL</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.balancing.FilteringMethodTrainingSamples"><code class="docutils literal notranslate"><span class="pre">FilteringMethodTrainingSamples</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.balancing.FilteringMethodTrainingSamples.CaS"><code class="docutils literal notranslate"><span class="pre">FilteringMethodTrainingSamples.CaS</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.balancing.filter_time_series"><code class="docutils literal notranslate"><span class="pre">filter_time_series()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.balancing.filter_training_samples"><code class="docutils literal notranslate"><span class="pre">filter_training_samples()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.balancing.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.balancing.plot_filtering"><code class="docutils literal notranslate"><span class="pre">plot_filtering()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.balancing.remove_gaps"><code class="docutils literal notranslate"><span class="pre">remove_gaps()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.utils.html#module-agentlib_mpc.utils.ml_model_eval_plotting">agentlib_mpc.utils.ml_model_eval_plotting module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.ml_model_eval_plotting.calc_scores"><code class="docutils literal notranslate"><span class="pre">calc_scores()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.ml_model_eval_plotting.evaluate_model"><code class="docutils literal notranslate"><span class="pre">evaluate_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.ml_model_eval_plotting.pairwise_sort"><code class="docutils literal notranslate"><span class="pre">pairwise_sort()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.ml_model_eval_plotting.plot_model_evaluation"><code class="docutils literal notranslate"><span class="pre">plot_model_evaluation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="agentlib_mpc.utils.html#agentlib_mpc.utils.ml_model_eval_plotting.predict_array"><code class="docutils literal notranslate"><span class="pre">predict_array()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="agentlib_mpc.utils.html#module-agentlib_mpc.utils.sampling">agentlib_mpc.utils.sampling module</a><ul>

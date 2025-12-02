@@ -381,6 +381,143 @@ time value.</p>
 </dd></dl>
 
 </section>
+<section id="module-agentlib_mpc.utils.balancing">
+<span id="agentlib-mpc-utils-balancing-module"></span><h2>agentlib_mpc.utils.balancing module<a class="headerlink" href="#module-agentlib_mpc.utils.balancing" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.balancing.FilteringMethodTimeSeries">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.balancing.</span></span><span class="sig-name descname"><span class="pre">FilteringMethodTimeSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/utils/balancing.html#FilteringMethodTimeSeries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.balancing.FilteringMethodTimeSeries" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.balancing.FilteringMethodTimeSeries.CaS">
+<span class="sig-name descname"><span class="pre">CaS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'clustering_and_sampling'</span></em><a class="headerlink" href="#agentlib_mpc.utils.balancing.FilteringMethodTimeSeries.CaS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.balancing.FilteringMethodTimeSeries.KNN">
+<span class="sig-name descname"><span class="pre">KNN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'k_nearest_neighbors'</span></em><a class="headerlink" href="#agentlib_mpc.utils.balancing.FilteringMethodTimeSeries.KNN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.balancing.FilteringMethodTimeSeries.ROC">
+<span class="sig-name descname"><span class="pre">ROC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'rate_of_change'</span></em><a class="headerlink" href="#agentlib_mpc.utils.balancing.FilteringMethodTimeSeries.ROC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.balancing.FilteringMethodTimeSeries.VOL">
+<span class="sig-name descname"><span class="pre">VOL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'volatility'</span></em><a class="headerlink" href="#agentlib_mpc.utils.balancing.FilteringMethodTimeSeries.VOL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.balancing.FilteringMethodTrainingSamples">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.balancing.</span></span><span class="sig-name descname"><span class="pre">FilteringMethodTrainingSamples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names=&lt;not</span> <span class="pre">given&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start=1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/utils/balancing.html#FilteringMethodTrainingSamples"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.balancing.FilteringMethodTrainingSamples" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.balancing.FilteringMethodTrainingSamples.CaS">
+<span class="sig-name descname"><span class="pre">CaS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'clustering_and_sampling'</span></em><a class="headerlink" href="#agentlib_mpc.utils.balancing.FilteringMethodTrainingSamples.CaS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.balancing.filter_time_series">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.balancing.</span></span><span class="sig-name descname"><span class="pre">filter_time_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_series</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#agentlib_mpc.utils.balancing.FilteringMethodTimeSeries" title="agentlib_mpc.utils.balancing.FilteringMethodTimeSeries"><span class="pre">FilteringMethodTimeSeries</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils/balancing.html#filter_time_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.balancing.filter_time_series" title="Permalink to this definition"></a></dt>
+<dd><p>Filter dataframe of time series data to remove less insightful parts using different methods.
+:param time_series: DataFrame with time series data (time index, multiple columns)
+:param method: FilteringMethod enum value specifying the filtering method to use
+:param window_size: Size of the moving window for filtering (default: 50)
+:param threshold: Threshold value for filtering (method-dependent)
+:param verbose: If True, plot the original and filtered data for comparison.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(df_inputs_filtered, df_targets_filtered).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple of filtered DataFrames</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.balancing.filter_training_samples">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.balancing.</span></span><span class="sig-name descname"><span class="pre">filter_training_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_inputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_targets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#agentlib_mpc.utils.balancing.FilteringMethodTrainingSamples" title="agentlib_mpc.utils.balancing.FilteringMethodTrainingSamples"><span class="pre">FilteringMethodTrainingSamples</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils/balancing.html#filter_training_samples"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.balancing.filter_training_samples" title="Permalink to this definition"></a></dt>
+<dd><p>Filter training samples in the DataFrame using specified filtering method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_inputs</strong> – DataFrame with input time series data (time index, multiple columns)</p></li>
+<li><p><strong>df_targets</strong> – DataFrame with target time series data (time index, multiple columns)</p></li>
+<li><p><strong>method</strong> – FilteringMethod enum value specifying the filtering method to use</p></li>
+<li><p><strong>threshold</strong> – Threshold value for filtering (method-dependent). For clustering, refers to the number of clusters.</p></li>
+<li><p><strong>verbose</strong> – If True, plot the original and filtered data for comparison.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Filtered DataFrames (inputs and targets) with less insightful parts removed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.balancing.main">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.balancing.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/utils/balancing.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.balancing.main" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.balancing.plot_filtering">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.balancing.</span></span><span class="sig-name descname"><span class="pre">plot_filtering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">original</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtered</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Data</span> <span class="pre">Filtering</span> <span class="pre">Comparison'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/utils/balancing.html#plot_filtering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.balancing.plot_filtering" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.balancing.remove_gaps">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.balancing.</span></span><span class="sig-name descname"><span class="pre">remove_gaps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gap_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils/balancing.html#remove_gaps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.balancing.remove_gaps" title="Permalink to this definition"></a></dt>
+<dd><p>Remove large gaps in time series data by shifting data points behind gaps back in time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> – DataFrame with numeric time index in seconds</p></li>
+<li><p><strong>gap_threshold</strong> – Maximum allowed gap in seconds (default: 3600 = 1 hour)</p></li>
+<li><p><strong>verbose</strong> – If True, plot the original and filtered data for comparison.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame with gaps removed by shifting time index.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-agentlib_mpc.utils.ml_model_eval_plotting">
+<span id="agentlib-mpc-utils-ml-model-eval-plotting-module"></span><h2>agentlib_mpc.utils.ml_model_eval_plotting module<a class="headerlink" href="#module-agentlib_mpc.utils.ml_model_eval_plotting" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.ml_model_eval_plotting.calc_scores">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.ml_model_eval_plotting.</span></span><span class="sig-name descname"><span class="pre">calc_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils/ml_model_eval_plotting.html#calc_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.ml_model_eval_plotting.calc_scores" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.ml_model_eval_plotting.evaluate_model">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.ml_model_eval_plotting.</span></span><span class="sig-name descname"><span class="pre">evaluate_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.ml_model_datatypes.TrainingData" title="agentlib_mpc.data_structures.ml_model_datatypes.TrainingData"><span class="pre">TrainingData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiPredictor" title="agentlib_mpc.models.casadi_predictor.CasadiPredictor"><span class="pre">CasadiPredictor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel" title="agentlib_mpc.models.serialized_ml_model.SerializedMLModel"><span class="pre">SerializedMLModel</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils/ml_model_eval_plotting.html#evaluate_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.ml_model_eval_plotting.evaluate_model" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluates the Model and returns primary score, metrics dict, and cross-check score</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.ml_model_eval_plotting.pairwise_sort">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.ml_model_eval_plotting.</span></span><span class="sig-name descname"><span class="pre">pairwise_sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arrays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/utils/ml_model_eval_plotting.html#pairwise_sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.ml_model_eval_plotting.pairwise_sort" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.ml_model_eval_plotting.plot_model_evaluation">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.ml_model_eval_plotting.</span></span><span class="sig-name descname"><span class="pre">plot_model_evaluation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">training_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.ml_model_datatypes.TrainingData" title="agentlib_mpc.data_structures.ml_model_datatypes.TrainingData"><span class="pre">TrainingData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cross_check_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiPredictor" title="agentlib_mpc.models.casadi_predictor.CasadiPredictor"><span class="pre">CasadiPredictor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel" title="agentlib_mpc.models.serialized_ml_model.SerializedMLModel"><span class="pre">SerializedMLModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/utils/ml_model_eval_plotting.html#plot_model_evaluation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.ml_model_eval_plotting.plot_model_evaluation" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the Model evaluation on test data</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.ml_model_eval_plotting.predict_array">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.ml_model_eval_plotting.</span></span><span class="sig-name descname"><span class="pre">predict_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ml_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiPredictor" title="agentlib_mpc.models.casadi_predictor.CasadiPredictor"><span class="pre">CasadiPredictor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Index</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/utils/ml_model_eval_plotting.html#predict_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.ml_model_eval_plotting.predict_array" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
 <section id="module-agentlib_mpc.utils.sampling">
 <span id="agentlib-mpc-utils-sampling-module"></span><h2>agentlib_mpc.utils.sampling module<a class="headerlink" href="#module-agentlib_mpc.utils.sampling" title="Permalink to this heading"></a></h2>
 <dl class="py function">
