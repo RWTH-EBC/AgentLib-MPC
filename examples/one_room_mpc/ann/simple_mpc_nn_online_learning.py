@@ -1,6 +1,8 @@
 import logging
 from pathlib import Path
 import os
+import agentlib as al
+import random
 
 from agentlib.utils.multi_agent_system import LocalMASAgency
 
@@ -9,8 +11,45 @@ logger = logging.getLogger(__name__)
 # script variables
 ub = 295.15
 
-ENV_CONFIG = {"rt": False, "factor": 0.01, "t_sample": 60}
+ENV_CONFIG = {"rt": False, "factor": 0.01, "t_sample": 3600, "offset": 0}
+class InputGeneratorConfig(al.ModelConfig):
+    outputs: al.ModelOutputs = [
+        al.ModelOutput(
+            name="mDot",
+            value=0.0225,
+            lb=0,
+            ub=0.05,
+            unit="K",
+            description="Air mass flow into zone",
+        ),
+        # disturbances
+        al.ModelOutput(
+            name="load",
+            value=150,
+            lb=150,
+            ub=150,
+            unit="W",
+            description="Heat load into zone",
+        ),
+        al.ModelOutput(
+            name="T_in",
+            value=290.15,
+            lb=290.15,
+            ub=290.15,
+            unit="K",
+            description="Inflow air temperature",
+        ),
+    ]
+class InputGenerator(al.Model):
+    config: InputGeneratorConfig
 
+    def do_step(self, *, t_start, t_sample=None):
+        for out in self.config.outputs:
+            value = random.random() * (out.ub - out.lb) + out.lb
+            self.set(out.name, value)
+
+    def initialize(self, **kwargs):
+        pass
 
 def agent_configs(ml_model_path: str) -> list[dict]:
     agent_mpc = {
@@ -33,6 +72,7 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                         "method": "multiple_shooting",
                     },
                     "results_file": "results//opt.csv",
+                    "overwrite_result_file": True,
                     "solver": {"name": "ipopt", "options": {"ipopt.print_level": 0}},
                 },
                 "time_step": 300,
@@ -49,6 +89,13 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                 "controls": [{"name": "mDot", "value": 0.02, "ub": 0.05, "lb": 0}],
                 "states": [{"name": "T", "value": 298.16, "ub": 303.15, "lb": 288.15}],
             },
+            {
+                "type": "local",
+                "subscriptions": [
+                    "Trainer_OL"
+                ]
+            }
+
         ],
     }
     agent_sim = {
@@ -68,37 +115,48 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                 "t_sample": 10,
                 "save_results": True,
                 "update_inputs_on_callback": False,
+                "overwrite_result_file": True,
+                "result_filename": "results//simulation_data_onlinelearning.csv",
                 "outputs": [
                     {"name": "T_out", "value": 298, "alias": "T"},
+                    {"name": "T_in_sim", "value": 290.15},
+                    {"name": "load_sim", "value": 150},
                 ],
                 "inputs": [
                     {"name": "mDot", "value": 0.02, "alias": "mDot"},
                 ],
+            },
+            {
+                "type": "local",
+                "subscriptions": [
+                    "Trainer_OL"
+                ]
             },
         ],
     }
     return [agent_mpc, agent_sim]
 
 
-def run_example(with_plots=True, log_level=logging.INFO, until=8000):
+def run_example(with_plots=True, log_level=logging.INFO, until=8000, initial_training_time=43200, retrain_delay=0):
     # Change the working directly so that relative paths work
     os.chdir(os.path.abspath(os.path.dirname(__file__)))
     logging.basicConfig(level=log_level)
 
-    # gets the subdirectory of anns with the highest number, i.e. the longest training
-    # time
     try:
         ann_path = list(Path.cwd().glob("anns/best_model/*/ml_model.json"))[-1]
     except IndexError:
-        # if there is none, we have to perform the training first
         import training_nn
-
         training_nn.main(initial_training_time=3600 * 24 * 1, plot_results=False, step_size=300)
-        ann_path = list(Path.cwd().glob("anns/best_model*/ml_model.json"))[1]
+        ann_path = list(Path.cwd().glob("anns/best_model/*/ml_model.json"))[-1]
 
+    #Run with Online Learning
+    agent_config = agent_configs(ml_model_path=str(ann_path))
+    import training_nn_onlinelearning
+    trainer = training_nn_onlinelearning.get_trainer(retrain_delay, str(ann_path))
+    agent_config.append(trainer)
 
     mas = LocalMASAgency(
-        agent_configs=agent_configs(ml_model_path=str(ann_path)),
+        agent_configs=agent_config,
         env=ENV_CONFIG,
         variable_logging=False,
     )
@@ -151,4 +209,4 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000):
 
 
 if __name__ == "__main__":
-    run_example(with_plots=True, until=43200)
+    run_example(until=86400*3, retrain_delay=86400)

@@ -72,7 +72,9 @@ class PhysicalModelConfig(CasadiModelConfig):
         ),
     ]
     outputs: List[CasadiOutput] = [
-        CasadiOutput(name="T_out", unit="K", description="Temperature of zone")
+        CasadiOutput(name="T_out", unit="K", description="Temperature of zone"),
+        CasadiOutput(name="T_in_sim", unit="K"),
+        CasadiOutput(name="load_sim", unit="W"),
     ]
 
 
@@ -87,6 +89,8 @@ class PhysicalModel(CasadiModel):
 
         # Define ae
         self.T_out.alg = self.T  # math operation to get the symbolic variable
+        self.T_in_sim.alg = self.T_in
+        self.load_sim.alg = self.load
 
         # Constraints: List[(lower bound, function, upper bound)]
         self.constraints = [
@@ -95,19 +99,12 @@ class PhysicalModel(CasadiModel):
         ]
 
         # Objective function
-        obj1 = self.create_sub_objective(
-            expressions=self.mDot,
-            weight=self.r_mDot,
-            name="control_costs",
+        objective = sum(
+            [
+                self.r_mDot * self.mDot,
+                self.s_T * self.T_slack**2,
+            ]
         )
-
-        obj2 = self.create_sub_objective(
-            expressions=self.T_slack ** 2,
-            weight=self.s_T,
-            name="temp_slack"
-        )
-
-        objective = self.create_combined_objective(obj1, obj2, normalization=1)
         return objective
 
 
@@ -193,18 +190,11 @@ class DataDrivenModel(CasadiMLModel):
         ]
 
         # Objective function
-        obj1 = self.create_sub_objective(
-            expressions=self.mDot,
-            weight=self.r_mDot,
-            name="control_costs",
+        objective = sum(
+            [
+                self.r_mDot * self.mDot,
+                self.s_T * self.T_slack**2,
+            ]
         )
-
-        obj2 = self.create_sub_objective(
-            expressions=self.T_slack ** 2,
-            weight=self.s_T,
-            name="temp_slack"
-        )
-
-        objective = self.create_combined_objective(obj1, obj2, normalization=1)
 
         return objective

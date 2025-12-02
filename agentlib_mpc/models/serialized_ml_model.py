@@ -1,6 +1,7 @@
 import abc
 import json
 import logging
+import subprocess
 
 import numpy as np
 
@@ -18,6 +19,14 @@ from typing import Union, Optional
 from agentlib_mpc.data_structures.ml_model_datatypes import OutputFeature, Feature
 
 logger = logging.getLogger(__name__)
+
+
+def get_git_revision_short_hash() -> str:
+    return (
+        subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
+        .decode("ascii")
+        .strip()
+    )
 
 
 class MLModels(str, Enum):
@@ -43,11 +52,16 @@ class SerializedMLModel(BaseModel, abc.ABC):
         description="Model output variables (which are automatically also inputs, as "
         "we need them recursively in MPC.) with their lag order.",
     )
+    agentlib_mpc_hash: str = Field(
+        default_factory=get_git_revision_short_hash,
+        description="The commit hash of the agentlib_mpc version this was created with.",
+    )
     training_info: Optional[dict] = Field(
         default=None,
         title="Training Info",
         description="Config of Trainer class with all the meta data used for training of the Model.",
     )
+
     model_type: MLModels
     model_config = ConfigDict(protected_namespaces=())
 
@@ -172,6 +186,16 @@ class SerializedANN(SerializedMLModel):
         title="structure",
         description="The structure of the ANN as json string.",
     )
+    optimizer: str = Field(
+        default=None,
+        title="optimizer",
+        description="The optimizer used for training the ANN.",
+    )
+    loss: str = Field(
+        default=None,
+        title="loss",
+        description="The loss function used for training the ANN.",
+    )
     model_config = ConfigDict(arbitrary_types_allowed=True)
     model_type: MLModels = MLModels.ANN
 
@@ -193,6 +217,9 @@ class SerializedANN(SerializedMLModel):
                 weight_l[idx] = weight_l[idx].tolist()
             weights.append(weight_l)
 
+        optimizer = model.optimizer.__class__.__name__.lower()
+        loss = model.loss
+
         return cls(
             structure=structure,
             weights=weights,
@@ -200,6 +227,8 @@ class SerializedANN(SerializedMLModel):
             input=input,
             output=output,
             trainer_config=training_info,
+            optimizer=optimizer,
+            loss=loss,
         )
 
     def deserialize(self) -> Sequential:
