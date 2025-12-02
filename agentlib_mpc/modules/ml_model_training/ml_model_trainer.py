@@ -351,23 +351,32 @@ class MLModelTrainer(BaseModule, abc.ABC):
 
 
     def save_all(
-        self,
-        serialized_ml_model: SerializedMLModel,
-        training_data: ml_model_datatypes.TrainingData,
+            self,
+            serialized_ml_model: SerializedMLModel,
+            training_data: ml_model_datatypes.TrainingData,
+            best_model_path,
+            name,
+            metrics_dict: dict,
+            cross_check_score: float
     ):
         """Saves all relevant data and results of the training process if desired."""
-        path = Path(self.config.save_directory, self.agent_and_time)
+
         if self.config.save_data:
-            training_data.save(path)
+            training_data.save(best_model_path)
+
         if self.config.save_ml_model:
-            self.save_ml_model(serialized_ml_model, path=path)
-        if self.config.save_plots:
-            evaluate_model(
-                training_data,
-                CasadiPredictor.from_serialized_model(serialized_ml_model),
-                save_path=path,
-                show_plot=False,
-            )
+            self.save_ml_model(serialized_ml_model, path=best_model_path)
+
+        plot_model_evaluation(
+            training_data,
+            name,
+            cross_check_score,
+            metrics_dict,
+            CasadiPredictor.from_serialized_model(serialized_ml_model),
+            show_plot=False,
+            save_path=best_model_path
+        )
+
 
     def _callback_data(self, variable: AgentVariable, name: str):
         """Adds received measured inputs to the past trajectory."""

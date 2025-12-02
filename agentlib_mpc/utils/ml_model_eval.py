@@ -28,7 +28,7 @@ def evaluate_model(
         name,
         training_data: ml_model_datatypes.TrainingData,
         model: Union[CasadiPredictor, SerializedMLModel]
-) -> tuple[float, dict, float]:
+) -> tuple[float, dict]:
     """Evaluates the Model and returns primary score, metrics dict, and cross-check score"""
 
     if isinstance(model, SerializedMLModel):
