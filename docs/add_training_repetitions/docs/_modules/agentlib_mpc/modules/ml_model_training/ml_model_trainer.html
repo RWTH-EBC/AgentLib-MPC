@@ -425,23 +425,32 @@
 
 
 <div class="viewcode-block" id="MLModelTrainer.save_all"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.save_all">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_all</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">serialized_ml_model</span><span class="p">:</span> <span class="n">SerializedMLModel</span><span class="p">,</span>
-        <span class="n">training_data</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">serialized_ml_model</span><span class="p">:</span> <span class="n">SerializedMLModel</span><span class="p">,</span>
+            <span class="n">training_data</span><span class="p">:</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">TrainingData</span><span class="p">,</span>
+            <span class="n">best_model_path</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="n">metrics_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+            <span class="n">cross_check_score</span><span class="p">:</span> <span class="nb">float</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves all relevant data and results of the training process if desired.&quot;&quot;&quot;</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_directory</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_and_time</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_data</span><span class="p">:</span>
-            <span class="n">training_data</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">training_data</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">best_model_path</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_ml_model</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">save_ml_model</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_plots</span><span class="p">:</span>
-            <span class="n">evaluate_model</span><span class="p">(</span>
-                <span class="n">training_data</span><span class="p">,</span>
-                <span class="n">CasadiPredictor</span><span class="o">.</span><span class="n">from_serialized_model</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">),</span>
-                <span class="n">save_path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
-                <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_ml_model</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">best_model_path</span><span class="p">)</span>
+
+        <span class="n">plot_model_evaluation</span><span class="p">(</span>
+            <span class="n">training_data</span><span class="p">,</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="n">cross_check_score</span><span class="p">,</span>
+            <span class="n">metrics_dict</span><span class="p">,</span>
+            <span class="n">CasadiPredictor</span><span class="o">.</span><span class="n">from_serialized_model</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">),</span>
+            <span class="n">show_plot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">save_path</span><span class="o">=</span><span class="n">best_model_path</span>
+        <span class="p">)</span></div>
+
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_callback_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds received measured inputs to the past trajectory.&quot;&quot;&quot;</span>
