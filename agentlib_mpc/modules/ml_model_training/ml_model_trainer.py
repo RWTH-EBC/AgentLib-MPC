@@ -30,8 +30,9 @@ from agentlib_mpc.models.serialized_ml_model import (
 from agentlib_mpc.models.serialized_ml_model import CustomGPR, MLModels
 from agentlib_mpc.data_structures import ml_model_datatypes
 from agentlib_mpc.data_structures.interpolation import InterpolationMethods
-from agentlib_mpc.utils.plotting.ml_model_test import evaluate_model
 from agentlib_mpc.utils.sampling import sample_values_to_target_grid
+from agentlib_mpc.utils.ml_model_eval import evaluate_model
+from agentlib_mpc.utils.plotting.ml_model_plotting import plot_model_evaluation
 
 from keras import Sequential
 
@@ -86,6 +87,9 @@ class MLModelTrainerConfig(BaseModuleConfig, abc.ABC):
     train_share: float = 0.7
     validation_share: float = 0.15
     test_share: float = 0.15
+    number_of_training_repetitions: int = pydantic.Field(
+        default=1,
+        despription="Number of repeated trainings for the initial training with the same configuration to avoid random initialisation")
     save_directory: Path = pydantic.Field(
         default=None, description="Path, where created ML Models should be saved."
     )
@@ -256,7 +260,6 @@ class MLModelTrainer(BaseModule, abc.ABC):
         self._data_sources: dict[str, Source] = {
             var: None for var in self.time_series_data.columns
         }
-        self.ml_model = self.build_ml_model()
         self.input_features, self.output_features = self._define_features()
 
     @property
@@ -296,9 +299,7 @@ class MLModelTrainer(BaseModule, abc.ABC):
             for column in loaded_time_series.columns:
                 if column in feature_names:
                     srs = loaded_time_series[column]
-                    time_series_data[column] = pd.concat(
-                        [time_series_data[column], srs]
-                    )
+                    time_series_data[column] = pd.concat([time_series_data[column], srs])
 
         return pd.DataFrame(time_series_data)
 
@@ -307,10 +308,47 @@ class MLModelTrainer(BaseModule, abc.ABC):
         sampled = self.resample()
         inputs, outputs = self.create_inputs_and_outputs(sampled)
         training_data = self.divide_in_tvt(inputs, outputs)
-        self.fit_ml_model(training_data)
-        serialized_ml_model = self.serialize_ml_model()
-        self.save_all(serialized_ml_model, training_data)
-        return serialized_ml_model
+
+        best_serialized_ml_model = None
+        best_score = 0
+        best_metrics = None
+        i = 1
+
+        self.ml_models = self.build_ml_model_sequence()
+
+        for self.ml_model in self.ml_models:
+            self.fit_ml_model(training_data)
+            serialized_ml_model = self.serialize_ml_model()
+            outputs = training_data.training_outputs.columns
+            for name in outputs:
+                total_score_mse, metrics_dict = evaluate_model(name, training_data, CasadiPredictor.from_serialized_model(serialized_ml_model))
+                train_r2 = metrics_dict[name]["train_score_r2"]
+
+                if abs(1 - train_r2) < abs(1 - best_score):
+                    best_score = train_r2
+                    best_serialized_ml_model = serialized_ml_model
+                    best_metrics = metrics_dict
+                    best_cross_check = total_score_mse
+
+                path = Path(self.config.save_directory, self.agent_and_time, f"Iteration_{i}")
+                if self.config.save_plots:
+                    path.mkdir(parents=True, exist_ok=True)
+                    plot_model_evaluation(
+                        training_data,
+                        name,
+                        total_score_mse,
+                        metrics_dict,
+                        CasadiPredictor.from_serialized_model(serialized_ml_model),
+                        show_plot=False,
+                        save_path=path
+                    )
+                i += 1
+
+        best_model_path = Path(self.config.save_directory, "best_model", self.agent_and_time)
+        self.save_all(best_serialized_ml_model, training_data, best_model_path, name, best_metrics, best_cross_check)
+        self.ml_model_path = best_model_path
+        return best_serialized_ml_model, best_model_path, training_data
+
 
     def save_all(
         self,
@@ -379,6 +417,18 @@ class MLModelTrainer(BaseModule, abc.ABC):
         Builds and returns an ann model
         """
         pass
+
+    def build_ml_model_sequence(self):
+        """
+        Builds and returns an ml model sequence
+        Build several trainer from same configuration and fit, to avoid bad results due to random initialisation
+        """
+        mls = list()
+        n = self.config.number_of_training_repetitions
+        for i in range(n):
+            ml_model = self.build_ml_model()
+            mls.append(ml_model)
+        return mls
 
     @abc.abstractmethod
     def fit_ml_model(self, training_data: ml_model_datatypes.TrainingData):
