@@ -1,0 +1,300 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>agentlib_mpc.utils.plotting package &mdash; agentlib_mpc 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
+
+  
+      <script src="_static/jquery.js"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+      <script src="_static/doctools.js"></script>
+      <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="agentlib_mpc.utils package" href="agentlib_mpc.utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            agentlib_mpc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PackageReference.html">Package Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">agentlib_mpc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PackageReference.html">Package Reference</a></li>
+          <li class="breadcrumb-item"><a href="agentlib_mpc.utils.html">agentlib_mpc.utils package</a></li>
+      <li class="breadcrumb-item active">agentlib_mpc.utils.plotting package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/agentlib_mpc.utils.plotting.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="agentlib-mpc-utils-plotting-package">
+<h1>agentlib_mpc.utils.plotting package<a class="headerlink" href="#agentlib-mpc-utils-plotting-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-agentlib_mpc.utils.plotting.admm_animation">
+<span id="agentlib-mpc-utils-plotting-admm-animation-module"></span><h2>agentlib_mpc.utils.plotting.admm_animation module<a class="headerlink" href="#module-agentlib_mpc.utils.plotting.admm_animation" title="Permalink to this heading"></a></h2>
+<p>Modules that defines functions to be used for automatically creating animations of
+ADMM convergence</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.admm_animation.animate_full">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.admm_animation.</span></span><span class="sig-name descname"><span class="pre">animate_full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">matplotlib.lines.Line2D</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/utils/plotting/admm_animation.html#animate_full"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.admm_animation.animate_full" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.admm_animation.init_full">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.admm_animation.</span></span><span class="sig-name descname"><span class="pre">init_full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">matplotlib.lines.Line2D</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Axes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/utils/plotting/admm_animation.html#init_full"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.admm_animation.init_full" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.admm_animation.make_animation">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.admm_animation.</span></span><span class="sig-name descname"><span class="pre">make_animation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">customize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Figure</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Axes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.basic.Style" title="agentlib_mpc.utils.plotting.basic.Style"><span class="pre">Style</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Figure</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Axes</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">300</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/utils/plotting/admm_animation.html#make_animation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.admm_animation.make_animation" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.admm_animation.make_image">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.admm_animation.</span></span><span class="sig-name descname"><span class="pre">make_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">customize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Figure</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Axes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.basic.Style" title="agentlib_mpc.utils.plotting.basic.Style"><span class="pre">Style</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Figure</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Axes</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/utils/plotting/admm_animation.html#make_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.admm_animation.make_image" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.admm_animation.make_lines">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.admm_animation.</span></span><span class="sig-name descname"><span class="pre">make_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Axes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Figure</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">matplotlib.lines.Line2D</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agentlib_mpc/utils/plotting/admm_animation.html#make_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.admm_animation.make_lines" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-agentlib_mpc.utils.plotting.admm_residuals">
+<span id="agentlib-mpc-utils-plotting-admm-residuals-module"></span><h2>agentlib_mpc.utils.plotting.admm_residuals module<a class="headerlink" href="#module-agentlib_mpc.utils.plotting.admm_residuals" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.admm_residuals.load_residuals">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.admm_residuals.</span></span><span class="sig-name descname"><span class="pre">load_residuals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/agentlib_mpc/utils/plotting/admm_residuals.html#load_residuals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.admm_residuals.load_residuals" title="Permalink to this definition"></a></dt>
+<dd><p>Loads a residuals csv file in the correct format.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.admm_residuals.plot_over_time">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.admm_residuals.</span></span><span class="sig-name descname"><span class="pre">plot_over_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">residuals:</span> <span class="pre">~pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primal_tol:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dual_tol:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iters:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">None)</span> <span class="pre">-&gt;</span> <span class="pre">(&lt;class</span> <span class="pre">'matplotlib.figure.Figure'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">(&lt;class</span> <span class="pre">'matplotlib.axes._axes.Axes'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;class</span> <span class="pre">'matplotlib.axes._axes.Axes'&gt;)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/utils/plotting/admm_residuals.html#plot_over_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.admm_residuals.plot_over_time" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the final residuals over time.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.admm_residuals.plot_single_time_step">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.admm_residuals.</span></span><span class="sig-name descname"><span class="pre">plot_single_time_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">residuals:</span> <span class="pre">~pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_step:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primal_tol:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dual_tol:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">None)</span> <span class="pre">-&gt;</span> <span class="pre">(&lt;class</span> <span class="pre">'matplotlib.figure.Figure'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;class</span> <span class="pre">'matplotlib.axes._axes.Axes'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/utils/plotting/admm_residuals.html#plot_single_time_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.admm_residuals.plot_single_time_step" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the decrease of the residuals over iterations for a time step</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.admm_residuals.residuals_over_time">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.admm_residuals.</span></span><span class="sig-name descname"><span class="pre">residuals_over_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">residuals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="_modules/agentlib_mpc/utils/plotting/admm_residuals.html#residuals_over_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.admm_residuals.residuals_over_time" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluates the residuals over time. Takes a raw residuals DataFrame and returns a
+Dataframe, which has for each time step the number of iterations and the final primal and dual residuals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame with float index (time in seconds) and the columns
+(“primal_residual”, “dual_residual”, “iters”)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-agentlib_mpc.utils.plotting.basic">
+<span id="agentlib-mpc-utils-plotting-basic-module"></span><h2>agentlib_mpc.utils.plotting.basic module<a class="headerlink" href="#module-agentlib_mpc.utils.plotting.basic" title="Permalink to this heading"></a></h2>
+<p>Some basic plotting utilities</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.EBCColors">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.basic.</span></span><span class="sig-name descname"><span class="pre">EBCColors</span></span><a class="reference internal" href="_modules/agentlib_mpc/utils/plotting/basic.html#EBCColors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.EBCColors" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.EBCColors.blue">
+<span class="sig-name descname"><span class="pre">blue</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0.0,</span> <span class="pre">0.32941176470588235,</span> <span class="pre">0.6235294117647059)</span></em><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.EBCColors.blue" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.EBCColors.dark_grey">
+<span class="sig-name descname"><span class="pre">dark_grey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0.3058823529411765,</span> <span class="pre">0.30980392156862746,</span> <span class="pre">0.3137254901960784)</span></em><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.EBCColors.dark_grey" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.EBCColors.dark_red">
+<span class="sig-name descname"><span class="pre">dark_red</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0.6745098039215687,</span> <span class="pre">0.16862745098039217,</span> <span class="pre">0.10980392156862745)</span></em><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.EBCColors.dark_red" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.EBCColors.ebc_palette_sort_1">
+<span class="sig-name descname"><span class="pre">ebc_palette_sort_1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[(0.6745098039215687,</span> <span class="pre">0.16862745098039217,</span> <span class="pre">0.10980392156862745),</span> <span class="pre">(0.8666666666666667,</span> <span class="pre">0.25098039215686274,</span> <span class="pre">0.17647058823529413),</span> <span class="pre">(0.9215686274509803,</span> <span class="pre">0.5490196078431373,</span> <span class="pre">0.5058823529411764),</span> <span class="pre">(0.3058823529411765,</span> <span class="pre">0.30980392156862746,</span> <span class="pre">0.3137254901960784),</span> <span class="pre">(0.615686274509804,</span> <span class="pre">0.6196078431372549,</span> <span class="pre">0.6274509803921569),</span> <span class="pre">(0.8509803921568627,</span> <span class="pre">0.8509803921568627,</span> <span class="pre">0.8509803921568627),</span> <span class="pre">(0.0,</span> <span class="pre">0.32941176470588235,</span> <span class="pre">0.6235294117647059),</span> <span class="pre">(0.615686274509804,</span> <span class="pre">0.7647058823529411,</span> <span class="pre">0.9019607843137255),</span> <span class="pre">(0.4392156862745098,</span> <span class="pre">0.6784313725490196,</span> <span class="pre">0.2784313725490196)]</span></em><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.EBCColors.ebc_palette_sort_1" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.EBCColors.ebc_palette_sort_2">
+<span class="sig-name descname"><span class="pre">ebc_palette_sort_2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[(0.8666666666666667,</span> <span class="pre">0.25098039215686274,</span> <span class="pre">0.17647058823529413),</span> <span class="pre">(0.0,</span> <span class="pre">0.32941176470588235,</span> <span class="pre">0.6235294117647059),</span> <span class="pre">(0.615686274509804,</span> <span class="pre">0.6196078431372549,</span> <span class="pre">0.6274509803921569),</span> <span class="pre">(0.4392156862745098,</span> <span class="pre">0.6784313725490196,</span> <span class="pre">0.2784313725490196),</span> <span class="pre">(0.6745098039215687,</span> <span class="pre">0.16862745098039217,</span> <span class="pre">0.10980392156862745),</span> <span class="pre">(0.3058823529411765,</span> <span class="pre">0.30980392156862746,</span> <span class="pre">0.3137254901960784),</span> <span class="pre">(0.9215686274509803,</span> <span class="pre">0.5490196078431373,</span> <span class="pre">0.5058823529411764),</span> <span class="pre">(0.615686274509804,</span> <span class="pre">0.7647058823529411,</span> <span class="pre">0.9019607843137255),</span> <span class="pre">(0.8509803921568627,</span> <span class="pre">0.8509803921568627,</span> <span class="pre">0.8509803921568627)]</span></em><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.EBCColors.ebc_palette_sort_2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.EBCColors.green">
+<span class="sig-name descname"><span class="pre">green</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0.4392156862745098,</span> <span class="pre">0.6784313725490196,</span> <span class="pre">0.2784313725490196)</span></em><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.EBCColors.green" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.EBCColors.grey">
+<span class="sig-name descname"><span class="pre">grey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0.615686274509804,</span> <span class="pre">0.6196078431372549,</span> <span class="pre">0.6274509803921569)</span></em><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.EBCColors.grey" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.EBCColors.light_blue">
+<span class="sig-name descname"><span class="pre">light_blue</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0.615686274509804,</span> <span class="pre">0.7647058823529411,</span> <span class="pre">0.9019607843137255)</span></em><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.EBCColors.light_blue" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.EBCColors.light_grey">
+<span class="sig-name descname"><span class="pre">light_grey</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0.8509803921568627,</span> <span class="pre">0.8509803921568627,</span> <span class="pre">0.8509803921568627)</span></em><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.EBCColors.light_grey" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.EBCColors.light_red">
+<span class="sig-name descname"><span class="pre">light_red</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0.9215686274509803,</span> <span class="pre">0.5490196078431373,</span> <span class="pre">0.5058823529411764)</span></em><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.EBCColors.light_red" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.EBCColors.red">
+<span class="sig-name descname"><span class="pre">red</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0.8666666666666667,</span> <span class="pre">0.25098039215686274,</span> <span class="pre">0.17647058823529413)</span></em><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.EBCColors.red" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.FontDict">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.basic.</span></span><span class="sig-name descname"><span class="pre">FontDict</span></span><a class="reference internal" href="_modules/agentlib_mpc/utils/plotting/basic.html#FontDict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.FontDict" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.FontDict.fontsize">
+<span class="sig-name descname"><span class="pre">fontsize</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.FontDict.fontsize" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.Style">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.basic.</span></span><span class="sig-name descname"><span class="pre">Style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">use_tex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/utils/plotting/basic.html#Style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.Style" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.ValueRange">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.basic.</span></span><span class="sig-name descname"><span class="pre">ValueRange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/utils/plotting/basic.html#ValueRange"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.ValueRange" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.ValueRange.max">
+<span class="sig-name descname"><span class="pre">max</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.ValueRange.max" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.ValueRange.min">
+<span class="sig-name descname"><span class="pre">min</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.ValueRange.min" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.make_fig">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.basic.</span></span><span class="sig-name descname"><span class="pre">make_fig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.basic.Style" title="agentlib_mpc.utils.plotting.basic.Style"><span class="pre">Style</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">customizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Customizer</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">plt.Figure</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">plt.Axes</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/agentlib_mpc/utils/plotting/basic.html#make_fig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.make_fig" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.basic.</span></span><span class="sig-name descname"><span class="pre">make_fig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.basic.Style" title="agentlib_mpc.utils.plotting.basic.Style"><span class="pre">Style</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">customizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiCustomizer</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">plt.Figure</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">plt.Axes</span><span class="p"><span class="pre">]</span></span></span></span></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.basic.</span></span><span class="sig-name descname"><span class="pre">make_fig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.basic.Style" title="agentlib_mpc.utils.plotting.basic.Style"><span class="pre">Style</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">plt.Figure</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">plt.Axes</span><span class="p"><span class="pre">]</span></span></span></span></dt>
+<dd><p>Creates a figure and axes with an amount of rows. If rows is specified, return
+a tuple of axes, else only an ax</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.make_grid">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.basic.</span></span><span class="sig-name descname"><span class="pre">make_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Axes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/utils/plotting/basic.html#make_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.make_grid" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.utils.plotting.basic.make_side_legend">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.utils.plotting.basic.</span></span><span class="sig-name descname"><span class="pre">make_side_legend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Axes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Figure</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right_position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/utils/plotting/basic.html#make_side_legend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.utils.plotting.basic.make_side_legend" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-agentlib_mpc.utils.plotting">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-agentlib_mpc.utils.plotting" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="agentlib_mpc.utils.html" class="btn btn-neutral float-left" title="agentlib_mpc.utils package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, AGENT-Project Associates.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
