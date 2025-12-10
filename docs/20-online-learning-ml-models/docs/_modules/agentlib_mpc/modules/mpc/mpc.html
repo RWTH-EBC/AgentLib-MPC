@@ -392,6 +392,19 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_ml_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
+        <span class="c1"># todo: check if var is a model or path --&gt; both possible</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">variable</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">opti_back</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">optimization_backend</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span>
+        <span class="c1"># if isinstance(value, dict):</span>
+        <span class="c1">#     opti_back[&#39;ml_model_sources&#39;] = [value]</span>
+        <span class="c1"># elif isinstance(value, str):</span>
+        <span class="c1">#     opti_back[&#39;ml_model_sources&#39;] = [value]</span>
+        <span class="n">opti_back</span><span class="p">[</span><span class="s1">&#39;ml_model_sources&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_status</span> <span class="o">=</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">InitStatus</span><span class="o">.</span><span class="n">during_update</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_optimization</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_status</span> <span class="o">=</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">InitStatus</span><span class="o">.</span><span class="n">ready</span>
+
 <div class="viewcode-block" id="BaseMPC.do_step"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.mpc.BaseMPC.do_step">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">do_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Performs an MPC step.</span>

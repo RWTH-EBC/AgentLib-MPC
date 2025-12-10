@@ -918,8 +918,8 @@
 
         <span class="n">ann</span> <span class="o">=</span> <span class="n">SerializedMLModel</span><span class="o">.</span><span class="n">load_serialized_model_from_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="n">keras_model</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">deserialize</span><span class="p">()</span>
-        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">optimizer</span>
-        <span class="n">loss</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">loss</span>
+        <span class="n">optimizer</span> <span class="o">=</span> <span class="n">keras_model</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">keras_model</span><span class="o">.</span><span class="n">loss</span>
         <span class="n">keras_model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="n">loss</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">keras_model</span></div>
 
