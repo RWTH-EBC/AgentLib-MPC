@@ -5,18 +5,14 @@ agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:10:25: F401 `p
 agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:44:28: F811 Redefinition of unused `models` from line 10
 agentlib_mpc/models/casadi_model.py:277:1: E402 Module level import not at top of file
 agentlib_mpc/models/casadi_predictor.py:670:35: F541 [*] f-string without any placeholders
-agentlib_mpc/modules/ml_model_training/ml_model_trainer.py:5:26: F401 [*] `typing.TYPE_CHECKING` imported but unused
-agentlib_mpc/modules/ml_model_training/ml_model_trainer.py:5:51: F401 [*] `typing.List` imported but unused
-agentlib_mpc/modules/ml_model_training/ml_model_trainer.py:5:57: F401 [*] `typing.Union` imported but unused
-agentlib_mpc/modules/ml_model_training/ml_model_trainer.py:6:8: F401 [*] `json` imported but unused
 agentlib_mpc/modules/mpc/skippable_mixin.py:50:28: E712 Comparison to `True` should be `cond is True` or `if cond:`
 agentlib_mpc/optimization_backends/backend.py:6:33: F401 [*] `typing.Callable` imported but unused
 agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py:201:17: F821 Undefined name `SubObjective`
+agentlib_mpc/utils/ml_model_eval_plotting.py:84:5: F841 Local variable `sum_total_score` is assigned to but never used
 agentlib_mpc/utils/plotting/admm_consensus_shades.py:41:5: F841 Local variable `a_trajectory` is assigned to but never used
 agentlib_mpc/utils/plotting/admm_consensus_shades.py:42:5: F841 Local variable `number_of_iterations` is assigned to but never used
 agentlib_mpc/utils/plotting/admm_consensus_shades.py:52:44: F821 Undefined name `series`
 agentlib_mpc/utils/plotting/admm_consensus_shades.py:57:9: F841 Local variable `prediction_color` is assigned to but never used
-agentlib_mpc/utils/plotting/ml_model_test.py:66:9: E731 Do not assign a `lambda` expression, use a `def`
 agentlib_mpc/utils/plotting/mpc_dashboard.py:34:5: F841 Local variable `sub_idx` is assigned to but never used
-Found 20 errors.
-[*] 9 fixable with the `--fix` option (6 hidden fixes can be enabled with the `--unsafe-fixes` option).
+Found 16 errors.
+[*] 5 fixable with the `--fix` option (6 hidden fixes can be enabled with the `--unsafe-fixes` option).
