@@ -318,6 +318,19 @@ class BaseMPC(BaseModule):
         """
         pass
 
+    def _update_ml_model(self, variable: AgentVariable):
+        # todo: check if var is a model or path --> both possible
+        value = variable.value
+        opti_back = self.config.optimization_backend['model']
+        # if isinstance(value, dict):
+        #     opti_back['ml_model_sources'] = [value]
+        # elif isinstance(value, str):
+        #     opti_back['ml_model_sources'] = [value]
+        opti_back['ml_model_sources'] = [value]
+        self.init_status = mpc_datamodels.InitStatus.during_update
+        self._init_optimization()
+        self.init_status = mpc_datamodels.InitStatus.ready
+
     def do_step(self):
         """
         Performs an MPC step.

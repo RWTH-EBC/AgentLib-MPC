@@ -844,8 +844,8 @@ class ANNTrainer(MLModelTrainer):
 
         ann = SerializedMLModel.load_serialized_model_from_file(path)
         keras_model = ann.deserialize()
-        optimizer = ann.optimizer
-        loss = ann.loss
+        optimizer = keras_model.optimizer.name
+        loss = keras_model.loss
         keras_model.compile(optimizer=optimizer, loss=loss)
         return keras_model
 
