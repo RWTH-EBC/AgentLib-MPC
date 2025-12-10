@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.optimization_backends.casadi_.admm &mdash; agentlib_mpc 0.6.6 documentation</title>
+  <title>agentlib_mpc.optimization_backends.casadi_.admm &mdash; agentlib_mpc 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -77,6 +77,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.casadi_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscretizationMethod</span><span class="p">,</span> <span class="n">Integrators</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats_path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.objective</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubObjective</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiModel</span><span class="p">,</span> <span class="n">CasadiInput</span><span class="p">,</span> <span class="n">CasadiParameter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures</span><span class="w"> </span><span class="kn">import</span> <span class="n">admm_datatypes</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.VariableGroup</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -91,6 +92,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">ADMMBackend</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.discretization</span><span class="w"> </span><span class="kn">import</span> <span class="n">Results</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.full</span><span class="w"> </span><span class="kn">import</span> <span class="n">FullSystem</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">delta_u</span>
 
 
 <div class="viewcode-block" id="CasadiADMMSystem"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.admm.CasadiADMMSystem">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CasadiADMMSystem</span><span class="p">(</span><span class="n">FullSystem</span><span class="p">):</span>
@@ -161,21 +163,30 @@
         <span class="p">)</span>
 
         <span class="c1"># add admm terms to objective function</span>
-        <span class="n">admm_objective</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">rho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">penalty_factor</span><span class="o">.</span><span class="n">full_symbolic</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">couplings</span><span class="p">)):</span>
+        <span class="n">admm_terms</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">coupling</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">couplings</span><span class="p">):</span>
             <span class="n">admm_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_couplings</span><span class="o">.</span><span class="n">full_symbolic</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="n">admm_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_couplings</span><span class="o">.</span><span class="n">full_symbolic</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="n">admm_lam</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">multipliers</span><span class="o">.</span><span class="n">full_symbolic</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">admm_objective</span> <span class="o">+=</span> <span class="n">admm_lam</span> <span class="o">*</span> <span class="n">admm_out</span> <span class="o">+</span> <span class="n">rho</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">admm_in</span> <span class="o">-</span> <span class="n">admm_out</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="n">admm_terms</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;admm_multiplier_</span><span class="si">{</span><span class="n">coupling</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">admm_lam</span> <span class="o">*</span> <span class="n">admm_out</span>
+            <span class="n">admm_terms</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;admm_augmentation_</span><span class="si">{</span><span class="n">coupling</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">rho</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">admm_in</span> <span class="o">-</span> <span class="n">admm_out</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">exchange</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">coupling</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">exchange</span><span class="p">):</span>
             <span class="n">admm_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exchange_diff</span><span class="o">.</span><span class="n">full_symbolic</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="n">admm_out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_exchange</span><span class="o">.</span><span class="n">full_symbolic</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="n">admm_lam</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exchange_multipliers</span><span class="o">.</span><span class="n">full_symbolic</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">admm_objective</span> <span class="o">+=</span> <span class="n">admm_lam</span> <span class="o">*</span> <span class="n">admm_out</span> <span class="o">+</span> <span class="n">rho</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">admm_in</span> <span class="o">-</span> <span class="n">admm_out</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="n">admm_terms</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;admm_multiplier_</span><span class="si">{</span><span class="n">coupling</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">admm_lam</span> <span class="o">*</span> <span class="n">admm_out</span>
+            <span class="n">admm_terms</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;admm_augmentation_</span><span class="si">{</span><span class="n">coupling</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">rho</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">admm_in</span> <span class="o">-</span> <span class="n">admm_out</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">cost_function</span> <span class="o">+=</span> <span class="n">admm_objective</span></div></div>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">admm_terms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">objective</span><span class="o">.</span><span class="n">objectives</span> <span class="o">+=</span> <span class="p">[</span>
+                <span class="n">SubObjective</span><span class="p">(</span><span class="n">term</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;admm_augmentation_term&quot;</span><span class="p">)</span>
+            <span class="p">]</span></div></div>
 
 
 <div class="viewcode-block" id="ADMMCollocation"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.admm.ADMMCollocation">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ADMMCollocation</span><span class="p">(</span><span class="n">DirectCollocation</span><span class="p">):</span>
@@ -184,7 +195,6 @@
 <span class="sd">        Perform a direct collocation discretization.</span>
 <span class="sd">        # pylint: disable=invalid-name</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="c1"># setup the polynomial base</span>
         <span class="n">collocation_matrices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collocation_polynomial</span><span class="p">()</span>
 
@@ -199,8 +209,9 @@
 
         <span class="c1"># Parameters that are constant over the horizon</span>
         <span class="n">const_par</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">)</span>
-        <span class="n">du_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">r_del_u</span><span class="p">)</span>
         <span class="n">rho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">penalty_factor</span><span class="p">)</span>
+
+        <span class="n">delta_u_objectives</span> <span class="o">=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_delta_u_objectives</span><span class="p">(</span><span class="n">sys</span><span class="p">)</span>
 
         <span class="c1"># Formulate the NLP</span>
         <span class="c1"># loop over prediction horizon</span>
@@ -208,13 +219,12 @@
             <span class="c1"># New NLP variable for the control</span>
             <span class="n">u_prev</span> <span class="o">=</span> <span class="n">uk</span>
             <span class="n">uk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="p">)</span>
-            <span class="c1"># penalty for control change between time steps</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">ts</span> <span class="o">*</span> <span class="n">ca</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">du_weights</span><span class="p">,</span> <span class="p">(</span><span class="n">u_prev</span> <span class="o">-</span> <span class="n">uk</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
 
-            <span class="c1"># New parameter for inputs</span>
-            <span class="n">dk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">delta_obj</span> <span class="ow">in</span> <span class="n">delta_u_objectives</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_objective</span><span class="p">(</span>
+                    <span class="n">sys</span><span class="p">,</span> <span class="n">delta_obj</span><span class="p">,</span> <span class="n">u_prev</span><span class="p">,</span> <span class="n">uk</span><span class="p">,</span> <span class="n">const_par</span>
+                <span class="p">)</span>
 
-            <span class="c1"># perform inner collocation loop</span>
             <span class="c1"># perform inner collocation loop</span>
             <span class="n">opt_vars_inside_inner</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">algebraics</span><span class="p">,</span>
@@ -227,10 +237,10 @@
                 <span class="n">sys</span><span class="o">.</span><span class="n">multipliers</span><span class="p">,</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">exchange_multipliers</span><span class="p">,</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">exchange_diff</span><span class="p">,</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="p">,</span>
             <span class="p">]</span>
             <span class="n">constant_over_inner</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span> <span class="n">uk</span><span class="p">,</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="p">:</span> <span class="n">dk</span><span class="p">,</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">:</span> <span class="n">const_par</span><span class="p">,</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">penalty_factor</span><span class="p">:</span> <span class="n">rho</span><span class="p">,</span>
             <span class="p">}</span>
@@ -285,28 +295,28 @@
             <span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="p">,</span> <span class="n">lb</span><span class="o">=</span><span class="n">initial_state</span><span class="p">,</span> <span class="n">ub</span><span class="o">=</span><span class="n">initial_state</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">initial_state</span>
         <span class="p">)</span>
 
-        <span class="c1"># Initialize control input</span>
-        <span class="n">previous_control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">last_control</span><span class="p">)</span>
+        <span class="n">current_control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">last_control</span><span class="p">)</span>
+        <span class="n">const_par</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">)</span>
 
         <span class="c1"># Add time-invariant parameters</span>
-        <span class="n">control_rate_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">r_del_u</span><span class="p">)</span>
         <span class="n">model_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">)</span>
         <span class="n">admm_penalty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">penalty_factor</span><span class="p">)</span>
+
+        <span class="n">delta_u_objectives</span> <span class="o">=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_delta_u_objectives</span><span class="p">(</span><span class="n">sys</span><span class="p">)</span>
 
         <span class="c1"># Create system integrator</span>
         <span class="n">dynamics_integrator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_ode</span><span class="p">(</span>
             <span class="n">sys</span><span class="p">,</span> <span class="n">integration_options</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">integrator</span>
         <span class="p">)</span>
 
-        <span class="c1"># Perform multiple shooting discretization</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">prediction_horizon</span><span class="p">):</span>
-            <span class="c1"># 1. Handle control inputs and their rate penalties</span>
-            <span class="n">current_control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="p">)</span>
-            <span class="n">control_rate_penalty</span> <span class="o">=</span> <span class="n">timestep</span> <span class="o">*</span> <span class="n">ca</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span>
-                <span class="n">control_rate_weights</span><span class="p">,</span> <span class="p">(</span><span class="n">previous_control</span> <span class="o">-</span> <span class="n">current_control</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">control_rate_penalty</span>
             <span class="n">previous_control</span> <span class="o">=</span> <span class="n">current_control</span>
+            <span class="n">current_control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">delta_obj</span> <span class="ow">in</span> <span class="n">delta_u_objectives</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">delta_u</span><span class="o">.</span><span class="n">get_objective</span><span class="p">(</span>
+                    <span class="n">sys</span><span class="p">,</span> <span class="n">delta_obj</span><span class="p">,</span> <span class="n">previous_control</span><span class="p">,</span> <span class="n">current_control</span><span class="p">,</span> <span class="n">const_par</span>
+                <span class="p">)</span>
 
             <span class="c1"># 2. Add optimization variables for current shooting interval</span>
             <span class="n">disturbance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="p">)</span>

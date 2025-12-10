@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules.dmpc package &mdash; agentlib_mpc 0.6.6 documentation</title>
+  <title>agentlib_mpc.modules.dmpc package &mdash; agentlib_mpc 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
@@ -352,7 +352,7 @@ Returns:</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.employee.MiniEmployee">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.dmpc.employee.</span></span><span class="sig-name descname"><span class="pre">MiniEmployee</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Agent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/modules/dmpc/employee.html#MiniEmployee"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.dmpc.employee.MiniEmployee" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModule</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.skippable_mixin.SkippableMixin" title="agentlib_mpc.modules.mpc.skippable_mixin.SkippableMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SkippableMixin</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.employee.MiniEmployee.get_new_measurement">
 <span class="sig-name descname"><span class="pre">get_new_measurement</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/modules/dmpc/employee.html#MiniEmployee.get_new_measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.dmpc.employee.MiniEmployee.get_new_measurement" title="Permalink to this definition"></a></dt>
@@ -412,7 +412,7 @@ Returns:</p>
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.employee.MiniEmployeeConfig">
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.dmpc.employee.</span></span><span class="sig-name descname"><span class="pre">MiniEmployeeConfig</span></span><a class="reference internal" href="_modules/agentlib_mpc/modules/dmpc/employee.html#MiniEmployeeConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.dmpc.employee.MiniEmployeeConfig" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModuleConfig</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.skippable_mixin.SkippableMixinConfig" title="agentlib_mpc.modules.mpc.skippable_mixin.SkippableMixinConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">SkippableMixinConfig</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Config<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -508,7 +508,7 @@ Returns:</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.DistributedMPC">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.dmpc.</span></span><span class="sig-name descname"><span class="pre">DistributedMPC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Agent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/agentlib_mpc/modules/dmpc.html#DistributedMPC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.dmpc.DistributedMPC" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="code/agentlib_mpc.modules.html#agentlib_mpc.modules.mpc_full.MPC" title="agentlib_mpc.modules.mpc_full.MPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">MPC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.mpc_full.MPC" title="agentlib_mpc.modules.mpc.mpc_full.MPC"><code class="xref py py-class docutils literal notranslate"><span class="pre">MPC</span></code></a></p>
 <p>Base class which defines common interfaces among all
 distributed mpc approaches (either optimization based,
 game theory based or some other).</p>
@@ -517,7 +517,7 @@ game theory based or some other).</p>
 <dl class="py class pydantic_model">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.dmpc.DistributedMPCConfig">
 <em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.modules.dmpc.</span></span><span class="sig-name descname"><span class="pre">DistributedMPCConfig</span></span><a class="reference internal" href="_modules/agentlib_mpc/modules/dmpc.html#DistributedMPCConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.dmpc.DistributedMPCConfig" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="code/agentlib_mpc.modules.html#agentlib_mpc.modules.mpc_full.MPCConfig" title="agentlib_mpc.modules.mpc_full.MPCConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">MPCConfig</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.mpc_full.MPCConfig" title="agentlib_mpc.modules.mpc.mpc_full.MPCConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">MPCConfig</span></code></a></p>
 <p>Base config class with common configurations</p>
 <dl class="field-list simple">
 <dt class="field-odd">Config<span class="colon">:</span></dt>
