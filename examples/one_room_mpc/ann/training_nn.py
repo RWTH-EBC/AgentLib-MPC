@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 from agentlib.utils.multi_agent_system import LocalMASAgency
 
 
+import model
+
 logger = logging.getLogger(__name__)
 
 
@@ -69,11 +71,7 @@ def plot(results):
     plt.show()
 
 
-def configs(
-    training_time: float = 1000,
-    plot_results: bool = False,
-    step_size: float = 60,
-    epochs: int = 1000,
+def configs(initial_training_time: float = 1000, plot_results: bool = False, step_size: float = 60
 ):
     trainer_config = {
         "id": "Trainer",
@@ -84,6 +82,10 @@ def configs(
                 "type": "agentlib_mpc.ann_trainer",
                 "epochs": 1000,
                 "batch_size": 64,
+                "online_learning": {
+                   "active": False,
+                    "training_at": initial_training_time,
+                },
                 "inputs": [
                     {"name": "mDot", "value": 0.0225, "source": "PID"},
                     {"name": "load", "value": 30, "source": "Simulator"},
@@ -98,7 +100,6 @@ def configs(
                 "train_share": 0.6,
                 "validation_share": 0.2,
                 "test_share": 0.2,
-                "retrain_delay": training_time,
                 "save_directory": "anns",
                 "use_values_for_incomplete_data": True,
                 "data_sources": ["results//simulation_data.csv"],
@@ -121,15 +122,15 @@ def configs(
                 "type": "simulator",
                 "model": {
                     "type": {
-                        "file": "model.py",
-                        "class_name": "PhysicalModel",
+                        "file": model.__file__,
+                        "class_name": model.PhysicalModel.__name__,
                     },
                 },
                 "t_sample": t_sample_sim,
                 "save_results": plot_results,
                 "result_filename": "results//simulation_data.csv",
                 "result_causalities": ["local", "input", "output"],
-                "overwrite_result_file": False,
+                "overwrite_result_file": True,
                 "inputs": [
                     {"name": "mDot", "value": 0.0225, "source": "PID"},
                     {"name": "load", "value": 30},
@@ -177,41 +178,31 @@ def configs(
                 "interval": 60 * 10,
                 "target_variable": {"name": "T_set", "alias": "T_set"},
             },
-            {
-                "type": "AgentLogger",
-                "values_only": True,
-                "t_sample": 3600,
-                "overwrite_log": True,
-            },
+            {"type": "AgentLogger", "values_only": True, "t_sample": 3600},
             {"type": "local", "subscriptions": ["Simulator"]},
         ],
     }
-    return [simulator_config, trainer_config, pid_controller]
+    return [simulator_config, pid_controller, trainer_config]
 
 
-def main(
-    training_time: float = 3600 * 24 * 0.2,
-    plot_results=False,
-    step_size: float = 300,
-    epochs: int = 1000,  # Add epochs parameter
-):
+def main(initial_training_time: float = 1000, plot_results=False, step_size: float = 300):
     env_config = {"rt": False, "t_sample": 3600}
     logging.basicConfig(level=logging.INFO)
     mas = LocalMASAgency(
         agent_configs=configs(
-            training_time=training_time,
+            initial_training_time=initial_training_time,
             plot_results=plot_results,
             step_size=step_size,
-            epochs=epochs,  # Pass epochs through
         ),
         env=env_config,
         variable_logging=False,
     )
-    mas.run(until=training_time + 100)
+    mas.run(until=initial_training_time + 100)
     if plot_results:
         results = mas.get_results(cleanup=True)
         plot(results)
+    mas.stop_agency()
 
 
 if __name__ == "__main__":
-    main(training_time=3600 * 24 * 1, plot_results=True, step_size=300)
+    main(initial_training_time=90000, plot_results=True, step_size=300)
