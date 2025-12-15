@@ -21,7 +21,6 @@ agentlib_mpc/utils/plotting/admm_consensus_shades.py:41:5: F841 Local variable `
 agentlib_mpc/utils/plotting/admm_consensus_shades.py:42:5: F841 Local variable `number_of_iterations` is assigned to but never used
 agentlib_mpc/utils/plotting/admm_consensus_shades.py:52:44: F821 Undefined name `series`
 agentlib_mpc/utils/plotting/admm_consensus_shades.py:57:9: F841 Local variable `prediction_color` is assigned to but never used
-agentlib_mpc/utils/plotting/ml_model_test.py:66:9: E731 Do not assign a `lambda` expression, use a `def`
 agentlib_mpc/utils/plotting/mpc_dashboard.py:34:5: F841 Local variable `sub_idx` is assigned to but never used
-Found 25 errors.
-[*] 12 fixable with the `--fix` option (7 hidden fixes can be enabled with the `--unsafe-fixes` option).
+Found 24 errors.
+[*] 12 fixable with the `--fix` option (6 hidden fixes can be enabled with the `--unsafe-fixes` option).
