@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>agentlib_mpc.machine_learning_plugins.addmo package &mdash; agentlib_mpc 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../_static/jquery.js"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+      <script src="../_static/doctools.js"></script>
+      <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            agentlib_mpc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../PackageReference.html">Package Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">agentlib_mpc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">agentlib_mpc.machine_learning_plugins.addmo package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/agentlib_mpc.machine_learning_plugins.addmo.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-agentlib_mpc.machine_learning_plugins.addmo">
+<span id="agentlib-mpc-machine-learning-plugins-addmo-package"></span><h1>agentlib_mpc.machine_learning_plugins.addmo package<a class="headerlink" href="#module-agentlib_mpc.machine_learning_plugins.addmo" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-agentlib_mpc.machine_learning_plugins.addmo.model_config_creation">
+<span id="agentlib-mpc-machine-learning-plugins-addmo-model-config-creation-module"></span><h2>agentlib_mpc.machine_learning_plugins.addmo.model_config_creation module<a class="headerlink" href="#module-agentlib_mpc.machine_learning_plugins.addmo.model_config_creation" title="Permalink to this heading"></a></h2>
+<p>Converter module for ADDMO framework Keras models to AgentLib-MPC format.</p>
+<p>This module provides functionality to convert Keras models trained with the ADDMO
+framework into the AgentLib-MPC serialized format, similar to the physXAI plugin.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.addmo_2_agentlib_json">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.</span></span><span class="sig-name descname"><span class="pre">addmo_2_agentlib_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keras_model_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addmo_json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_lags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_lag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'absolute'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/machine_learning_plugins/addmo/model_config_creation.html#addmo_2_agentlib_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.addmo_2_agentlib_json" title="Permalink to this definition"></a></dt>
+<dd><p>Converts ADDMO Keras model configuration to AgentLib-MPC compatible JSON format.</p>
+<p>This is the main conversion function that orchestrates the transformation from
+ADDMO’s minimal JSON format to AgentLib-MPC’s comprehensive format required for
+model predictive control.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keras_model_path</strong> – Path to the .keras model file</p></li>
+<li><p><strong>addmo_json</strong> – The JSON metadata from ADDMO framework containing:
+- target_name: Output feature name
+- features_ordered: Ordered list of input features
+- (optional) preprocessing, instructions, etc.</p></li>
+<li><p><strong>dt</strong> – Time step in seconds (e.g., 300 for 5 minutes)</p></li>
+<li><p><strong>feature_lags</strong> – REQUIRED dict mapping feature names to their max lag order.
+Must include ALL features from features_ordered.
+Example: {“u_hp”: 2, “T_amb”: 1, “T”: 1}</p></li>
+<li><p><strong>output_lag</strong> – Lag order for the output feature (default: 1)</p></li>
+<li><p><strong>output_type</strong> – Type of output - “absolute” or “difference” (default: “absolute”)</p></li>
+<li><p><strong>validate_model</strong> – Whether to validate Keras model shape against config (default: True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>The converted configuration in AgentLib-MPC JSON format with fields:</dt><dd><ul class="simple">
+<li><p>dt: Time step</p></li>
+<li><p>model_type: “KerasANN”</p></li>
+<li><p>model_path: Path to .keras file</p></li>
+<li><p>input: Dict of input features with lags</p></li>
+<li><p>output: Dict of output feature with metadata</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If ADDMO JSON is invalid or model validation fails</p></li>
+<li><p><strong>FileNotFoundError</strong> – If Keras model file doesn’t exist</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">addmo_json</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s2">&quot;target_name&quot;</span><span class="p">:</span> <span class="s2">&quot;T&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s2">&quot;features_ordered&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;u_hp&quot;</span><span class="p">,</span> <span class="s2">&quot;T_amb&quot;</span><span class="p">,</span> <span class="s2">&quot;rad_dir&quot;</span><span class="p">,</span> <span class="s2">&quot;human_schedule&quot;</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">config</span> <span class="o">=</span> <span class="n">addmo_2_agentlib_json</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">keras_model_path</span><span class="o">=</span><span class="s2">&quot;models/model.keras&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">addmo_json</span><span class="o">=</span><span class="n">addmo_json</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">dt</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">feature_lags</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;u_hp&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;T_amb&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;rad_dir&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;human_schedule&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.build_input_dict">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.</span></span><span class="sig-name descname"><span class="pre">build_input_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features_ordered</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_lags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/machine_learning_plugins/addmo/model_config_creation.html#build_input_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.build_input_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Builds the input dictionary for AgentLib-MPC format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features_ordered</strong> – Ordered list of all features from ADDMO</p></li>
+<li><p><strong>target_name</strong> – Name of the output/target feature</p></li>
+<li><p><strong>feature_lags</strong> – Dict mapping feature names to lag orders (REQUIRED - must match training)</p></li>
+<li><p><strong>recursive</strong> – Whether the output is recursive (used as input)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Input configuration in AgentLib format</dt><dd><p>{“feature_name”: {“name”: “feature_name”, “lag”: 1}, …}</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If feature_lags is missing entries for features in features_ordered</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.build_output_dict">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.</span></span><span class="sig-name descname"><span class="pre">build_output_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_lag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'absolute'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/machine_learning_plugins/addmo/model_config_creation.html#build_output_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.build_output_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Builds the output dictionary for AgentLib-MPC format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_name</strong> – Name of the output/target feature</p></li>
+<li><p><strong>output_lag</strong> – Lag order for the output feature</p></li>
+<li><p><strong>output_type</strong> – Type of output (“absolute” or “difference”)</p></li>
+<li><p><strong>recursive</strong> – Whether output is recursive (used as input for next step)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Output configuration in AgentLib format</dt><dd><p>{“target_name”: {“name”: “…”, “lag”: 1, “output_type”: “…”, “recursive”: True}}</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.infer_recursive_output">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.</span></span><span class="sig-name descname"><span class="pre">infer_recursive_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features_ordered</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/machine_learning_plugins/addmo/model_config_creation.html#infer_recursive_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.infer_recursive_output" title="Permalink to this definition"></a></dt>
+<dd><p>Determines if the output feature is recursive (used as input).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target_name</strong> – Name of the output/target feature</p></li>
+<li><p><strong>features_ordered</strong> – Ordered list of all features used in the model</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if target appears in features_ordered (recursive)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.load_addmo_model">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.</span></span><span class="sig-name descname"><span class="pre">load_addmo_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keras_model_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addmo_json_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_lags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_lag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'absolute'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/machine_learning_plugins/addmo/model_config_creation.html#load_addmo_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.load_addmo_model" title="Permalink to this definition"></a></dt>
+<dd><p>Convenience function to load both ADDMO JSON and convert to AgentLib format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keras_model_path</strong> – Path to the .keras model file</p></li>
+<li><p><strong>addmo_json_path</strong> – Path to the ADDMO JSON metadata file</p></li>
+<li><p><strong>dt</strong> – Time step in seconds</p></li>
+<li><p><strong>feature_lags</strong> – REQUIRED dict mapping feature names to lag orders</p></li>
+<li><p><strong>output_lag</strong> – Lag order for output feature</p></li>
+<li><p><strong>output_type</strong> – Type of output (“absolute” or “difference”)</p></li>
+<li><p><strong>validate_model</strong> – Whether to validate Keras model shape against config (default: True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>AgentLib-MPC compatible configuration</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>FileNotFoundError</strong> – If paths don’t exist</p></li>
+<li><p><strong>ValueError</strong> – If JSON is invalid</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.validate_addmo_json">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.</span></span><span class="sig-name descname"><span class="pre">validate_addmo_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">addmo_json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/machine_learning_plugins/addmo/model_config_creation.html#validate_addmo_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.validate_addmo_json" title="Permalink to this definition"></a></dt>
+<dd><p>Validates that the ADDMO JSON contains all required fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>addmo_json</strong> – The JSON metadata from ADDMO framework</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If required fields are missing or invalid</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.validate_keras_model_shape">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.</span></span><span class="sig-name descname"><span class="pre">validate_keras_model_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keras_model_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_lags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/machine_learning_plugins/addmo/model_config_creation.html#validate_keras_model_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.validate_keras_model_shape" title="Permalink to this definition"></a></dt>
+<dd><p>Validates that the Keras model’s input shape matches expected feature configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keras_model_path</strong> – Path to the .keras model file</p></li>
+<li><p><strong>expected_features</strong> – List of feature names in order</p></li>
+<li><p><strong>feature_lags</strong> – Dictionary mapping feature names to their lag orders</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If model input shape doesn’t match lag configuration</p></li>
+<li><p><strong>FileNotFoundError</strong> – If Keras model file doesn’t exist</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-agentlib_mpc.machine_learning_plugins.addmo.test_model_config_creation">
+<span id="agentlib-mpc-machine-learning-plugins-addmo-test-model-config-creation-module"></span><h2>agentlib_mpc.machine_learning_plugins.addmo.test_model_config_creation module<a class="headerlink" href="#module-agentlib_mpc.machine_learning_plugins.addmo.test_model_config_creation" title="Permalink to this heading"></a></h2>
+<p>Simple test to verify ADDMO to AgentLib-MPC config conversion.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.machine_learning_plugins.addmo.test_model_config_creation.main">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.machine_learning_plugins.addmo.test_model_config_creation.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/machine_learning_plugins/addmo/test_model_config_creation.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.machine_learning_plugins.addmo.test_model_config_creation.main" title="Permalink to this definition"></a></dt>
+<dd><p>Test ADDMO to AgentLib-MPC config conversion.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, AGENT-Project Associates.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

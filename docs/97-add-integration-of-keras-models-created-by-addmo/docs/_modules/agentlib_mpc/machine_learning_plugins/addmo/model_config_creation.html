@@ -1,0 +1,449 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>agentlib_mpc.machine_learning_plugins.addmo.model_config_creation &mdash; agentlib_mpc 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../../../_static/jquery.js"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+      <script src="../../../../_static/doctools.js"></script>
+      <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            agentlib_mpc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../PackageReference.html">Package Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">agentlib_mpc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">agentlib_mpc.machine_learning_plugins.addmo.model_config_creation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for agentlib_mpc.machine_learning_plugins.addmo.model_config_creation</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Converter module for ADDMO framework Keras models to AgentLib-MPC format.</span>
+
+<span class="sd">This module provides functionality to convert Keras models trained with the ADDMO</span>
+<span class="sd">framework into the AgentLib-MPC serialized format, similar to the physXAI plugin.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
+
+
+<div class="viewcode-block" id="validate_addmo_json"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.addmo.html#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.validate_addmo_json">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">validate_addmo_json</span><span class="p">(</span><span class="n">addmo_json</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validates that the ADDMO JSON contains all required fields.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        addmo_json: The JSON metadata from ADDMO framework</span>
+<span class="sd">        </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If required fields are missing or invalid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">required_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;target_name&quot;</span><span class="p">,</span> <span class="s2">&quot;features_ordered&quot;</span><span class="p">]</span>
+    
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">required_fields</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">addmo_json</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;ADDMO JSON is missing required field: &#39;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Available fields: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">addmo_json</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+    
+    <span class="c1"># Validate target_name is a string</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">addmo_json</span><span class="p">[</span><span class="s2">&quot;target_name&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&#39;target_name&#39; must be a string, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">addmo_json</span><span class="p">[</span><span class="s1">&#39;target_name&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    
+    <span class="c1"># Validate features_ordered is a non-empty list</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">addmo_json</span><span class="p">[</span><span class="s2">&quot;features_ordered&quot;</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&#39;features_ordered&#39; must be a list, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">addmo_json</span><span class="p">[</span><span class="s1">&#39;features_ordered&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">addmo_json</span><span class="p">[</span><span class="s2">&quot;features_ordered&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;features_ordered&#39; cannot be empty&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Validate all features are strings</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">addmo_json</span><span class="p">[</span><span class="s2">&quot;features_ordered&quot;</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;All features in &#39;features_ordered&#39; must be strings. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Feature at index </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> is </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="infer_recursive_output"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.addmo.html#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.infer_recursive_output">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">infer_recursive_output</span><span class="p">(</span><span class="n">target_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">features_ordered</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines if the output feature is recursive (used as input).</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        target_name: Name of the output/target feature</span>
+<span class="sd">        features_ordered: Ordered list of all features used in the model</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if target appears in features_ordered (recursive)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">target_name</span> <span class="ow">in</span> <span class="n">features_ordered</span></div>
+
+
+<div class="viewcode-block" id="validate_keras_model_shape"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.addmo.html#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.validate_keras_model_shape">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">validate_keras_model_shape</span><span class="p">(</span>
+    <span class="n">keras_model_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">expected_features</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">feature_lags</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validates that the Keras model&#39;s input shape matches expected feature configuration.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        keras_model_path: Path to the .keras model file</span>
+<span class="sd">        expected_features: List of feature names in order</span>
+<span class="sd">        feature_lags: Dictionary mapping feature names to their lag orders</span>
+<span class="sd">        </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If model input shape doesn&#39;t match lag configuration</span>
+<span class="sd">        FileNotFoundError: If Keras model file doesn&#39;t exist</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">keras</span>
+    
+    <span class="n">keras_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">keras_model_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">keras_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Keras model file not found: </span><span class="si">{</span><span class="n">keras_model_path</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    
+    <span class="c1"># Load the model to inspect input shape</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="n">keras_model_path</span><span class="p">)</span>
+    
+    <span class="c1"># Get input shape (e.g., (None, 5) means batch_size, n_features)</span>
+    <span class="n">input_shape</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">input_shape</span>
+    
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Expected Keras model with 2D input shape (batch_size, n_features), &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;but got shape with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span><span class="si">}</span><span class="s2"> dimensions: </span><span class="si">{</span><span class="n">input_shape</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    
+    <span class="n">model_n_features</span> <span class="o">=</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c1"># Calculate expected number of inputs based on lags</span>
+    <span class="c1"># Each feature with lag=n contributes n inputs to the model</span>
+    <span class="n">expected_n_features</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">feature_lags</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span> <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">expected_features</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">model_n_features</span> <span class="o">!=</span> <span class="n">expected_n_features</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Keras model input shape mismatch!</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;  Model expects: </span><span class="si">{</span><span class="n">model_n_features</span><span class="si">}</span><span class="s2"> inputs</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;  Config expects: </span><span class="si">{</span><span class="n">expected_n_features</span><span class="si">}</span><span class="s2"> inputs</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;  Features: </span><span class="si">{</span><span class="n">expected_features</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;  Feature lags: </span><span class="si">{</span><span class="n">feature_lags</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;  Calculation: </span><span class="si">{</span><span class="s1">&#39; + &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s1">(</span><span class="si">{</span><span class="n">feature_lags</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="si">}</span><span class="s1">)&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">feature</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">expected_features</span><span class="p">)</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">expected_n_features</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="build_input_dict"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.addmo.html#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.build_input_dict">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">build_input_dict</span><span class="p">(</span>
+    <span class="n">features_ordered</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">target_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">feature_lags</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Builds the input dictionary for AgentLib-MPC format.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        features_ordered: Ordered list of all features from ADDMO</span>
+<span class="sd">        target_name: Name of the output/target feature</span>
+<span class="sd">        feature_lags: Dict mapping feature names to lag orders (REQUIRED - must match training)</span>
+<span class="sd">        recursive: Whether the output is recursive (used as input)</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: Input configuration in AgentLib format</span>
+<span class="sd">              {&quot;feature_name&quot;: {&quot;name&quot;: &quot;feature_name&quot;, &quot;lag&quot;: 1}, ...}</span>
+<span class="sd">        </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If feature_lags is missing entries for features in features_ordered</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">input_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="c1"># Validate that all features have lag definitions</span>
+    <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">features_ordered</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">feature</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">feature_lags</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Feature &#39;</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">&#39; from features_ordered is missing in feature_lags. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;All features must have lag definitions. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Provided lags: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">feature_lags</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">features_ordered</span><span class="p">:</span>
+        <span class="c1"># If recursive, the target appears in features_ordered but should NOT be in input dict</span>
+        <span class="c1"># (AgentLib handles recursive outputs separately)</span>
+        <span class="k">if</span> <span class="n">recursive</span> <span class="ow">and</span> <span class="n">feature</span> <span class="o">==</span> <span class="n">target_name</span><span class="p">:</span>
+            <span class="k">continue</span>
+        
+        <span class="n">input_dict</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">feature</span><span class="p">,</span>
+            <span class="s2">&quot;lag&quot;</span><span class="p">:</span> <span class="n">feature_lags</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span>
+        <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">input_dict</span></div>
+
+
+<div class="viewcode-block" id="build_output_dict"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.addmo.html#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.build_output_dict">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">build_output_dict</span><span class="p">(</span>
+    <span class="n">target_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">output_lag</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">output_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;absolute&quot;</span><span class="p">,</span>
+    <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Builds the output dictionary for AgentLib-MPC format.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        target_name: Name of the output/target feature</span>
+<span class="sd">        output_lag: Lag order for the output feature</span>
+<span class="sd">        output_type: Type of output (&quot;absolute&quot; or &quot;difference&quot;)</span>
+<span class="sd">        recursive: Whether output is recursive (used as input for next step)</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: Output configuration in AgentLib format</span>
+<span class="sd">              {&quot;target_name&quot;: {&quot;name&quot;: &quot;...&quot;, &quot;lag&quot;: 1, &quot;output_type&quot;: &quot;...&quot;, &quot;recursive&quot;: True}}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">target_name</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">target_name</span><span class="p">,</span>
+            <span class="s2">&quot;lag&quot;</span><span class="p">:</span> <span class="n">output_lag</span><span class="p">,</span>
+            <span class="s2">&quot;output_type&quot;</span><span class="p">:</span> <span class="n">output_type</span><span class="p">,</span>
+            <span class="s2">&quot;recursive&quot;</span><span class="p">:</span> <span class="n">recursive</span>
+        <span class="p">}</span>
+    <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="addmo_2_agentlib_json"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.addmo.html#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.addmo_2_agentlib_json">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">addmo_2_agentlib_json</span><span class="p">(</span>
+    <span class="n">keras_model_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+    <span class="n">addmo_json</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">feature_lags</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">output_lag</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">output_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;absolute&quot;</span><span class="p">,</span>
+    <span class="n">validate_model</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts ADDMO Keras model configuration to AgentLib-MPC compatible JSON format.</span>
+<span class="sd">    </span>
+<span class="sd">    This is the main conversion function that orchestrates the transformation from</span>
+<span class="sd">    ADDMO&#39;s minimal JSON format to AgentLib-MPC&#39;s comprehensive format required for</span>
+<span class="sd">    model predictive control.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        keras_model_path: Path to the .keras model file</span>
+<span class="sd">        addmo_json: The JSON metadata from ADDMO framework containing:</span>
+<span class="sd">                    - target_name: Output feature name</span>
+<span class="sd">                    - features_ordered: Ordered list of input features</span>
+<span class="sd">                    - (optional) preprocessing, instructions, etc.</span>
+<span class="sd">        dt: Time step in seconds (e.g., 300 for 5 minutes)</span>
+<span class="sd">        feature_lags: REQUIRED dict mapping feature names to their max lag order.</span>
+<span class="sd">                      Must include ALL features from features_ordered.</span>
+<span class="sd">                      Example: {&quot;u_hp&quot;: 2, &quot;T_amb&quot;: 1, &quot;T&quot;: 1}</span>
+<span class="sd">        output_lag: Lag order for the output feature (default: 1)</span>
+<span class="sd">        output_type: Type of output - &quot;absolute&quot; or &quot;difference&quot; (default: &quot;absolute&quot;)</span>
+<span class="sd">        validate_model: Whether to validate Keras model shape against config (default: True)</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: The converted configuration in AgentLib-MPC JSON format with fields:</span>
+<span class="sd">              - dt: Time step</span>
+<span class="sd">              - model_type: &quot;KerasANN&quot;</span>
+<span class="sd">              - model_path: Path to .keras file</span>
+<span class="sd">              - input: Dict of input features with lags</span>
+<span class="sd">              - output: Dict of output feature with metadata</span>
+<span class="sd">              </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If ADDMO JSON is invalid or model validation fails</span>
+<span class="sd">        FileNotFoundError: If Keras model file doesn&#39;t exist</span>
+<span class="sd">        </span>
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; addmo_json = {</span>
+<span class="sd">        ...     &quot;target_name&quot;: &quot;T&quot;,</span>
+<span class="sd">        ...     &quot;features_ordered&quot;: [&quot;u_hp&quot;, &quot;T_amb&quot;, &quot;rad_dir&quot;, &quot;human_schedule&quot;, &quot;T&quot;]</span>
+<span class="sd">        ... }</span>
+<span class="sd">        &gt;&gt;&gt; config = addmo_2_agentlib_json(</span>
+<span class="sd">        ...     keras_model_path=&quot;models/model.keras&quot;,</span>
+<span class="sd">        ...     addmo_json=addmo_json,</span>
+<span class="sd">        ...     dt=300,</span>
+<span class="sd">        ...     feature_lags={&quot;u_hp&quot;: 1, &quot;T_amb&quot;: 1, &quot;rad_dir&quot;: 1, &quot;human_schedule&quot;: 1, &quot;T&quot;: 1}</span>
+<span class="sd">        ... )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Step 1: Validate ADDMO JSON structure</span>
+    <span class="n">validate_addmo_json</span><span class="p">(</span><span class="n">addmo_json</span><span class="p">)</span>
+    
+    <span class="c1"># Step 2: Extract key information</span>
+    <span class="n">target_name</span> <span class="o">=</span> <span class="n">addmo_json</span><span class="p">[</span><span class="s2">&quot;target_name&quot;</span><span class="p">]</span>
+    <span class="n">features_ordered</span> <span class="o">=</span> <span class="n">addmo_json</span><span class="p">[</span><span class="s2">&quot;features_ordered&quot;</span><span class="p">]</span>
+    
+    <span class="c1"># Step 3: Determine if output is recursive</span>
+    <span class="n">recursive</span> <span class="o">=</span> <span class="n">infer_recursive_output</span><span class="p">(</span><span class="n">target_name</span><span class="p">,</span> <span class="n">features_ordered</span><span class="p">)</span>
+    
+    <span class="c1"># Step 4: Validate Keras model shape if requested</span>
+    <span class="k">if</span> <span class="n">validate_model</span><span class="p">:</span>
+        <span class="n">validate_keras_model_shape</span><span class="p">(</span>
+            <span class="n">keras_model_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">keras_model_path</span><span class="p">),</span>
+            <span class="n">expected_features</span><span class="o">=</span><span class="n">features_ordered</span><span class="p">,</span>
+            <span class="n">feature_lags</span><span class="o">=</span><span class="n">feature_lags</span>
+        <span class="p">)</span>
+    
+    <span class="c1"># Step 5: Build input and output dictionaries</span>
+    <span class="n">input_dict</span> <span class="o">=</span> <span class="n">build_input_dict</span><span class="p">(</span>
+        <span class="n">features_ordered</span><span class="o">=</span><span class="n">features_ordered</span><span class="p">,</span>
+        <span class="n">target_name</span><span class="o">=</span><span class="n">target_name</span><span class="p">,</span>
+        <span class="n">feature_lags</span><span class="o">=</span><span class="n">feature_lags</span><span class="p">,</span>
+        <span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span>
+    <span class="p">)</span>
+    
+    <span class="n">output_dict</span> <span class="o">=</span> <span class="n">build_output_dict</span><span class="p">(</span>
+        <span class="n">target_name</span><span class="o">=</span><span class="n">target_name</span><span class="p">,</span>
+        <span class="n">output_lag</span><span class="o">=</span><span class="n">output_lag</span><span class="p">,</span>
+        <span class="n">output_type</span><span class="o">=</span><span class="n">output_type</span><span class="p">,</span>
+        <span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Step 6: Construct final AgentLib-MPC configuration</span>
+    <span class="n">agentlib_config</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="p">,</span>
+        <span class="s2">&quot;model_type&quot;</span><span class="p">:</span> <span class="s2">&quot;KerasANN&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;model_path&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">keras_model_path</span><span class="p">),</span>
+        <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">input_dict</span><span class="p">,</span>
+        <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="n">output_dict</span>
+    <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">agentlib_config</span></div>
+
+
+<div class="viewcode-block" id="load_addmo_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.addmo.html#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.load_addmo_model">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">load_addmo_model</span><span class="p">(</span>
+    <span class="n">keras_model_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+    <span class="n">addmo_json_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">feature_lags</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">output_lag</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">output_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;absolute&quot;</span><span class="p">,</span>
+    <span class="n">validate_model</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convenience function to load both ADDMO JSON and convert to AgentLib format.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        keras_model_path: Path to the .keras model file</span>
+<span class="sd">        addmo_json_path: Path to the ADDMO JSON metadata file</span>
+<span class="sd">        dt: Time step in seconds</span>
+<span class="sd">        feature_lags: REQUIRED dict mapping feature names to lag orders</span>
+<span class="sd">        output_lag: Lag order for output feature</span>
+<span class="sd">        output_type: Type of output (&quot;absolute&quot; or &quot;difference&quot;)</span>
+<span class="sd">        validate_model: Whether to validate Keras model shape against config (default: True)</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: AgentLib-MPC compatible configuration</span>
+<span class="sd">        </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        FileNotFoundError: If paths don&#39;t exist</span>
+<span class="sd">        ValueError: If JSON is invalid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Load ADDMO JSON file</span>
+    <span class="n">json_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">addmo_json_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">json_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;ADDMO JSON file not found: </span><span class="si">{</span><span class="n">addmo_json_path</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">addmo_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    
+    <span class="c1"># Convert using main function</span>
+    <span class="k">return</span> <span class="n">addmo_2_agentlib_json</span><span class="p">(</span>
+        <span class="n">keras_model_path</span><span class="o">=</span><span class="n">keras_model_path</span><span class="p">,</span>
+        <span class="n">addmo_json</span><span class="o">=</span><span class="n">addmo_json</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+        <span class="n">feature_lags</span><span class="o">=</span><span class="n">feature_lags</span><span class="p">,</span>
+        <span class="n">output_lag</span><span class="o">=</span><span class="n">output_lag</span><span class="p">,</span>
+        <span class="n">output_type</span><span class="o">=</span><span class="n">output_type</span><span class="p">,</span>
+        <span class="n">validate_model</span><span class="o">=</span><span class="n">validate_model</span>
+    <span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, AGENT-Project Associates.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
