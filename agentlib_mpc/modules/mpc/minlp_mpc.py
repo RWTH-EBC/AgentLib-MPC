@@ -24,21 +24,6 @@ class MINLPMPCConfig(BaseMPCConfig):
         default=[], description="List of all binary control variables of the MPC. "
     )
 
-    @field_validator("binary_controls")
-    @classmethod
-    def validate_binary_bounds(cls, binary_controls: mpc_datamodels.MPCVariables):
-        """Assures all binary variables have 0 and 1 as boundaries."""
-        for bc in binary_controls:
-            if bc.ub == 1 and bc.lb == 0:
-                continue
-            logger.warning(
-                f"Binary variable {bc.name} does not have bounds '0, 1'. This will be"
-                f" automatically changed."
-            )
-            bc.ub = 1
-            bc.lb = 0
-        return binary_controls
-
 
 class MINLPMPC(BaseMPC):
     config: MINLPMPCConfig
