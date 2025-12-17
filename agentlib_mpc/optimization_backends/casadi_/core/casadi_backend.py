@@ -292,7 +292,7 @@ class CasADiBackend(OptimizationBackend):
         df = results.df
         objective_names, objective_values = self.approximate_objective(df)
 
-        if not self.results_file_exists():
+        if not self.results_folder_exists():
             if not self.config.save_only_stats:
                 results.write_columns(res_file)
             results.write_combined_stats_columns(stats_path(res_file), objective_names)

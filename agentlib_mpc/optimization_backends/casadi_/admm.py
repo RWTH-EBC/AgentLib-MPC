@@ -3,7 +3,6 @@ import pandas as pd
 
 from agentlib_mpc.data_structures.casadi_utils import DiscretizationMethod, Integrators
 from agentlib_mpc.data_structures.mpc_datamodels import stats_path
-from agentlib_mpc.data_structures.objective import SubObjective
 from agentlib_mpc.models.casadi_model import CasadiModel, CasadiInput, CasadiParameter
 from agentlib_mpc.data_structures import admm_datatypes
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
@@ -108,6 +107,8 @@ class CasadiADMMSystem(FullSystem):
             admm_terms[f"admm_augmentation_{coupling.name}"] = (
                 rho / 2 * (admm_in - admm_out) ** 2
             )
+
+        from agentlib_mpc.data_structures.objective import SubObjective
 
         for name, term in admm_terms.items():
             self.objective.objectives += [
@@ -389,7 +390,7 @@ class CasADiADMMBackend(CasADiBaseBackend, ADMMBackend):
 
         res_file = self.config.results_file
 
-        if self.results_file_exists():
+        if self.results_folder_exists():
             self.it += 1
             if now != self.now:  # means we advanced to next step
                 self.it = 0

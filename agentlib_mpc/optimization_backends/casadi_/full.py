@@ -103,14 +103,12 @@ class MultipleShooting(basic.MultipleShooting):
         """
         Defines a multiple shooting discretization
         """
-        vars_dict = {sys.states.name: {}}
         n = self.options.prediction_horizon
         ts = self.options.time_step
         opts = {"t0": 0, "tf": ts}
         # Initial State
         x0 = self.add_opt_par(sys.initial_state)
         xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)
-        vars_dict[sys.states.name][0] = xk
         uk = self.add_opt_par(sys.last_control)
 
         # Parameters that are constant over the horizon
@@ -157,7 +155,6 @@ class MultipleShooting(basic.MultipleShooting):
             self.k += 1
             self.pred_time = ts * self.k
             xk = self.add_opt_var(sys.states)
-            vars_dict[sys.states.name][self.k] = xk
             self.add_constraint(xk - xk_end, gap_closing=True)
 
             # add model constraints last due to fatrop

@@ -196,6 +196,8 @@ class CasadiADMMNNSystem(CasadiADMMSystem, CasadiMLSystem):
                 rho / 2 * (admm_in - admm_out) ** 2
             )
 
+        from agentlib_mpc.data_structures.objective import SubObjective
+
         for name, term in admm_terms.items():
             self.objective.objectives += [
                 SubObjective(term, name="admm_augmentation_term")
