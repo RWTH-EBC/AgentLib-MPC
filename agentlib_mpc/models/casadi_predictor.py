@@ -314,14 +314,12 @@ class Dense(Layer):
         self.activation = self.get_activation(layer.get_config()["activation"])
 
         # weights and biases
-        try:
-            self.weights, self.biases = layer.get_weights()
-        except ValueError as e:
-            if e.__str__() == "not enough values to unpack (expected 2, got 1)":
-                self.weights = layer.get_weights()
-                self.biases = np.zeros(1)
-            else:
-                raise e
+        weights_list = layer.get_weights()
+        self.weights = weights_list[0]
+        if len(weights_list) >= 2:
+            self.biases = weights_list[1]
+        else:
+            self.biases = np.zeros(1)
         self.biases = self.biases.reshape(1, self.biases.shape[0])
 
         # check input dimension
