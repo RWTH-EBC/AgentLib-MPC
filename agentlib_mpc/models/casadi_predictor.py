@@ -319,7 +319,8 @@ class Dense(Layer):
         if len(weights_list) >= 2:
             self.biases = weights_list[1]
         else:
-            self.biases = np.zeros(1)
+            # create zero bias matching the number of output neurons
+            self.biases = np.zeros(self.weights.shape[1])
         self.biases = self.biases.reshape(1, self.biases.shape[0])
 
         # check input dimension
