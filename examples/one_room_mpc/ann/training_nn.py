@@ -82,7 +82,7 @@ def configs(
                 "step_size": 300,
                 "module_id": "trainer",
                 "type": "agentlib_mpc.ann_trainer",
-                "epochs": 1000,
+                "epochs": epochs,
                 "batch_size": 64,
                 "inputs": [
                     {"name": "mDot", "value": 0.0225, "source": "PID"},
