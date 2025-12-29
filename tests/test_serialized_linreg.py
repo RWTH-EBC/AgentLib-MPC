@@ -71,5 +71,5 @@ class TestSerializedLinReg(unittest.TestCase):
         self.assertIsInstance(casadi_linreg, CasadiLinReg)
         self.assertEqual(
             round(self.test_linreg.predict(np.ones((1, 2)))[0].item(), 5),
-            round(casadi_linreg.predict(np.ones((1, 2)))[0].item(), 5),
+            round(float(casadi_linreg.predict(np.ones((1, 2)))[0]), 5),
         )

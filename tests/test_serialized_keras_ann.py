@@ -103,5 +103,5 @@ class TestSerializedKerasANN(unittest.TestCase):
         self.assertIsInstance(casadi_ann, CasadiANN)
         self.assertEqual(
             round(self.test_ann.predict(np.ones((1, 2)))[0].item(), 5),
-            round(casadi_ann.predict(np.ones((1, 2)))[0].item(), 5),
+            round(float(casadi_ann.predict(np.ones((1, 2)))[0]), 5),
         )
