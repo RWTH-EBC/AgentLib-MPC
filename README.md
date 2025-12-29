@@ -42,9 +42,9 @@ pip install agentlib_mpc[ml]
 
 For now, please cite the base framework under https://github.com/RWTH-EBC/AgentLib.
 
-A preprint is available under http://dx.doi.org/10.2139/ssrn.4884846   and can be cited as: 
+A preprint is available under http://dx.doi.org/10.2139/ssrn.4884846 and can be cited as: 
 
-> Eser, Steffen and Storek, Thomas and Wüllhorst, Fabian and Dähling, Stefan and Gall, Jan and Stoffel, Phillip and Müller, Dirk, A Modular Python Framework for Rapid Development of Advanced Control Algorithms for Energy Systems. Available at SSRN: https://ssrn.com/abstract=4884846 or http://dx.doi.org/10.2139/ssrn.4884846     
+> Eser, Steffen and Storek, Thomas and Wüllhorst, Fabian and Dähling, Stefan and Gall, Jan and Stoffel, Phillip and Müller, Dirk, A Modular Python Framework for Rapid Development of Advanced Control Algorithms for Energy Systems. Available at SSRN: https://ssrn.com/abstract=4884846 or http://dx.doi.org/10.2139/ssrn.4884846 
 
 When using AgentLib-MPC, please remember to cite other tools that you are using, for example CasADi or IPOPT.
 
