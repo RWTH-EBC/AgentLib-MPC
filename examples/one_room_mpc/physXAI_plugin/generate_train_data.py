@@ -168,6 +168,7 @@ def main(
     # Save training data for physXAI
     results = mas.get_results(cleanup=True)
     df = results["PID"]["AgentLogger"]
+    
     if df.index.duplicated().any():
         df = df.groupby(level=0).first()
     df = df.ffill().bfill()
