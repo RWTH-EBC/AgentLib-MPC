@@ -6,7 +6,7 @@
 This is a plugin for [AgentLib](https://github.com/RWTH-EBC/AgentLib). 
 Includes functions for modeling with [CasADi](https://web.casadi.org/), and using those models in nonlinear MPC, central and distributed (based on ADMM).
 
-See examples and the tutorial in the docs.
+See examples and the tutorial in the docs. 
 Best example to start is an MPC for [a single air conditioned room](https://github.com/RWTH-EBC/AgentLib-MPC/blob/main/examples/one_room_mpc/physical/simple_mpc.py).
 
 
