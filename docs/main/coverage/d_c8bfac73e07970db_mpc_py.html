@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="d_c8bfac73e07970db_mpc_full_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.4">coverage.py v7.4.4</a>,
-            created at 2025-12-17 08:36 +0000
+            created at 2025-12-30 10:38 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -431,7 +431,7 @@
     <p class="run"><span class="n"><a id="t347" href="#t347">347</a></span><span class="t">            <span class="nam">ub</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="nam">control</span><span class="op">)</span><span class="op">.</span><span class="nam">ub</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t348" href="#t348">348</a></span><span class="t">            <span class="nam">lb</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="nam">control</span><span class="op">)</span><span class="op">.</span><span class="nam">lb</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t349" href="#t349">349</a></span><span class="t">            <span class="com"># take the first entry of the control trajectory</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t350" href="#t350">350</a></span><span class="t">            <span class="nam">actuation</span> <span class="op">=</span> <span class="nam">float</span><span class="op">(</span><span class="nam">solution</span><span class="op">[</span><span class="nam">control</span><span class="op">]</span><span class="op">[</span><span class="num">0</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t350" href="#t350">350</a></span><span class="t">            <span class="nam">actuation</span> <span class="op">=</span> <span class="nam">solution</span><span class="op">[</span><span class="nam">control</span><span class="op">]</span><span class="op">[</span><span class="num">0</span><span class="op">]</span><span class="op">.</span><span class="nam">item</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t351" href="#t351">351</a></span><span class="t">            <span class="com"># if variables only slightly breach boundaries, clip</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t352" href="#t352">352</a></span><span class="t">            <span class="key">if</span> <span class="nam">ub</span> <span class="op">&lt;</span> <span class="nam">actuation</span> <span class="op">&lt;</span> <span class="nam">ub</span> <span class="op">+</span> <span class="nam">tolerance</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t353" href="#t353">353</a></span><span class="t">                <span class="nam">actuation</span> <span class="op">=</span> <span class="nam">ub</span>&nbsp;</span><span class="r"></span></p>
@@ -519,7 +519,7 @@
             <a id="nextFileLink" class="nav" href="d_c8bfac73e07970db_mpc_full_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.4">coverage.py v7.4.4</a>,
-            created at 2025-12-17 08:36 +0000
+            created at 2025-12-30 10:38 +0000
         </p>
     </div>
 </footer>
