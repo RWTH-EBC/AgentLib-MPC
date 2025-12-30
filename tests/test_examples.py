@@ -23,10 +23,6 @@ class TestExamples(unittest.TestCase):
         # Create a unique temporary directory for this test
         self.test_dir = tempfile.mkdtemp(prefix="agentlib_test_")
 
-        # Create results subdirectory
-        self.results_dir = os.path.join(self.test_dir, "results")
-        os.makedirs(self.results_dir, exist_ok=True)
-
     def tearDown(self) -> None:
         broker = LocalBroadcastBroker()
         broker.delete_all_clients()
@@ -94,6 +90,7 @@ class TestExamples(unittest.TestCase):
             log_level=logging.FATAL,
             with_dashboard=False,
         )
+
     def test_mpc_time_variant_inputs(self):
         """Test the mpc agent example: simple_mpc_with_time_variant_inputs"""
 
