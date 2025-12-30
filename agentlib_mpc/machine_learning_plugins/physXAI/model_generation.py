@@ -120,7 +120,7 @@ def generate_physxai_model(models: Union[list[str], dict[str, str], str], physXA
                 os.remove(path)
 
         # Convert physXAI config files to agentlib_mpc json format
-        model_config = physXAI_2_agentlib_json(run_id, preprocessing, model, training_data)
+        model_config = physXAI_2_agentlib_json(run_id, preprocessing, model, training_data, model_name=name)
         os.makedirs(os.path.join(model_save_path, run_id), exist_ok=True)
         file = os.path.join(model_save_path, run_id, f"{name}.json")
         with open(file, 'w') as f:

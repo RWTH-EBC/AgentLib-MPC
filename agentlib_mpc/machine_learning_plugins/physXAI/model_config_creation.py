@@ -1,5 +1,6 @@
 import re
 from collections import defaultdict
+from typing import Optional
 import joblib
 
 
@@ -21,8 +22,8 @@ def model_path_generation(run_id: str, output_name: str) -> str:
     return f"models/{run_id}/{output_name}"
 
 
-def physXAI_2_agentlib_json(run_id: str, preprocessing_dict: dict, model_dict: dict = None, training_dict: dict = None,
-                           model_type: str = 'ANN') -> dict:
+def physXAI_2_agentlib_json(run_id: str, preprocessing_dict: dict, model_dict: Optional[dict] = None, training_dict: Optional[dict] = None,
+                           model_name: Optional[str] = None, model_type: str = 'ANN') -> dict:
     """
     Converts physXAI model configurations to an AgentLib-MPC compatible JSON format.
     Args:
@@ -30,6 +31,7 @@ def physXAI_2_agentlib_json(run_id: str, preprocessing_dict: dict, model_dict: d
         preprocessing_dict (dict): The preprocessing configuration from physXAI.
         model_dict (dict, optional): The model configuration from physXAI. Defaults to None.
         training_dict (dict, optional): The training configuration from physXAI. Defaults to None.
+        model_name (str, optional): The save name of the model. Defaults to None. If None, the output feature name is used.
         model_type (str, optional): The type of model ('ANN' or 'LinReg'). Defaults to 'ANN'.
     Returns:
         dict: The converted configuration in AgentLib-MPC JSON format.
@@ -148,7 +150,9 @@ def physXAI_2_agentlib_json(run_id: str, preprocessing_dict: dict, model_dict: d
     if model_type == 'LinReg' or (model_dict is not None and model_dict['__class_name__'] == 'LinearRegressionModel'):
         target_dict["model_type"] = "LinReg"
 
-        load_path = model_path_generation(run_id, output_key_name) + '.joblib'
+        if model_name is None:
+            model_name = output_key_name
+        load_path = model_path_generation(run_id, model_name) + '.joblib'
         model = joblib.load(load_path)
         target_dict["parameters"] = {
             "coef": model.coef_.tolist(),
@@ -160,6 +164,9 @@ def physXAI_2_agentlib_json(run_id: str, preprocessing_dict: dict, model_dict: d
 
     else:
         target_dict["model_type"] = "KerasANN"
-        target_dict["model_path"] = model_path_generation(run_id, output_key_name) + '.keras'
+
+        if model_name is None:
+            model_name = output_key_name
+        target_dict["model_path"] = model_path_generation(run_id, model_name) + '.keras'
 
     return target_dict
