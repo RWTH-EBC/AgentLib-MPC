@@ -244,7 +244,7 @@ class CombinedObjective:
         total_value = 0
 
         # For control change penalties, we also need the previous control to penalise the first step
-        current_start_index = result_df.index.get_loc(0) # Get time step 0
+        current_start_index = result_df.index.get_loc(grid[0]) # Get time step 0
         previous_start_index = current_start_index - 1 # Get previous time step
 		# Update grid and dataframe
         if previous_start_index >= 0:
