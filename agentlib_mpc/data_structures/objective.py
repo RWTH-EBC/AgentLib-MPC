@@ -244,15 +244,18 @@ class CombinedObjective:
         total_value = 0
 
         # For control change penalties, we also need the previous control to penalise the first step
-        current_start_index = result_df.index.get_loc(grid[0]) # Get time step 0
-        previous_start_index = current_start_index - 1 # Get previous time step
-		# Update grid and dataframe
-        if previous_start_index >= 0:
-            previous_time_step = result_df.index[previous_start_index]
-            helper_grid = np.insert(grid, 0, previous_time_step)
+        if grid is not None:
+            current_start_index = result_df.index.get_loc(grid[0]) # Get time step 0
+            previous_start_index = current_start_index - 1 # Get previous time step
+            # Update grid and dataframe
+            if previous_start_index >= 0:
+                previous_time_step = result_df.index[previous_start_index]
+                helper_grid = np.insert(grid, 0, previous_time_step)
+            else:
+                helper_grid = grid
+            df_helper = self._prepare_dataframe(result_df, helper_grid)
         else:
-            helper_grid = grid
-        df_helper = self._prepare_dataframe(result_df, helper_grid)
+            df_helper = self._prepare_dataframe(result_df, grid)
 
         for obj in self.objectives:
             name = obj.name
