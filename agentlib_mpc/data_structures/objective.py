@@ -243,7 +243,7 @@ class CombinedObjective:
         df = self._prepare_dataframe(result_df, grid)
         total_value = 0
 
-        # For control change penalties, we also need the previous control to penaltise the first step
+        # For control change penalties, we also need the previous control to penalise the first step
         current_start_index = result_df.index.get_loc(0) # Get time step 0
         previous_start_index = current_start_index - 1 # Get previous time step
 		# Update grid and dataframe
@@ -257,7 +257,7 @@ class CombinedObjective:
         for obj in self.objectives:
             name = obj.name
             if isinstance(obj, ChangePenaltyObjective):
-                # Handle symbolic or numeric weights for control change penalities
+                # Handle symbolic or numeric weights for control change penalties
                 if hasattr(obj.weight, "sym"):
                     weight_name = obj.weight.name
                     weight = df_helper.loc[:, ("parameter", weight_name)].shift(-1).iloc[:-1] # Have to be shifted by 1 to match correct time step
