@@ -317,15 +317,18 @@
         <span class="n">total_value</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="c1"># For control change penalties, we also need the previous control to penalise the first step</span>
-        <span class="n">current_start_index</span> <span class="o">=</span> <span class="n">result_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="c1"># Get time step 0</span>
-        <span class="n">previous_start_index</span> <span class="o">=</span> <span class="n">current_start_index</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1"># Get previous time step</span>
-		<span class="c1"># Update grid and dataframe</span>
-        <span class="k">if</span> <span class="n">previous_start_index</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">previous_time_step</span> <span class="o">=</span> <span class="n">result_df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">previous_start_index</span><span class="p">]</span>
-            <span class="n">helper_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">previous_time_step</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">current_start_index</span> <span class="o">=</span> <span class="n">result_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="c1"># Get time step 0</span>
+            <span class="n">previous_start_index</span> <span class="o">=</span> <span class="n">current_start_index</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1"># Get previous time step</span>
+            <span class="c1"># Update grid and dataframe</span>
+            <span class="k">if</span> <span class="n">previous_start_index</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">previous_time_step</span> <span class="o">=</span> <span class="n">result_df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">previous_start_index</span><span class="p">]</span>
+                <span class="n">helper_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">previous_time_step</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">helper_grid</span> <span class="o">=</span> <span class="n">grid</span>
+            <span class="n">df_helper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_dataframe</span><span class="p">(</span><span class="n">result_df</span><span class="p">,</span> <span class="n">helper_grid</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">helper_grid</span> <span class="o">=</span> <span class="n">grid</span>
-        <span class="n">df_helper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_dataframe</span><span class="p">(</span><span class="n">result_df</span><span class="p">,</span> <span class="n">helper_grid</span><span class="p">)</span>
+            <span class="n">df_helper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_dataframe</span><span class="p">(</span><span class="n">result_df</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span>
