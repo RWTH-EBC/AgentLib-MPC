@@ -1537,8 +1537,107 @@ get from the config with get()</p>
 <dd></dd></dl>
 
 </section>
-<section id="agentlib-mpc-data-structures-objective-module">
-<h2>agentlib_mpc.data_structures.objective module<a class="headerlink" href="#agentlib-mpc-data-structures-objective-module" title="Permalink to this heading"></a></h2>
+<section id="module-agentlib_mpc.data_structures.objective">
+<span id="agentlib-mpc-data-structures-objective-module"></span><h2>agentlib_mpc.data_structures.objective module<a class="headerlink" href="#module-agentlib_mpc.data_structures.objective" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.ChangePenaltyObjective">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.objective.</span></span><span class="sig-name descname"><span class="pre">ChangePenaltyObjective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expressions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiInput" title="agentlib_mpc.models.casadi_model.CasadiInput"><span class="pre">CasadiInput</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiParameter" title="agentlib_mpc.models.casadi_model.CasadiParameter"><span class="pre">CasadiParameter</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#ChangePenaltyObjective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.ChangePenaltyObjective" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.data_structures.objective.SubObjective" title="agentlib_mpc.data_structures.objective.SubObjective"><code class="xref py py-class docutils literal notranslate"><span class="pre">SubObjective</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.ChangePenaltyObjective.calculate_value">
+<span class="sig-name descname"><span class="pre">calculate_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#ChangePenaltyObjective.calculate_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.ChangePenaltyObjective.calculate_value" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the final weighted result by multiplying all expressions</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.ChangePenaltyObjective.get_control_name">
+<span class="sig-name descname"><span class="pre">get_control_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#ChangePenaltyObjective.get_control_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.ChangePenaltyObjective.get_control_name" title="Permalink to this definition"></a></dt>
+<dd><p>Return the name of the associated control variable</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.ChangePenaltyObjective.get_weighted_expression">
+<span class="sig-name descname"><span class="pre">get_weighted_expression</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#ChangePenaltyObjective.get_weighted_expression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.ChangePenaltyObjective.get_weighted_expression" title="Permalink to this definition"></a></dt>
+<dd><p>Override parent method to provide a placeholder.
+The actual penalty calculation happens in the discretization step.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.CombinedObjective">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.objective.</span></span><span class="sig-name descname"><span class="pre">CombinedObjective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">objectives</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalization</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#CombinedObjective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.CombinedObjective" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Container for multiple objective terms with normalization</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.CombinedObjective.calculate_values">
+<span class="sig-name descname"><span class="pre">calculate_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#CombinedObjective.calculate_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.CombinedObjective.calculate_values" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate values for each objective component using the result dataframe</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.CombinedObjective.get_casadi_expression">
+<span class="sig-name descname"><span class="pre">get_casadi_expression</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#CombinedObjective.get_casadi_expression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.CombinedObjective.get_casadi_expression" title="Permalink to this definition"></a></dt>
+<dd><p>Combine all objectives into a single CasADi expression</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.CombinedObjective.get_delta_u_objectives">
+<span class="sig-name descname"><span class="pre">get_delta_u_objectives</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#CombinedObjective.get_delta_u_objectives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.CombinedObjective.get_delta_u_objectives" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a list of all ChangePenaltyObjective instances</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.ConditionalObjective">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.objective.</span></span><span class="sig-name descname"><span class="pre">ConditionalObjective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">condition_objective_pairs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_objective</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#ConditionalObjective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.ConditionalObjective" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents a conditional objective that switches between different objectives based on conditions</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.ConditionalObjective.calculate_values">
+<span class="sig-name descname"><span class="pre">calculate_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#ConditionalObjective.calculate_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.ConditionalObjective.calculate_values" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate values for each objective component based on when conditions are active.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.ConditionalObjective.get_casadi_expression">
+<span class="sig-name descname"><span class="pre">get_casadi_expression</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#ConditionalObjective.get_casadi_expression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.ConditionalObjective.get_casadi_expression" title="Permalink to this definition"></a></dt>
+<dd><p>Combine all objectives into a conditional CasADi expression</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.ConditionalObjective.get_delta_u_objectives">
+<span class="sig-name descname"><span class="pre">get_delta_u_objectives</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#ConditionalObjective.get_delta_u_objectives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.ConditionalObjective.get_delta_u_objectives" title="Permalink to this definition"></a></dt>
+<dd><p>Returns all ChangePenaltyObjective instances from all contained objectives</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.ConditionalObjective.objectives">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">objectives</span></span><a class="headerlink" href="#agentlib_mpc.data_structures.objective.ConditionalObjective.objectives" title="Permalink to this definition"></a></dt>
+<dd><p>Return flattened list of all objective terms for reporting</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.SubObjective">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.objective.</span></span><span class="sig-name descname"><span class="pre">SubObjective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expressions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MX</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiParameter" title="agentlib_mpc.models.casadi_model.CasadiParameter"><span class="pre">CasadiParameter</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#SubObjective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.SubObjective" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.SubObjective.calculate_value">
+<span class="sig-name descname"><span class="pre">calculate_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#SubObjective.calculate_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.SubObjective.calculate_value" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the objective value from data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.SubObjective.get_weighted_expression">
+<span class="sig-name descname"><span class="pre">get_weighted_expression</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#SubObjective.get_weighted_expression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.SubObjective.get_weighted_expression" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the final weighted expression</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 
