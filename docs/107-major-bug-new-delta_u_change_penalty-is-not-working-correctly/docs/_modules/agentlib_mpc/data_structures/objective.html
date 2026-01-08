@@ -316,7 +316,7 @@
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_dataframe</span><span class="p">(</span><span class="n">result_df</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
         <span class="n">total_value</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="c1"># For control change penalties, we also need the previous control to penaltise the first step</span>
+        <span class="c1"># For control change penalties, we also need the previous control to penalise the first step</span>
         <span class="n">current_start_index</span> <span class="o">=</span> <span class="n">result_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># Get time step 0</span>
         <span class="n">previous_start_index</span> <span class="o">=</span> <span class="n">current_start_index</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1"># Get previous time step</span>
 		<span class="c1"># Update grid and dataframe</span>
@@ -330,7 +330,7 @@
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ChangePenaltyObjective</span><span class="p">):</span>
-                <span class="c1"># Handle symbolic or numeric weights for control change penalities</span>
+                <span class="c1"># Handle symbolic or numeric weights for control change penalties</span>
                 <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="s2">&quot;sym&quot;</span><span class="p">):</span>
                     <span class="n">weight_name</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">name</span>
                     <span class="n">weight</span> <span class="o">=</span> <span class="n">df_helper</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="s2">&quot;parameter&quot;</span><span class="p">,</span> <span class="n">weight_name</span><span class="p">)]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># Have to be shifted by 1 to match correct time step</span>
