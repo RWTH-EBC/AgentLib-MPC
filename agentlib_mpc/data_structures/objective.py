@@ -194,7 +194,7 @@ class ChangePenaltyObjective(SubObjective):
         diff_values = series.diff()
         diff = diff_values.values[1:]
         ts = np.diff(series.index)
-        results = pd.Series(weight**2 * diff**2 * ts, index=series.index[1:])
+        results = pd.Series(weight**2 * diff**2 * ts)
         return sum(results.dropna())
 
 
@@ -243,22 +243,42 @@ class CombinedObjective:
         df = self._prepare_dataframe(result_df, grid)
         total_value = 0
 
+        # For control change penalties, we also need the previous control to penaltise the first step
+		current_start_index = result_df.index.get_loc(0) # Get time step 0
+        previous_start_index = current_start_index - 1 # Get previous time step
+		# Update grid and dataframe
+        if previous_start_index >= 0:
+            previous_time_step = result_df.index[previous_start_index]
+            helper_grid = np.insert(grid, 0, previous_time_step)
+        else:
+            helper_grid = grid
+        df_helper = self._prepare_dataframe(result_df, helper_grid)
+
         for obj in self.objectives:
             name = obj.name
-            # Handle symbolic or numeric weights
-            if hasattr(obj.weight, "sym"):
-                weight_name = obj.weight.name
-                weight = df.loc[:, ("parameter", weight_name)].iloc[:-1]
-            else:
-                weight = obj.weight
             if isinstance(obj, ChangePenaltyObjective):
+                # Handle symbolic or numeric weights for control change penalities
+                if hasattr(obj.weight, "sym"):
+                    weight_name = obj.weight.name
+                    weight = df_helper.loc[:, ("parameter", weight_name)].shift(-1).iloc[:-1] # Have to be shifted by 1 to match correct time step
+                else:
+                    weight = obj.weight
+
                 control_name = obj.get_control_name()
-                control_series = df.loc[:, ("variable", control_name)]
+                control_series = df_helper.loc[:, ("variable", control_name)]
                 value = obj.calculate_value(control_series, weight)
                 self._values[name] = value / self.normalization
-            elif isinstance(obj, SubObjective):
-                value = obj.calculate_value(df, weight)
-                self._values[name] = value / self.normalization
+            else:
+                # Handle symbolic or numeric weights
+                if hasattr(obj.weight, "sym"):
+                    weight_name = obj.weight.name
+                    weight = df.loc[:, ("parameter", weight_name)].iloc[:-1]
+                else:
+                    weight = obj.weight
+
+                if isinstance(obj, SubObjective):
+                    value = obj.calculate_value(df, weight)
+                    self._values[name] = value / self.normalization
             if self._values[name] is not None:
                 total_value += self._values[name]
 
