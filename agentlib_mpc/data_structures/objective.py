@@ -35,11 +35,26 @@ class SubObjective:
     def __mul__(self, other):
         """Scale objective by a factor"""
         if isinstance(other, (int, float, CasadiParameter)):
-            new_expression = other * self.expression
-            new_weight = self.weight
-            return SubObjective(new_expression, new_weight, f"scaled_{self.name}")
+            new_weight = self._multiply_weights(self.weight, other)
+            return SubObjective(self.expression, new_weight, f"scaled_{self.name}")
         else:
             raise TypeError(f"Cannot multiply SubObjective with {type(other)}")
+
+    def _multiply_weights(self, weight1, weight2):
+        """Helper method to properly multiply weights of different types"""
+        # If both are numeric (int/float)
+        if isinstance(weight1, (int, float)) and isinstance(weight2, (int, float)):
+            return weight1 * weight2
+        if isinstance(weight1, CasadiParameter) and isinstance(weight2, (int, float)):
+            return weight1.sym * weight2
+
+        if isinstance(weight1, (int, float)) and isinstance(weight2, CasadiParameter):
+            return weight1 * weight2.sym
+
+        if isinstance(weight1, CasadiParameter) and isinstance(weight2, CasadiParameter):
+            return weight1.sym * weight2.sym
+
+        return weight1 * weight2
 
     def get_weighted_expression(self):
         """Returns the final weighted expression"""
@@ -172,12 +187,13 @@ class ChangePenaltyObjective(SubObjective):
     def __mul__(self, mul):
         """Scale change penalty objective by a factor"""
         if isinstance(mul, (int, float, CasadiParameter)):
-            new_weight = self.weight
+            # Scale the weight properly using the parent class method
+            new_weight = self._multiply_weights(self.weight, mul)
             scaled_obj = ChangePenaltyObjective(self.control, new_weight, f"scaled_{self.name}")
-            scaled_obj._scale_factor = mul
             return scaled_obj
         else:
             raise TypeError(f"Cannot multiply ChangePenaltyObjective with {type(mul)}")
+
     def get_control_name(self):
         """Return the name of the associated control variable"""
         return self.control.name
