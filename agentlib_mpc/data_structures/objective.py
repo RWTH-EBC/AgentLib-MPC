@@ -6,6 +6,69 @@ from typing import Union
 from agentlib_mpc.models.casadi_model import CasadiParameter, CasadiInput
 
 
+class CompositeWeight:
+    def __init__(self, base_component):
+        """
+        Create a composite weight that tracks original parameter names
+        """
+        self.param_names = []  # List of parameter names involved
+        self.constant_factor = 1.0
+
+        if isinstance(base_component, CasadiParameter):
+            self.param_names = [base_component.name]
+            self.sym = base_component.sym
+        elif isinstance(base_component, (int, float)):
+            self.constant_factor = base_component
+            self.sym = base_component
+        elif isinstance(base_component, CompositeWeight):
+            self.param_names = base_component.param_names.copy()
+            self.constant_factor = base_component.constant_factor
+            self.sym = base_component.sym
+
+        self._update_name()
+
+    def multiply_by(self, other):
+        """Multiply this weight by another component"""
+        if isinstance(other, CasadiParameter):
+            self.param_names.append(other.name)
+            self.sym *= other.sym
+        elif isinstance(other, (int, float)):
+            self.constant_factor *= other
+            self.sym *= other
+        elif isinstance(other, CompositeWeight):
+            self.param_names.extend(other.param_names)
+            self.constant_factor *= other.constant_factor
+            self.sym *= other.sym
+
+        self._update_name()
+        return self
+
+    def _update_name(self):
+        """Generate a descriptive name based on components"""
+        parts = []
+
+        if self.param_names:
+            parts.extend(self.param_names)
+
+        if self.constant_factor != 1.0:
+            if parts:
+                parts.append(f"*{self.constant_factor}")
+            else:
+                parts.append(str(self.constant_factor))
+
+        self.name = "_times_".join(parts) if parts else "1"
+
+    def evaluate(self, df):
+        """Evaluate the composite weight using values from the dataframe"""
+        result = self.constant_factor
+
+        for param_name in self.param_names:
+            param_values = df.loc[:, ("parameter", param_name)]
+            result *= param_values
+
+        return result
+
+
 class SubObjective:
     def __init__(
         self,
@@ -42,23 +105,31 @@ class SubObjective:
 
     def _multiply_weights(self, weight1, weight2):
         """Helper method to properly multiply weights of different types"""
-        # If both are numeric (int/float)
         if isinstance(weight1, (int, float)) and isinstance(weight2, (int, float)):
             return weight1 * weight2
-        if isinstance(weight1, CasadiParameter) and isinstance(weight2, (int, float)):
-            return weight1.sym * weight2
 
-        if isinstance(weight1, (int, float)) and isinstance(weight2, CasadiParameter):
-            return weight1 * weight2.sym
+        if isinstance(weight1, (CasadiParameter, CompositeWeight)) or isinstance(weight2,(CasadiParameter, CompositeWeight)):
+            if isinstance(weight1, CompositeWeight):
+                result = CompositeWeight(weight1)
+            else:
+                result = CompositeWeight(weight1)
 
-        if isinstance(weight1, CasadiParameter) and isinstance(weight2, CasadiParameter):
-            return weight1.sym * weight2.sym
+            result.multiply_by(weight2)
+            return result
+
+        if hasattr(weight1, 'sym'):
+            weight1 = weight1.sym
+        if hasattr(weight2, 'sym'):
+            weight2 = weight2.sym
 
         return weight1 * weight2
 
     def get_weighted_expression(self):
         """Returns the final weighted expression"""
-        return self.weight * self.expression
+        if isinstance(self.weight, (CompositeWeight, CasadiParameter)):
+            return self.weight.sym * self.expression
+        else:
+            return self.weight * self.expression
 
     def calculate_value(self, data, weight):
         """Calculate the objective value from data"""
@@ -261,8 +332,8 @@ class CombinedObjective:
 
         # For control change penalties, we also need the previous control to penalise the first step
         if grid is not None:
-            current_start_index = result_df.index.get_loc(grid[0]) # Get time step 0
-            previous_start_index = current_start_index - 1 # Get previous time step
+            current_start_index = result_df.index.get_loc(grid[0])  # Get time step 0
+            previous_start_index = current_start_index - 1  # Get previous time step
             # Update grid and dataframe
             if previous_start_index >= 0:
                 previous_time_step = result_df.index[previous_start_index]
@@ -277,9 +348,11 @@ class CombinedObjective:
             name = obj.name
             if isinstance(obj, ChangePenaltyObjective):
                 # Handle symbolic or numeric weights for control change penalties
-                if hasattr(obj.weight, "sym"):
+                if isinstance(obj.weight, CasadiParameter):
                     weight_name = obj.weight.name
-                    weight = df_helper.loc[:, ("parameter", weight_name)].shift(-1).iloc[:-1] # Have to be shifted by 1 to match correct time step
+                    weight = df_helper.loc[:, ("parameter", weight_name)].shift(-1).iloc[:-1]
+                elif isinstance(obj.weight, CompositeWeight):
+                    weight = obj.weight.evaluate(df_helper).shift(-1).iloc[:-1]
                 else:
                     weight = obj.weight
 
@@ -288,10 +361,12 @@ class CombinedObjective:
                 value = obj.calculate_value(control_series, weight)
                 self._values[name] = value / self.normalization
             else:
-                # Handle symbolic or numeric weights
-                if hasattr(obj.weight, "sym"):
+                if isinstance(obj.weight, (CasadiParameter)):
                     weight_name = obj.weight.name
                     weight = df.loc[:, ("parameter", weight_name)].iloc[:-1]
+                elif isinstance(obj.weight, CompositeWeight):
+                    weight = obj.weight.evaluate(df).iloc[:-1]
+
                 else:
                     weight = obj.weight
 
