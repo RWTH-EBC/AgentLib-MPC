@@ -72,13 +72,13 @@ pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pyli
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'non-ascii-bytes-literal' (unknown-option-value)
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'eq-without-hash' (unknown-option-value)
 ************* Module agentlib_mpc.utils.plotting.basic
-agentlib_mpc/utils/plotting/basic.py:1:0: F0002: agentlib_mpc/utils/plotting/basic.py: Fatal error while checking 'agentlib_mpc/utils/plotting/basic.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-04.txt'. (astroid-error)
+agentlib_mpc/utils/plotting/basic.py:1:0: F0002: agentlib_mpc/utils/plotting/basic.py: Fatal error while checking 'agentlib_mpc/utils/plotting/basic.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-25.txt'. (astroid-error)
 ************* Module agentlib_mpc.data_structures.mpc_datamodels
-agentlib_mpc/data_structures/mpc_datamodels.py:1:0: F0002: agentlib_mpc/data_structures/mpc_datamodels.py: Fatal error while checking 'agentlib_mpc/data_structures/mpc_datamodels.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-04.txt'. (astroid-error)
+agentlib_mpc/data_structures/mpc_datamodels.py:1:0: F0002: agentlib_mpc/data_structures/mpc_datamodels.py: Fatal error while checking 'agentlib_mpc/data_structures/mpc_datamodels.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-26.txt'. (astroid-error)
 ************* Module agentlib_mpc.data_structures.admm_datatypes
-agentlib_mpc/data_structures/admm_datatypes.py:1:0: F0002: agentlib_mpc/data_structures/admm_datatypes.py: Fatal error while checking 'agentlib_mpc/data_structures/admm_datatypes.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-04.txt'. (astroid-error)
+agentlib_mpc/data_structures/admm_datatypes.py:1:0: F0002: agentlib_mpc/data_structures/admm_datatypes.py: Fatal error while checking 'agentlib_mpc/data_structures/admm_datatypes.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-26.txt'. (astroid-error)
 ************* Module agentlib_mpc.data_structures.casadi_utils
-agentlib_mpc/data_structures/casadi_utils.py:1:0: F0002: agentlib_mpc/data_structures/casadi_utils.py: Fatal error while checking 'agentlib_mpc/data_structures/casadi_utils.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-04.txt'. (astroid-error)
+agentlib_mpc/data_structures/casadi_utils.py:1:0: F0002: agentlib_mpc/data_structures/casadi_utils.py: Fatal error while checking 'agentlib_mpc/data_structures/casadi_utils.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-26.txt'. (astroid-error)
 ************* Module agentlib_mpc.models.casadi_predictor
 agentlib_mpc/models/casadi_predictor.py:284:0: C0301: Line too long (106/100) (line-too-long)
 agentlib_mpc/models/casadi_predictor.py:287:0: C0301: Line too long (113/100) (line-too-long)
@@ -109,7 +109,7 @@ agentlib_mpc/models/casadi_predictor.py:4:0: E0401: Unable to import 'numpy' (im
 agentlib_mpc/models/casadi_predictor.py:7:0: E0401: Unable to import 'keras' (import-error)
 agentlib_mpc/models/casadi_predictor.py:8:0: E0401: Unable to import 'keras.src' (import-error)
 agentlib_mpc/models/casadi_predictor.py:9:0: E0401: Unable to import 'keras' (import-error)
-agentlib_mpc/models/casadi_predictor.py:1:0: F0002: agentlib_mpc/models/casadi_predictor.py: Fatal error while checking 'agentlib_mpc/models/casadi_predictor.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-05.txt'. (astroid-error)
+agentlib_mpc/models/casadi_predictor.py:1:0: F0002: agentlib_mpc/models/casadi_predictor.py: Fatal error while checking 'agentlib_mpc/models/casadi_predictor.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-27.txt'. (astroid-error)
 ************* Module agentlib_mpc.models.serialized_ml_model
 agentlib_mpc/models/serialized_ml_model.py:49:0: C0301: Line too long (101/100) (line-too-long)
 agentlib_mpc/models/serialized_ml_model.py:104:0: C0301: Line too long (112/100) (line-too-long)
@@ -131,16 +131,16 @@ agentlib_mpc/models/serialized_ml_model.py:12:0: E0401: Unable to import 'pydant
 agentlib_mpc/models/serialized_ml_model.py:13:0: E0401: Unable to import 'sklearn.gaussian_process' (import-error)
 agentlib_mpc/models/serialized_ml_model.py:14:0: E0401: Unable to import 'sklearn.gaussian_process.kernels' (import-error)
 agentlib_mpc/models/serialized_ml_model.py:15:0: E0401: Unable to import 'sklearn.linear_model' (import-error)
-agentlib_mpc/models/serialized_ml_model.py:1:0: F0002: agentlib_mpc/models/serialized_ml_model.py: Fatal error while checking 'agentlib_mpc/models/serialized_ml_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-05.txt'. (astroid-error)
+agentlib_mpc/models/serialized_ml_model.py:1:0: F0002: agentlib_mpc/models/serialized_ml_model.py: Fatal error while checking 'agentlib_mpc/models/serialized_ml_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-27.txt'. (astroid-error)
 ************* Module agentlib_mpc.models.casadi_ml_model
 agentlib_mpc/models/casadi_ml_model.py:452:0: C0301: Line too long (131/100) (line-too-long)
-agentlib_mpc/models/casadi_ml_model.py:1:0: F0002: agentlib_mpc/models/casadi_ml_model.py: Fatal error while checking 'agentlib_mpc/models/casadi_ml_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-05.txt'. (astroid-error)
+agentlib_mpc/models/casadi_ml_model.py:1:0: F0002: agentlib_mpc/models/casadi_ml_model.py: Fatal error while checking 'agentlib_mpc/models/casadi_ml_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-28.txt'. (astroid-error)
 ************* Module agentlib_mpc.models.casadi_model
 agentlib_mpc/models/casadi_model.py:277:0: C0301: Line too long (128/100) (line-too-long)
 agentlib_mpc/models/casadi_model.py:527:0: C0301: Line too long (121/100) (line-too-long)
 agentlib_mpc/models/casadi_model.py:532:0: C0301: Line too long (128/100) (line-too-long)
 agentlib_mpc/models/casadi_model.py:575:0: C0301: Line too long (101/100) (line-too-long)
-agentlib_mpc/models/casadi_model.py:1:0: F0002: agentlib_mpc/models/casadi_model.py: Fatal error while checking 'agentlib_mpc/models/casadi_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-05.txt'. (astroid-error)
+agentlib_mpc/models/casadi_model.py:1:0: F0002: agentlib_mpc/models/casadi_model.py: Fatal error while checking 'agentlib_mpc/models/casadi_model.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-28.txt'. (astroid-error)
 ************* Module agentlib_mpc.models
 agentlib_mpc/models/__init__.py:5:0: E0401: Unable to import 'agentlib.utils.plugin_import' (import-error)
 agentlib_mpc/models/casadi_predictor.py:6:0: C0411: standard import "from enum import Enum" should be placed before "import casadi as ca" (wrong-import-order)
@@ -170,16 +170,16 @@ agentlib_mpc/models/serialized_ml_model.py:5:0: C0412: Imports from package nump
 agentlib_mpc/models/serialized_ml_model.py:9:0: C0412: Imports from package keras are not grouped (ungrouped-imports)
 ************* Module agentlib_mpc.utils.sampling
 agentlib_mpc/utils/sampling.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/utils/sampling.py:1:0: F0002: agentlib_mpc/utils/sampling.py: Fatal error while checking 'agentlib_mpc/utils/sampling.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-06.txt'. (astroid-error)
+agentlib_mpc/utils/sampling.py:1:0: F0002: agentlib_mpc/utils/sampling.py: Fatal error while checking 'agentlib_mpc/utils/sampling.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-28.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.analysis
 agentlib_mpc/utils/analysis.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/utils/analysis.py:1:0: F0002: agentlib_mpc/utils/analysis.py: Fatal error while checking 'agentlib_mpc/utils/analysis.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-06.txt'. (astroid-error)
+agentlib_mpc/utils/analysis.py:1:0: F0002: agentlib_mpc/utils/analysis.py: Fatal error while checking 'agentlib_mpc/utils/analysis.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-28.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.__init__
-agentlib_mpc/utils/__init__.py:1:0: F0002: agentlib_mpc/utils/__init__.py: Fatal error while checking 'agentlib_mpc/utils/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-06.txt'. (astroid-error)
+agentlib_mpc/utils/__init__.py:1:0: F0002: agentlib_mpc/utils/__init__.py: Fatal error while checking 'agentlib_mpc/utils/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-29.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.plotting.interactive
 agentlib_mpc/utils/plotting/interactive.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/utils/plotting/interactive.py:1:0: E0401: Unable to import 'pandas' (import-error)
-agentlib_mpc/utils/plotting/interactive.py:1:0: F0002: agentlib_mpc/utils/plotting/interactive.py: Fatal error while checking 'agentlib_mpc/utils/plotting/interactive.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-06.txt'. (astroid-error)
+agentlib_mpc/utils/plotting/interactive.py:1:0: F0002: agentlib_mpc/utils/plotting/interactive.py: Fatal error while checking 'agentlib_mpc/utils/plotting/interactive.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-29.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.plotting.admm_consensus_shades
 agentlib_mpc/utils/plotting/admm_consensus_shades.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/utils/plotting/admm_consensus_shades.py:1:0: E0401: Unable to import 'pandas' (import-error)
@@ -194,31 +194,31 @@ agentlib_mpc/utils/plotting/admm_consensus_shades.py:42:4: W0612: Unused variabl
 agentlib_mpc/utils/plotting/admm_consensus_shades.py:57:8: W0612: Unused variable 'prediction_color' (unused-variable)
 ************* Module agentlib_mpc.utils.plotting.mpc
 agentlib_mpc/utils/plotting/mpc.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/utils/plotting/mpc.py:1:0: F0002: agentlib_mpc/utils/plotting/mpc.py: Fatal error while checking 'agentlib_mpc/utils/plotting/mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-06.txt'. (astroid-error)
+agentlib_mpc/utils/plotting/mpc.py:1:0: F0002: agentlib_mpc/utils/plotting/mpc.py: Fatal error while checking 'agentlib_mpc/utils/plotting/mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-29.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.plotting.mpc_dashboard
 agentlib_mpc/utils/plotting/mpc_dashboard.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/utils/plotting/mpc_dashboard.py:1:0: F0002: agentlib_mpc/utils/plotting/mpc_dashboard.py: Fatal error while checking 'agentlib_mpc/utils/plotting/mpc_dashboard.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-07.txt'. (astroid-error)
+agentlib_mpc/utils/plotting/mpc_dashboard.py:1:0: F0002: agentlib_mpc/utils/plotting/mpc_dashboard.py: Fatal error while checking 'agentlib_mpc/utils/plotting/mpc_dashboard.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-29.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.plotting.discretization_structure
 agentlib_mpc/utils/plotting/discretization_structure.py:57:0: C0301: Line too long (102/100) (line-too-long)
 agentlib_mpc/utils/plotting/discretization_structure.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/utils/plotting/discretization_structure.py:3:0: E0401: Unable to import 'matplotlib.pyplot' (import-error)
 agentlib_mpc/utils/plotting/discretization_structure.py:4:0: E0401: Unable to import 'pandas' (import-error)
-agentlib_mpc/utils/plotting/discretization_structure.py:1:0: F0002: agentlib_mpc/utils/plotting/discretization_structure.py: Fatal error while checking 'agentlib_mpc/utils/plotting/discretization_structure.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-07.txt'. (astroid-error)
+agentlib_mpc/utils/plotting/discretization_structure.py:1:0: F0002: agentlib_mpc/utils/plotting/discretization_structure.py: Fatal error while checking 'agentlib_mpc/utils/plotting/discretization_structure.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-29.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.plotting.ml_model_test
 agentlib_mpc/utils/plotting/ml_model_test.py:127:0: C0301: Line too long (103/100) (line-too-long)
 agentlib_mpc/utils/plotting/ml_model_test.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/utils/plotting/ml_model_test.py:1:0: F0002: agentlib_mpc/utils/plotting/ml_model_test.py: Fatal error while checking 'agentlib_mpc/utils/plotting/ml_model_test.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-07.txt'. (astroid-error)
+agentlib_mpc/utils/plotting/ml_model_test.py:1:0: F0002: agentlib_mpc/utils/plotting/ml_model_test.py: Fatal error while checking 'agentlib_mpc/utils/plotting/ml_model_test.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-29.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.plotting.admm_dashboard
 agentlib_mpc/utils/plotting/admm_dashboard.py:110:0: C0301: Line too long (105/100) (line-too-long)
 agentlib_mpc/utils/plotting/admm_dashboard.py:122:0: C0301: Line too long (102/100) (line-too-long)
 agentlib_mpc/utils/plotting/admm_dashboard.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/utils/plotting/admm_dashboard.py:1:0: F0002: agentlib_mpc/utils/plotting/admm_dashboard.py: Fatal error while checking 'agentlib_mpc/utils/plotting/admm_dashboard.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-07.txt'. (astroid-error)
+agentlib_mpc/utils/plotting/admm_dashboard.py:1:0: F0002: agentlib_mpc/utils/plotting/admm_dashboard.py: Fatal error while checking 'agentlib_mpc/utils/plotting/admm_dashboard.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-29.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.plotting.admm_residuals
 agentlib_mpc/utils/plotting/admm_residuals.py:144:0: C0301: Line too long (109/100) (line-too-long)
 agentlib_mpc/utils/plotting/admm_residuals.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/utils/plotting/admm_residuals.py:1:0: F0002: agentlib_mpc/utils/plotting/admm_residuals.py: Fatal error while checking 'agentlib_mpc/utils/plotting/admm_residuals.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-07.txt'. (astroid-error)
+agentlib_mpc/utils/plotting/admm_residuals.py:1:0: F0002: agentlib_mpc/utils/plotting/admm_residuals.py: Fatal error while checking 'agentlib_mpc/utils/plotting/admm_residuals.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-30.txt'. (astroid-error)
 ************* Module agentlib_mpc.utils.plotting.admm_animation
-agentlib_mpc/utils/plotting/admm_animation.py:1:0: F0002: agentlib_mpc/utils/plotting/admm_animation.py: Fatal error while checking 'agentlib_mpc/utils/plotting/admm_animation.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-07.txt'. (astroid-error)
+agentlib_mpc/utils/plotting/admm_animation.py:1:0: F0002: agentlib_mpc/utils/plotting/admm_animation.py: Fatal error while checking 'agentlib_mpc/utils/plotting/admm_animation.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-30.txt'. (astroid-error)
 agentlib_mpc/utils/plotting/ml_model_test.py:1:0: C0411: standard import "from pathlib import Path" should be placed before "import matplotlib.pyplot as plt" (wrong-import-order)
 agentlib_mpc/utils/plotting/admm_dashboard.py:1:0: C0411: standard import "import os" should be placed before "import matplotlib.pyplot as plt" (wrong-import-order)
 agentlib_mpc/utils/plotting/admm_dashboard.py:2:0: C0411: standard import "import webbrowser" should be placed before "import matplotlib.pyplot as plt" (wrong-import-order)
@@ -233,7 +233,7 @@ agentlib_mpc/utils/plotting/admm_residuals.py:2:0: C0412: Imports from package p
 agentlib_mpc/utils/plotting/admm_animation.py:5:0: C0412: Imports from package pathlib are not grouped (ungrouped-imports)
 ************* Module agentlib_mpc.data_structures.ml_model_datatypes
 agentlib_mpc/data_structures/ml_model_datatypes.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/data_structures/ml_model_datatypes.py:1:0: F0002: agentlib_mpc/data_structures/ml_model_datatypes.py: Fatal error while checking 'agentlib_mpc/data_structures/ml_model_datatypes.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-07.txt'. (astroid-error)
+agentlib_mpc/data_structures/ml_model_datatypes.py:1:0: F0002: agentlib_mpc/data_structures/ml_model_datatypes.py: Fatal error while checking 'agentlib_mpc/data_structures/ml_model_datatypes.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-30.txt'. (astroid-error)
 ************* Module agentlib_mpc.data_structures.interpolation
 agentlib_mpc/data_structures/interpolation.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/data_structures/interpolation.py:3:0: C0103: Constant name "a" doesn't conform to UPPER_CASE naming style (invalid-name)
@@ -245,17 +245,17 @@ agentlib_mpc/data_structures/interpolation.py:10:4: C0103: Class constant name "
 agentlib_mpc/data_structures/interpolation.py:24:4: C0103: Class constant name "mean_over_interval" doesn't conform to UPPER_CASE naming style (invalid-name)
 agentlib_mpc/data_structures/interpolation.py:27:0: C0103: Constant name "c" doesn't conform to UPPER_CASE naming style (invalid-name)
 ************* Module agentlib_mpc.data_structures.objective
-agentlib_mpc/data_structures/objective.py:217:0: C0301: Line too long (107/100) (line-too-long)
-agentlib_mpc/data_structures/objective.py:266:0: C0301: Line too long (146/100) (line-too-long)
-agentlib_mpc/data_structures/objective.py:351:0: C0301: Line too long (107/100) (line-too-long)
-agentlib_mpc/data_structures/objective.py:443:0: C0301: Line too long (115/100) (line-too-long)
-agentlib_mpc/data_structures/objective.py:463:0: C0301: Line too long (115/100) (line-too-long)
-agentlib_mpc/data_structures/objective.py:489:0: C0301: Line too long (109/100) (line-too-long)
+agentlib_mpc/data_structures/objective.py:111:0: C0301: Line too long (125/100) (line-too-long)
+agentlib_mpc/data_structures/objective.py:304:0: C0301: Line too long (107/100) (line-too-long)
+agentlib_mpc/data_structures/objective.py:442:0: C0301: Line too long (107/100) (line-too-long)
+agentlib_mpc/data_structures/objective.py:534:0: C0301: Line too long (115/100) (line-too-long)
+agentlib_mpc/data_structures/objective.py:554:0: C0301: Line too long (115/100) (line-too-long)
+agentlib_mpc/data_structures/objective.py:580:0: C0301: Line too long (109/100) (line-too-long)
 agentlib_mpc/data_structures/objective.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/data_structures/objective.py:1:0: E0401: Unable to import 'pandas' (import-error)
 agentlib_mpc/data_structures/objective.py:2:0: E0401: Unable to import 'numpy' (import-error)
 agentlib_mpc/data_structures/objective.py:4:0: E0401: Unable to import 'casadi' (import-error)
-agentlib_mpc/data_structures/objective.py:1:0: F0002: agentlib_mpc/data_structures/objective.py: Fatal error while checking 'agentlib_mpc/data_structures/objective.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-07.txt'. (astroid-error)
+agentlib_mpc/data_structures/objective.py:1:0: F0002: agentlib_mpc/data_structures/objective.py: Fatal error while checking 'agentlib_mpc/data_structures/objective.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-30.txt'. (astroid-error)
 ************* Module agentlib_mpc.data_structures.coordinator_datatypes
 agentlib_mpc/data_structures/coordinator_datatypes.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/data_structures/coordinator_datatypes.py:5:0: E0401: Unable to import 'numpy' (import-error)
@@ -292,7 +292,7 @@ agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py:135:0: C0
 agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py:150:0: C0301: Line too long (118/100) (line-too-long)
 agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py:172:0: C0304: Final newline missing (missing-final-newline)
 agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py:1:0: F0002: agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py: Fatal error while checking 'agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-08.txt'. (astroid-error)
+agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py:1:0: F0002: agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py: Fatal error while checking 'agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-31.txt'. (astroid-error)
 ************* Module agentlib_mpc.machine_learning_plugins.physXAI.model_generation
 agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:7:0: C0301: Line too long (103/100) (line-too-long)
 agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:12:0: C0301: Line too long (149/100) (line-too-long)
@@ -309,12 +309,12 @@ agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:87:0: C0301: L
 agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:91:0: C0301: Line too long (133/100) (line-too-long)
 agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:123:0: C0301: Line too long (108/100) (line-too-long)
 agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:1:0: F0002: agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py: Fatal error while checking 'agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-08.txt'. (astroid-error)
+agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:1:0: F0002: agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py: Fatal error while checking 'agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-31.txt'. (astroid-error)
 ************* Module agentlib_mpc.machine_learning_plugins.physXAI
 agentlib_mpc/machine_learning_plugins/physXAI/__init__.py:1:0: C0103: Module name "physXAI" doesn't conform to snake_case naming style (invalid-name)
 ************* Module agentlib_mpc.optimization_backends.backend
 agentlib_mpc/optimization_backends/backend.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/optimization_backends/backend.py:1:0: F0002: agentlib_mpc/optimization_backends/backend.py: Fatal error while checking 'agentlib_mpc/optimization_backends/backend.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-08.txt'. (astroid-error)
+agentlib_mpc/optimization_backends/backend.py:1:0: F0002: agentlib_mpc/optimization_backends/backend.py: Fatal error while checking 'agentlib_mpc/optimization_backends/backend.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-31.txt'. (astroid-error)
 ************* Module agentlib_mpc.optimization_backends
 agentlib_mpc/optimization_backends/__init__.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/optimization_backends/__init__.py:3:0: E0401: Unable to import 'pydantic' (import-error)
@@ -365,7 +365,7 @@ agentlib_mpc/optimization_backends/casadi_/basic.py:459:8: C0103: Variable name 
 ************* Module agentlib_mpc.optimization_backends.casadi_.casadi_ml
 agentlib_mpc/optimization_backends/casadi_/casadi_ml.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/optimization_backends/casadi_/casadi_ml.py:1:0: E0401: Unable to import 'casadi' (import-error)
-agentlib_mpc/optimization_backends/casadi_/casadi_ml.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/casadi_ml.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/casadi_ml.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-08.txt'. (astroid-error)
+agentlib_mpc/optimization_backends/casadi_/casadi_ml.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/casadi_ml.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/casadi_ml.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-32.txt'. (astroid-error)
 ************* Module agentlib_mpc.optimization_backends.casadi_.full
 agentlib_mpc/optimization_backends/casadi_/full.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/optimization_backends/casadi_/full.py:1:0: E0401: Unable to import 'casadi' (import-error)
@@ -443,13 +443,13 @@ agentlib_mpc/optimization_backends/casadi_/minlp.py:180:12: C0103: Variable name
 ************* Module agentlib_mpc.optimization_backends.casadi_.minlp_cia
 agentlib_mpc/optimization_backends/casadi_/minlp_cia.py:28:29: W1401: Anomalous backslash in string: '\ '. String constant might be missing an r prefix. (anomalous-backslash-in-string)
 agentlib_mpc/optimization_backends/casadi_/minlp_cia.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/optimization_backends/casadi_/minlp_cia.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/minlp_cia.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/minlp_cia.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-09.txt'. (astroid-error)
+agentlib_mpc/optimization_backends/casadi_/minlp_cia.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/minlp_cia.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/minlp_cia.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-32.txt'. (astroid-error)
 ************* Module agentlib_mpc.optimization_backends.casadi_.mhe
 agentlib_mpc/optimization_backends/casadi_/mhe.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/optimization_backends/casadi_/mhe.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/mhe.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/mhe.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-09.txt'. (astroid-error)
+agentlib_mpc/optimization_backends/casadi_/mhe.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/mhe.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/mhe.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-33.txt'. (astroid-error)
 ************* Module agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml
 agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-09.txt'. (astroid-error)
+agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-33.txt'. (astroid-error)
 ************* Module agentlib_mpc.optimization_backends.casadi_.core.VariableGroup
 agentlib_mpc/optimization_backends/casadi_/core/VariableGroup.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/optimization_backends/casadi_/core/VariableGroup.py:1:0: C0103: Module name "VariableGroup" doesn't conform to snake_case naming style (invalid-name)
@@ -463,20 +463,22 @@ agentlib_mpc/optimization_backends/casadi_/core/VariableGroup.py:149:4: R0913: T
 ************* Module agentlib_mpc.optimization_backends.casadi_.core.casadi_backend
 agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py:313:0: C0301: Line too long (183/100) (line-too-long)
 agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-10.txt'. (astroid-error)
+agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-33.txt'. (astroid-error)
 ************* Module agentlib_mpc.optimization_backends.casadi_.core.system
-agentlib_mpc/optimization_backends/casadi_/core/system.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/core/system.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/core/system.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-10.txt'. (astroid-error)
+agentlib_mpc/optimization_backends/casadi_/core/system.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/core/system.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/core/system.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-33.txt'. (astroid-error)
 ************* Module agentlib_mpc.optimization_backends.casadi_.core.discretization
-agentlib_mpc/optimization_backends/casadi_/core/discretization.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/core/discretization.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/core/discretization.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-10.txt'. (astroid-error)
+agentlib_mpc/optimization_backends/casadi_/core/discretization.py:1:0: F0002: agentlib_mpc/optimization_backends/casadi_/core/discretization.py: Fatal error while checking 'agentlib_mpc/optimization_backends/casadi_/core/discretization.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-33.txt'. (astroid-error)
 ************* Module agentlib_mpc.optimization_backends.casadi_.core.delta_u
-agentlib_mpc/optimization_backends/casadi_/core/delta_u.py:26:0: C0301: Line too long (114/100) (line-too-long)
+agentlib_mpc/optimization_backends/casadi_/core/delta_u.py:20:0: C0301: Line too long (113/100) (line-too-long)
+agentlib_mpc/optimization_backends/casadi_/core/delta_u.py:24:0: C0301: Line too long (114/100) (line-too-long)
 agentlib_mpc/optimization_backends/casadi_/core/delta_u.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/optimization_backends/casadi_/core/delta_u.py:1:0: E0401: Unable to import 'casadi' (import-error)
-agentlib_mpc/optimization_backends/casadi_/core/delta_u.py:7:0: C0116: Missing function or method docstring (missing-function-docstring)
-agentlib_mpc/optimization_backends/casadi_/core/delta_u.py:11:0: C0116: Missing function or method docstring (missing-function-docstring)
-agentlib_mpc/optimization_backends/casadi_/core/delta_u.py:11:42: C0103: Argument name "uk" doesn't conform to snake_case naming style (invalid-name)
-agentlib_mpc/optimization_backends/casadi_/core/delta_u.py:26:4: W1203: Use lazy % formatting in logging functions (logging-fstring-interpolation)
-agentlib_mpc/optimization_backends/casadi_/core/delta_u.py:2:0: C0411: standard import "import logging" should be placed before "import casadi as ca" (wrong-import-order)
+agentlib_mpc/optimization_backends/casadi_/core/delta_u.py:3:0: E0401: Unable to import 'casadi' (import-error)
+agentlib_mpc/optimization_backends/casadi_/core/delta_u.py:9:0: C0116: Missing function or method docstring (missing-function-docstring)
+agentlib_mpc/optimization_backends/casadi_/core/delta_u.py:13:0: C0116: Missing function or method docstring (missing-function-docstring)
+agentlib_mpc/optimization_backends/casadi_/core/delta_u.py:13:42: C0103: Argument name "uk" doesn't conform to snake_case naming style (invalid-name)
+agentlib_mpc/optimization_backends/casadi_/core/delta_u.py:24:4: W1203: Use lazy % formatting in logging functions (logging-fstring-interpolation)
+agentlib_mpc/optimization_backends/casadi_/core/delta_u.py:3:0: C0411: third party import "import casadi as ca" should be placed before "from agentlib_mpc.models.casadi_model import CasadiParameter" (wrong-import-order)
+agentlib_mpc/optimization_backends/casadi_/core/delta_u.py:4:0: C0411: standard import "import logging" should be placed before "import casadi as ca" (wrong-import-order)
 ************* Module agentlib_mpc.modules.data_source
 agentlib_mpc/modules/data_source.py:122:0: C0301: Line too long (147/100) (line-too-long)
 agentlib_mpc/modules/data_source.py:178:0: C0301: Line too long (101/100) (line-too-long)
@@ -485,7 +487,7 @@ agentlib_mpc/modules/data_source.py:1:0: C0114: Missing module docstring (missin
 agentlib_mpc/modules/data_source.py:3:0: E0401: Unable to import 'pandas' (import-error)
 agentlib_mpc/modules/data_source.py:4:0: E0401: Unable to import 'numpy' (import-error)
 agentlib_mpc/modules/data_source.py:6:0: E0401: Unable to import 'pydantic' (import-error)
-agentlib_mpc/modules/data_source.py:1:0: F0002: agentlib_mpc/modules/data_source.py: Fatal error while checking 'agentlib_mpc/modules/data_source.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-10.txt'. (astroid-error)
+agentlib_mpc/modules/data_source.py:1:0: F0002: agentlib_mpc/modules/data_source.py: Fatal error while checking 'agentlib_mpc/modules/data_source.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-34.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.ml_model_simulator
 agentlib_mpc/modules/ml_model_simulator.py:26:0: C0301: Line too long (105/100) (line-too-long)
 agentlib_mpc/modules/ml_model_simulator.py:6:0: E0401: Unable to import 'pydantic' (import-error)
@@ -507,7 +509,7 @@ agentlib_mpc/modules/__init__.py:16:4: C0116: Missing function or method docstri
 agentlib_mpc/modules/deactivate_mpc/fallback_pid.py:52:0: C0301: Line too long (115/100) (line-too-long)
 agentlib_mpc/modules/deactivate_mpc/fallback_pid.py:93:0: C0301: Line too long (103/100) (line-too-long)
 agentlib_mpc/modules/deactivate_mpc/fallback_pid.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/modules/deactivate_mpc/fallback_pid.py:1:0: F0002: agentlib_mpc/modules/deactivate_mpc/fallback_pid.py: Fatal error while checking 'agentlib_mpc/modules/deactivate_mpc/fallback_pid.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-10.txt'. (astroid-error)
+agentlib_mpc/modules/deactivate_mpc/fallback_pid.py:1:0: F0002: agentlib_mpc/modules/deactivate_mpc/fallback_pid.py: Fatal error while checking 'agentlib_mpc/modules/deactivate_mpc/fallback_pid.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-34.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.deactivate_mpc.deactivate_mpc
 agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py:29:0: C0301: Line too long (139/100) (line-too-long)
 agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py:33:0: C0301: Line too long (139/100) (line-too-long)
@@ -515,10 +517,10 @@ agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py:1:0: C0114: Missing module
 agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py:1:0: E0401: Unable to import 'agentlib' (import-error)
 agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py:2:0: E0401: Unable to import 'agentlib.core' (import-error)
 agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py:3:0: E0401: Unable to import 'pydantic' (import-error)
-agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py:1:0: F0002: agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py: Fatal error while checking 'agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-10.txt'. (astroid-error)
+agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py:1:0: F0002: agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py: Fatal error while checking 'agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-34.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.mpc.mpc
 agentlib_mpc/modules/mpc/mpc.py:99:0: C0301: Line too long (121/100) (line-too-long)
-agentlib_mpc/modules/mpc/mpc.py:1:0: F0002: agentlib_mpc/modules/mpc/mpc.py: Fatal error while checking 'agentlib_mpc/modules/mpc/mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-10.txt'. (astroid-error)
+agentlib_mpc/modules/mpc/mpc.py:1:0: F0002: agentlib_mpc/modules/mpc/mpc.py: Fatal error while checking 'agentlib_mpc/modules/mpc/mpc.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-34.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.mpc.minlp_mpc
 agentlib_mpc/modules/mpc/minlp_mpc.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/modules/mpc/minlp_mpc.py:4:0: E0401: Unable to import 'agentlib.core.errors' (import-error)
@@ -535,13 +537,13 @@ agentlib_mpc/modules/mpc/mpc_full.py:32:8: W0201: Attribute '_lags_dict_seconds'
 agentlib_mpc/modules/mpc/mpc_full.py:36:8: W0201: Attribute 'history' defined outside __init__ (attribute-defined-outside-init)
 ************* Module agentlib_mpc.modules.mpc.skippable_mixin
 agentlib_mpc/modules/mpc/skippable_mixin.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/modules/mpc/skippable_mixin.py:1:0: F0002: agentlib_mpc/modules/mpc/skippable_mixin.py: Fatal error while checking 'agentlib_mpc/modules/mpc/skippable_mixin.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-10.txt'. (astroid-error)
+agentlib_mpc/modules/mpc/skippable_mixin.py:1:0: F0002: agentlib_mpc/modules/mpc/skippable_mixin.py: Fatal error while checking 'agentlib_mpc/modules/mpc/skippable_mixin.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-34.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.estimation.mhe
 agentlib_mpc/modules/estimation/mhe.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/modules/estimation/mhe.py:1:0: F0002: agentlib_mpc/modules/estimation/mhe.py: Fatal error while checking 'agentlib_mpc/modules/estimation/mhe.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-10.txt'. (astroid-error)
+agentlib_mpc/modules/estimation/mhe.py:1:0: F0002: agentlib_mpc/modules/estimation/mhe.py: Fatal error while checking 'agentlib_mpc/modules/estimation/mhe.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-34.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.dmpc.coordinator
 agentlib_mpc/modules/dmpc/coordinator.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/modules/dmpc/coordinator.py:1:0: F0002: agentlib_mpc/modules/dmpc/coordinator.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/coordinator.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-11.txt'. (astroid-error)
+agentlib_mpc/modules/dmpc/coordinator.py:1:0: F0002: agentlib_mpc/modules/dmpc/coordinator.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/coordinator.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-35.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.dmpc.employee
 agentlib_mpc/modules/dmpc/employee.py:89:0: C0301: Line too long (140/100) (line-too-long)
 agentlib_mpc/modules/dmpc/employee.py:183:0: C0325: Unnecessary parens after 'not' keyword (superfluous-parens)
@@ -563,11 +565,11 @@ agentlib_mpc/modules/dmpc/employee.py:2:0: C0412: Imports from package dataclass
 ************* Module agentlib_mpc.modules.dmpc
 agentlib_mpc/modules/dmpc/__init__.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 ************* Module agentlib_mpc.modules.dmpc.admm.admm_coordinated
-agentlib_mpc/modules/dmpc/admm/admm_coordinated.py:1:0: F0002: agentlib_mpc/modules/dmpc/admm/admm_coordinated.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/admm/admm_coordinated.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-11.txt'. (astroid-error)
+agentlib_mpc/modules/dmpc/admm/admm_coordinated.py:1:0: F0002: agentlib_mpc/modules/dmpc/admm/admm_coordinated.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/admm/admm_coordinated.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-35.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.dmpc.admm.admm
-agentlib_mpc/modules/dmpc/admm/admm.py:1:0: F0002: agentlib_mpc/modules/dmpc/admm/admm.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/admm/admm.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-11.txt'. (astroid-error)
+agentlib_mpc/modules/dmpc/admm/admm.py:1:0: F0002: agentlib_mpc/modules/dmpc/admm/admm.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/admm/admm.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-35.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.dmpc.admm.admm_coordinator
-agentlib_mpc/modules/dmpc/admm/admm_coordinator.py:1:0: F0002: agentlib_mpc/modules/dmpc/admm/admm_coordinator.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/admm/admm_coordinator.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-11.txt'. (astroid-error)
+agentlib_mpc/modules/dmpc/admm/admm_coordinator.py:1:0: F0002: agentlib_mpc/modules/dmpc/admm/admm_coordinator.py: Fatal error while checking 'agentlib_mpc/modules/dmpc/admm/admm_coordinator.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-35.txt'. (astroid-error)
 agentlib_mpc/modules/dmpc/admm/admm_coordinator.py:6:0: C0412: Imports from package time are not grouped (ungrouped-imports)
 ************* Module agentlib_mpc.modules.ml_model_training.data_reduction
 agentlib_mpc/modules/ml_model_training/data_reduction.py:97:0: C0301: Line too long (122/100) (line-too-long)
@@ -589,12 +591,12 @@ agentlib_mpc/modules/ml_model_training/data_reduction.py:69:8: C0103: Variable n
 agentlib_mpc/modules/ml_model_training/data_reduction.py:75:13: R1734: Consider using [] instead of list() (use-list-literal)
 agentlib_mpc/modules/ml_model_training/data_reduction.py:5:0: C0411: standard import "from abc import ABC, abstractmethod" should be placed before "import numpy as np" (wrong-import-order)
 ************* Module agentlib_mpc.modules.ml_model_training.setpoint_generator
-agentlib_mpc/modules/ml_model_training/setpoint_generator.py:1:0: F0002: agentlib_mpc/modules/ml_model_training/setpoint_generator.py: Fatal error while checking 'agentlib_mpc/modules/ml_model_training/setpoint_generator.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-11.txt'. (astroid-error)
+agentlib_mpc/modules/ml_model_training/setpoint_generator.py:1:0: F0002: agentlib_mpc/modules/ml_model_training/setpoint_generator.py: Fatal error while checking 'agentlib_mpc/modules/ml_model_training/setpoint_generator.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-36.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.ml_model_training.ml_model_trainer
 agentlib_mpc/modules/ml_model_training/ml_model_trainer.py:515:0: C0325: Unnecessary parens after '=' keyword (superfluous-parens)
 agentlib_mpc/modules/ml_model_training/ml_model_trainer.py:723:0: C0301: Line too long (102/100) (line-too-long)
 agentlib_mpc/modules/ml_model_training/ml_model_trainer.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-agentlib_mpc/modules/ml_model_training/ml_model_trainer.py:1:0: F0002: agentlib_mpc/modules/ml_model_training/ml_model_trainer.py: Fatal error while checking 'agentlib_mpc/modules/ml_model_training/ml_model_trainer.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-08-08-42-12.txt'. (astroid-error)
+agentlib_mpc/modules/ml_model_training/ml_model_trainer.py:1:0: F0002: agentlib_mpc/modules/ml_model_training/ml_model_trainer.py: Fatal error while checking 'agentlib_mpc/modules/ml_model_training/ml_model_trainer.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-01-13-17-38-36.txt'. (astroid-error)
 ************* Module agentlib_mpc.modules.InputPrediction.try_predictor
 agentlib_mpc/modules/InputPrediction/try_predictor.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 agentlib_mpc/modules/InputPrediction/try_predictor.py:1:0: E0401: Unable to import 'pandas' (import-error)
@@ -759,14 +761,12 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
             ref_list=var_ref.parameters,
         )
         self.initial_state = OptimizationParameter.declare(
-            denotation="initial_state",  # append the 0 as a convention to get initial guess
+            denotation="initial_state",
             variables=model.get_states(var_ref.states),
             ref_list=var_ref.states,
             use_in_stage_function=False,
             assert_complete=True,
-        )
-
-        # dynamics (duplicate-code)
+        ) (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml:[456:507]
 ==agentlib_mpc.optimization_backends.casadi_.casadi_ml:[292:343]
@@ -820,7 +820,7 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
             output_denotations,
         )
 
- (duplicate-code)
+    def _create_lag_structure_for_denotations(self, system: CasadiMLSystem): (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml:[333:365]
 ==agentlib_mpc.optimization_backends.casadi_.casadi_ml:[168:200]
@@ -986,18 +986,18 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.utils.plotting.interactive:[453:483]
 ==agentlib_mpc.utils.plotting.mpc_dashboard:[316:353]
-                        ),
-                        style={
-                            "min-width": "600px",
-                            "min-height": "400px",
-                            "max-width": "900px",
-                            "max-height": "450px",
-                        },
-                    ),
-                ],
-                className="draggable",
-            )
-        )
+                                ),
+                                style={
+                                    "min-width": "600px",
+                                    "min-height": "400px",
+                                    "max-width": "900px",
+                                    "max-height": "450px",
+                                },
+                            ),
+                        ],
+                        className="draggable",
+                    )
+                )
 
     return html.Div(
         components,
@@ -1013,9 +1013,16 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
     )
 
 
-def obj_plot(
-    data, convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds"
-) -> dcc.Graph: (duplicate-code)
+def detect_index_type(data: pd.DataFrame) -> Tuple[bool, bool]:
+    """
+    Detect the type of index in the DataFrame.
+
+    Args:
+        data: DataFrame to check
+
+    Returns:
+        Tuple of (is_multi_index, is_datetime)
+    """ (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.mhe:[484:518]
 ==agentlib_mpc.utils.sampling:[118:152]
@@ -1183,7 +1190,7 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
         constraint_lb_denotations = [LB_PREFIX + k for k in constraints]
         constraint_ub_denotations = [UB_PREFIX + k for k in constraints]
 
-        # create a dictionary which holds all the inputs for the sim step of the model (duplicate-code)
+        # aggregate outputs (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.basic:[278:309]
 ==agentlib_mpc.optimization_backends.casadi_.mhe:[298:331]
@@ -1319,7 +1326,7 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
             self.k += 1
             self.pred_time = ts * self.k
 
-            # New NLP variable for differential state at end of interval
+            # New NLP variables at end of interval
             xk = self.add_opt_var(sys.states)
 
             # Add continuity constraint
@@ -1339,7 +1346,6 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
             sys.outputs.full_symbolic,
         )
         integrator_ode = {"x": x, "p": p, "ode": ode}
-
         if integrator == Integrators.euler:
             xk_end = x + ode * opts["tf"]
             opt_integrator = ca.Function(
@@ -1347,26 +1353,9 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
             )
         else:  # rk, cvodes
             opt_integrator = ca.integrator("system", integrator, integrator_ode, opts)
-
         return opt_integrator
 
-    def _construct_stage_function(self, system: BaseSystem):
-        """
-        Combine information from the model and the var_ref to create CasADi
-        functions which describe the system dynamics and constraints at each
-        stage of the optimization problem. Sets the stage function. It has
-        all mpc variables as inputs, sorted by denotation (declared in
-        self.declare_quantities) and outputs ode, cost function and 3 outputs
-        per constraint (constraint, lb_constraint, ub_constraint).
-
-        In the basic case, it has the form:
-        CasadiFunction: ['x', 'z', 'u', 'y', 'd', 'p'] ->
-            ['ode', 'cost_function', 'model_constraints',
-            'ub_model_constraints', 'lb_model_constraints']
-
-        Args:
-            system
-        """ (duplicate-code)
+ (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.basic:[194:207]
 ==agentlib_mpc.optimization_backends.casadi_.casadi_ml:[252:265]
@@ -1386,19 +1375,19 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.utils.plotting.interactive:[453:466]
 ==agentlib_mpc.utils.plotting.mpc_dashboard:[288:301]
-                        ),
-                        style={
-                            "min-width": "600px",
-                            "min-height": "400px",
-                            "max-width": "900px",
-                            "max-height": "450px",
-                        },
-                    ),
-                ],
-                className="draggable",
-            )
-        )
- (duplicate-code)
+                                ),
+                                style={
+                                    "min-width": "600px",
+                                    "min-height": "400px",
+                                    "max-width": "900px",
+                                    "max-height": "450px",
+                                },
+                            ),
+                        ],
+                        className="draggable",
+                    )
+                )
+    # Handle alternative column structures explicitly without exception handling (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.utils.plotting.interactive:[253:289]
 ==agentlib_mpc.utils.plotting.mpc_dashboard:[223:258]
@@ -1411,32 +1400,31 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
         ),
         xaxis_title=x_axis_label,
         yaxis_title=y_axis_label,
-        uirevision="same",  # Add this line
+        uirevision="same",
     )
 
     return fig
 
 
-def plot_admm_plotly(
-    series: pd.Series,
-    plot_actual_values: bool = True,
-    plot_predictions: bool = False,
+def make_components(
+    data: pd.DataFrame,
+    convert_to: str,
+    stats: Optional[pd.DataFrame] = None,
+    use_datetime: bool = False,
     step: bool = False,
-    convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds",
-):
+) -> html.Div:
     """
+    Create dashboard components from MPC data and stats.
+
     Args:
-        series: A column of the MPC results Dataframe
-        fig: Plotly figure to plot on
-        plot_actual_values: whether the closed loop actual values at the start of each
-         optimization should be plotted (default True)
-        plot_predictions: whether all predicted trajectories should be plotted
-        step: whether to use a step plot or a line plot
-        convert_to: Will convert the index of the returned series to the specified unit
-         (seconds, minutes, hours, days)
+        data: DataFrame with MPC data
+        convert_to: Time unit for plotting
+        stats: Optional DataFrame with MPC statistics
+        use_datetime: Whether to interpret timestamps as datetime
+        step: Whether to use step plots
 
     Returns:
-        None
+        Dash HTML Div containing all components
     """ (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml:[207:229]
@@ -1532,7 +1520,8 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
             dk = self.add_opt_par(sys.non_controlled_inputs)
             zk = self.add_opt_var(sys.algebraics)
             yk = self.add_opt_var(sys.outputs)
-            # get stage
+
+            # get path constraints and objective values (stage)
             stage_arguments = {
                 # variables
                 sys.states.name: xk,
@@ -1560,18 +1549,18 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.mhe:[458:470]
 ==agentlib_mpc.utils.sampling:[79:91]
-    target_grid_length = len(grid)
-    if isinstance(trajectory, (float, int)):
-        # return constant trajectory for scalars
-        return [trajectory] * target_grid_length
-    if isinstance(trajectory, list):
-        # return lists of matching length without timestamps
-        if len(trajectory) == target_grid_length:
-            return trajectory
-        raise ValueError(
-            f"Passed list with length {len(trajectory)} "
-            f"does not match target ({target_grid_length})."
-        ) (duplicate-code)
+        target_grid_length = len(grid)
+        if isinstance(trajectory, (float, int)):
+            # return constant trajectory for scalars
+            return [trajectory] * target_grid_length
+        if isinstance(trajectory, list):
+            # return lists of matching length without timestamps
+            if len(trajectory) == target_grid_length:
+                return trajectory
+            raise ValueError(
+                f"Passed list with length {len(trajectory)} "
+                f"does not match target ({target_grid_length})."
+            ) (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml:[430:443]
 ==agentlib_mpc.optimization_backends.casadi_.casadi_ml:[268:280]
@@ -1586,8 +1575,7 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
         all_input_variables = {}
         lagged_inputs: dict[int, dict[str, ca.MX]] = {}
         # dict[lag, dict[denotation, list[var_name]]]
-        lagged_input_names: dict[int, dict[str, list[str]]] = {}
- (duplicate-code)
+        lagged_input_names: dict[int, dict[str, list[str]]] = {} (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.basic:[191:201]
 ==agentlib_mpc.optimization_backends.casadi_.mhe:[214:224]
@@ -1654,11 +1642,9 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
 
         return unassigned_by_model_var
 
-    def collect_variables_for_optimization(
-        self, var_ref: mpc_datamodels.VariableReference = None
-    ) -> Dict[str, AgentVariable]:
-        """Gets all variables noted in the var ref and puts them in a flat
-        dictionary.""" (duplicate-code)
+    def set_actuation(self, solution):
+        """Takes the solution from optimization backend and sends the first
+        step to AgentVariables.""" (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.modules.mpc.minlp_mpc:[50:62]
 ==agentlib_mpc.modules.mpc.mpc:[230:242]
@@ -1763,7 +1749,14 @@ class CollocationMatrices:
     D: np.ndarray
 
 
-class DirectCollocation(Discretization): (duplicate-code)
+class DirectCollocation(Discretization):
+    def _discretize(self, sys: BaseSystem):
+        """
+        Defines a direct collocation discretization.
+        # pylint: disable=invalid-name
+        """
+
+        # setup the polynomial base (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.basic:[413:424]
 ==agentlib_mpc.optimization_backends.casadi_.minlp:[153:164]
@@ -1786,6 +1779,7 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
                 p=ca.vertcat(uk, dk, const_par, zk, yk),
             )
             xk_end = fk["xf"]
+            # calculate model constraint
             self.k += 1
             self.pred_time = ts * self.k
             xk = self.add_opt_var(sys.states) (duplicate-code)
@@ -1816,6 +1810,8 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
 ==agentlib_mpc.optimization_backends.casadi_.full:[157:168]
 ==agentlib_mpc.optimization_backends.casadi_.minlp:[181:190]
             self.add_constraint(xk - xk_end, gap_closing=True)
+
+            # add model constraints last due to fatrop
             self.add_constraint(
                 stage["model_constraints"],
                 lb=stage["lb_model_constraints"],
@@ -2007,7 +2003,7 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
         constraint_lb_denotations = [LB_PREFIX + k for k in constraints]
         constraint_ub_denotations = [UB_PREFIX + k for k in constraints]
 
-        # aggregate outputs (duplicate-code)
+        # create a dictionary which holds all the inputs for the sim step of the model (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.basic:[194:201]
 ==agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml:[416:423]
@@ -2076,7 +2072,7 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
         constraint_lb_denotations = [LB_PREFIX + k for k in constraints]
         constraint_ub_denotations = [UB_PREFIX + k for k in constraints]
 
-        # create a dictionary which holds all the inputs for the sim step of the model (duplicate-code)
+        # aggregate outputs (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.utils.plotting.admm_dashboard:[19:37]
 ==agentlib_mpc.utils.plotting.interactive:[17:30]
@@ -2088,11 +2084,16 @@ except ImportError as e:
     ) from e
 
 
-def plot_obj_data_stacked(
-    data: pd.DataFrame,
-    convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds",
-) -> dcc.Graph:
-    """Create a stacked area chart for objective data components.""" (duplicate-code)
+def load_agent_data(directory: str) -> Dict[str, pd.DataFrame]:
+    """
+    Load MPC data for multiple agents from files containing 'admm' in their name.
+
+    Args:
+    directory (str): Directory path containing the data files.
+
+    Returns:
+    Dict[str, pd.DataFrame]: Dictionary with agent names as keys and their data as values.
+    """ (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.utils.plotting.interactive:[102:108]
 ==agentlib_mpc.utils.plotting.mpc_dashboard:[317:323]
@@ -2105,21 +2106,21 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.utils.plotting.interactive:[51:57]
 ==agentlib_mpc.utils.plotting.mpc_dashboard:[289:295]
-            style={
-                "min-width": "600px",
-                "min-height": "400px",
-                "max-width": "900px",
-                "max-height": "450px",
-            }, (duplicate-code)
+                                style={
+                                    "min-width": "600px",
+                                    "min-height": "400px",
+                                    "max-width": "900px",
+                                    "max-height": "450px",
+                                }, (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.utils.plotting.interactive:[444:450]
 ==agentlib_mpc.utils.plotting.mpc_dashboard:[277:283]
-                components.append(
-                    html.Div(
-                        [
-                            dcc.Graph(
-                                id=f"plot-{column}",
-                                figure=plot_mpc_plotly( (duplicate-code)
+        components.append(
+            html.Div(
+                [
+                    dcc.Graph(
+                        id=f"plot-{column}",
+                        figure=plot_mpc_plotly( (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.utils.plotting.interactive:[90:96]
 ==agentlib_mpc.utils.plotting.mpc_dashboard:[224:230]
@@ -2148,7 +2149,8 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
             "n_features_in": model.n_features_in_,
             "rank": model.rank_,
             "singular": model.singular_.tolist(),
-        } (duplicate-code)
+        }
+ (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.modules.dmpc.admm.admm:[832:841]
 ==agentlib_mpc.modules.mpc.mpc_full:[111:120]
@@ -2168,10 +2170,7 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
             raise ConfigurationError(
                 f"The optimization backend of Agent {self.source} could not "
                 f"finish its setup!"
-            ) from err
-
-    def _setup_optimization_backend(self) -> OptimizationBackendT:
-        """Performs the setup of the optimization_backend, keeps track of status""" (duplicate-code)
+            ) from err (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.modules.mpc.minlp_mpc:[88:94]
 ==agentlib_mpc.modules.mpc.mpc:[423:428]
@@ -2179,8 +2178,7 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
         if not results_file:
             return
         os.remove(results_file)
-        os.remove(mpc_datamodels.stats_path(results_file))
- (duplicate-code)
+        os.remove(mpc_datamodels.stats_path(results_file)) (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.admm:[125:134]
 ==agentlib_mpc.optimization_backends.casadi_.minlp:[70:80]
@@ -2238,11 +2236,11 @@ agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.utils.plotting.admm_dashboard:[532:537]
 ==agentlib_mpc.utils.plotting.interactive:[36:41]
-            xref="paper",
-            yref="paper",
-            x=0.5,
-            y=0.5,
-            showarrow=False, (duplicate-code)
+                xref="paper",
+                yref="paper",
+                x=0.5,
+                y=0.5,
+                showarrow=False, (duplicate-code)
 agentlib_mpc/modules/InputPrediction/__init__.py:1:0: R0801: Similar lines in 2 files
 ==agentlib_mpc.utils.plotting.admm_dashboard:[13:18]
 ==agentlib_mpc.utils.plotting.interactive:[12:17]
