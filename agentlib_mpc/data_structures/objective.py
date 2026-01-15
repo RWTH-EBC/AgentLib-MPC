@@ -3,6 +3,7 @@ import numpy as np
 import re
 import casadi as ca
 from typing import Union
+import warnings
 from agentlib_mpc.models.casadi_model import CasadiParameter, CasadiInput
 
 
@@ -140,8 +141,9 @@ class SubObjective:
             return result
 
         except Exception as e:
-            raise ValueError(f"Unable to evaluate expression: {expr}. Error: {e}")
-
+            warnings.warn(f"Unable to evaluate expression: {expr}. Error: {e}. Set objective value to 0 as quick fix, but expression needs to be checked.", UserWarning)
+            result = 0
+            return result
 
 class ChangePenaltyObjective(SubObjective):
     def __init__(
