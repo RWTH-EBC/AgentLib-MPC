@@ -20,8 +20,13 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**PlugIns:**
-Did the bug appear in combination with AgentLib PlugIns? (e.g. AgentLib MPC)
-
 **Additional context**
 Add any other context about the problem here.
+
+**System information** 
+python version: 
+- python version: 
+- operating system: 
+- agentlib_mpc version: 
+- installation method: (pip/source)
+- optional dependencies: (fmu/ml/interactive/none)
