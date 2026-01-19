@@ -81,6 +81,9 @@
 
 
 <div class="viewcode-block" id="SubObjective"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.SubObjective">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SubObjective</span><span class="p">:</span>
+
+    <span class="n">_warned_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">expressions</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">,</span>
@@ -176,7 +179,6 @@
         <span class="n">var_names</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[a-zA-Z][a-zA-Z0-9_]*&quot;</span><span class="p">,</span> <span class="n">expr_str</span><span class="p">)</span>
         <span class="n">var_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">var_names</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">casadi_functions</span><span class="p">]</span>
 
-
         <span class="n">values_found</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="n">var_names</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">col_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;variable&quot;</span><span class="p">,</span> <span class="s2">&quot;parameter&quot;</span><span class="p">]:</span>
@@ -213,10 +215,16 @@
 
             <span class="k">return</span> <span class="n">result</span>
 
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to evaluate expression: </span><span class="si">{</span><span class="n">expr</span><span class="si">}</span><span class="s2">. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">. Set objective value to 0 as quick fix, but expression needs to be checked.&quot;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">SyntaxError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SubObjective</span><span class="o">.</span><span class="n">_warned_names</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Unable to evaluate expression </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">expr</span><span class="si">}</span><span class="s2">). Some terms will be ignored when displaying the objective value. The control still works, only the objective logging is affected.&quot;</span><span class="p">,</span>
+                    <span class="ne">RuntimeWarning</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">SubObjective</span><span class="o">.</span><span class="n">_warned_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">return</span> <span class="n">result</span></div>
+
 
 <div class="viewcode-block" id="ChangePenaltyObjective"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.ChangePenaltyObjective">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ChangePenaltyObjective</span><span class="p">(</span><span class="n">SubObjective</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -248,11 +256,14 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Scale change penalty objective by a factor&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mul</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">)):</span>
             <span class="n">new_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span>
-            <span class="n">scaled_obj</span> <span class="o">=</span> <span class="n">ChangePenaltyObjective</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">,</span> <span class="n">new_weight</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;scaled_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">scaled_obj</span> <span class="o">=</span> <span class="n">ChangePenaltyObjective</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">,</span> <span class="n">new_weight</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;scaled_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
             <span class="n">scaled_obj</span><span class="o">.</span><span class="n">_scale_factor</span> <span class="o">=</span> <span class="n">mul</span>
             <span class="k">return</span> <span class="n">scaled_obj</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot multiply ChangePenaltyObjective with </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">mul</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
 <div class="viewcode-block" id="ChangePenaltyObjective.get_control_name"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.ChangePenaltyObjective.get_control_name">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_control_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the name of the associated control variable&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="o">.</span><span class="n">name</span></div>
@@ -289,7 +300,9 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Add another objective to this CombinedObjective&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">CombinedObjective</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">CombinedObjective</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span> <span class="o">*</span><span class="n">other</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">normalization</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">CombinedObjective</span><span class="p">(</span>
+                <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span> <span class="o">*</span><span class="n">other</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">normalization</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot add CombinedObjective with </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -297,13 +310,17 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Scale all objectives in the combination&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">)):</span>
             <span class="n">scaled_objectives</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="o">*</span> <span class="n">other</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">]</span>
-            <span class="k">return</span> <span class="n">CombinedObjective</span><span class="p">(</span><span class="o">*</span><span class="n">scaled_objectives</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">normalization</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">CombinedObjective</span><span class="p">(</span>
+                <span class="o">*</span><span class="n">scaled_objectives</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">normalization</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot multiply CombinedObjective with </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CombinedObjective.get_delta_u_objectives"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.CombinedObjective.get_delta_u_objectives">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_delta_u_objectives</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of all ChangePenaltyObjective instances&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ChangePenaltyObjective</span><span class="p">)]</span></div>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ChangePenaltyObjective</span><span class="p">)</span>
+        <span class="p">]</span></div>
 
 <div class="viewcode-block" id="CombinedObjective.get_casadi_expression"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.CombinedObjective.get_casadi_expression">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_casadi_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Combine all objectives into a single CasADi expression&quot;&quot;&quot;</span>
@@ -492,7 +509,9 @@
 
             <span class="n">active_objectives</span><span class="p">[</span><span class="n">objective</span><span class="p">]</span> <span class="o">=</span> <span class="n">condition_mask</span>
 
-            <span class="n">active_objectives</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">default_objective</span><span class="p">]</span> <span class="o">=</span> <span class="n">active_objectives</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">default_objective</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">condition_mask</span>
+            <span class="n">active_objectives</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">default_objective</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">active_objectives</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">default_objective</span><span class="p">]</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">condition_mask</span>
+            <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">active_objectives</span>
 
@@ -509,10 +528,23 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">condition_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
 
-        <span class="n">identifier_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;[a-zA-Z_][a-zA-Z0-9_]*&#39;</span>
+        <span class="n">identifier_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;[a-zA-Z_][a-zA-Z0-9_]*&quot;</span>
         <span class="n">potential_vars</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">identifier_pattern</span><span class="p">,</span> <span class="n">condition_str</span><span class="p">)</span>
 
-        <span class="n">operators_keywords</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;and&#39;</span><span class="p">,</span> <span class="s1">&#39;or&#39;</span><span class="p">,</span> <span class="s1">&#39;not&#39;</span><span class="p">,</span> <span class="s1">&#39;in&#39;</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="s1">&#39;if&#39;</span><span class="p">,</span> <span class="s1">&#39;else&#39;</span><span class="p">,</span> <span class="s1">&#39;elif&#39;</span><span class="p">,</span> <span class="s1">&#39;for&#39;</span><span class="p">,</span> <span class="s1">&#39;while&#39;</span><span class="p">,</span> <span class="s1">&#39;def&#39;</span><span class="p">,</span> <span class="s1">&#39;class&#39;</span><span class="p">}</span>
+        <span class="n">operators_keywords</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;and&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;or&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;not&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;in&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;is&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;if&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;else&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;elif&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;for&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;while&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;def&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;class&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
         <span class="n">var_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">potential_vars</span> <span class="k">if</span> <span class="n">var</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">operators_keywords</span><span class="p">]</span>
 
         <span class="n">var_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">var_names</span><span class="p">))</span>
@@ -538,7 +570,11 @@
                 <span class="n">local_vars</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">eval_str</span> <span class="o">=</span> <span class="n">condition_str</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">eval_str</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;__builtins__&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;abs&quot;</span><span class="p">:</span> <span class="nb">abs</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="nb">min</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="nb">max</span><span class="p">},</span> <span class="n">local_vars</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span>
+                    <span class="n">eval_str</span><span class="p">,</span>
+                    <span class="p">{</span><span class="s2">&quot;__builtins__&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;abs&quot;</span><span class="p">:</span> <span class="nb">abs</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="nb">min</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="nb">max</span><span class="p">},</span>
+                    <span class="n">local_vars</span><span class="p">,</span>
+                <span class="p">)</span>
                 <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
