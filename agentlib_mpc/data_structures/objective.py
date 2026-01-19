@@ -8,6 +8,9 @@ from agentlib_mpc.models.casadi_model import CasadiParameter, CasadiInput
 
 
 class SubObjective:
+
+    _warned_names = set()
+
     def __init__(
         self,
         expressions: ca.MX,
@@ -103,7 +106,6 @@ class SubObjective:
         var_names = re.findall(r"[a-zA-Z][a-zA-Z0-9_]*", expr_str)
         var_names = [name for name in var_names if name not in casadi_functions]
 
-
         values_found = {}
         for var_name in var_names:
             for col_type in ["variable", "parameter"]:
@@ -140,10 +142,16 @@ class SubObjective:
 
             return result
 
-        except Exception as e:
-            warnings.warn(f"Unable to evaluate expression: {expr}. Error: {e}. Set objective value to 0 as quick fix, but expression needs to be checked.", UserWarning)
+        except SyntaxError as e:
+            if self.name not in SubObjective._warned_names:
+                warnings.warn(
+                    f"Unable to evaluate expression {self.name} ({expr}). Some terms will be ignored when displaying the objective value. The control still works, only the objective logging is affected.",
+                    RuntimeWarning,
+                )
+                SubObjective._warned_names.add(self.name)
             result = 0
             return result
+
 
 class ChangePenaltyObjective(SubObjective):
     def __init__(
@@ -175,11 +183,14 @@ class ChangePenaltyObjective(SubObjective):
         """Scale change penalty objective by a factor"""
         if isinstance(mul, (int, float, CasadiParameter)):
             new_weight = self.weight
-            scaled_obj = ChangePenaltyObjective(self.control, new_weight, f"scaled_{self.name}")
+            scaled_obj = ChangePenaltyObjective(
+                self.control, new_weight, f"scaled_{self.name}"
+            )
             scaled_obj._scale_factor = mul
             return scaled_obj
         else:
             raise TypeError(f"Cannot multiply ChangePenaltyObjective with {type(mul)}")
+
     def get_control_name(self):
         """Return the name of the associated control variable"""
         return self.control.name
@@ -216,7 +227,9 @@ class CombinedObjective:
     def __add__(self, other):
         """Add another objective to this CombinedObjective"""
         if isinstance(other, CombinedObjective):
-            return CombinedObjective(*self.objectives, *other.objectives, normalization=self.normalization)
+            return CombinedObjective(
+                *self.objectives, *other.objectives, normalization=self.normalization
+            )
         else:
             raise TypeError(f"Cannot add CombinedObjective with {type(other)}")
 
@@ -224,13 +237,17 @@ class CombinedObjective:
         """Scale all objectives in the combination"""
         if isinstance(other, (int, float, CasadiParameter)):
             scaled_objectives = [obj * other for obj in self.objectives]
-            return CombinedObjective(*scaled_objectives, normalization=self.normalization)
+            return CombinedObjective(
+                *scaled_objectives, normalization=self.normalization
+            )
         else:
             raise TypeError(f"Cannot multiply CombinedObjective with {type(other)}")
 
     def get_delta_u_objectives(self):
         """Returns a list of all ChangePenaltyObjective instances"""
-        return [obj for obj in self.objectives if isinstance(obj, ChangePenaltyObjective)]
+        return [
+            obj for obj in self.objectives if isinstance(obj, ChangePenaltyObjective)
+        ]
 
     def get_casadi_expression(self):
         """Combine all objectives into a single CasADi expression"""
@@ -419,7 +436,9 @@ class ConditionalObjective:
 
             active_objectives[objective] = condition_mask
 
-            active_objectives[self.default_objective] = active_objectives[self.default_objective] & ~condition_mask
+            active_objectives[self.default_objective] = (
+                active_objectives[self.default_objective] & ~condition_mask
+            )
 
         return active_objectives
 
@@ -436,10 +455,23 @@ class ConditionalObjective:
         """
         condition_str = str(condition)
 
-        identifier_pattern = r'[a-zA-Z_][a-zA-Z0-9_]*'
+        identifier_pattern = r"[a-zA-Z_][a-zA-Z0-9_]*"
         potential_vars = re.findall(identifier_pattern, condition_str)
 
-        operators_keywords = {'and', 'or', 'not', 'in', 'is', 'if', 'else', 'elif', 'for', 'while', 'def', 'class'}
+        operators_keywords = {
+            "and",
+            "or",
+            "not",
+            "in",
+            "is",
+            "if",
+            "else",
+            "elif",
+            "for",
+            "while",
+            "def",
+            "class",
+        }
         var_names = [var for var in potential_vars if var not in operators_keywords]
 
         var_names = list(dict.fromkeys(var_names))
@@ -465,7 +497,11 @@ class ConditionalObjective:
                 local_vars[var_name] = values[i]
             try:
                 eval_str = condition_str
-                result = eval(eval_str, {"__builtins__": {}, "abs": abs, "min": min, "max": max}, local_vars)
+                result = eval(
+                    eval_str,
+                    {"__builtins__": {}, "abs": abs, "min": min, "max": max},
+                    local_vars,
+                )
                 mask[i] = bool(result)
 
             except Exception as e:
