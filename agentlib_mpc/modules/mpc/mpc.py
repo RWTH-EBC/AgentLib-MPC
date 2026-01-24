@@ -115,7 +115,8 @@ def create_optimization_backend(optimization_backend, agent_id):
             "Given model config does not contain key 'type' (type of the model)."
         )
     _type = optimization_backend.pop("type")
-    optimization_backend["name"] = agent_id
+    optimization_backend["name"] = agent_id if optimization_backend["name"] is None \
+        else optimization_backend["name"]
     if isinstance(_type, dict):
         custom_cls = custom_injection(config=_type)
         backend = custom_cls(config=optimization_backend)
