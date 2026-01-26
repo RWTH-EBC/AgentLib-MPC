@@ -1,25 +1,104 @@
-"""
-Converter module for ADDMO framework Keras models to AgentLib-MPC format.
-
-This module provides functionality to convert Keras models trained with the ADDMO
-framework into the AgentLib-MPC serialized format, similar to the physXAI plugin.
-"""
-
 import json
+import re
+from collections import defaultdict
 from pathlib import Path
 from typing import Union, Optional
 
 
-def validate_addmo_json(addmo_json: dict) -> None:
-    """
-    Validates that the ADDMO JSON contains all required fields.
+# ADDMO uses "___lag{number}" pattern (three underscores)
+ADDMO_LAG_PATTERN = r"___lag(\d+)$"
+# AgentLib-MPC uses "_{number}" pattern (single underscore at end)
+AGENTLIB_LAG_PATTERN = r"_(\d+)$"
+
+
+def extract_lags_from_features(features_ordered: list[str]) -> dict[str, int]:
+    # First pass: group features and collect all lag indices
+    feature_groups = defaultdict(list)
     
-    Args:
-        addmo_json: The JSON metadata from ADDMO framework
+    for idx, feature_name in enumerate(features_ordered):
+        # Try ADDMO pattern first
+        addmo_match = re.search(ADDMO_LAG_PATTERN, feature_name)
+        if addmo_match:
+            lag_num = int(addmo_match.group(1))
+            base_name = feature_name[:addmo_match.start()]
+            feature_groups[base_name].append((lag_num, idx, feature_name))
+            continue
         
-    Raises:
-        ValueError: If required fields are missing or invalid
-    """
+        # Try AgentLib pattern
+        agentlib_match = re.search(AGENTLIB_LAG_PATTERN, feature_name)
+        if agentlib_match:
+            suffix_num = int(agentlib_match.group(1))
+            base_name = feature_name[:agentlib_match.start()]
+            # AgentLib convention: suffix directly represents lag index (feature_1 = lag_1, feature_2 = lag_2)
+            lag_num = suffix_num
+            feature_groups[base_name].append((lag_num, idx, feature_name))
+            continue
+        
+        # No lag suffix means lag_0 (current time step)
+        feature_groups[feature_name].append((0, idx, feature_name))
+
+    print("Extracted feature groups with lags:")
+    print(feature_groups)
+    
+    # Second pass: validate consecutive lags and compute lag counts
+    feature_lags = {}
+    
+    for base_name, lag_list in feature_groups.items():
+        # Sort by original position first to check ascending lag order
+        lag_list_by_position = sorted(lag_list, key=lambda x: x[1])
+        
+        # Check lags appear in ascending order in the original features_ordered
+        for i in range(len(lag_list_by_position) - 1):
+            current_lag = lag_list_by_position[i][0]
+            next_lag = lag_list_by_position[i + 1][0]
+            if next_lag != current_lag + 1:
+                raise ValueError(
+                    f"Feature '{base_name}' lags must appear in ascending order (lag_0, lag_1, ...) in features_ordered. "
+                    f"Found lag_{current_lag} followed by lag_{next_lag}. "
+                    f"Features: {[fname for _, _, fname in lag_list_by_position]}"
+                )
+        
+        # Now sort by lag number for remaining validations
+        lag_list.sort(key=lambda x: x[0])
+        lag_numbers = [lag_num for lag_num, _, _ in lag_list]
+        
+        # Validate consecutive lags starting from 0
+        if lag_numbers[0] != 0:
+            raise ValueError(
+                f"Feature '{base_name}' lags must start from 0 (current time step). "
+                f"Found lags: {lag_numbers}. "
+                f"Features: {[fname for _, _, fname in lag_list]}"
+            )
+        
+        # Check for consecutive lags (no gaps)
+        for i in range(len(lag_numbers) - 1):
+            if lag_numbers[i + 1] != lag_numbers[i] + 1:
+                raise ValueError(
+                    f"Feature '{base_name}' has non-consecutive lags. "
+                    f"Found lags: {lag_numbers}. "
+                    f"Missing lag_{lag_numbers[i] + 1}. "
+                    f"Features: {[fname for _, _, fname in lag_list]}"
+                )
+        
+        # Check that all lags are grouped consecutively in features_ordered
+        original_indices = [idx for _, idx, _ in lag_list]
+        for i in range(len(original_indices) - 1):
+            if original_indices[i + 1] != original_indices[i] + 1:
+                raise ValueError(
+                    f"Feature '{base_name}' lags are not grouped consecutively in features_ordered. "
+                    f"AgentLib requires all lags of a feature to appear together. "
+                    f"Found at positions {original_indices}. "
+                    f"Features: {[fname for _, _, fname in lag_list]}"
+                )
+        
+        # Lag count is the number of lag instances
+        feature_lags[base_name] = len(lag_numbers)
+    
+    return feature_lags
+
+
+def validate_addmo_json(addmo_json: dict) -> None:
+
     required_fields = ["target_name", "features_ordered"]
     
     for field in required_fields:
@@ -53,37 +132,11 @@ def validate_addmo_json(addmo_json: dict) -> None:
             )
 
 
-def infer_recursive_output(target_name: str, features_ordered: list[str]) -> bool:
-    """
-    Determines if the output feature is recursive (used as input).
-    
-    Args:
-        target_name: Name of the output/target feature
-        features_ordered: Ordered list of all features used in the model
-        
-    Returns:
-        bool: True if target appears in features_ordered (recursive)
-    """
-    return target_name in features_ordered
-
-
 def validate_keras_model_shape(
     keras_model_path: str,
     expected_features: list[str],
     feature_lags: dict[str, int]
 ) -> None:
-    """
-    Validates that the Keras model's input shape matches expected feature configuration.
-    
-    Args:
-        keras_model_path: Path to the .keras model file
-        expected_features: List of feature names in order
-        feature_lags: Dictionary mapping feature names to their lag orders
-        
-    Raises:
-        ValueError: If model input shape doesn't match lag configuration
-        FileNotFoundError: If Keras model file doesn't exist
-    """
     import keras
     
     keras_path = Path(keras_model_path)
@@ -128,42 +181,44 @@ def build_input_dict(
     recursive: bool = False
 ) -> dict:
     """
-    Builds the input dictionary for AgentLib-MPC format.
+    Builds input dict preserving the order from features_ordered.
     
-    Args:
-        features_ordered: Ordered list of all features from ADDMO
-        target_name: Name of the output/target feature
-        feature_lags: Dict mapping feature names to lag orders (REQUIRED - must match training)
-        recursive: Whether the output is recursive (used as input)
-        
-    Returns:
-        dict: Input configuration in AgentLib format
-              {"feature_name": {"name": "feature_name", "lag": 1}, ...}
-        
-    Raises:
-        ValueError: If feature_lags is missing entries for features in features_ordered
+    Note: features_ordered may contain lag suffixes (e.g., "T_amb___lag0", "T_amb___lag1")
+    but we need to extract base names and ensure they appear in input_dict in the same
+    grouped order (all lags of T_amb, then all lags of next feature).
     """
     input_dict = {}
+    seen_features = set()
     
-    # Validate that all features have lag definitions
-    for feature in features_ordered:
-        if feature not in feature_lags:
+    for feature_with_lag in features_ordered:
+        # Extract base feature name (strip lag suffixes)
+        base_name = feature_with_lag
+        for pattern in [ADDMO_LAG_PATTERN, AGENTLIB_LAG_PATTERN]:
+            match = re.search(pattern, feature_with_lag)
+            if match:
+                base_name = feature_with_lag[:match.start()]
+                break
+        
+        # Skip if we've already added this base feature or if it's the recursive target
+        if base_name in seen_features:
+            continue
+        if recursive and base_name == target_name:
+            continue
+        
+        # Validate that base feature has lag definition
+        if base_name not in feature_lags:
             raise ValueError(
-                f"Feature '{feature}' from features_ordered is missing in feature_lags. "
+                f"Feature '{base_name}' (from '{feature_with_lag}') is missing in feature_lags. "
                 f"All features must have lag definitions. "
                 f"Provided lags: {list(feature_lags.keys())}"
             )
-    
-    for feature in features_ordered:
-        # If recursive, the target appears in features_ordered but should NOT be in input dict
-        # (AgentLib handles recursive outputs separately)
-        if recursive and feature == target_name:
-            continue
         
-        input_dict[feature] = {
-            "name": feature,
-            "lag": feature_lags[feature]
+        # Add to input_dict (preserves order via dict insertion order)
+        input_dict[base_name] = {
+            "name": base_name,
+            "lag": feature_lags[base_name]
         }
+        seen_features.add(base_name)
     
     return input_dict
 
@@ -174,19 +229,6 @@ def build_output_dict(
     output_type: str = "absolute",
     recursive: bool = True
 ) -> dict:
-    """
-    Builds the output dictionary for AgentLib-MPC format.
-    
-    Args:
-        target_name: Name of the output/target feature
-        output_lag: Lag order for the output feature
-        output_type: Type of output ("absolute" or "difference")
-        recursive: Whether output is recursive (used as input for next step)
-        
-    Returns:
-        dict: Output configuration in AgentLib format
-              {"target_name": {"name": "...", "lag": 1, "output_type": "...", "recursive": True}}
-    """
     return {
         target_name: {
             "name": target_name,
@@ -199,69 +241,37 @@ def build_output_dict(
 
 def addmo_2_agentlib_json(
     keras_model_path: Union[str, Path],
-    addmo_json: dict,
+    addmo_json_path: Union[str, Path],
     dt: float,
-    feature_lags: dict[str, int],
-    output_lag: int = 1,
+    feature_lags: Optional[dict[str, int]] = None,
+    output_lag: Optional[int] = None,
     output_type: str = "absolute",
     validate_model: bool = True
 ) -> dict:
-    """
-    Converts ADDMO Keras model configuration to AgentLib-MPC compatible JSON format.
+
+    json_path = Path(addmo_json_path)
+    if not json_path.exists():
+        raise FileNotFoundError(
+            f"ADDMO JSON file not found: {addmo_json_path}"
+        )
     
-    This is the main conversion function that orchestrates the transformation from
-    ADDMO's minimal JSON format to AgentLib-MPC's comprehensive format required for
-    model predictive control.
+    with open(json_path, 'r') as f:
+        addmo_json = json.load(f)
     
-    Args:
-        keras_model_path: Path to the .keras model file
-        addmo_json: The JSON metadata from ADDMO framework containing:
-                    - target_name: Output feature name
-                    - features_ordered: Ordered list of input features
-                    - (optional) preprocessing, instructions, etc.
-        dt: Time step in seconds (e.g., 300 for 5 minutes)
-        feature_lags: REQUIRED dict mapping feature names to their max lag order.
-                      Must include ALL features from features_ordered.
-                      Example: {"u_hp": 2, "T_amb": 1, "T": 1}
-        output_lag: Lag order for the output feature (default: 1)
-        output_type: Type of output - "absolute" or "difference" (default: "absolute")
-        validate_model: Whether to validate Keras model shape against config (default: True)
-        
-    Returns:
-        dict: The converted configuration in AgentLib-MPC JSON format with fields:
-              - dt: Time step
-              - model_type: "KerasANN"
-              - model_path: Path to .keras file
-              - input: Dict of input features with lags
-              - output: Dict of output feature with metadata
-              
-    Raises:
-        ValueError: If ADDMO JSON is invalid or model validation fails
-        FileNotFoundError: If Keras model file doesn't exist
-        
-    Example:
-        >>> addmo_json = {
-        ...     "target_name": "T",
-        ...     "features_ordered": ["u_hp", "T_amb", "rad_dir", "human_schedule", "T"]
-        ... }
-        >>> config = addmo_2_agentlib_json(
-        ...     keras_model_path="models/model.keras",
-        ...     addmo_json=addmo_json,
-        ...     dt=300,
-        ...     feature_lags={"u_hp": 1, "T_amb": 1, "rad_dir": 1, "human_schedule": 1, "T": 1}
-        ... )
-    """
-    # Step 1: Validate ADDMO JSON structure
     validate_addmo_json(addmo_json)
     
-    # Step 2: Extract key information
     target_name = addmo_json["target_name"]
     features_ordered = addmo_json["features_ordered"]
     
-    # Step 3: Determine if output is recursive
-    recursive = infer_recursive_output(target_name, features_ordered)
+    if feature_lags is None:
+        feature_lags = extract_lags_from_features(features_ordered)
     
-    # Step 4: Validate Keras model shape if requested
+    recursive = target_name in features_ordered
+    
+    if output_lag is None:
+        # Count how many lag instances of the target exist
+        output_lag = feature_lags.get(target_name, 1) if recursive else 1
+    
     if validate_model:
         validate_keras_model_shape(
             keras_model_path=str(keras_model_path),
@@ -269,7 +279,6 @@ def addmo_2_agentlib_json(
             feature_lags=feature_lags
         )
     
-    # Step 5: Build input and output dictionaries
     input_dict = build_input_dict(
         features_ordered=features_ordered,
         target_name=target_name,
@@ -284,7 +293,6 @@ def addmo_2_agentlib_json(
         recursive=recursive
     )
     
-    # Step 6: Construct final AgentLib-MPC configuration
     agentlib_config = {
         "dt": dt,
         "model_type": "KerasANN",
@@ -294,53 +302,3 @@ def addmo_2_agentlib_json(
     }
     
     return agentlib_config
-
-
-def load_addmo_model(
-    keras_model_path: Union[str, Path],
-    addmo_json_path: Union[str, Path],
-    dt: float,
-    feature_lags: dict[str, int],
-    output_lag: int = 1,
-    output_type: str = "absolute",
-    validate_model: bool = True
-) -> dict:
-    """
-    Convenience function to load both ADDMO JSON and convert to AgentLib format.
-    
-    Args:
-        keras_model_path: Path to the .keras model file
-        addmo_json_path: Path to the ADDMO JSON metadata file
-        dt: Time step in seconds
-        feature_lags: REQUIRED dict mapping feature names to lag orders
-        output_lag: Lag order for output feature
-        output_type: Type of output ("absolute" or "difference")
-        validate_model: Whether to validate Keras model shape against config (default: True)
-        
-    Returns:
-        dict: AgentLib-MPC compatible configuration
-        
-    Raises:
-        FileNotFoundError: If paths don't exist
-        ValueError: If JSON is invalid
-    """
-    # Load ADDMO JSON file
-    json_path = Path(addmo_json_path)
-    if not json_path.exists():
-        raise FileNotFoundError(
-            f"ADDMO JSON file not found: {addmo_json_path}"
-        )
-    
-    with open(json_path, 'r') as f:
-        addmo_json = json.load(f)
-    
-    # Convert using main function
-    return addmo_2_agentlib_json(
-        keras_model_path=keras_model_path,
-        addmo_json=addmo_json,
-        dt=dt,
-        feature_lags=feature_lags,
-        output_lag=output_lag,
-        output_type=output_type,
-        validate_model=validate_model
-    )
