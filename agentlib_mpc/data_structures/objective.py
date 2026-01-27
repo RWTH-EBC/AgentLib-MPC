@@ -3,6 +3,7 @@ import numpy as np
 import re
 import casadi as ca
 from typing import Union
+import warnings
 from agentlib_mpc.models.casadi_model import CasadiParameter, CasadiInput
 
 
