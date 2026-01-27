@@ -7,6 +7,9 @@ from agentlib_mpc.models.casadi_model import CasadiParameter, CasadiInput
 
 
 class SubObjective:
+
+    _warned_names = set()
+
     def __init__(
         self,
         expressions: ca.MX,
@@ -139,8 +142,23 @@ class SubObjective:
 
             return result
 
-        except Exception as e:
-            raise ValueError(f"Unable to evaluate expression: {expr}. Error: {e}")
+
+        except SyntaxError as e:
+
+            if self.name not in SubObjective._warned_names:
+                warnings.warn(
+
+                    f"Unable to evaluate expression {self.name} ({expr}). Some terms will be ignored when displaying the objective value. The control still works, only the objective logging is affected.",
+
+                    RuntimeWarning,
+
+                )
+
+                SubObjective._warned_names.add(self.name)
+
+            result = 0
+
+            return result
 
 
 class ChangePenaltyObjective(SubObjective):
