@@ -1,7 +1,6 @@
 agentlib_mpc/__init__.py:4:22: F401 [*] `.modules.MODULE_TYPES` imported but unused
 agentlib_mpc/__init__.py:5:21: F401 [*] `.models.MODEL_TYPES` imported but unused
-agentlib_mpc/data_structures/objective.py:146:31: F841 [*] Local variable `e` is assigned to but never used
-agentlib_mpc/data_structures/objective.py:149:17: F821 Undefined name `warnings`
+agentlib_mpc/data_structures/objective.py:147:31: F841 [*] Local variable `e` is assigned to but never used
 agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py:43:30: F541 [*] f-string without any placeholders
 agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:10:25: F401 `physXAI.models` imported but unused; consider using `importlib.util.find_spec` to test for availability
 agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:44:28: F811 Redefinition of unused `models` from line 10
@@ -16,5 +15,5 @@ agentlib_mpc/utils/plotting/admm_consensus_shades.py:42:5: F841 Local variable `
 agentlib_mpc/utils/plotting/admm_consensus_shades.py:52:44: F821 Undefined name `series`
 agentlib_mpc/utils/plotting/admm_consensus_shades.py:57:9: F841 Local variable `prediction_color` is assigned to but never used
 agentlib_mpc/utils/plotting/mpc_dashboard.py:34:5: F841 Local variable `sub_idx` is assigned to but never used
-Found 18 errors.
+Found 17 errors.
 [*] 6 fixable with the `--fix` option (6 hidden fixes can be enabled with the `--unsafe-fixes` option).
