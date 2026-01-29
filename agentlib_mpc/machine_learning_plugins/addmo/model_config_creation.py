@@ -132,48 +132,6 @@ def validate_addmo_json(addmo_json: dict) -> None:
             )
 
 
-def validate_keras_model_shape(
-    keras_model_path: str,
-    expected_features: list[str],
-    feature_lags: dict[str, int]
-) -> None:
-    import keras
-    
-    keras_path = Path(keras_model_path)
-    if not keras_path.exists():
-        raise FileNotFoundError(
-            f"Keras model file not found: {keras_model_path}"
-        )
-    
-    # Load the model to inspect input shape
-    model = keras.models.load_model(keras_model_path)
-    
-    # Get input shape (e.g., (None, 5) means batch_size, n_features)
-    input_shape = model.input_shape
-    
-    if len(input_shape) != 2:
-        raise ValueError(
-            f"Expected Keras model with 2D input shape (batch_size, n_features), "
-            f"but got shape with {len(input_shape)} dimensions: {input_shape}"
-        )
-    
-    model_n_features = input_shape[1]
-    
-    # Calculate expected number of inputs based on lags
-    # Each feature with lag=n contributes n inputs to the model
-    expected_n_features = sum(feature_lags[feature] for feature in expected_features)
-    
-    if model_n_features != expected_n_features:
-        raise ValueError(
-            f"Keras model input shape mismatch!\n"
-            f"  Model expects: {model_n_features} inputs\n"
-            f"  Config expects: {expected_n_features} inputs\n"
-            f"  Features: {expected_features}\n"
-            f"  Feature lags: {feature_lags}\n"
-            f"  Calculation: {' + '.join(f'{feature}({feature_lags[feature]})' for feature in expected_features)} = {expected_n_features}"
-        )
-
-
 def build_input_dict(
     features_ordered: list[str],
     target_name: str,
@@ -243,10 +201,7 @@ def addmo_2_agentlib_json(
     keras_model_path: Union[str, Path],
     addmo_json_path: Union[str, Path],
     dt: float,
-    feature_lags: Optional[dict[str, int]] = None,
-    output_lag: Optional[int] = None,
-    output_type: str = "absolute",
-    validate_model: bool = True
+    output_type: str = "absolute"
 ) -> dict:
 
     json_path = Path(addmo_json_path)
@@ -263,33 +218,40 @@ def addmo_2_agentlib_json(
     target_name = addmo_json["target_name"]
     features_ordered = addmo_json["features_ordered"]
     
-    if feature_lags is None:
-        feature_lags = extract_lags_from_features(features_ordered)
+    feature_lags = extract_lags_from_features(features_ordered)
     
-    recursive = target_name in features_ordered
+    # Detect if target has special suffix indicating state prediction
+    # _absolute: absolute next-step prediction (recursive=True, output_type=absolute)
+    # _diff: difference prediction (recursive=True, output_type=difference)
+    base_target_name = target_name
+    detected_output_type = output_type
     
-    if output_lag is None:
-        # Count how many lag instances of the target exist
-        output_lag = feature_lags.get(target_name, 1) if recursive else 1
+    if target_name.endswith("_absolute"):
+        base_target_name = target_name[:-9]
+        detected_output_type = "absolute"
+
+    elif target_name.endswith("_diff"):
+        base_target_name = target_name[:-5]
+        detected_output_type = "difference"
     
-    if validate_model:
-        validate_keras_model_shape(
-            keras_model_path=str(keras_model_path),
-            expected_features=features_ordered,
-            feature_lags=feature_lags
-        )
+    # Check if base target (not the suffixed version) is in feature_lags to determine recursiveness
+    recursive = base_target_name in feature_lags
+
+
+    # Count how many lag instances of the base target exist
+    output_lag = feature_lags.get(base_target_name, 1) if recursive else 1
     
     input_dict = build_input_dict(
         features_ordered=features_ordered,
-        target_name=target_name,
+        target_name=base_target_name,  # Use base name, not _next
         feature_lags=feature_lags,
         recursive=recursive
     )
     
     output_dict = build_output_dict(
-        target_name=target_name,
+        target_name=base_target_name,  # Use base name, not _absolute/_delta
         output_lag=output_lag,
-        output_type=output_type,
+        output_type=detected_output_type,  # Use detected output_type from suffix
         recursive=recursive
     )
     
@@ -302,3 +264,33 @@ def addmo_2_agentlib_json(
     }
     
     return agentlib_config
+
+
+def main():
+    source_folder = Path("/Volumes/Samsung_T7/Git/AgentLib-MPC/examples/one_room_mpc/addmo_plugin/keras")
+    output_type = "absolute"
+
+    keras_path = source_folder / "best_model.keras"
+    json_path = source_folder / "best_model_metadata.json"
+
+    if not keras_path.exists() or not json_path.exists():
+        print(f"Files not found in {source_folder}")
+        return
+    
+    print(f"Creating AgentLib-MPC config from ADDMO files in {source_folder}...")
+
+    agentlib_config = addmo_2_agentlib_json(
+        keras_model_path=keras_path,
+        addmo_json_path=json_path,
+        dt=300,
+        output_type=output_type
+    )
+
+    with open(source_folder / "keras_ann.json", 'w') as f:
+        json.dump(agentlib_config, f, indent=2)
+
+    print("Generated AgentLib-MPC Config:")
+    print(agentlib_config)
+
+if __name__ == "__main__":
+    main()

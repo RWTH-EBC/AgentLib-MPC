@@ -72,6 +72,7 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                 "result_filename": "results//simulation_data.csv",
                 "overwrite_result_file": True,
                 "update_inputs_on_callback": False,
+                "result_causalities": ["input", "output", "local"],
                 "outputs": [
                     {"name": "T_out", "value": 298, "alias": "T"},
                 ],
@@ -106,10 +107,11 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000, testing=Fal
 
     # gets the subdirectory of anns with the highest number, i.e. the longest training time
     try:
-        ann_path = list(Path.cwd().glob("anns/*/ml_model.json"))[-1]
+        ann_path = list(Path.cwd().glob("keras/keras_ann.json"))[-1]
+        # ann_path = list(Path.cwd().glob("anns/*/ml_model.json"))[-1]
     except IndexError:
         # if there is none, we have to perform the training first
-        import examples.one_room_mpc.ann.training_nn as training
+        import training_nn as training
 
         training.main(training_time=3600 * 24 * 1, plot_results=False, step_size=300)
         ann_path = list(Path.cwd().glob("anns/*/ml_model.json"))[-1]
