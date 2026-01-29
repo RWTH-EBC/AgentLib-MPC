@@ -1,0 +1,399 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>agentlib_mpc.machine_learning_plugins.addmo.model_config_creation &mdash; agentlib_mpc 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../../../_static/jquery.js"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+      <script src="../../../../_static/doctools.js"></script>
+      <script src="../../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            agentlib_mpc
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials/tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../PackageReference.html">Package Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">agentlib_mpc</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">agentlib_mpc.machine_learning_plugins.addmo.model_config_creation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for agentlib_mpc.machine_learning_plugins.addmo.model_config_creation</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
+
+
+<span class="c1"># ADDMO uses &quot;___lag{number}&quot; pattern (three underscores)</span>
+<span class="n">ADDMO_LAG_PATTERN</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;___lag(\d+)$&quot;</span>
+<span class="c1"># AgentLib-MPC uses &quot;_{number}&quot; pattern (single underscore at end)</span>
+<span class="n">AGENTLIB_LAG_PATTERN</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;_(\d+)$&quot;</span>
+
+
+<div class="viewcode-block" id="extract_lags_from_features"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.addmo.html#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.extract_lags_from_features">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">extract_lags_from_features</span><span class="p">(</span><span class="n">features_ordered</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="c1"># First pass: group features and collect all lag indices</span>
+    <span class="n">feature_groups</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">feature_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">features_ordered</span><span class="p">):</span>
+        <span class="c1"># Try ADDMO pattern first</span>
+        <span class="n">addmo_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">ADDMO_LAG_PATTERN</span><span class="p">,</span> <span class="n">feature_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">addmo_match</span><span class="p">:</span>
+            <span class="n">lag_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">addmo_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">base_name</span> <span class="o">=</span> <span class="n">feature_name</span><span class="p">[:</span><span class="n">addmo_match</span><span class="o">.</span><span class="n">start</span><span class="p">()]</span>
+            <span class="n">feature_groups</span><span class="p">[</span><span class="n">base_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">lag_num</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">feature_name</span><span class="p">))</span>
+            <span class="k">continue</span>
+        
+        <span class="c1"># Try AgentLib pattern</span>
+        <span class="n">agentlib_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">AGENTLIB_LAG_PATTERN</span><span class="p">,</span> <span class="n">feature_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">agentlib_match</span><span class="p">:</span>
+            <span class="n">suffix_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">agentlib_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">base_name</span> <span class="o">=</span> <span class="n">feature_name</span><span class="p">[:</span><span class="n">agentlib_match</span><span class="o">.</span><span class="n">start</span><span class="p">()]</span>
+            <span class="c1"># AgentLib convention: suffix directly represents lag index (feature_1 = lag_1, feature_2 = lag_2)</span>
+            <span class="n">lag_num</span> <span class="o">=</span> <span class="n">suffix_num</span>
+            <span class="n">feature_groups</span><span class="p">[</span><span class="n">base_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">lag_num</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">feature_name</span><span class="p">))</span>
+            <span class="k">continue</span>
+        
+        <span class="c1"># No lag suffix means lag_0 (current time step)</span>
+        <span class="n">feature_groups</span><span class="p">[</span><span class="n">feature_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">feature_name</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Extracted feature groups with lags:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">feature_groups</span><span class="p">)</span>
+    
+    <span class="c1"># Second pass: validate consecutive lags and compute lag counts</span>
+    <span class="n">feature_lags</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="k">for</span> <span class="n">base_name</span><span class="p">,</span> <span class="n">lag_list</span> <span class="ow">in</span> <span class="n">feature_groups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="c1"># Sort by original position first to check ascending lag order</span>
+        <span class="n">lag_list_by_position</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">lag_list</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        
+        <span class="c1"># Check lags appear in ascending order in the original features_ordered</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lag_list_by_position</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">current_lag</span> <span class="o">=</span> <span class="n">lag_list_by_position</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">next_lag</span> <span class="o">=</span> <span class="n">lag_list_by_position</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">next_lag</span> <span class="o">!=</span> <span class="n">current_lag</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Feature &#39;</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">&#39; lags must appear in ascending order (lag_0, lag_1, ...) in features_ordered. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Found lag_</span><span class="si">{</span><span class="n">current_lag</span><span class="si">}</span><span class="s2"> followed by lag_</span><span class="si">{</span><span class="n">next_lag</span><span class="si">}</span><span class="s2">. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Features: </span><span class="si">{</span><span class="p">[</span><span class="n">fname</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">fname</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">lag_list_by_position</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+        
+        <span class="c1"># Now sort by lag number for remaining validations</span>
+        <span class="n">lag_list</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">lag_numbers</span> <span class="o">=</span> <span class="p">[</span><span class="n">lag_num</span> <span class="k">for</span> <span class="n">lag_num</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lag_list</span><span class="p">]</span>
+        
+        <span class="c1"># Validate consecutive lags starting from 0</span>
+        <span class="k">if</span> <span class="n">lag_numbers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Feature &#39;</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">&#39; lags must start from 0 (current time step). &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Found lags: </span><span class="si">{</span><span class="n">lag_numbers</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Features: </span><span class="si">{</span><span class="p">[</span><span class="n">fname</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">fname</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">lag_list</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        
+        <span class="c1"># Check for consecutive lags (no gaps)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lag_numbers</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">lag_numbers</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">lag_numbers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Feature &#39;</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">&#39; has non-consecutive lags. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Found lags: </span><span class="si">{</span><span class="n">lag_numbers</span><span class="si">}</span><span class="s2">. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Missing lag_</span><span class="si">{</span><span class="n">lag_numbers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Features: </span><span class="si">{</span><span class="p">[</span><span class="n">fname</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">fname</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">lag_list</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+        
+        <span class="c1"># Check that all lags are grouped consecutively in features_ordered</span>
+        <span class="n">original_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">idx</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">lag_list</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">original_indices</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">original_indices</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">original_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Feature &#39;</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">&#39; lags are not grouped consecutively in features_ordered. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;AgentLib requires all lags of a feature to appear together. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Found at positions </span><span class="si">{</span><span class="n">original_indices</span><span class="si">}</span><span class="s2">. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Features: </span><span class="si">{</span><span class="p">[</span><span class="n">fname</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">fname</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">lag_list</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+        
+        <span class="c1"># Lag count is the number of lag instances</span>
+        <span class="n">feature_lags</span><span class="p">[</span><span class="n">base_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">lag_numbers</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">feature_lags</span></div>
+
+
+<div class="viewcode-block" id="validate_addmo_json"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.addmo.html#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.validate_addmo_json">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">validate_addmo_json</span><span class="p">(</span><span class="n">addmo_json</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+    <span class="n">required_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;target_name&quot;</span><span class="p">,</span> <span class="s2">&quot;features_ordered&quot;</span><span class="p">]</span>
+    
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">required_fields</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">addmo_json</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;ADDMO JSON is missing required field: &#39;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Available fields: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">addmo_json</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+    
+    <span class="c1"># Validate target_name is a string</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">addmo_json</span><span class="p">[</span><span class="s2">&quot;target_name&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&#39;target_name&#39; must be a string, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">addmo_json</span><span class="p">[</span><span class="s1">&#39;target_name&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    
+    <span class="c1"># Validate features_ordered is a non-empty list</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">addmo_json</span><span class="p">[</span><span class="s2">&quot;features_ordered&quot;</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&#39;features_ordered&#39; must be a list, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">addmo_json</span><span class="p">[</span><span class="s1">&#39;features_ordered&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">addmo_json</span><span class="p">[</span><span class="s2">&quot;features_ordered&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;features_ordered&#39; cannot be empty&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Validate all features are strings</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">feature</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">addmo_json</span><span class="p">[</span><span class="s2">&quot;features_ordered&quot;</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">feature</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;All features in &#39;features_ordered&#39; must be strings. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Feature at index </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> is </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">feature</span><span class="p">)</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="build_input_dict"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.addmo.html#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.build_input_dict">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">build_input_dict</span><span class="p">(</span>
+    <span class="n">features_ordered</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">target_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">feature_lags</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Builds input dict preserving the order from features_ordered.</span>
+<span class="sd">    </span>
+<span class="sd">    Note: features_ordered may contain lag suffixes (e.g., &quot;T_amb___lag0&quot;, &quot;T_amb___lag1&quot;)</span>
+<span class="sd">    but we need to extract base names and ensure they appear in input_dict in the same</span>
+<span class="sd">    grouped order (all lags of T_amb, then all lags of next feature).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">input_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">seen_features</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    
+    <span class="k">for</span> <span class="n">feature_with_lag</span> <span class="ow">in</span> <span class="n">features_ordered</span><span class="p">:</span>
+        <span class="c1"># Extract base feature name (strip lag suffixes)</span>
+        <span class="n">base_name</span> <span class="o">=</span> <span class="n">feature_with_lag</span>
+        <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ADDMO_LAG_PATTERN</span><span class="p">,</span> <span class="n">AGENTLIB_LAG_PATTERN</span><span class="p">]:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">feature_with_lag</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="n">base_name</span> <span class="o">=</span> <span class="n">feature_with_lag</span><span class="p">[:</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">()]</span>
+                <span class="k">break</span>
+        
+        <span class="c1"># Skip if we&#39;ve already added this base feature or if it&#39;s the recursive target</span>
+        <span class="k">if</span> <span class="n">base_name</span> <span class="ow">in</span> <span class="n">seen_features</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">recursive</span> <span class="ow">and</span> <span class="n">base_name</span> <span class="o">==</span> <span class="n">target_name</span><span class="p">:</span>
+            <span class="k">continue</span>
+        
+        <span class="c1"># Validate that base feature has lag definition</span>
+        <span class="k">if</span> <span class="n">base_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">feature_lags</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Feature &#39;</span><span class="si">{</span><span class="n">base_name</span><span class="si">}</span><span class="s2">&#39; (from &#39;</span><span class="si">{</span><span class="n">feature_with_lag</span><span class="si">}</span><span class="s2">&#39;) is missing in feature_lags. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;All features must have lag definitions. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Provided lags: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">feature_lags</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        
+        <span class="c1"># Add to input_dict (preserves order via dict insertion order)</span>
+        <span class="n">input_dict</span><span class="p">[</span><span class="n">base_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">base_name</span><span class="p">,</span>
+            <span class="s2">&quot;lag&quot;</span><span class="p">:</span> <span class="n">feature_lags</span><span class="p">[</span><span class="n">base_name</span><span class="p">]</span>
+        <span class="p">}</span>
+        <span class="n">seen_features</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">base_name</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">input_dict</span></div>
+
+
+<div class="viewcode-block" id="build_output_dict"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.addmo.html#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.build_output_dict">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">build_output_dict</span><span class="p">(</span>
+    <span class="n">target_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">output_lag</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">output_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;absolute&quot;</span><span class="p">,</span>
+    <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">target_name</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">target_name</span><span class="p">,</span>
+            <span class="s2">&quot;lag&quot;</span><span class="p">:</span> <span class="n">output_lag</span><span class="p">,</span>
+            <span class="s2">&quot;output_type&quot;</span><span class="p">:</span> <span class="n">output_type</span><span class="p">,</span>
+            <span class="s2">&quot;recursive&quot;</span><span class="p">:</span> <span class="n">recursive</span>
+        <span class="p">}</span>
+    <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="addmo_2_agentlib_json"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.addmo.html#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.addmo_2_agentlib_json">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">addmo_2_agentlib_json</span><span class="p">(</span>
+    <span class="n">keras_model_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+    <span class="n">addmo_json_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+    <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">output_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;absolute&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+
+    <span class="n">json_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">addmo_json_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">json_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;ADDMO JSON file not found: </span><span class="si">{</span><span class="n">addmo_json_path</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">addmo_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    
+    <span class="n">validate_addmo_json</span><span class="p">(</span><span class="n">addmo_json</span><span class="p">)</span>
+    
+    <span class="n">target_name</span> <span class="o">=</span> <span class="n">addmo_json</span><span class="p">[</span><span class="s2">&quot;target_name&quot;</span><span class="p">]</span>
+    <span class="n">features_ordered</span> <span class="o">=</span> <span class="n">addmo_json</span><span class="p">[</span><span class="s2">&quot;features_ordered&quot;</span><span class="p">]</span>
+    
+    <span class="n">feature_lags</span> <span class="o">=</span> <span class="n">extract_lags_from_features</span><span class="p">(</span><span class="n">features_ordered</span><span class="p">)</span>
+    
+    <span class="c1"># Detect if target has special suffix indicating state prediction</span>
+    <span class="c1"># _absolute: absolute next-step prediction (recursive=True, output_type=absolute)</span>
+    <span class="c1"># _diff: difference prediction (recursive=True, output_type=difference)</span>
+    <span class="n">base_target_name</span> <span class="o">=</span> <span class="n">target_name</span>
+    <span class="n">detected_output_type</span> <span class="o">=</span> <span class="n">output_type</span>
+    
+    <span class="k">if</span> <span class="n">target_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_absolute&quot;</span><span class="p">):</span>
+        <span class="n">base_target_name</span> <span class="o">=</span> <span class="n">target_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">9</span><span class="p">]</span>
+        <span class="n">detected_output_type</span> <span class="o">=</span> <span class="s2">&quot;absolute&quot;</span>
+
+    <span class="k">elif</span> <span class="n">target_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_diff&quot;</span><span class="p">):</span>
+        <span class="n">base_target_name</span> <span class="o">=</span> <span class="n">target_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span>
+        <span class="n">detected_output_type</span> <span class="o">=</span> <span class="s2">&quot;difference&quot;</span>
+    
+    <span class="c1"># Check if base target (not the suffixed version) is in feature_lags to determine recursiveness</span>
+    <span class="n">recursive</span> <span class="o">=</span> <span class="n">base_target_name</span> <span class="ow">in</span> <span class="n">feature_lags</span>
+
+
+    <span class="c1"># Count how many lag instances of the base target exist</span>
+    <span class="n">output_lag</span> <span class="o">=</span> <span class="n">feature_lags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">base_target_name</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">recursive</span> <span class="k">else</span> <span class="mi">1</span>
+    
+    <span class="n">input_dict</span> <span class="o">=</span> <span class="n">build_input_dict</span><span class="p">(</span>
+        <span class="n">features_ordered</span><span class="o">=</span><span class="n">features_ordered</span><span class="p">,</span>
+        <span class="n">target_name</span><span class="o">=</span><span class="n">base_target_name</span><span class="p">,</span>  <span class="c1"># Use base name, not _next</span>
+        <span class="n">feature_lags</span><span class="o">=</span><span class="n">feature_lags</span><span class="p">,</span>
+        <span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span>
+    <span class="p">)</span>
+    
+    <span class="n">output_dict</span> <span class="o">=</span> <span class="n">build_output_dict</span><span class="p">(</span>
+        <span class="n">target_name</span><span class="o">=</span><span class="n">base_target_name</span><span class="p">,</span>  <span class="c1"># Use base name, not _absolute/_delta</span>
+        <span class="n">output_lag</span><span class="o">=</span><span class="n">output_lag</span><span class="p">,</span>
+        <span class="n">output_type</span><span class="o">=</span><span class="n">detected_output_type</span><span class="p">,</span>  <span class="c1"># Use detected output_type from suffix</span>
+        <span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span>
+    <span class="p">)</span>
+    
+    <span class="n">agentlib_config</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="p">,</span>
+        <span class="s2">&quot;model_type&quot;</span><span class="p">:</span> <span class="s2">&quot;KerasANN&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;model_path&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">keras_model_path</span><span class="p">),</span>
+        <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">input_dict</span><span class="p">,</span>
+        <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="n">output_dict</span>
+    <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">agentlib_config</span></div>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.addmo.html#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.main">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">source_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/Volumes/Samsung_T7/Git/AgentLib-MPC/examples/one_room_mpc/addmo_plugin/keras&quot;</span><span class="p">)</span>
+    <span class="n">output_type</span> <span class="o">=</span> <span class="s2">&quot;absolute&quot;</span>
+
+    <span class="n">keras_path</span> <span class="o">=</span> <span class="n">source_folder</span> <span class="o">/</span> <span class="s2">&quot;best_model.keras&quot;</span>
+    <span class="n">json_path</span> <span class="o">=</span> <span class="n">source_folder</span> <span class="o">/</span> <span class="s2">&quot;best_model_metadata.json&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">keras_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">json_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Files not found in </span><span class="si">{</span><span class="n">source_folder</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating AgentLib-MPC config from ADDMO files in </span><span class="si">{</span><span class="n">source_folder</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+
+    <span class="n">agentlib_config</span> <span class="o">=</span> <span class="n">addmo_2_agentlib_json</span><span class="p">(</span>
+        <span class="n">keras_model_path</span><span class="o">=</span><span class="n">keras_path</span><span class="p">,</span>
+        <span class="n">addmo_json_path</span><span class="o">=</span><span class="n">json_path</span><span class="p">,</span>
+        <span class="n">dt</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+        <span class="n">output_type</span><span class="o">=</span><span class="n">output_type</span>
+    <span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">source_folder</span> <span class="o">/</span> <span class="s2">&quot;keras_ann.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">agentlib_config</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Generated AgentLib-MPC Config:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">agentlib_config</span><span class="p">)</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, AGENT-Project Associates.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
