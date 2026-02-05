@@ -594,7 +594,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Sending optimal values to other agents.&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">coup</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cons_and_exchange</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">send_coupling_variable</span><span class="p">(</span><span class="n">coup</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">solution</span><span class="p">[</span><span class="n">coup</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span></div>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">solution</span><span class="p">[</span><span class="n">coup</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_coupling_variable</span><span class="p">(</span><span class="n">coup</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="p">))</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_mean_coupling_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Computes the current global value of a coupling variable and saves</span>
