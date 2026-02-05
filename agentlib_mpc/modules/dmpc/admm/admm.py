@@ -522,8 +522,7 @@ class ADMM(DistributedMPC):
             result = solution[coup.name]
             if isinstance(result, pd.Series):
                 result = result.to_numpy()
-            else:
-                result = result.ravel()
+            result = result.ravel()
             self.send_coupling_variable(coup.local, list(result))
 
     def _set_mean_coupling_values(self):

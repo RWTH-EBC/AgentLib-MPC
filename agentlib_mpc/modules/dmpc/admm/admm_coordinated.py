@@ -177,15 +177,13 @@ class CoordinatedADMM(MiniEmployee, ADMM):
             result = self._result[coup.name]
             if isinstance(result, pd.Series):
                 result = result.to_numpy()
-            else:
-                result = result.ravel()
+            result = result.ravel()
             cons_traj[coup.alias] = result
         for exchange in self.config.exchange:
             result = self._result[exchange.name]
             if isinstance(result, pd.Series):
                 result = result.to_numpy()
-            else:
-                result = result.ravel()
+            result = result.ravel()
             exchange_traj[exchange.alias] = result
 
         opt_return = adt.AgentToCoordinator(
