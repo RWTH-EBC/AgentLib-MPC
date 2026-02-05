@@ -189,7 +189,8 @@
             <span class="s2">&quot;Given model config does not contain key &#39;type&#39; (type of the model).&quot;</span>
         <span class="p">)</span>
     <span class="n">_type</span> <span class="o">=</span> <span class="n">optimization_backend</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span>
-    <span class="n">optimization_backend</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">agent_id</span>
+    <span class="n">optimization_backend</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">agent_id</span> <span class="k">if</span> <span class="n">optimization_backend</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> \
+        <span class="k">else</span> <span class="n">optimization_backend</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">custom_cls</span> <span class="o">=</span> <span class="n">custom_injection</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">_type</span><span class="p">)</span>
         <span class="n">backend</span> <span class="o">=</span> <span class="n">custom_cls</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">optimization_backend</span><span class="p">)</span>
