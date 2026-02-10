@@ -80,6 +80,70 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiParameter</span><span class="p">,</span> <span class="n">CasadiInput</span>
 
 
+<div class="viewcode-block" id="CompositeWeight"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.CompositeWeight">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CompositeWeight</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_component</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a composite weight that tracks original parameter names</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param_names</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># List of parameter names involved</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constant_factor</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_component</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">param_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">base_component</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sym</span> <span class="o">=</span> <span class="n">base_component</span><span class="o">.</span><span class="n">sym</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_component</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">constant_factor</span> <span class="o">=</span> <span class="n">base_component</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sym</span> <span class="o">=</span> <span class="n">base_component</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_component</span><span class="p">,</span> <span class="n">CompositeWeight</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">param_names</span> <span class="o">=</span> <span class="n">base_component</span><span class="o">.</span><span class="n">param_names</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">constant_factor</span> <span class="o">=</span> <span class="n">base_component</span><span class="o">.</span><span class="n">constant_factor</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sym</span> <span class="o">=</span> <span class="n">base_component</span><span class="o">.</span><span class="n">sym</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_name</span><span class="p">()</span>
+
+<div class="viewcode-block" id="CompositeWeight.multiply_by"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.CompositeWeight.multiply_by">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">multiply_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Multiply this weight by another component&quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">param_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sym</span> <span class="o">*=</span> <span class="n">other</span><span class="o">.</span><span class="n">sym</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">constant_factor</span> <span class="o">*=</span> <span class="n">other</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sym</span> <span class="o">*=</span> <span class="n">other</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">CompositeWeight</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">param_names</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">param_names</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">constant_factor</span> <span class="o">*=</span> <span class="n">other</span><span class="o">.</span><span class="n">constant_factor</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sym</span> <span class="o">*=</span> <span class="n">other</span><span class="o">.</span><span class="n">sym</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_name</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a descriptive name based on components&quot;&quot;&quot;</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_names</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param_names</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">constant_factor</span> <span class="o">!=</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">parts</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;*</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">constant_factor</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constant_factor</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;_times_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="k">if</span> <span class="n">parts</span> <span class="k">else</span> <span class="s2">&quot;1&quot;</span>
+
+<div class="viewcode-block" id="CompositeWeight.evaluate"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.CompositeWeight.evaluate">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the composite weight using values from the dataframe&quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">constant_factor</span>
+
+        <span class="k">for</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_names</span><span class="p">:</span>
+            <span class="n">param_values</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="s2">&quot;parameter&quot;</span><span class="p">,</span> <span class="n">param_name</span><span class="p">)]</span>
+            <span class="n">result</span> <span class="o">*=</span> <span class="n">param_values</span>
+
+        <span class="k">return</span> <span class="n">result</span></div></div>
+
+
 <div class="viewcode-block" id="SubObjective"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.SubObjective">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SubObjective</span><span class="p">:</span>
 
     <span class="n">_warned_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
@@ -112,15 +176,34 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Scale objective by a factor&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">)):</span>
-            <span class="n">new_expression</span> <span class="o">=</span> <span class="n">other</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">expression</span>
-            <span class="n">new_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span>
-            <span class="k">return</span> <span class="n">SubObjective</span><span class="p">(</span><span class="n">new_expression</span><span class="p">,</span> <span class="n">new_weight</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;scaled_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">new_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multiply_weights</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">SubObjective</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expression</span><span class="p">,</span> <span class="n">new_weight</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;scaled_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot multiply SubObjective with </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_multiply_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weight1</span><span class="p">,</span> <span class="n">weight2</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Helper method to properly multiply weights of different types&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weight1</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weight2</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">weight1</span> <span class="o">*</span> <span class="n">weight2</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weight1</span><span class="p">,</span> <span class="p">(</span><span class="n">CasadiParameter</span><span class="p">,</span> <span class="n">CompositeWeight</span><span class="p">))</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">weight2</span><span class="p">,(</span><span class="n">CasadiParameter</span><span class="p">,</span> <span class="n">CompositeWeight</span><span class="p">)):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">CompositeWeight</span><span class="p">(</span><span class="n">weight1</span><span class="p">)</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">multiply_by</span><span class="p">(</span><span class="n">weight2</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">weight1</span><span class="p">,</span> <span class="s1">&#39;sym&#39;</span><span class="p">):</span>
+            <span class="n">weight1</span> <span class="o">=</span> <span class="n">weight1</span><span class="o">.</span><span class="n">sym</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">weight2</span><span class="p">,</span> <span class="s1">&#39;sym&#39;</span><span class="p">):</span>
+            <span class="n">weight2</span> <span class="o">=</span> <span class="n">weight2</span><span class="o">.</span><span class="n">sym</span>
+
+        <span class="k">return</span> <span class="n">weight1</span> <span class="o">*</span> <span class="n">weight2</span>
+
 <div class="viewcode-block" id="SubObjective.get_weighted_expression"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.SubObjective.get_weighted_expression">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_weighted_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the final weighted expression&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">expression</span></div>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="p">(</span><span class="n">CompositeWeight</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">sym</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">expression</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">expression</span></div>
 
 <div class="viewcode-block" id="SubObjective.calculate_value"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.SubObjective.calculate_value">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">weight</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the objective value from data&quot;&quot;&quot;</span>
@@ -255,11 +338,11 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mul</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Scale change penalty objective by a factor&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mul</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">)):</span>
-            <span class="n">new_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span>
+            <span class="c1"># Scale the weight properly using the parent class method</span>
+            <span class="n">new_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multiply_weights</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">mul</span><span class="p">)</span>
             <span class="n">scaled_obj</span> <span class="o">=</span> <span class="n">ChangePenaltyObjective</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="p">,</span> <span class="n">new_weight</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;scaled_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
-            <span class="n">scaled_obj</span><span class="o">.</span><span class="n">_scale_factor</span> <span class="o">=</span> <span class="n">mul</span>
             <span class="k">return</span> <span class="n">scaled_obj</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot multiply ChangePenaltyObjective with </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">mul</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -280,7 +363,7 @@
         <span class="n">diff_values</span> <span class="o">=</span> <span class="n">series</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span>
         <span class="n">diff</span> <span class="o">=</span> <span class="n">diff_values</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
         <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">weight</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">diff</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ts</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">weight</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">diff</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ts</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">dropna</span><span class="p">())</span></div></div>
 
 
@@ -335,22 +418,49 @@
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_dataframe</span><span class="p">(</span><span class="n">result_df</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
         <span class="n">total_value</span> <span class="o">=</span> <span class="mi">0</span>
 
+        <span class="c1"># For control change penalties, we also need the previous control to penalise the first step</span>
+        <span class="k">if</span> <span class="n">grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">current_start_index</span> <span class="o">=</span> <span class="n">result_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># Get time step 0</span>
+            <span class="n">previous_start_index</span> <span class="o">=</span> <span class="n">current_start_index</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># Get previous time step</span>
+            <span class="c1"># Update grid and dataframe</span>
+            <span class="k">if</span> <span class="n">previous_start_index</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">previous_time_step</span> <span class="o">=</span> <span class="n">result_df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">previous_start_index</span><span class="p">]</span>
+                <span class="n">helper_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">previous_time_step</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">helper_grid</span> <span class="o">=</span> <span class="n">grid</span>
+            <span class="n">df_helper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_dataframe</span><span class="p">(</span><span class="n">result_df</span><span class="p">,</span> <span class="n">helper_grid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">df_helper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_dataframe</span><span class="p">(</span><span class="n">result_df</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">name</span>
-            <span class="c1"># Handle symbolic or numeric weights</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="s2">&quot;sym&quot;</span><span class="p">):</span>
-                <span class="n">weight_name</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">name</span>
-                <span class="n">weight</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="s2">&quot;parameter&quot;</span><span class="p">,</span> <span class="n">weight_name</span><span class="p">)]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">weight</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">weight</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">ChangePenaltyObjective</span><span class="p">):</span>
+                <span class="c1"># Handle symbolic or numeric weights for control change penalties</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">):</span>
+                    <span class="n">weight_name</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">name</span>
+                    <span class="n">weight</span> <span class="o">=</span> <span class="n">df_helper</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="s2">&quot;parameter&quot;</span><span class="p">,</span> <span class="n">weight_name</span><span class="p">)]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">CompositeWeight</span><span class="p">):</span>
+                    <span class="n">weight</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">df_helper</span><span class="p">)</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">weight</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">weight</span>
+
                 <span class="n">control_name</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_control_name</span><span class="p">()</span>
-                <span class="n">control_series</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="s2">&quot;variable&quot;</span><span class="p">,</span> <span class="n">control_name</span><span class="p">)]</span>
+                <span class="n">control_series</span> <span class="o">=</span> <span class="n">df_helper</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="s2">&quot;variable&quot;</span><span class="p">,</span> <span class="n">control_name</span><span class="p">)]</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">calculate_value</span><span class="p">(</span><span class="n">control_series</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">SubObjective</span><span class="p">):</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">calculate_value</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="p">(</span><span class="n">CasadiParameter</span><span class="p">)):</span>
+                    <span class="n">weight_name</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">name</span>
+                    <span class="n">weight</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="s2">&quot;parameter&quot;</span><span class="p">,</span> <span class="n">weight_name</span><span class="p">)]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">CompositeWeight</span><span class="p">):</span>
+                    <span class="n">weight</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">weight</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">weight</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">SubObjective</span><span class="p">):</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">calculate_value</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalization</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">total_value</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
 
