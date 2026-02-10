@@ -16,7 +16,7 @@ def model_path_generation(run_id: str, output_name: str, sweep_id: str = '') -> 
     Args:
         run_id (str): The unique identifier for the mpc run.
         output_name (str): The name of the output feature.
-        sweep_id (str, optional): Optional sweep identifier to organize model save folder. Defaults to ''.
+        sweep_id (str, optional): Optional sweep identifier to organize model save folder. Defaults to ''. 
     Returns:
         str: The relative path to the model file.
     """
