@@ -113,11 +113,7 @@ class SubObjective:
             return weight1 * weight2
 
         if isinstance(weight1, (CasadiParameter, CompositeWeight)) or isinstance(weight2,(CasadiParameter, CompositeWeight)):
-            if isinstance(weight1, CompositeWeight):
-                result = CompositeWeight(weight1)
-            else:
-                result = CompositeWeight(weight1)
-
+            result = CompositeWeight(weight1)
             result.multiply_by(weight2)
             return result
 
