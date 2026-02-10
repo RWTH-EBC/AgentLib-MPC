@@ -15,17 +15,18 @@ except ImportError:
 model_save_path_rel: str = 'models'  # Relative path in agentlib_mpc to save machine learning models
 
 
-def use_existing_models(old_id: str, new_id: str, model_save_path: str) -> list[str]:
+def use_existing_models(old_id: str, new_id: str, model_save_path: str, sweep_id: str = '') -> list[str]:
     """Use existing physXAI models by copying them to a new folder with a new run_id.
     
     Args:
         old_id (str): Existing model run identifier
         new_id (str): New model run identifier
         model_save_path (str): Path where models are saved
+        sweep_id (str, optional): Optional sweep identifier to organize model save folder. Defaults to ''.
     Returns:
         List[str]: List of generated model file paths
     """
-    new_path = pathlib.Path(os.path.join(model_save_path, new_id))
+    new_path = pathlib.Path(os.path.join(model_save_path, sweep_id, new_id))
     os.makedirs(new_path, exist_ok=True)
 
     old_path = pathlib.Path(os.path.join(model_save_path, old_id))
@@ -42,7 +43,7 @@ def use_existing_models(old_id: str, new_id: str, model_save_path: str) -> list[
 
 
 def generate_physxai_model(models: Union[list[str], dict[str, str], str], physXAI_scripts_path: str,
-                           training_data_path: str, run_id: str, time_step: int = 900) -> list[str]:
+                           training_data_path: str, run_id: str, time_step: int = 900, sweep_id: str = '') -> list[str]:
     """Generate physXAI models
 
     Args:
@@ -54,6 +55,7 @@ def generate_physxai_model(models: Union[list[str], dict[str, str], str], physXA
         training_data_path (str): Path to training data csv file
         run_id (str): Run identifier
         time_step (int, optional): Time step for training. Defaults to 900.
+        sweep_id (str, optional): Optional sweep identifier to organize model save folder. Defaults to ''.
 
     Returns:
         List[str]: List of generated model file paths
@@ -61,9 +63,9 @@ def generate_physxai_model(models: Union[list[str], dict[str, str], str], physXA
 
     # If a single string is given, it is assumed to be an id to an existing model folder. In this case, the existing models are copied to a new folder with the given new run_id.
     if isinstance(models, str):
-        return use_existing_models(models, run_id, model_save_path_rel)
+        return use_existing_models(models, run_id, model_save_path_rel, sweep_id)
 
-    model_save_path =  os.path.abspath(model_save_path_rel)
+    model_save_path =  os.path.abspath(os.path.join(model_save_path_rel, sweep_id))
     model_names = list()
     # If a list of strings is given, each string is assumed to be a physXAI script filename (with or without .py ending) to be executed for model training. The output model names will be determined by the physXAI scripts.
     if isinstance(models, list):
@@ -120,7 +122,7 @@ def generate_physxai_model(models: Union[list[str], dict[str, str], str], physXA
                 os.remove(path)
 
         # Convert physXAI config files to agentlib_mpc json format
-        model_config = physXAI_2_agentlib_json(run_id, preprocessing, model, training_data, model_name=name)
+        model_config = physXAI_2_agentlib_json(run_id, preprocessing, model, training_data, model_name=name, sweep_id=sweep_id)
         os.makedirs(os.path.join(model_save_path, run_id), exist_ok=True)
         file = os.path.join(model_save_path, run_id, f"{name}.json")
         with open(file, 'w') as f:

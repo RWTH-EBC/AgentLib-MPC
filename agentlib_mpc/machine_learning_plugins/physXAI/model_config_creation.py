@@ -1,3 +1,4 @@
+import os
 import re
 from collections import defaultdict
 from typing import Optional
@@ -9,21 +10,21 @@ lag_pattern = r"_lag(\d+)$"  # Pattern to extract lag information from feature n
 preprocessing_training_info = ["test_size", "val_size", "random_state"]  # Define relevant preprocessing info keys
 
 
-def model_path_generation(run_id: str, output_name: str) -> str:
+def model_path_generation(run_id: str, output_name: str, sweep_id: str = '') -> str:
     """
     Generates the relative model path based on run_id and output_name.
     Args:
         run_id (str): The unique identifier for the mpc run.
         output_name (str): The name of the output feature.
+        sweep_id (str, optional): Optional sweep identifier to organize model save folder. Defaults to ''. 
     Returns:
         str: The relative path to the model file.
     """
-
-    return f"models/{run_id}/{output_name}"
+    return os.path.join("models", sweep_id, run_id, output_name)
 
 
 def physXAI_2_agentlib_json(run_id: str, preprocessing_dict: dict, model_dict: Optional[dict] = None, training_dict: Optional[dict] = None,
-                           model_name: Optional[str] = None, model_type: str = 'ANN') -> dict:
+                           model_name: Optional[str] = None, model_type: str = 'ANN', sweep_id: str = '') -> dict:
     """
     Converts physXAI model configurations to an AgentLib-MPC compatible JSON format.
     Args:
@@ -33,6 +34,7 @@ def physXAI_2_agentlib_json(run_id: str, preprocessing_dict: dict, model_dict: O
         training_dict (dict, optional): The training configuration from physXAI. Defaults to None.
         model_name (str, optional): The save name of the model. Defaults to None. If None, the output feature name is used.
         model_type (str, optional): The type of model ('ANN' or 'LinReg'). Defaults to 'ANN'.
+        sweep_id (str, optional): Optional sweep identifier to organize model save folder. Defaults to ''.
     Returns:
         dict: The converted configuration in AgentLib-MPC JSON format.
     """
@@ -152,7 +154,7 @@ def physXAI_2_agentlib_json(run_id: str, preprocessing_dict: dict, model_dict: O
 
         if model_name is None:
             model_name = output_key_name
-        load_path = model_path_generation(run_id, model_name) + '.joblib'
+        load_path = model_path_generation(run_id, model_name, sweep_id) + '.joblib'
         model = joblib.load(load_path)
         target_dict["parameters"] = {
             "coef": model.coef_.tolist(),
@@ -167,6 +169,6 @@ def physXAI_2_agentlib_json(run_id: str, preprocessing_dict: dict, model_dict: O
 
         if model_name is None:
             model_name = output_key_name
-        target_dict["model_path"] = model_path_generation(run_id, model_name) + '.keras'
+        target_dict["model_path"] = model_path_generation(run_id, model_name, sweep_id) + '.keras'
 
     return target_dict
