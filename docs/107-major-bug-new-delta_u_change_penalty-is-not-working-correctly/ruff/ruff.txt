@@ -1,6 +1,6 @@
 agentlib_mpc/__init__.py:4:22: F401 [*] `.modules.MODULE_TYPES` imported but unused
 agentlib_mpc/__init__.py:5:21: F401 [*] `.models.MODEL_TYPES` imported but unused
-agentlib_mpc/data_structures/objective.py:231:31: F841 [*] Local variable `e` is assigned to but never used
+agentlib_mpc/data_structures/objective.py:227:31: F841 [*] Local variable `e` is assigned to but never used
 agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py:45:30: F541 [*] f-string without any placeholders
 agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:10:25: F401 `physXAI.models` imported but unused; consider using `importlib.util.find_spec` to test for availability
 agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py:44:28: F811 Redefinition of unused `models` from line 10
