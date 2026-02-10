@@ -7,6 +7,70 @@ import warnings
 from agentlib_mpc.models.casadi_model import CasadiParameter, CasadiInput
 
 
+class CompositeWeight:
+    def __init__(self, base_component):
+        """
+        Create a composite weight that tracks original parameter names
+        """
+        self.param_names = []  # List of parameter names involved
+        self.constant_factor = 1.0
+
+        if isinstance(base_component, CasadiParameter):
+            self.param_names = [base_component.name]
+            self.sym = base_component.sym
+        elif isinstance(base_component, (int, float)):
+            self.constant_factor = base_component
+            self.sym = base_component
+        elif isinstance(base_component, CompositeWeight):
+            self.param_names = base_component.param_names.copy()
+            self.constant_factor = base_component.constant_factor
+            self.sym = base_component.sym
+
+        self._update_name()
+
+    def multiply_by(self, other):
+        """Multiply this weight by another component"""
+        
+        if isinstance(other, CasadiParameter):
+            self.param_names.append(other.name)
+            self.sym *= other.sym
+        elif isinstance(other, (int, float)):
+            self.constant_factor *= other
+            self.sym *= other
+        elif isinstance(other, CompositeWeight):
+            self.param_names.extend(other.param_names)
+            self.constant_factor *= other.constant_factor
+            self.sym *= other.sym
+
+        self._update_name()
+        return self
+
+    def _update_name(self):
+        """Generate a descriptive name based on components"""
+        parts = []
+
+        if self.param_names:
+            parts.extend(self.param_names)
+
+        if self.constant_factor != 1.0:
+            if parts:
+                parts.append(f"*{self.constant_factor}")
+            else:
+                parts.append(str(self.constant_factor))
+
+        self.name = "_times_".join(parts) if parts else "1"
+
+    def evaluate(self, df):
+        """Evaluate the composite weight using values from the dataframe"""
+        result = self.constant_factor
+
+        for param_name in self.param_names:
+            param_values = df.loc[:, ("parameter", param_name)]
+            result *= param_values
+
+        return result
+
+
 class SubObjective:
 
     _warned_names = set()
@@ -39,15 +103,34 @@ class SubObjective:
     def __mul__(self, other):
         """Scale objective by a factor"""
         if isinstance(other, (int, float, CasadiParameter)):
-            new_expression = other * self.expression
-            new_weight = self.weight
-            return SubObjective(new_expression, new_weight, f"scaled_{self.name}")
+            new_weight = self._multiply_weights(self.weight, other)
+            return SubObjective(self.expression, new_weight, f"scaled_{self.name}")
         else:
             raise TypeError(f"Cannot multiply SubObjective with {type(other)}")
 
+    def _multiply_weights(self, weight1, weight2):
+        """Helper method to properly multiply weights of different types"""
+        if isinstance(weight1, (int, float)) and isinstance(weight2, (int, float)):
+            return weight1 * weight2
+
+        if isinstance(weight1, (CasadiParameter, CompositeWeight)) or isinstance(weight2,(CasadiParameter, CompositeWeight)):
+            result = CompositeWeight(weight1)
+            result.multiply_by(weight2)
+            return result
+
+        if hasattr(weight1, 'sym'):
+            weight1 = weight1.sym
+        if hasattr(weight2, 'sym'):
+            weight2 = weight2.sym
+
+        return weight1 * weight2
+
     def get_weighted_expression(self):
         """Returns the final weighted expression"""
-        return self.weight * self.expression
+        if isinstance(self.weight, (CompositeWeight, CasadiParameter)):
+            return self.weight.sym * self.expression
+        else:
+            return self.weight * self.expression
 
     def calculate_value(self, data, weight):
         """Calculate the objective value from data"""
@@ -182,11 +265,11 @@ class ChangePenaltyObjective(SubObjective):
     def __mul__(self, mul):
         """Scale change penalty objective by a factor"""
         if isinstance(mul, (int, float, CasadiParameter)):
-            new_weight = self.weight
+            # Scale the weight properly using the parent class method
+            new_weight = self._multiply_weights(self.weight, mul)
             scaled_obj = ChangePenaltyObjective(
                 self.control, new_weight, f"scaled_{self.name}"
             )
-            scaled_obj._scale_factor = mul
             return scaled_obj
         else:
             raise TypeError(f"Cannot multiply ChangePenaltyObjective with {type(mul)}")
@@ -207,7 +290,7 @@ class ChangePenaltyObjective(SubObjective):
         diff_values = series.diff()
         diff = diff_values.values[1:]
         ts = np.diff(series.index)
-        results = pd.Series(weight**2 * diff**2 * ts, index=series.index[1:])
+        results = pd.Series(weight**2 * diff**2 * ts)
         return sum(results.dropna())
 
 
@@ -262,22 +345,49 @@ class CombinedObjective:
         df = self._prepare_dataframe(result_df, grid)
         total_value = 0
 
+        # For control change penalties, we also need the previous control to penalise the first step
+        if grid is not None:
+            current_start_index = result_df.index.get_loc(grid[0])  # Get time step 0
+            previous_start_index = current_start_index - 1  # Get previous time step
+            # Update grid and dataframe
+            if previous_start_index >= 0:
+                previous_time_step = result_df.index[previous_start_index]
+                helper_grid = np.insert(grid, 0, previous_time_step)
+            else:
+                helper_grid = grid
+            df_helper = self._prepare_dataframe(result_df, helper_grid)
+        else:
+            df_helper = self._prepare_dataframe(result_df, grid)
+
         for obj in self.objectives:
             name = obj.name
-            # Handle symbolic or numeric weights
-            if hasattr(obj.weight, "sym"):
-                weight_name = obj.weight.name
-                weight = df.loc[:, ("parameter", weight_name)].iloc[:-1]
-            else:
-                weight = obj.weight
             if isinstance(obj, ChangePenaltyObjective):
+                # Handle symbolic or numeric weights for control change penalties
+                if isinstance(obj.weight, CasadiParameter):
+                    weight_name = obj.weight.name
+                    weight = df_helper.loc[:, ("parameter", weight_name)].shift(-1).iloc[:-1]
+                elif isinstance(obj.weight, CompositeWeight):
+                    weight = obj.weight.evaluate(df_helper).shift(-1).iloc[:-1]
+                else:
+                    weight = obj.weight
+
                 control_name = obj.get_control_name()
-                control_series = df.loc[:, ("variable", control_name)]
+                control_series = df_helper.loc[:, ("variable", control_name)]
                 value = obj.calculate_value(control_series, weight)
                 self._values[name] = value / self.normalization
-            elif isinstance(obj, SubObjective):
-                value = obj.calculate_value(df, weight)
-                self._values[name] = value / self.normalization
+            else:
+                if isinstance(obj.weight, (CasadiParameter)):
+                    weight_name = obj.weight.name
+                    weight = df.loc[:, ("parameter", weight_name)].iloc[:-1]
+                elif isinstance(obj.weight, CompositeWeight):
+                    weight = obj.weight.evaluate(df).iloc[:-1]
+
+                else:
+                    weight = obj.weight
+
+                if isinstance(obj, SubObjective):
+                    value = obj.calculate_value(df, weight)
+                    self._values[name] = value / self.normalization
             if self._values[name] is not None:
                 total_value += self._values[name]
 
