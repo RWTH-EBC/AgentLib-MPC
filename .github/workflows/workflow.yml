@@ -5,7 +5,7 @@ on:
 
 jobs:
   ci:
-    uses: RWTH-EBC/ci_templates/.github/workflows/ci_pipeline.yml@main
+    uses: RWTH-EBC/ci_templates/.github/workflows/ci_pipeline.yml@22-coverage_testcoverage-is-failing
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
