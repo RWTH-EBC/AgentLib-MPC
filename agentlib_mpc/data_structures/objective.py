@@ -30,6 +30,7 @@ class CompositeWeight:
 
     def multiply_by(self, other):
         """Multiply this weight by another component"""
+        
         if isinstance(other, CasadiParameter):
             self.param_names.append(other.name)
             self.sym *= other.sym
