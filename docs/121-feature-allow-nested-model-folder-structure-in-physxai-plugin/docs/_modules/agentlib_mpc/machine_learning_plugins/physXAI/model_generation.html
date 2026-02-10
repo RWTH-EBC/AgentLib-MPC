@@ -136,7 +136,7 @@
 
     <span class="c1"># If a single string is given, it is assumed to be an id to an existing model folder. In this case, the existing models are copied to a new folder with the given new run_id.</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">use_existing_models</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="n">run_id</span><span class="p">,</span> <span class="n">model_save_path_rel</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">use_existing_models</span><span class="p">(</span><span class="n">models</span><span class="p">,</span> <span class="n">run_id</span><span class="p">,</span> <span class="n">model_save_path_rel</span><span class="p">,</span> <span class="n">sweep_id</span><span class="p">)</span>
 
     <span class="n">model_save_path</span> <span class="o">=</span>  <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_save_path_rel</span><span class="p">,</span> <span class="n">sweep_id</span><span class="p">))</span>
     <span class="n">model_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
