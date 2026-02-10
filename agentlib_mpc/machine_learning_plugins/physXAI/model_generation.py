@@ -63,7 +63,7 @@ def generate_physxai_model(models: Union[list[str], dict[str, str], str], physXA
 
     # If a single string is given, it is assumed to be an id to an existing model folder. In this case, the existing models are copied to a new folder with the given new run_id.
     if isinstance(models, str):
-        return use_existing_models(models, run_id, model_save_path_rel)
+        return use_existing_models(models, run_id, model_save_path_rel, sweep_id)
 
     model_save_path =  os.path.abspath(os.path.join(model_save_path_rel, sweep_id))
     model_names = list()

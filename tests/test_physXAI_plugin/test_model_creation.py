@@ -18,11 +18,12 @@ def test_model_creation(monkeypatch):
         "physXAI_scripts_path": "physXAI_scripts",
         "training_data_path": "training_data.csv",
         "run_id": "03",
+        "sweep_id": "test_sweep",
     }
     test_return_value_01 = [
-        os.path.join("models", "03", "output_model.json"),
-        os.path.join("models", "03", "output_preprocessing.json"),
-        os.path.join("models", "03", "output_training_data.json")
+        os.path.join("models", "test_sweep", "03", "output_model.json"),
+        os.path.join("models", "test_sweep", "03", "output_preprocessing.json"),
+        os.path.join("models", "test_sweep", "03", "output_training_data.json")
     ]
     ##############################################################################
     test_args_02 = {
