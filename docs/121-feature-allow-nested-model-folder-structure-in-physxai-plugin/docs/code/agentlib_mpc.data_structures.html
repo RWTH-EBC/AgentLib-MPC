@@ -1590,6 +1590,24 @@ The actual penalty calculation happens in the discretization step.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.CompositeWeight">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.objective.</span></span><span class="sig-name descname"><span class="pre">CompositeWeight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_component</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#CompositeWeight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.CompositeWeight" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.CompositeWeight.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#CompositeWeight.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.CompositeWeight.evaluate" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate the composite weight using values from the dataframe</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.CompositeWeight.multiply_by">
+<span class="sig-name descname"><span class="pre">multiply_by</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#CompositeWeight.multiply_by"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.CompositeWeight.multiply_by" title="Permalink to this definition"></a></dt>
+<dd><p>Multiply this weight by another component</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.ConditionalObjective">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.objective.</span></span><span class="sig-name descname"><span class="pre">ConditionalObjective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">condition_objective_pairs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_objective</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#ConditionalObjective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.ConditionalObjective" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
