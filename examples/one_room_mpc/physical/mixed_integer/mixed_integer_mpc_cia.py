@@ -193,7 +193,8 @@ AGENT_SIM = {
                 "type": {"file": __file__, "class_name": "MyCasadiModel"},
                 "states": [{"name": "T", "value": 298.16}],
             },
-            "t_sample": 10,
+            "t_sample_communication": 10,
+            "t_sample_simulation": 10,
             "update_inputs_on_callback": False,
             "outputs": [
                 {"name": "T_out", "value": 298, "alias": "T"},
