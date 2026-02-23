@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.models.casadi_model &mdash; agentlib_mpc 1.0.2 documentation</title>
+  <title>agentlib_mpc.models.casadi_model &mdash; agentlib_mpc 1.0.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -72,7 +72,7 @@
              
   <h1>Source code for agentlib_mpc.models.casadi_model</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Holds the classes for CasADi variables and the CasADi model.&quot;&quot;&quot;</span>
-
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
@@ -347,7 +347,6 @@
         <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div></div>
 
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.objective</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubObjective</span><span class="p">,</span> <span class="n">ChangePenaltyObjective</span><span class="p">,</span> <span class="n">CombinedObjective</span><span class="p">,</span> <span class="n">ConditionalObjective</span>
 <div class="viewcode-block" id="CasadiModelConfig"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CasadiModelConfig</span><span class="p">(</span><span class="n">ModelConfig</span><span class="p">):</span>
     <span class="n">system</span><span class="p">:</span> <span class="n">CasadiTypes</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">objective</span><span class="p">:</span> <span class="n">CasadiTypes</span> <span class="o">=</span> <span class="kc">None</span>
@@ -366,6 +365,9 @@
         <span class="p">}</span>
     <span class="p">)</span></div>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.objective</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubObjective</span><span class="p">,</span> <span class="n">ChangePenaltyObjective</span><span class="p">,</span> <span class="n">CombinedObjective</span>
 
 <div class="viewcode-block" id="CasadiModel"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CasadiModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base Class for CasADi models. To implement your own model, inherit</span>
@@ -599,11 +601,13 @@
 
 <div class="viewcode-block" id="CasadiModel.create_sub_objective"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.create_sub_objective">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_sub_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expressions</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a SubObjective without requiring imports&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.objective</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubObjective</span>
 
         <span class="k">return</span> <span class="n">SubObjective</span><span class="p">(</span><span class="n">expressions</span><span class="o">=</span><span class="n">expressions</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CasadiModel.create_change_penalty"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModel.create_change_penalty">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_change_penalty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expressions</span><span class="p">:</span> <span class="n">CasadiInput</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">CasadiParameter</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a ChangePenaltyObjective without requiring imports&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.objective</span><span class="w"> </span><span class="kn">import</span> <span class="n">ChangePenaltyObjective</span>
 
         <span class="k">return</span> <span class="n">ChangePenaltyObjective</span><span class="p">(</span><span class="n">expressions</span><span class="o">=</span><span class="n">expressions</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
 
@@ -611,6 +615,7 @@
                                   <span class="o">*</span><span class="n">objectives</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">SubObjective</span><span class="p">,</span> <span class="n">ChangePenaltyObjective</span><span class="p">],</span>
                                   <span class="n">normalization</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a CombinedObjective without requiring imports&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.objective</span><span class="w"> </span><span class="kn">import</span> <span class="n">CombinedObjective</span>
 
         <span class="k">return</span> <span class="n">CombinedObjective</span><span class="p">(</span><span class="o">*</span><span class="n">objectives</span><span class="p">,</span> <span class="n">normalization</span><span class="o">=</span><span class="n">normalization</span><span class="p">)</span></div>
 
@@ -618,6 +623,7 @@
                                      <span class="o">*</span><span class="n">condition_objective_pairs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">CombinedObjective</span><span class="p">],</span>
                                      <span class="n">default_objective</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a ConditionalObjective without requiring imports&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.objective</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConditionalObjective</span>
 
         <span class="k">return</span> <span class="n">ConditionalObjective</span><span class="p">(</span>
             <span class="o">*</span><span class="n">condition_objective_pairs</span><span class="p">,</span> <span class="n">default_objective</span><span class="o">=</span><span class="n">default_objective</span>
