@@ -1,5 +1,5 @@
 """Holds the classes for CasADi variables and the CasADi model."""
-
+from __future__ import annotations
 import json
 import logging
 import abc
@@ -20,6 +20,9 @@ from agentlib.core.datamodels import (
     Causality,
 )
 from agentlib_mpc.data_structures.casadi_utils import ModelConstraint
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from agentlib_mpc.data_structures.objective import SubObjective, ChangePenaltyObjective, CombinedObjective
 
 import warnings
 
@@ -274,7 +277,6 @@ class CasadiOutput(CasadiVariable):
         json.dumps(data)
 
 
-from agentlib_mpc.data_structures.objective import SubObjective, ChangePenaltyObjective, CombinedObjective, ConditionalObjective
 class CasadiModelConfig(ModelConfig):
     system: CasadiTypes = None
     objective: CasadiTypes = None
