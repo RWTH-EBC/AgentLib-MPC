@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.3 
+- Bug fix: circular import of objective in casadi model
+
 ## 1.0.2
 - Bug fix: The code should not fail if objective logging cannot evaluate the expression.
 
