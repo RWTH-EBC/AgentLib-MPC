@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.data_structures package &mdash; agentlib_mpc 1.0.1 documentation</title>
+  <title>agentlib_mpc.data_structures package &mdash; agentlib_mpc 1.0.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
@@ -1585,6 +1585,24 @@ The actual penalty calculation happens in the discretization step.</p>
 <dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.CombinedObjective.get_delta_u_objectives">
 <span class="sig-name descname"><span class="pre">get_delta_u_objectives</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#CombinedObjective.get_delta_u_objectives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.CombinedObjective.get_delta_u_objectives" title="Permalink to this definition"></a></dt>
 <dd><p>Returns a list of all ChangePenaltyObjective instances</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.CompositeWeight">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.data_structures.objective.</span></span><span class="sig-name descname"><span class="pre">CompositeWeight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_component</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#CompositeWeight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.CompositeWeight" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.CompositeWeight.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#CompositeWeight.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.CompositeWeight.evaluate" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluate the composite weight using values from the dataframe</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.data_structures.objective.CompositeWeight.multiply_by">
+<span class="sig-name descname"><span class="pre">multiply_by</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/data_structures/objective.html#CompositeWeight.multiply_by"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.data_structures.objective.CompositeWeight.multiply_by" title="Permalink to this definition"></a></dt>
+<dd><p>Multiply this weight by another component</p>
 </dd></dl>
 
 </dd></dl>
