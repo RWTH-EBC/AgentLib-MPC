@@ -1,5 +1,5 @@
 """Holds the classes for CasADi variables and the CasADi model."""
-
+from __future__ import annotations
 import json
 import logging
 import abc
@@ -274,7 +274,6 @@ class CasadiOutput(CasadiVariable):
         json.dumps(data)
 
 
-from agentlib_mpc.data_structures.objective import SubObjective, ChangePenaltyObjective, CombinedObjective, ConditionalObjective
 class CasadiModelConfig(ModelConfig):
     system: CasadiTypes = None
     objective: CasadiTypes = None
@@ -293,6 +292,9 @@ class CasadiModelConfig(ModelConfig):
         }
     )
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from agentlib_mpc.data_structures.objective import SubObjective, ChangePenaltyObjective, CombinedObjective
 
 class CasadiModel(Model):
     """Base Class for CasADi models. To implement your own model, inherit
@@ -526,11 +528,13 @@ class CasadiModel(Model):
 
     def create_sub_objective(self, expressions: ca.MX, weight: Union[float, int, CasadiParameter] = 1, name: str = None):
         """Create a SubObjective without requiring imports"""
+        from agentlib_mpc.data_structures.objective import SubObjective
 
         return SubObjective(expressions=expressions, weight=weight, name=name)
 
     def create_change_penalty(self, expressions: CasadiInput, weight: Union[float, int, CasadiParameter] = 1, name: str = None):
         """Create a ChangePenaltyObjective without requiring imports"""
+        from agentlib_mpc.data_structures.objective import ChangePenaltyObjective
 
         return ChangePenaltyObjective(expressions=expressions, weight=weight, name=name)
 
@@ -538,6 +542,7 @@ class CasadiModel(Model):
                                   *objectives: Union[SubObjective, ChangePenaltyObjective],
                                   normalization: Union[float, int] = 1.0):
         """Create a CombinedObjective without requiring imports"""
+        from agentlib_mpc.data_structures.objective import CombinedObjective
 
         return CombinedObjective(*objectives, normalization=normalization)
 
@@ -545,6 +550,7 @@ class CasadiModel(Model):
                                      *condition_objective_pairs: Union[CombinedObjective],
                                      default_objective=None):
         """Create a ConditionalObjective without requiring imports"""
+        from agentlib_mpc.data_structures.objective import ConditionalObjective
 
         return ConditionalObjective(
             *condition_objective_pairs, default_objective=default_objective

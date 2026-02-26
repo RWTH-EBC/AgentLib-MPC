@@ -1,3 +1,5 @@
+<img src="./docs/images/logos/agentlib_mpc_logo.svg" alt="drawing" height="150"/>
+
 # agentlib_mpc
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![pylint](https://rwth-ebc.github.io/AgentLib-MPC/main/pylint/pylint.svg)](https://rwth-ebc.github.io/AgentLib-MPC/main/pylint/pylint.html)

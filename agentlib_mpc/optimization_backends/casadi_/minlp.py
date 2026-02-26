@@ -78,8 +78,6 @@ class DirectCollocation(basic.DirectCollocation):
         x0 = self.add_opt_par(sys.initial_state)
         xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)
 
-        uk = self.add_opt_var(sys.controls)
-
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
 
@@ -89,9 +87,9 @@ class DirectCollocation(basic.DirectCollocation):
         # loop over prediction horizon
         while self.k < n:
             # New NLP variable for the control
-            u_prev = uk
             uk = self.add_opt_var(sys.controls)
             wk = self.add_opt_var(sys.binary_controls)
+            u_prev = uk
 
             for delta_obj in delta_u_objectives:
                 self.objective_function += delta_u.get_objective(
