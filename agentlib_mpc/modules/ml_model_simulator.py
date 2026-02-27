@@ -7,11 +7,10 @@ import pydantic
 from agentlib.core import AgentVariable, AgentVariables, Agent
 from agentlib.core.errors import ConfigurationError
 from agentlib.modules.simulation.simulator import SimulatorConfig, Simulator
-from pydantic_core.core_schema import FieldValidationInfo
 
 from agentlib_mpc.models.casadi_ml_model import CasadiMLModel
 from agentlib_mpc.models.serialized_ml_model import SerializedMLModel
-from pydantic import field_validator, model_validator
+from pydantic import model_validator
 
 
 class MLModelSimulatorConfig(SimulatorConfig):
@@ -32,9 +31,6 @@ class MLModelSimulatorConfig(SimulatorConfig):
 class MLModelSimulator(Simulator):
     config: MLModelSimulatorConfig
     model: CasadiMLModel
-
-    def __init__(self, config: MLModelSimulatorConfig, agent=Agent):
-        super().__init__(config=config, agent=agent)
 
     def _callback_update_model_input(self, inp: AgentVariable, name: str):
         """Set given model input value to the model"""
