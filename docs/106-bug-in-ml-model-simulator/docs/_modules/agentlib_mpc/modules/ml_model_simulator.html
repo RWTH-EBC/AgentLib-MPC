@@ -81,11 +81,10 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">AgentVariables</span><span class="p">,</span> <span class="n">Agent</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigurationError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.modules.simulation.simulator</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulatorConfig</span><span class="p">,</span> <span class="n">Simulator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_core.core_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldValidationInfo</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_ml_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiMLModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.serialized_ml_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">SerializedMLModel</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">field_validator</span><span class="p">,</span> <span class="n">model_validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">model_validator</span>
 
 
 <div class="viewcode-block" id="MLModelSimulatorConfig"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MLModelSimulatorConfig</span><span class="p">(</span><span class="n">SimulatorConfig</span><span class="p">):</span>
@@ -106,9 +105,6 @@
 <div class="viewcode-block" id="MLModelSimulator"><a class="viewcode-back" href="../../../code/agentlib_mpc.modules.html#agentlib_mpc.modules.ml_model_simulator.MLModelSimulator">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MLModelSimulator</span><span class="p">(</span><span class="n">Simulator</span><span class="p">):</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">MLModelSimulatorConfig</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">CasadiMLModel</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">MLModelSimulatorConfig</span><span class="p">,</span> <span class="n">agent</span><span class="o">=</span><span class="n">Agent</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_callback_update_model_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set given model input value to the model&quot;&quot;&quot;</span>
