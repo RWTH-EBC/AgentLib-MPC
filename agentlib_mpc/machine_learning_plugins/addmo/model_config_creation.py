@@ -267,7 +267,7 @@ def addmo_2_agentlib_json(
 
 
 def main():
-    source_folder = Path("/Volumes/Samsung_T7/Git/AgentLib-MPC/examples/one_room_mpc/addmo_plugin/keras")
+    source_folder = Path("C:/Users/Fred/Desktop/Git/AgentLib-MPC/examples/one_room_mpc/addmo_plugin/keras")
     output_type = "absolute"
 
     keras_path = source_folder / "best_model.keras"

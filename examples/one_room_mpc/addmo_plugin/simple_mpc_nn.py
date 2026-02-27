@@ -37,7 +37,7 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                     "overwrite_result_file": True,
                     "solver": {"name": "ipopt", "options": {"ipopt.print_level": 0}},
                 },
-                "time_step": 300,
+                "time_step": 60,
                 "prediction_horizon": 15,
                 "parameters": [
                     {"name": "s_T", "value": 3},
@@ -67,7 +67,8 @@ def agent_configs(ml_model_path: str) -> list[dict]:
                     },
                     "states": [{"name": "T", "value": 298.16}],
                 },
-                "t_sample": 10,
+                "t_sample_simulation": 60,
+                "t_sample_communication": 60,
                 "save_results": True,
                 "result_filename": "results//simulation_data.csv",
                 "overwrite_result_file": True,
@@ -170,4 +171,4 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000, testing=Fal
 
 
 if __name__ == "__main__":
-    run_example(with_plots=True, until=3600)
+    run_example(with_plots=True, until=86400)

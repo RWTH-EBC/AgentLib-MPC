@@ -41,6 +41,11 @@ def convert_simulation_csv(input_file, output_file, target: str, output_type: st
     df['Time'] = df['Time'].astype(float)
     df['Time'] = df['Time'].apply(lambda seconds: start_datetime + timedelta(seconds=seconds))
 
+    # Convert numeric columns to float (excluding Time which is already converted)
+    for col in df.columns:
+        if col != 'Time':
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+
     # Create target for training based on output_type
     if output_type == "absolute":
         # Absolute: predict next value target(k+1)
@@ -75,12 +80,12 @@ def convert_simulation_csv(input_file, output_file, target: str, output_type: st
 if __name__ == "__main__":
     import os
     
-    input_file = "/Volumes/Samsung_T7/Git/AgentLib-MPC/examples/one_room_mpc/addmo_plugin/results/simulation_data.csv"
+    input_file = r"C:\Users\Fred\Desktop\Git\AgentLib-MPC\examples\one_room_mpc\addmo_plugin\results\simulation_data.csv"
     target = "T"  # Column name in simulation CSV
-    output_type = "absolute"  # 'absolute' for next value, 'difference' for delta
+    output_type = "difference"  # 'absolute' for next value, 'difference' for delta
     
     # List of variable names to exclude from the output CSV
-    exclude_vars = ['T_out']  # Add variable names here, e.g., ['var1', 'var2']
+    exclude_vars = ['T_out','T_in','T_upper','T_slack']  # Add variable names here, e.g., ['var1', 'var2']
     
     # Get the directory and filename
     input_dir = os.path.dirname(input_file)

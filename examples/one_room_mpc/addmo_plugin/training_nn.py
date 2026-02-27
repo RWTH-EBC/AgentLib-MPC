@@ -1,4 +1,5 @@
 import logging
+import os
 import random
 
 import agentlib as al
@@ -91,7 +92,7 @@ def configs(
                 ],
                 "outputs": [{"name": "T", "value": 273.15 + 22}],
                 # the lags here are not needed, but we have them to validate the code
-                "lags": {"load": 2, "T": 2, "mDot": 3},
+                # "lags": {"load": 2, "T": 2, "mDot": 3},
                 "output_types": {"T": "difference"},
                 "interpolations": {"mDot": "mean_over_interval"},
                 "layers": [{32, "sigmoid"}],
@@ -125,11 +126,12 @@ def configs(
                         "class_name": "PhysicalModel",
                     },
                 },
-                "t_sample": t_sample_sim,
+                "t_sample_simulation": t_sample_sim,
+                "t_sample_communication": t_sample_sim,
                 "save_results": plot_results,
                 "result_filename": "results//simulation_data.csv",
                 "result_causalities": ["local", "input", "output"],
-                "overwrite_result_file": False,
+                "overwrite_result_file": True,
                 "inputs": [
                     {"name": "mDot", "value": 0.0225, "source": "PID"},
                     {"name": "load", "value": 30},
@@ -140,7 +142,8 @@ def configs(
             {
                 "module_id": "input_generator",
                 "type": "simulator",
-                "t_sample": step_size * 10,
+                "t_sample_simulation": step_size * 10,
+                "t_sample_communication": step_size * 10,
                 "model": {"type": {"file": __file__, "class_name": "InputGenerator"}},
                 "outputs": [
                     # {"name": "mDot"},
@@ -195,6 +198,10 @@ def main(
     step_size: float = 300,
     epochs: int = 1000,  # Add epochs parameter
 ):
+    # Change to the script's directory
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(script_dir)
+    
     env_config = {"rt": False, "t_sample": 3600}
     logging.basicConfig(level=logging.INFO)
     mas = LocalMASAgency(
