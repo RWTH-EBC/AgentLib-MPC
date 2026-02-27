@@ -114,6 +114,11 @@
     <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
     <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">seconds</span><span class="p">:</span> <span class="n">start_datetime</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">seconds</span><span class="p">))</span>
 
+    <span class="c1"># Convert numeric columns to float (excluding Time which is already converted)</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">col</span> <span class="o">!=</span> <span class="s1">&#39;Time&#39;</span><span class="p">:</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
+
     <span class="c1"># Create target for training based on output_type</span>
     <span class="k">if</span> <span class="n">output_type</span> <span class="o">==</span> <span class="s2">&quot;absolute&quot;</span><span class="p">:</span>
         <span class="c1"># Absolute: predict next value target(k+1)</span>
@@ -148,12 +153,12 @@
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
     
-    <span class="n">input_file</span> <span class="o">=</span> <span class="s2">&quot;/Volumes/Samsung_T7/Git/AgentLib-MPC/examples/one_room_mpc/addmo_plugin/results/simulation_data.csv&quot;</span>
+    <span class="n">input_file</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\Fred\Desktop\Git\AgentLib-MPC\examples\one_room_mpc\addmo_plugin\results\simulation_data.csv&quot;</span>
     <span class="n">target</span> <span class="o">=</span> <span class="s2">&quot;T&quot;</span>  <span class="c1"># Column name in simulation CSV</span>
-    <span class="n">output_type</span> <span class="o">=</span> <span class="s2">&quot;absolute&quot;</span>  <span class="c1"># &#39;absolute&#39; for next value, &#39;difference&#39; for delta</span>
+    <span class="n">output_type</span> <span class="o">=</span> <span class="s2">&quot;difference&quot;</span>  <span class="c1"># &#39;absolute&#39; for next value, &#39;difference&#39; for delta</span>
     
     <span class="c1"># List of variable names to exclude from the output CSV</span>
-    <span class="n">exclude_vars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;T_out&#39;</span><span class="p">]</span>  <span class="c1"># Add variable names here, e.g., [&#39;var1&#39;, &#39;var2&#39;]</span>
+    <span class="n">exclude_vars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;T_out&#39;</span><span class="p">,</span><span class="s1">&#39;T_in&#39;</span><span class="p">,</span><span class="s1">&#39;T_upper&#39;</span><span class="p">,</span><span class="s1">&#39;T_slack&#39;</span><span class="p">]</span>  <span class="c1"># Add variable names here, e.g., [&#39;var1&#39;, &#39;var2&#39;]</span>
     
     <span class="c1"># Get the directory and filename</span>
     <span class="n">input_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
