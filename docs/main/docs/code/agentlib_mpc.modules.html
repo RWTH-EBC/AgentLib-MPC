@@ -663,19 +663,26 @@ class inherits from the Simulator class from the agentlib core.</p>
 </dd>
 <dt class="field-odd">Validators<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><a class="reference internal" href="#agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.check_t_sample" title="agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.check_t_sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_t_sample</span></code></a> » <code class="xref py py-obj docutils literal notranslate"><span class="pre">t_sample</span></code></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.check_t_sample_simulation" title="agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.check_t_sample_simulation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_t_sample_simulation</span></code></a> » <code class="xref py py-obj docutils literal notranslate"><span class="pre">all</span> <span class="pre">fields</span></code></p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.serialized_ml_models">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">serialized_ml_models</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">AgentVariable</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.serialized_ml_models" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Validated by<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.check_t_sample_simulation" title="agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.check_t_sample_simulation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_t_sample_simulation</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method pydantic_validator">
-<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.check_t_sample">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_t_sample</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">t_sample</span></em><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_simulator.html#MLModelSimulatorConfig.check_t_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.check_t_sample" title="Permalink to this definition"></a></dt>
-<dd><p>Check if t_sample is smaller than stop-start time</p>
+<dt class="sig sig-object py" id="agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.check_t_sample_simulation">
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_t_sample_simulation</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">all</span> <span class="pre">fields</span></em><a class="reference internal" href="../_modules/agentlib_mpc/modules/ml_model_simulator.html#MLModelSimulatorConfig.check_t_sample_simulation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.modules.ml_model_simulator.MLModelSimulatorConfig.check_t_sample_simulation" title="Permalink to this definition"></a></dt>
+<dd><p>Check if t_sample_simulation is equal to the model time step</p>
 </dd></dl>
 
 <dl class="py method">
