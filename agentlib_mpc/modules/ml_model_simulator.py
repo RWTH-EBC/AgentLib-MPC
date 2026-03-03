@@ -4,35 +4,28 @@ class inherits from the Simulator class from the agentlib core.
 """
 
 import pydantic
-from agentlib.core import AgentVariable, AgentVariables
+from agentlib.core import AgentVariable, AgentVariables, Agent
 from agentlib.core.errors import ConfigurationError
 from agentlib.modules.simulation.simulator import SimulatorConfig, Simulator
-from pydantic_core.core_schema import FieldValidationInfo
 
 from agentlib_mpc.models.casadi_ml_model import CasadiMLModel
 from agentlib_mpc.models.serialized_ml_model import SerializedMLModel
-from pydantic import field_validator
+from pydantic import model_validator
 
 
 class MLModelSimulatorConfig(SimulatorConfig):
     serialized_ml_models: AgentVariables = []
 
-    @field_validator("t_sample")
-    @classmethod
-    def check_t_sample(cls, t_sample, info: FieldValidationInfo):
-        """Check if t_sample is smaller than stop-start time"""
-        if "model" not in info.data:
+    @model_validator(mode="after")
+    def check_t_sample_simulation(self):
+        """Check if t_sample_simulation is equal to the model time step"""
+        dt = self.model.dt
+        if self.t_sample_simulation != dt:
             raise ConfigurationError(
-                "Model validation failed: the 'model' field is missing or invalid in the configuration. "
-                "Please verify your model configuration."
+                f" Simulation sampling time of Simulator must be the same as MLModel time step. Current"
+                f" MLModel time step is {dt} and chosen simulation sampling time is {self.t_sample_simulation}."
             )
-        dt = info.data["model"].dt
-        if t_sample < dt or t_sample % dt != 0:
-            raise ConfigurationError(
-                f"Sampling Time of Simulator must be multiple of MLModel time step. Current"
-                f" MLModel time step is {dt} and chosen sampling time is {t_sample}."
-            )
-        return t_sample
+        return self
 
 
 class MLModelSimulator(Simulator):

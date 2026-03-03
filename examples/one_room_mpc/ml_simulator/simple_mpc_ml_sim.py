@@ -46,7 +46,7 @@ def agent_configs(ml_model_mpc_path: str, ml_model_sim_path: str) -> list[dict]:
                     "overwrite_result_file": True,
                     "solver": {"name": "ipopt"},
                 },
-                "time_step": 300,
+                "time_step": 600,
                 "prediction_horizon": 15,
                 "parameters": [
                     {"name": "s_T", "value": 10},
