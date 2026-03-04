@@ -26,6 +26,7 @@ sys.setrecursionlimit(1500)
 project = "agentlib_mpc"
 copyright = "2021, AGENT-Project Associates"
 author = "AGENT-Project Associates"
+maintainer = "Institute for Energy Efficient Buildings and Indoor Climate, RWTH Aachen University"
 
 # The full version, including alpha/beta/rc tags
 with open(Path(__file__).parents[2].joinpath(project, "__init__.py"), "r") as file:
@@ -112,6 +113,10 @@ html_theme_options = {
     "logo_icon": "&#xe869",
 }
 
+# Add the maintainer to the HTML context, as it is not a standard Sphinx variable
+html_context = {
+    "maintainer": maintainer,
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
