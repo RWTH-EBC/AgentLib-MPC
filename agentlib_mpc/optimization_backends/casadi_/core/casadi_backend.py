@@ -318,6 +318,9 @@ class CasADiBackend(OptimizationBackend):
             self.config.discretization_options.time_step,
         )
         objective_values = objective.calculate_values(results_df, grid)
-        objective_names = [obj.name for obj in objective.objectives] + ["total"]
+        objective_names = []
+        for obj in objective.objectives:
+            if obj.name not in obj.skip_expr:
+                objective_names.append(obj.name)
 
         return objective_names, objective_values

@@ -74,6 +74,7 @@ class CompositeWeight:
 class SubObjective:
 
     _warned_names = set()
+    skip_expr = set()
 
     def __init__(
         self,
@@ -92,6 +93,12 @@ class SubObjective:
         self.expression = expressions
         self.weight = weight
         self.name = name or f"obj_{id(self)}"
+        self._check_expressions(expressions)
+
+    def _check_expressions(self, expr) -> None:
+        expr_str = str(expr)
+        if "?" in expr_str or "@" in expr_str:
+            self.skip_expr.add(self.name)
 
     def __add__(self, other):
         """Add two objectives together to create a CombinedObjective"""
@@ -361,6 +368,8 @@ class CombinedObjective:
 
         for obj in self.objectives:
             name = obj.name
+            if name in obj.skip_expr:
+                continue
             if isinstance(obj, ChangePenaltyObjective):
                 # Handle symbolic or numeric weights for control change penalties
                 if isinstance(obj.weight, CasadiParameter):

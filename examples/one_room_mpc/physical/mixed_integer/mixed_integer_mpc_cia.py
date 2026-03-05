@@ -129,7 +129,7 @@ class MyCasadiModel(CasadiModel):
         # Objective function
         objective = sum(
             [
-                self.r_cooling * self.cooling_power,
+                self.r_cooling * abs(self.cooling_power),
                 self.s_T * self.T_slack**2,
             ]
         )
