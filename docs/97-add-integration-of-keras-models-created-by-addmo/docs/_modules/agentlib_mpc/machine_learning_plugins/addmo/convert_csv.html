@@ -144,6 +144,32 @@
             <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">cols_to_drop</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Excluded variables: </span><span class="si">{</span><span class="n">cols_to_drop</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     
+    <span class="c1"># Reorder columns for agentlib-mpc compatibility:</span>
+    <span class="c1"># 1. Time column first</span>
+    <span class="c1"># 2. Non-target input features</span>
+    <span class="c1"># 3. Recursive target feature (original target column)</span>
+    <span class="c1"># 4. Target output column (_absolute or _diff)</span>
+    <span class="n">all_cols</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    
+    <span class="c1"># Separate columns</span>
+    <span class="n">time_col</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Time&#39;</span><span class="p">]</span>
+    <span class="n">target_output_col</span> <span class="o">=</span> <span class="p">[</span><span class="n">target_col</span><span class="p">]</span>  <span class="c1"># The created _absolute or _diff column</span>
+    <span class="n">target_input_col</span> <span class="o">=</span> <span class="p">[</span><span class="n">target</span><span class="p">]</span>  <span class="c1"># The original target column (used as recursive input)</span>
+    
+    <span class="c1"># All other columns (non-target inputs)</span>
+    <span class="n">other_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">all_cols</span> 
+                  <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">time_col</span> <span class="o">+</span> <span class="n">target_output_col</span> <span class="o">+</span> <span class="n">target_input_col</span><span class="p">]</span>
+    
+    <span class="c1"># Reorder: Time -&gt; other inputs -&gt; recursive target -&gt; target output</span>
+    <span class="n">ordered_cols</span> <span class="o">=</span> <span class="n">time_col</span> <span class="o">+</span> <span class="n">other_cols</span> <span class="o">+</span> <span class="n">target_input_col</span> <span class="o">+</span> <span class="n">target_output_col</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">ordered_cols</span><span class="p">]</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Column order (agentlib-mpc compatible):&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Time: </span><span class="si">{</span><span class="n">time_col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Input features: </span><span class="si">{</span><span class="n">other_cols</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Recursive target (input): </span><span class="si">{</span><span class="n">target_input_col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - Target output: </span><span class="si">{</span><span class="n">target_output_col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    
     <span class="c1"># Save to output file</span>
     <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converted CSV saved to: </span><span class="si">{</span><span class="n">output_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
