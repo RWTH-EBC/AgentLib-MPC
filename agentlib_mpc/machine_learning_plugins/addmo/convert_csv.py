@@ -71,6 +71,32 @@ def convert_simulation_csv(input_file, output_file, target: str, output_type: st
             df = df.drop(columns=cols_to_drop)
             print(f"Excluded variables: {cols_to_drop}")
     
+    # Reorder columns for agentlib-mpc compatibility:
+    # 1. Time column first
+    # 2. Non-target input features
+    # 3. Recursive target feature (original target column)
+    # 4. Target output column (_absolute or _diff)
+    all_cols = df.columns.tolist()
+    
+    # Separate columns
+    time_col = ['Time']
+    target_output_col = [target_col]  # The created _absolute or _diff column
+    target_input_col = [target]  # The original target column (used as recursive input)
+    
+    # All other columns (non-target inputs)
+    other_cols = [col for col in all_cols 
+                  if col not in time_col + target_output_col + target_input_col]
+    
+    # Reorder: Time -> other inputs -> recursive target -> target output
+    ordered_cols = time_col + other_cols + target_input_col + target_output_col
+    df = df[ordered_cols]
+    
+    print(f"Column order (agentlib-mpc compatible):")
+    print(f"  - Time: {time_col}")
+    print(f"  - Input features: {other_cols}")
+    print(f"  - Recursive target (input): {target_input_col}")
+    print(f"  - Target output: {target_output_col}")
+    
     # Save to output file
     df.to_csv(output_file, index=False)
     print(f"Converted CSV saved to: {output_file}")
