@@ -115,6 +115,17 @@ class MyCasadiModel(CasadiModel):
             name="control_costs",
         )
 
+        # Malicious definition from Issue #101
+        # cooling_load = self.mDot / self.C * (self.T_in - self.T)
+        # complex_objective = cooling_load **2 - cooling_load / self.load
+
+        # obj1 = self.create_sub_objective(
+        #     expressions=complex_objective,
+        #     weight=self.r_mDot,
+        #     name="control_costs",
+        # )
+
+
         obj2 = self.create_sub_objective(
             expressions=self.T_slack**2, weight=1000, name="temp_slack"
         )
@@ -128,6 +139,7 @@ class MyCasadiModel(CasadiModel):
         #         self.s_T * self.T_slack**2,
         #     ]
         # )
+
 
         # Also supported:
         # return obj1 + obj2

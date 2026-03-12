@@ -6,6 +6,40 @@ from typing import Union
 from agentlib_mpc.models.casadi_model import CasadiParameter, CasadiInput
 
 
+def _replace_subexpressions(expr_str):
+    """
+    Replace CasADi subexpression definitions (marked with @N=...) in an expression string
+    with their actual definitions and inline them into the main expression.
+    
+    Args:
+        expr_str: String representation of a CasADi expression
+        
+    Returns:
+        Expression string with subexpressions inlined
+    """
+    if "@" not in expr_str:
+        return expr_str
+    
+    # Extract all subexpression definitions using regex
+    defs = dict(re.findall(r"(@\d+)=(.*?),\s*", expr_str))
+    
+    # Remove the definitions from the expression string
+    clean_expr = re.sub(r"@\d+=.*?,\s*", "", expr_str)
+    
+    # Inline subexpressions into the main expression
+    # Process in order to handle nested references (@2 might reference @1)
+    for subexpr in sorted(defs.keys(), key=lambda x: int(x[1:])):
+        clean_expr = clean_expr.replace(subexpr, f"({defs[subexpr]})")
+    
+    print("Subexpressions found in objective expression:")
+    for subexpr, definition in defs.items():
+        print(f"  {subexpr} = {definition}")
+    print(f"Expression before removing subexpressions: {expr_str}")
+    print(f"Cleaned expression after removing subexpressions: {clean_expr}")
+    
+    return clean_expr
+
+
 class SubObjective:
     def __init__(
         self,
@@ -64,6 +98,9 @@ class SubObjective:
 
         expr_str = str(expr)
 
+        if "@" in expr_str:
+            expr_str = _replace_subexpressions(expr_str)
+
         # Handle common CasADi functions with simple replacements
         casadi_replacements = {
             "sq(": "(",
@@ -71,8 +108,26 @@ class SubObjective:
             "sqrt(": "sqrt(",
             "sin(": "sin(",
             "cos(": "cos(",
+            "tan(": "tan(",
+            "asin(": "arcsin(",
+            "acos(": "arccos(",
+            "atan(": "arctan(",
+            "atan2(": "arctan2(",
+            "sinh(": "sinh(",
+            "cosh(": "cosh(",
+            "tanh(": "tanh(",
+            "asinh(": "arcsinh(",
+            "acosh(": "arccosh(",
+            "atanh(": "arctanh(",
             "exp(": "exp(",
             "log(": "log(",
+            "log10(": "log10(",
+            "pow(": "power(",
+            "floor(": "floor(",
+            "ceil(": "ceil(",
+            "sign(": "sign(",
+            "fmin(": "minimum(",
+            "fmax(": "maximum(",
         }
 
         # Apply replacements
@@ -93,11 +148,40 @@ class SubObjective:
             "sqrt",
             "sin",
             "cos",
+            "tan",
+            "asin",
+            "acos",
+            "atan",
+            "atan2",
+            "sinh",
+            "cosh",
+            "tanh",
+            "asinh",
+            "acosh",
+            "atanh",
             "exp",
             "log",
+            "log10",
             "abs",
+            "pow",
+            "power",
+            "floor",
+            "ceil",
+            "round",
+            "sign",
+            "fmin",
+            "fmax",
             "max",
             "min",
+            "minimum",
+            "maximum",
+            "arcsin",
+            "arccos",
+            "arctan",
+            "arctan2",
+            "arcsinh",
+            "arccosh",
+            "arctanh",
         ]
         var_names = re.findall(r"[a-zA-Z][a-zA-Z0-9_]*", expr_str)
         var_names = [name for name in var_names if name not in casadi_functions]
@@ -120,8 +204,27 @@ class SubObjective:
                     "sqrt": np.sqrt,
                     "sin": np.sin,
                     "cos": np.cos,
+                    "tan": np.tan,
+                    "arcsin": np.arcsin,
+                    "arccos": np.arccos,
+                    "arctan": np.arctan,
+                    "arctan2": np.arctan2,
+                    "sinh": np.sinh,
+                    "cosh": np.cosh,
+                    "tanh": np.tanh,
+                    "arcsinh": np.arcsinh,
+                    "arccosh": np.arccosh,
+                    "arctanh": np.arctanh,
                     "exp": np.exp,
                     "log": np.log,
+                    "log10": np.log10,
+                    "power": np.power,
+                    "floor": np.floor,
+                    "ceil": np.ceil,
+                    "round": np.round,
+                    "sign": np.sign,
+                    "minimum": np.minimum,
+                    "maximum": np.maximum,
                     "max": np.maximum,
                     "min": np.minimum,
                 }
@@ -433,6 +536,10 @@ class ConditionalObjective:
             Boolean Series with True where condition is true
         """
         condition_str = str(condition)
+        
+        # Handle CasADi subexpressions in conditions
+        if "@" in condition_str:
+            condition_str = _replace_subexpressions(condition_str)
 
         identifier_pattern = r'[a-zA-Z_][a-zA-Z0-9_]*'
         potential_vars = re.findall(identifier_pattern, condition_str)

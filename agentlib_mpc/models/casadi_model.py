@@ -336,6 +336,9 @@ class CasadiModel(Model):
                     expressions=self.objective, name=str(self.objective)
                 )
             )
+            # Mark as legacy with a flag (don't override get_casadi_expression,
+            # as it's needed by the discretization code)
+            self.objective._is_legacy_wrapped = True
             warnings.warn(
                 "\033[93mWARNING:\033[0m Model uses the deprecated objective formulation. "
                 "Consider migrating to the new CombinedObjective formulation.\n"
