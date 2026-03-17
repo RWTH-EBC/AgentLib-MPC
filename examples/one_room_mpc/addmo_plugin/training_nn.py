@@ -113,7 +113,7 @@ def configs(
     }
 
     # sample rate is at least 1, and maximum 10
-    t_sample_sim = min(max(1, int(step_size) // 30), 10)
+    t_sample_sim = min(max(1, int(step_size) // 30), 300)
     simulator_config = {
         "id": "Simulator",
         "modules": [
@@ -221,4 +221,4 @@ def main(
 
 
 if __name__ == "__main__":
-    main(training_time=3600 * 24 * 1, plot_results=True, step_size=300)
+    main(training_time=3600 * 24 * 1, plot_results=True, step_size=900)

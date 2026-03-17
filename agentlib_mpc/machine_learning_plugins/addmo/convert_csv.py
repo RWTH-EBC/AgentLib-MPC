@@ -108,7 +108,7 @@ if __name__ == "__main__":
     
     input_file = r"C:\Users\Fred\Desktop\Git\AgentLib-MPC\examples\one_room_mpc\addmo_plugin\results\simulation_data.csv"
     target = "T"  # Column name in simulation CSV
-    output_type = "difference"  # 'absolute' for next value, 'difference' for delta
+    output_type = "absolute"  # 'absolute' for next value, 'difference' for delta
     
     # List of variable names to exclude from the output CSV
     exclude_vars = ['T_out','T_in','T_upper','T_slack']  # Add variable names here, e.g., ['var1', 'var2']
