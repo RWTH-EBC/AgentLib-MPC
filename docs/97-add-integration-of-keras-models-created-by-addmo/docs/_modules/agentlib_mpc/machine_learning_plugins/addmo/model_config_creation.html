@@ -341,10 +341,11 @@
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.addmo.html#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.main">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="n">source_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;C:/Users/Fred/Desktop/Git/AgentLib-MPC/examples/one_room_mpc/addmo_plugin/keras&quot;</span><span class="p">)</span>
-    <span class="n">output_type</span> <span class="o">=</span> <span class="s2">&quot;absolute&quot;</span>
 
     <span class="n">keras_path</span> <span class="o">=</span> <span class="n">source_folder</span> <span class="o">/</span> <span class="s2">&quot;best_model.keras&quot;</span>
     <span class="n">json_path</span> <span class="o">=</span> <span class="n">source_folder</span> <span class="o">/</span> <span class="s2">&quot;best_model_metadata.json&quot;</span>
+
+    <span class="n">dt</span> <span class="o">=</span> <span class="mi">10</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">keras_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">json_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Files not found in </span><span class="si">{</span><span class="n">source_folder</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -355,8 +356,7 @@
     <span class="n">agentlib_config</span> <span class="o">=</span> <span class="n">addmo_2_agentlib_json</span><span class="p">(</span>
         <span class="n">keras_model_path</span><span class="o">=</span><span class="n">keras_path</span><span class="p">,</span>
         <span class="n">addmo_json_path</span><span class="o">=</span><span class="n">json_path</span><span class="p">,</span>
-        <span class="n">dt</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
-        <span class="n">output_type</span><span class="o">=</span><span class="n">output_type</span>
+        <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">source_folder</span> <span class="o">/</span> <span class="s2">&quot;keras_ann.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
