@@ -83,12 +83,12 @@ def configs(
                 "step_size": 300,
                 "module_id": "trainer",
                 "type": "agentlib_mpc.ann_trainer",
-                "epochs": 1000,
+                "epochs": 500,
                 "batch_size": 64,
                 "inputs": [
                     {"name": "mDot", "value": 0.0225, "source": "PID"},
                     {"name": "load", "value": 30, "source": "Simulator"},
-                    {"name": "T_in", "value": 290.15},
+                    # {"name": "T_in", "value": 290.15},
                 ],
                 "outputs": [{"name": "T", "value": 273.15 + 22}],
                 # the lags here are not needed, but we have them to validate the code
@@ -113,7 +113,7 @@ def configs(
     }
 
     # sample rate is at least 1, and maximum 10
-    t_sample_sim = min(max(1, int(step_size) // 30), 300)
+    t_sample_sim = min(max(1, int(step_size) // 30), 10)
     simulator_config = {
         "id": "Simulator",
         "modules": [
@@ -221,4 +221,4 @@ def main(
 
 
 if __name__ == "__main__":
-    main(training_time=3600 * 24 * 1, plot_results=True, step_size=900)
+    main(training_time=3600 * 24 * 1, plot_results=True, step_size=300)

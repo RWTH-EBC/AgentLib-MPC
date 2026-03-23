@@ -268,10 +268,11 @@ def addmo_2_agentlib_json(
 
 def main():
     source_folder = Path("C:/Users/Fred/Desktop/Git/AgentLib-MPC/examples/one_room_mpc/addmo_plugin/keras")
-    output_type = "absolute"
 
     keras_path = source_folder / "best_model.keras"
     json_path = source_folder / "best_model_metadata.json"
+
+    dt = 10
 
     if not keras_path.exists() or not json_path.exists():
         print(f"Files not found in {source_folder}")
@@ -282,8 +283,7 @@ def main():
     agentlib_config = addmo_2_agentlib_json(
         keras_model_path=keras_path,
         addmo_json_path=json_path,
-        dt=300,
-        output_type=output_type
+        dt=dt,
     )
 
     with open(source_folder / "keras_ann.json", 'w') as f:
