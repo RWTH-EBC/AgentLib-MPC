@@ -40,6 +40,58 @@ def _replace_subexpressions(expr_str):
     return clean_expr
 
 
+def _replace_ternary(eval_str):
+    """
+    Replace CasADi ternary expressions like (cond)?true:false with where(cond, true, false).
+    """
+    while "?" in eval_str:
+        q_idx = eval_str.rfind("?")
+        c_idx = eval_str.find(":", q_idx)
+        if q_idx == -1 or c_idx == -1:
+            break
+            
+        # Backward search for condition
+        pares = 0
+        cond_start = 0
+        for i in range(q_idx - 1, -1, -1):
+            if eval_str[i] == ")":
+                pares += 1
+            elif eval_str[i] == "(":
+                pares -= 1
+                if pares < 0:
+                    cond_start = i + 1
+                    break
+        else:
+            cond_start = 0
+                    
+        # Forward search for false_val
+        pares = 0
+        false_end = len(eval_str)
+        for i in range(c_idx + 1, len(eval_str)):
+            if eval_str[i] == "(":
+                pares += 1
+            elif eval_str[i] == ")":
+                pares -= 1
+                if pares < 0:
+                    false_end = i
+                    break
+            elif pares == 0 and eval_str[i] in "+-*/,@":
+                if i > c_idx + 1:
+                    false_end = i
+                    break
+                    
+        cond_str = eval_str[cond_start:q_idx]
+        true_str = eval_str[q_idx + 1 : c_idx]
+        false_str = eval_str[c_idx + 1 : false_end]
+        
+        eval_str = (
+            eval_str[:cond_start]
+            + f"where({cond_str}, {true_str}, {false_str})"
+            + eval_str[false_end:]
+        )
+    return eval_str
+
+
 class SubObjective:
     def __init__(
         self,
@@ -92,6 +144,11 @@ class SubObjective:
         direct expression with a casadi function and map from the available variables"""
         # Handle simple named variables first
         var_name = expr.name
+
+        # Debug
+        print(f"Evaluating expression: {expr}")
+        
+
         for col_type in ["variable", "parameter"]:
             if (col_type, var_name) in df.columns:
                 return df.loc[:, (col_type, var_name)].values[:-1]
@@ -100,6 +157,12 @@ class SubObjective:
 
         if "@" in expr_str:
             expr_str = _replace_subexpressions(expr_str)
+
+        if "?" in expr_str:
+            expr_str = _replace_ternary(expr_str)
+            
+        # Replace logical NOT '!' with bitwise NOT '~' for NumPy arrays
+        expr_str = re.sub(r"(?<![<>=!])!(?!=)", "~", expr_str)
 
         # Handle common CasADi functions with simple replacements
         casadi_replacements = {
@@ -182,6 +245,7 @@ class SubObjective:
             "arcsinh",
             "arccosh",
             "arctanh",
+            "where",
         ]
         var_names = re.findall(r"[a-zA-Z][a-zA-Z0-9_]*", expr_str)
         var_names = [name for name in var_names if name not in casadi_functions]
@@ -227,6 +291,7 @@ class SubObjective:
                     "maximum": np.maximum,
                     "max": np.maximum,
                     "min": np.minimum,
+                    "where": np.where,
                 }
             )
 
@@ -536,10 +601,21 @@ class ConditionalObjective:
             Boolean Series with True where condition is true
         """
         condition_str = str(condition)
+        print(f"Evaluating condition (raw CasADi): {condition_str}")
         
         # Handle CasADi subexpressions in conditions
         if "@" in condition_str:
             condition_str = _replace_subexpressions(condition_str)
+
+        # Handle CasADi ternary expressions (if_else)
+        if "?" in condition_str:
+            condition_str = _replace_ternary(condition_str)
+
+        # Replace CasADi logical operators with Python equivalents for eval
+        condition_str = condition_str.replace("&&", " and ")
+        condition_str = condition_str.replace("||", " or ")
+        condition_str = re.sub(r"(?<![<>=!])!(?!=)", " not ", condition_str)
+        print(f"Evaluating condition (translated for eval): {condition_str}")
 
         identifier_pattern = r'[a-zA-Z_][a-zA-Z0-9_]*'
         potential_vars = re.findall(identifier_pattern, condition_str)
@@ -570,7 +646,9 @@ class ConditionalObjective:
                 local_vars[var_name] = values[i]
             try:
                 eval_str = condition_str
-                result = eval(eval_str, {"__builtins__": {}, "abs": abs, "min": min, "max": max}, local_vars)
+                # Include standard math/numpy functions required by the parser
+                safe_dict = {"__builtins__": {}, "abs": abs, "min": min, "max": max, "where": np.where}
+                result = eval(eval_str, safe_dict, local_vars)
                 mask[i] = bool(result)
 
             except Exception as e:
@@ -578,3 +656,12 @@ class ConditionalObjective:
                 mask[i] = False
 
         return pd.Series(mask, index=df.index)
+
+
+if __name__ == "__main__":
+
+    # test ternary replacement
+    test_expr = "(x > 0) ? (y + 1) : (y - 1)"
+    replaced_expr = _replace_ternary(test_expr)
+    print(f"Original expression: {test_expr}")
+    print(f"Replaced expression: {replaced_expr}")
