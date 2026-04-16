@@ -277,12 +277,41 @@
     <span class="n">output_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;absolute&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 
+    <span class="n">keras_model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">keras_model_path</span><span class="p">)</span>
     <span class="n">json_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">addmo_json_path</span><span class="p">)</span>
+    
     <span class="k">if</span> <span class="ow">not</span> <span class="n">json_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;ADDMO JSON file not found: </span><span class="si">{</span><span class="n">addmo_json_path</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
     
+    <span class="kn">import</span><span class="w"> </span><span class="nn">keras</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="n">keras_model_path</span><span class="p">)</span>
+    <span class="n">last_layer</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="k">if</span> <span class="n">last_layer</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;Normalization&#39;</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">last_layer</span><span class="p">,</span> <span class="s1">&#39;invert&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Replacing reverted Normalization layer </span><span class="si">{</span><span class="n">last_layer</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with Rescaling layer.&quot;</span><span class="p">)</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">last_layer</span><span class="o">.</span><span class="n">mean</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="n">variance</span> <span class="o">=</span> <span class="n">last_layer</span><span class="o">.</span><span class="n">variance</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">)</span>
+        
+        <span class="c1"># Extract single values if they are stored as arrays</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">scale</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">scale</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">scale</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="k">if</span> <span class="n">scale</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">scale</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">mean</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="k">if</span> <span class="n">mean</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">mean</span><span class="o">.</span><span class="n">flatten</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">rescaling_layer</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Rescaling</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">mean</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;fixed_rescaling&quot;</span><span class="p">)</span>
+        <span class="n">new_output</span> <span class="o">=</span> <span class="n">rescaling_layer</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+        <span class="n">new_model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">new_output</span><span class="p">)</span>
+        
+        <span class="n">new_model_path</span> <span class="o">=</span> <span class="n">keras_model_path</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">keras_model_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">_fixed_norm</span><span class="si">{</span><span class="n">keras_model_path</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">new_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">new_model_path</span><span class="p">)</span>
+        <span class="n">keras_model_path</span> <span class="o">=</span> <span class="n">new_model_path</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved modified model to </span><span class="si">{</span><span class="n">new_model_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No reverted Normalization layer found at the end. Last layer is </span><span class="si">{</span><span class="n">last_layer</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">addmo_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     
@@ -340,9 +369,9 @@
 
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.addmo.html#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.main">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-    <span class="n">source_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;C:/Users/Fred/Desktop/Git/AgentLib-MPC/examples/one_room_mpc/addmo_plugin/keras&quot;</span><span class="p">)</span>
+    <span class="n">source_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;C:\Users\sle-fmu\Desktop\Git\AgentLib-MPC\examples\one_room_mpc\addmo_plugin\keras&quot;</span><span class="p">)</span>
 
-    <span class="n">keras_path</span> <span class="o">=</span> <span class="n">source_folder</span> <span class="o">/</span> <span class="s2">&quot;best_model.keras&quot;</span>
+    <span class="n">keras_path</span> <span class="o">=</span> <span class="n">source_folder</span> <span class="o">/</span> <span class="s2">&quot;ml_model.keras&quot;</span>
     <span class="n">json_path</span> <span class="o">=</span> <span class="n">source_folder</span> <span class="o">/</span> <span class="s2">&quot;best_model_metadata.json&quot;</span>
 
     <span class="n">dt</span> <span class="o">=</span> <span class="mi">10</span>
