@@ -204,12 +204,41 @@ def addmo_2_agentlib_json(
     output_type: str = "absolute"
 ) -> dict:
 
+    keras_model_path = Path(keras_model_path)
     json_path = Path(addmo_json_path)
+    
     if not json_path.exists():
         raise FileNotFoundError(
             f"ADDMO JSON file not found: {addmo_json_path}"
         )
     
+    import keras
+    import numpy as np
+    model = keras.models.load_model(keras_model_path)
+    last_layer = model.layers[-1]
+    
+    if last_layer.__class__.__name__ == 'Normalization' and getattr(last_layer, 'invert', False):
+        print(f"Replacing reverted Normalization layer {last_layer.name} with Rescaling layer.")
+        mean = last_layer.mean.numpy()
+        variance = last_layer.variance.numpy()
+        scale = np.sqrt(variance)
+        
+        # Extract single values if they are stored as arrays
+        if hasattr(scale, "shape") and len(scale.shape) > 0:
+            scale = float(scale.item() if scale.size == 1 else scale.flatten()[-1])
+            mean = float(mean.item() if mean.size == 1 else mean.flatten()[-1])
+
+        rescaling_layer = keras.layers.Rescaling(scale=scale, offset=mean, name="fixed_rescaling")
+        new_output = rescaling_layer(model.layers[-2].output)
+        new_model = keras.Model(inputs=model.inputs, outputs=new_output)
+        
+        new_model_path = keras_model_path.with_name(f"{keras_model_path.stem}_fixed_norm{keras_model_path.suffix}")
+        new_model.save(new_model_path)
+        keras_model_path = new_model_path
+        print(f"Saved modified model to {new_model_path}")
+    else:
+        print(f"No reverted Normalization layer found at the end. Last layer is {last_layer.__class__.__name__}.")
+
     with open(json_path, 'r') as f:
         addmo_json = json.load(f)
     
@@ -267,9 +296,9 @@ def addmo_2_agentlib_json(
 
 
 def main():
-    source_folder = Path("C:/Users/Fred/Desktop/Git/AgentLib-MPC/examples/one_room_mpc/addmo_plugin/keras")
+    source_folder = Path(r"C:\Users\sle-fmu\Desktop\Git\AgentLib-MPC\examples\one_room_mpc\addmo_plugin\keras")
 
-    keras_path = source_folder / "best_model.keras"
+    keras_path = source_folder / "ml_model.keras"
     json_path = source_folder / "best_model_metadata.json"
 
     dt = 10
