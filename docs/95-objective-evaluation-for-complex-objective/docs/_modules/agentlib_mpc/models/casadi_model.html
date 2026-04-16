@@ -409,8 +409,7 @@
                     <span class="n">expressions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">objective</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">objective</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="p">)</span>
-            <span class="c1"># Mark as legacy with a flag (don&#39;t override get_casadi_expression,</span>
-            <span class="c1"># as it&#39;s needed by the discretization code)</span>
+            <span class="c1"># Mark as legacy with flag</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">objective</span><span class="o">.</span><span class="n">_is_legacy_wrapped</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
                 <span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[93mWARNING:</span><span class="se">\033</span><span class="s2">[0m Model uses the deprecated objective formulation. &quot;</span>

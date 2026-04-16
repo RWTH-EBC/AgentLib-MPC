@@ -214,10 +214,6 @@
         <span class="c1"># Handle simple named variables first</span>
         <span class="n">var_name</span> <span class="o">=</span> <span class="n">expr</span><span class="o">.</span><span class="n">name</span>
 
-        <span class="c1"># Debug</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Evaluating expression: </span><span class="si">{</span><span class="n">expr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        
-
         <span class="k">for</span> <span class="n">col_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;variable&quot;</span><span class="p">,</span> <span class="s2">&quot;parameter&quot;</span><span class="p">]:</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">col_type</span><span class="p">,</span> <span class="n">var_name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="n">col_type</span><span class="p">,</span> <span class="n">var_name</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -633,13 +629,10 @@
 <span class="sd">            Boolean Series with True where condition is true</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">condition_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">condition</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Evaluating condition (raw CasADi): </span><span class="si">{</span><span class="n">condition_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         
-        <span class="c1"># Handle CasADi subexpressions in conditions</span>
         <span class="k">if</span> <span class="s2">&quot;@&quot;</span> <span class="ow">in</span> <span class="n">condition_str</span><span class="p">:</span>
             <span class="n">condition_str</span> <span class="o">=</span> <span class="n">_replace_subexpressions</span><span class="p">(</span><span class="n">condition_str</span><span class="p">)</span>
 
-        <span class="c1"># Handle CasADi ternary expressions (if_else)</span>
         <span class="k">if</span> <span class="s2">&quot;?&quot;</span> <span class="ow">in</span> <span class="n">condition_str</span><span class="p">:</span>
             <span class="n">condition_str</span> <span class="o">=</span> <span class="n">_replace_ternary</span><span class="p">(</span><span class="n">condition_str</span><span class="p">)</span>
 
@@ -647,7 +640,6 @@
         <span class="n">condition_str</span> <span class="o">=</span> <span class="n">condition_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&amp;&amp;&quot;</span><span class="p">,</span> <span class="s2">&quot; and &quot;</span><span class="p">)</span>
         <span class="n">condition_str</span> <span class="o">=</span> <span class="n">condition_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;||&quot;</span><span class="p">,</span> <span class="s2">&quot; or &quot;</span><span class="p">)</span>
         <span class="n">condition_str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;(?&lt;![&lt;&gt;=!])!(?!=)&quot;</span><span class="p">,</span> <span class="s2">&quot; not &quot;</span><span class="p">,</span> <span class="n">condition_str</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Evaluating condition (translated for eval): </span><span class="si">{</span><span class="n">condition_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">identifier_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;[a-zA-Z_][a-zA-Z0-9_]*&#39;</span>
         <span class="n">potential_vars</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">identifier_pattern</span><span class="p">,</span> <span class="n">condition_str</span><span class="p">)</span>
@@ -678,9 +670,7 @@
                 <span class="n">local_vars</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">eval_str</span> <span class="o">=</span> <span class="n">condition_str</span>
-                <span class="c1"># Include standard math/numpy functions required by the parser</span>
-                <span class="n">safe_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;__builtins__&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;abs&quot;</span><span class="p">:</span> <span class="nb">abs</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="nb">min</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="nb">max</span><span class="p">,</span> <span class="s2">&quot;where&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">}</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">eval_str</span><span class="p">,</span> <span class="n">safe_dict</span><span class="p">,</span> <span class="n">local_vars</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">eval_str</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;__builtins__&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;abs&quot;</span><span class="p">:</span> <span class="nb">abs</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="nb">min</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="nb">max</span><span class="p">,</span> <span class="s2">&quot;where&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">},</span> <span class="n">local_vars</span><span class="p">)</span>
                 <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>

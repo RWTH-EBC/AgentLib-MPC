@@ -365,9 +365,7 @@
         <span class="c1"># Calculate objective values</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">df</span>
         
-        <span class="c1"># Skip objective calculation for legacy objectives (old notation)</span>
-        <span class="c1"># as they may contain conditional expressions that cannot be evaluated</span>
-        <span class="c1"># Legacy objectives are marked with _is_legacy_wrapped flag</span>
+        <span class="c1"># Skip objective calculation for legacy objectives</span>
         <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">objective</span><span class="p">,</span> <span class="s1">&#39;_is_legacy_wrapped&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
             <span class="n">objective_names</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">objective_values</span> <span class="o">=</span> <span class="p">{}</span>
