@@ -136,7 +136,15 @@ class MyCasadiModel(CasadiModel):
             weight=self.s_T,
             name="temperature_slack"
         )
-        objective1 = self.create_combined_objective(obj1_mDot, obj1_slack, normalization=10)
+        objective1_base = self.create_combined_objective(obj1_mDot, obj1_slack, normalization=10)
+        
+        inner_condition = ca.logic_and(self.mDot.sym > 0.01, self.T.sym > 293.0)
+        objective1_alternative = self.create_combined_objective(obj1_mDot, normalization=1)
+        
+        objective1 = self.create_conditional_objective(
+            (inner_condition, objective1_alternative),
+            default_objective=objective1_base
+        )
 
         # Objective 2 (when time >= switch)
         obj2_mDot = self.create_sub_objective(

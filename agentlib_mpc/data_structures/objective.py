@@ -6,16 +6,11 @@ from typing import Union
 from agentlib_mpc.models.casadi_model import CasadiParameter, CasadiInput
 
 
-def _replace_subexpressions(expr_str):
+def _replace_subexpressions(expr_str, verbose=False):
     """
     Replace CasADi subexpression definitions (marked with @N=...) in an expression string
     with their actual definitions and inline them into the main expression.
-    
-    Args:
-        expr_str: String representation of a CasADi expression
-        
-    Returns:
-        Expression string with subexpressions inlined
+
     """
     if "@" not in expr_str:
         return expr_str
@@ -31,11 +26,12 @@ def _replace_subexpressions(expr_str):
     for subexpr in sorted(defs.keys(), key=lambda x: int(x[1:])):
         clean_expr = clean_expr.replace(subexpr, f"({defs[subexpr]})")
     
-    print("Subexpressions found in objective expression:")
-    for subexpr, definition in defs.items():
-        print(f"  {subexpr} = {definition}")
-    print(f"Expression before removing subexpressions: {expr_str}")
-    print(f"Cleaned expression after removing subexpressions: {clean_expr}")
+    if verbose:
+        print("Subexpressions found in objective expression:")
+        for subexpr, definition in defs.items():
+            print(f"  {subexpr} = {definition}")
+        print(f"Expression before removing subexpressions: {expr_str}")
+        print(f"Cleaned expression after removing subexpressions: {clean_expr}")
     
     return clean_expr
 
@@ -205,48 +201,11 @@ class SubObjective:
                 eval_str = eval_str.replace(casadi_func, replacement)
 
         # Extract variable names, filtering out CasADi function names
-        casadi_functions = [
-            "sq",
-            "fabs",
-            "sqrt",
-            "sin",
-            "cos",
-            "tan",
-            "asin",
-            "acos",
-            "atan",
-            "atan2",
-            "sinh",
-            "cosh",
-            "tanh",
-            "asinh",
-            "acosh",
-            "atanh",
-            "exp",
-            "log",
-            "log10",
-            "abs",
-            "pow",
-            "power",
-            "floor",
-            "ceil",
-            "round",
-            "sign",
-            "fmin",
-            "fmax",
-            "max",
-            "min",
-            "minimum",
-            "maximum",
-            "arcsin",
-            "arccos",
-            "arctan",
-            "arctan2",
-            "arcsinh",
-            "arccosh",
-            "arctanh",
-            "where",
-        ]
+        base_funcs = [k.rstrip("(") for k in casadi_replacements.keys()]
+        replaced_funcs = [v.rstrip("(") for v in casadi_replacements.values() if v.endswith("(")]
+        extra_funcs = ["round", "max", "min", "minimum", "maximum", "where", "abs", "power"]
+        casadi_functions = list(set(base_funcs + replaced_funcs + extra_funcs))
+        
         var_names = re.findall(r"[a-zA-Z][a-zA-Z0-9_]*", expr_str)
         var_names = [name for name in var_names if name not in casadi_functions]
 
@@ -656,12 +615,3 @@ class ConditionalObjective:
                 mask[i] = False
 
         return pd.Series(mask, index=df.index)
-
-
-if __name__ == "__main__":
-
-    # test ternary replacement
-    test_expr = "(x > 0) ? (y + 1) : (y - 1)"
-    replaced_expr = _replace_ternary(test_expr)
-    print(f"Original expression: {test_expr}")
-    print(f"Replaced expression: {replaced_expr}")
