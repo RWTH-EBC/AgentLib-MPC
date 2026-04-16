@@ -291,9 +291,7 @@ class CasADiBackend(OptimizationBackend):
         # Calculate objective values
         df = results.df
         
-        # Skip objective calculation for legacy objectives (old notation)
-        # as they may contain conditional expressions that cannot be evaluated
-        # Legacy objectives are marked with _is_legacy_wrapped flag
+        # Skip objective calculation for legacy objectives
         if getattr(self.system.objective, '_is_legacy_wrapped', False):
             objective_names = []
             objective_values = {}

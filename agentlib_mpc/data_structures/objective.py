@@ -141,10 +141,6 @@ class SubObjective:
         # Handle simple named variables first
         var_name = expr.name
 
-        # Debug
-        print(f"Evaluating expression: {expr}")
-        
-
         for col_type in ["variable", "parameter"]:
             if (col_type, var_name) in df.columns:
                 return df.loc[:, (col_type, var_name)].values[:-1]
@@ -560,13 +556,10 @@ class ConditionalObjective:
             Boolean Series with True where condition is true
         """
         condition_str = str(condition)
-        print(f"Evaluating condition (raw CasADi): {condition_str}")
         
-        # Handle CasADi subexpressions in conditions
         if "@" in condition_str:
             condition_str = _replace_subexpressions(condition_str)
 
-        # Handle CasADi ternary expressions (if_else)
         if "?" in condition_str:
             condition_str = _replace_ternary(condition_str)
 
@@ -574,7 +567,6 @@ class ConditionalObjective:
         condition_str = condition_str.replace("&&", " and ")
         condition_str = condition_str.replace("||", " or ")
         condition_str = re.sub(r"(?<![<>=!])!(?!=)", " not ", condition_str)
-        print(f"Evaluating condition (translated for eval): {condition_str}")
 
         identifier_pattern = r'[a-zA-Z_][a-zA-Z0-9_]*'
         potential_vars = re.findall(identifier_pattern, condition_str)
@@ -605,9 +597,7 @@ class ConditionalObjective:
                 local_vars[var_name] = values[i]
             try:
                 eval_str = condition_str
-                # Include standard math/numpy functions required by the parser
-                safe_dict = {"__builtins__": {}, "abs": abs, "min": min, "max": max, "where": np.where}
-                result = eval(eval_str, safe_dict, local_vars)
+                result = eval(eval_str, {"__builtins__": {}, "abs": abs, "min": min, "max": max, "where": np.where}, local_vars)
                 mask[i] = bool(result)
 
             except Exception as e:
