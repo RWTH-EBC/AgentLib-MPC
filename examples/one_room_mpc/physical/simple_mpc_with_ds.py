@@ -147,7 +147,6 @@ AGENT_MPC = {
             "module_id": "Ag1Com", 
             "type": "data_space", 
             "kind":"mpc",
-            "log_level": "DEBUG",
             "service_id": "c383a38a-9fcd-49e3-aaa7-b989606c4e86",
             "parse_json": True
         },
@@ -199,7 +198,6 @@ AGENT_SIM = {
     "modules": [
         {
             "module_id": "Ag1Com", 
-            "log_level": "DEBUG",
             "type": "data_space", 
             "kind": "sim",
             "service_id": "4dfd0de8-fbd4-4d1a-88a7-26d4638a0ae2",
