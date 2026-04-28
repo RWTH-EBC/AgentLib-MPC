@@ -19,6 +19,7 @@ def convert_simulation_csv(
     output_type: str,
     exclude_vars: list[str] = None,
     wanted_sampling_rate: int = 300,
+    lags: dict[str, int] = None,
 ) -> str:
     """
     Convert simulation CSV to normalized format.
@@ -29,6 +30,7 @@ def convert_simulation_csv(
         output_type: 'absolute' or 'difference' for prediction type
         exclude_vars: List of variable names to exclude from the output (optional)
         wanted_sampling_rate: Desired sampling interval in seconds (default: 300)
+        lags: Dictionary indicating the number of lags to add for each feature, e.g., {'T': 2}
         
     Returns:
         Path to the saved output CSV file
@@ -80,7 +82,7 @@ def convert_simulation_csv(
         df[target_col] = df[target].shift(-1)
     elif output_type == "difference":
         # Difference: predict delta = target(k+1) - target(k)
-        target_col = f"{target}_diff"
+        target_col = f"{target}_difference"
         df[target_col] = df[target].shift(-1) - df[target]
     else:
         raise ValueError(f"output_type must be 'absolute' or 'difference', got '{output_type}'")
@@ -97,18 +99,40 @@ def convert_simulation_csv(
         if cols_to_drop:
             df = df.drop(columns=cols_to_drop)
             print(f"Excluded variables: {cols_to_drop}")
+            
+    # Add lags according to ADDMO naming convention.
+    # The integer specified is the TOTAL number of values for that feature 
+    # (e.g. 2 means lag0 and lag1), matching AgentLib's definition.
+    target_input_col = [target]
+    if lags:
+        for feature, total_lags in lags.items():
+            if feature in df.columns and total_lags > 1:
+                # Get index of the feature to insert new lags right after it
+                feature_idx = df.columns.get_loc(feature)
+                df.rename(columns={feature: f"{feature}___lag0"}, inplace=True)
+                for i in range(1, total_lags):
+                    lagged_values = df[f"{feature}___lag0"].shift(i)
+                    # Insert the new column right after the previous lag
+                    df.insert(feature_idx + i, f"{feature}___lag{i}", lagged_values)
+                
+                # Update target input columns if target was lagged
+                if feature == target:
+                    target_input_col = [f"{target}___lag{i}" for i in range(total_lags)]
+                    
+        # Drop rows with NaN caused by shifting for lags
+        df = df.dropna()
     
     # Reorder columns for agentlib-mpc compatibility:
     # 1. Time column first
     # 2. Non-target input features
     # 3. Recursive target feature (original target column)
-    # 4. Target output column (_absolute or _diff)
+    # 4. Target output column (_absolute or _difference)
     all_cols = df.columns.tolist()
     
     # Separate columns
     time_col = ['Time']
-    target_output_col = [target_col]  # The created _absolute or _diff column
-    target_input_col = [target]  # The original target column (used as recursive input)
+    target_output_col = [target_col]  # The created _absolute or _difference column
+    # target_input_col was set above (either [target] or [target___lag0, ...])
     
     # All other columns (non-target inputs)
     other_cols = [col for col in all_cols 
@@ -138,14 +162,14 @@ def convert_simulation_csv(
 
 
 if __name__ == "__main__":
-    
+
+    # Fill out/check these parameters before running the script
     input_file = r"C:\Users\sle-fmu\Desktop\Git\AgentLib-MPC\examples\one_room_mpc\addmo_plugin\results\simulation_data.csv"
-    target = "T"  # Column name in simulation CSV
-    output_type = "absolute"  # 'absolute' for next value, 'difference' for delta
-    wanted_sampling_rate = 300  # Seconds
-    
-    # List of variable names to exclude from the output CSV
-    exclude_vars = ['T_out','T_in','T_upper','T_slack']  # Add variable names here, e.g., ['var1', 'var2']
+    target = "T"  # Name of the variable to predict (must match a column in the input CSV, e.g., 'T')
+    output_type = "difference"  # 'absolute' for next value, 'difference' for delta
+    wanted_sampling_rate = 60  # dt
+    exclude_vars = ['T_out','T_in','T_upper','T_slack']  # Add variables to be excluded here, e.g., ['var1', 'var2']
+    lags = {'mDot': 2, 'load': 2, 'T': 5}  # Add features and total lags here, e.g., {'feature1': 3, 'feature2': 2}
     
     convert_simulation_csv(
         input_file=input_file,
@@ -153,4 +177,5 @@ if __name__ == "__main__":
         output_type=output_type,
         exclude_vars=exclude_vars,
         wanted_sampling_rate=wanted_sampling_rate,
+        lags=lags,
     )

@@ -201,11 +201,18 @@ def addmo_2_agentlib_json(
     keras_model_path: Union[str, Path],
     addmo_json_path: Union[str, Path],
     dt: float,
-    output_type: str = "absolute"
+    output_type: str = "absolute",
+    target_folder: Optional[Union[str, Path]] = None
 ) -> dict:
 
     keras_model_path = Path(keras_model_path)
     json_path = Path(addmo_json_path)
+    
+    if target_folder:
+        target_dir = Path(target_folder)
+        target_dir.mkdir(parents=True, exist_ok=True)
+    else:
+        target_dir = keras_model_path.parent
     
     if not json_path.exists():
         raise FileNotFoundError(
@@ -214,6 +221,7 @@ def addmo_2_agentlib_json(
     
     import keras
     import numpy as np
+    import shutil
     model = keras.models.load_model(keras_model_path)
     last_layer = model.layers[-1]
     
@@ -232,12 +240,16 @@ def addmo_2_agentlib_json(
         new_output = rescaling_layer(model.layers[-2].output)
         new_model = keras.Model(inputs=model.inputs, outputs=new_output)
         
-        new_model_path = keras_model_path.with_name(f"{keras_model_path.stem}_fixed_norm{keras_model_path.suffix}")
+        new_model_path = target_dir / f"{keras_model_path.stem}_fixed_norm{keras_model_path.suffix}"
         new_model.save(new_model_path)
-        keras_model_path = new_model_path
+        final_model_path = new_model_path
         print(f"Saved modified model to {new_model_path}")
     else:
         print(f"No reverted Normalization layer found at the end. Last layer is {last_layer.__class__.__name__}.")
+        final_model_path = target_dir / keras_model_path.name
+        if keras_model_path != final_model_path:
+            shutil.copy2(keras_model_path, final_model_path)
+            print(f"Copied original model to {final_model_path}")
 
     with open(json_path, 'r') as f:
         addmo_json = json.load(f)
@@ -251,7 +263,7 @@ def addmo_2_agentlib_json(
     
     # Detect if target has special suffix indicating state prediction
     # _absolute: absolute next-step prediction (recursive=True, output_type=absolute)
-    # _diff: difference prediction (recursive=True, output_type=difference)
+    # _difference: difference prediction (recursive=True, output_type=difference)
     base_target_name = target_name
     detected_output_type = output_type
     
@@ -259,9 +271,27 @@ def addmo_2_agentlib_json(
         base_target_name = target_name[:-9]
         detected_output_type = "absolute"
 
-    elif target_name.endswith("_diff"):
-        base_target_name = target_name[:-5]
+    elif target_name.endswith("_difference"):
+        base_target_name = target_name[:-11]
         detected_output_type = "difference"
+
+    # AgentLib-MPC limitation: recursive target features must be at the end
+    if base_target_name in feature_lags:
+        num_target_lags = feature_lags[base_target_name]
+        expected_target_features = features_ordered[-num_target_lags:]
+        for feat in expected_target_features:
+            base_name = feat
+            for pattern in [ADDMO_LAG_PATTERN, AGENTLIB_LAG_PATTERN]:
+                match = re.search(pattern, feat)
+                if match:
+                    base_name = feat[:match.start()]
+                    break
+            if base_name != base_target_name:
+                raise ValueError(
+                    f"AgentLib-MPC currently requires the recursive target '{base_target_name}' "
+                    f"to be the last feature(s) in 'features_ordered'. "
+                    f"Please provide a model with reordered features."
+                )
     
     # Check if base target (not the suffixed version) is in feature_lags to determine recursiveness
     recursive = base_target_name in feature_lags
@@ -278,7 +308,7 @@ def addmo_2_agentlib_json(
     )
     
     output_dict = build_output_dict(
-        target_name=base_target_name,  # Use base name, not _absolute/_delta
+        target_name=base_target_name,  # Use base name, not _absolute/_difference
         output_lag=output_lag,
         output_type=detected_output_type,  # Use detected output_type from suffix
         recursive=recursive
@@ -287,7 +317,7 @@ def addmo_2_agentlib_json(
     agentlib_config = {
         "dt": dt,
         "model_type": "KerasANN",
-        "model_path": str(keras_model_path),
+        "model_path": str(final_model_path.absolute()), # Absolute path avoids execution directory issues
         "input": input_dict,
         "output": output_dict
     }
@@ -296,12 +326,13 @@ def addmo_2_agentlib_json(
 
 
 def main():
-    source_folder = Path(r"C:\Users\sle-fmu\Desktop\Git\AgentLib-MPC\examples\one_room_mpc\addmo_plugin\keras")
-
+    # Fill out/check these parameters before running the script
+    source_folder = Path(r"C:\Users\sle-fmu\Desktop\Git\ADDMo\tmp\agentlib_keras_train") # Addmo path with files ml_model.keras and ml_model_metadata.json
+    target_folder = Path(r"C:\Users\sle-fmu\Desktop\Git\AgentLib-MPC\examples\one_room_mpc\addmo_plugin\keras") # Agentlib-MPC path
+    dt = 60
+    
     keras_path = source_folder / "ml_model.keras"
-    json_path = source_folder / "best_model_metadata.json"
-
-    dt = 10
+    json_path = source_folder / "ml_model_metadata.json"
 
     if not keras_path.exists() or not json_path.exists():
         print(f"Files not found in {source_folder}")
@@ -313,9 +344,10 @@ def main():
         keras_model_path=keras_path,
         addmo_json_path=json_path,
         dt=dt,
+        target_folder=target_folder
     )
 
-    with open(source_folder / "keras_ann.json", 'w') as f:
+    with open(target_folder / "keras_ann.json", 'w') as f:
         json.dump(agentlib_config, f, indent=2)
 
     print("Generated AgentLib-MPC Config:")
