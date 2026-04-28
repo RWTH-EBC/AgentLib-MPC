@@ -274,11 +274,18 @@
     <span class="n">keras_model_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
     <span class="n">addmo_json_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
     <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-    <span class="n">output_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;absolute&quot;</span>
+    <span class="n">output_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;absolute&quot;</span><span class="p">,</span>
+    <span class="n">target_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 
     <span class="n">keras_model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">keras_model_path</span><span class="p">)</span>
     <span class="n">json_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">addmo_json_path</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">target_folder</span><span class="p">:</span>
+        <span class="n">target_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">target_folder</span><span class="p">)</span>
+        <span class="n">target_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">target_dir</span> <span class="o">=</span> <span class="n">keras_model_path</span><span class="o">.</span><span class="n">parent</span>
     
     <span class="k">if</span> <span class="ow">not</span> <span class="n">json_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
@@ -287,6 +294,7 @@
     
     <span class="kn">import</span><span class="w"> </span><span class="nn">keras</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="n">keras_model_path</span><span class="p">)</span>
     <span class="n">last_layer</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     
@@ -305,12 +313,16 @@
         <span class="n">new_output</span> <span class="o">=</span> <span class="n">rescaling_layer</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
         <span class="n">new_model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">new_output</span><span class="p">)</span>
         
-        <span class="n">new_model_path</span> <span class="o">=</span> <span class="n">keras_model_path</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">keras_model_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">_fixed_norm</span><span class="si">{</span><span class="n">keras_model_path</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">new_model_path</span> <span class="o">=</span> <span class="n">target_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">keras_model_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">_fixed_norm</span><span class="si">{</span><span class="n">keras_model_path</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">new_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">new_model_path</span><span class="p">)</span>
-        <span class="n">keras_model_path</span> <span class="o">=</span> <span class="n">new_model_path</span>
+        <span class="n">final_model_path</span> <span class="o">=</span> <span class="n">new_model_path</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved modified model to </span><span class="si">{</span><span class="n">new_model_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No reverted Normalization layer found at the end. Last layer is </span><span class="si">{</span><span class="n">last_layer</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">final_model_path</span> <span class="o">=</span> <span class="n">target_dir</span> <span class="o">/</span> <span class="n">keras_model_path</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="n">keras_model_path</span> <span class="o">!=</span> <span class="n">final_model_path</span><span class="p">:</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">keras_model_path</span><span class="p">,</span> <span class="n">final_model_path</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Copied original model to </span><span class="si">{</span><span class="n">final_model_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">addmo_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
@@ -324,7 +336,7 @@
     
     <span class="c1"># Detect if target has special suffix indicating state prediction</span>
     <span class="c1"># _absolute: absolute next-step prediction (recursive=True, output_type=absolute)</span>
-    <span class="c1"># _diff: difference prediction (recursive=True, output_type=difference)</span>
+    <span class="c1"># _difference: difference prediction (recursive=True, output_type=difference)</span>
     <span class="n">base_target_name</span> <span class="o">=</span> <span class="n">target_name</span>
     <span class="n">detected_output_type</span> <span class="o">=</span> <span class="n">output_type</span>
     
@@ -332,9 +344,27 @@
         <span class="n">base_target_name</span> <span class="o">=</span> <span class="n">target_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">9</span><span class="p">]</span>
         <span class="n">detected_output_type</span> <span class="o">=</span> <span class="s2">&quot;absolute&quot;</span>
 
-    <span class="k">elif</span> <span class="n">target_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_diff&quot;</span><span class="p">):</span>
-        <span class="n">base_target_name</span> <span class="o">=</span> <span class="n">target_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">target_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;_difference&quot;</span><span class="p">):</span>
+        <span class="n">base_target_name</span> <span class="o">=</span> <span class="n">target_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">11</span><span class="p">]</span>
         <span class="n">detected_output_type</span> <span class="o">=</span> <span class="s2">&quot;difference&quot;</span>
+
+    <span class="c1"># AgentLib-MPC limitation: recursive target features must be at the end</span>
+    <span class="k">if</span> <span class="n">base_target_name</span> <span class="ow">in</span> <span class="n">feature_lags</span><span class="p">:</span>
+        <span class="n">num_target_lags</span> <span class="o">=</span> <span class="n">feature_lags</span><span class="p">[</span><span class="n">base_target_name</span><span class="p">]</span>
+        <span class="n">expected_target_features</span> <span class="o">=</span> <span class="n">features_ordered</span><span class="p">[</span><span class="o">-</span><span class="n">num_target_lags</span><span class="p">:]</span>
+        <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">expected_target_features</span><span class="p">:</span>
+            <span class="n">base_name</span> <span class="o">=</span> <span class="n">feat</span>
+            <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ADDMO_LAG_PATTERN</span><span class="p">,</span> <span class="n">AGENTLIB_LAG_PATTERN</span><span class="p">]:</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">feat</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="n">base_name</span> <span class="o">=</span> <span class="n">feat</span><span class="p">[:</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">()]</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">base_name</span> <span class="o">!=</span> <span class="n">base_target_name</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;AgentLib-MPC currently requires the recursive target &#39;</span><span class="si">{</span><span class="n">base_target_name</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;to be the last feature(s) in &#39;features_ordered&#39;. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Please provide a model with reordered features.&quot;</span>
+                <span class="p">)</span>
     
     <span class="c1"># Check if base target (not the suffixed version) is in feature_lags to determine recursiveness</span>
     <span class="n">recursive</span> <span class="o">=</span> <span class="n">base_target_name</span> <span class="ow">in</span> <span class="n">feature_lags</span>
@@ -351,7 +381,7 @@
     <span class="p">)</span>
     
     <span class="n">output_dict</span> <span class="o">=</span> <span class="n">build_output_dict</span><span class="p">(</span>
-        <span class="n">target_name</span><span class="o">=</span><span class="n">base_target_name</span><span class="p">,</span>  <span class="c1"># Use base name, not _absolute/_delta</span>
+        <span class="n">target_name</span><span class="o">=</span><span class="n">base_target_name</span><span class="p">,</span>  <span class="c1"># Use base name, not _absolute/_difference</span>
         <span class="n">output_lag</span><span class="o">=</span><span class="n">output_lag</span><span class="p">,</span>
         <span class="n">output_type</span><span class="o">=</span><span class="n">detected_output_type</span><span class="p">,</span>  <span class="c1"># Use detected output_type from suffix</span>
         <span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span>
@@ -360,7 +390,7 @@
     <span class="n">agentlib_config</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="p">,</span>
         <span class="s2">&quot;model_type&quot;</span><span class="p">:</span> <span class="s2">&quot;KerasANN&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;model_path&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">keras_model_path</span><span class="p">),</span>
+        <span class="s2">&quot;model_path&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">final_model_path</span><span class="o">.</span><span class="n">absolute</span><span class="p">()),</span> <span class="c1"># Absolute path avoids execution directory issues</span>
         <span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">input_dict</span><span class="p">,</span>
         <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="n">output_dict</span>
     <span class="p">}</span>
@@ -369,12 +399,13 @@
 
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.addmo.html#agentlib_mpc.machine_learning_plugins.addmo.model_config_creation.main">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-    <span class="n">source_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;C:\Users\sle-fmu\Desktop\Git\AgentLib-MPC\examples\one_room_mpc\addmo_plugin\keras&quot;</span><span class="p">)</span>
-
+    <span class="c1"># Fill out/check these parameters before running the script</span>
+    <span class="n">source_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;C:\Users\sle-fmu\Desktop\Git\ADDMo\tmp\agentlib_keras_train&quot;</span><span class="p">)</span> <span class="c1"># Addmo path with files ml_model.keras and ml_model_metadata.json</span>
+    <span class="n">target_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;C:\Users\sle-fmu\Desktop\Git\AgentLib-MPC\examples\one_room_mpc\addmo_plugin\keras&quot;</span><span class="p">)</span> <span class="c1"># Agentlib-MPC path</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="mi">60</span>
+    
     <span class="n">keras_path</span> <span class="o">=</span> <span class="n">source_folder</span> <span class="o">/</span> <span class="s2">&quot;ml_model.keras&quot;</span>
-    <span class="n">json_path</span> <span class="o">=</span> <span class="n">source_folder</span> <span class="o">/</span> <span class="s2">&quot;best_model_metadata.json&quot;</span>
-
-    <span class="n">dt</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">json_path</span> <span class="o">=</span> <span class="n">source_folder</span> <span class="o">/</span> <span class="s2">&quot;ml_model_metadata.json&quot;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">keras_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">json_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Files not found in </span><span class="si">{</span><span class="n">source_folder</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -386,9 +417,10 @@
         <span class="n">keras_model_path</span><span class="o">=</span><span class="n">keras_path</span><span class="p">,</span>
         <span class="n">addmo_json_path</span><span class="o">=</span><span class="n">json_path</span><span class="p">,</span>
         <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+        <span class="n">target_folder</span><span class="o">=</span><span class="n">target_folder</span>
     <span class="p">)</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">source_folder</span> <span class="o">/</span> <span class="s2">&quot;keras_ann.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">target_folder</span> <span class="o">/</span> <span class="s2">&quot;keras_ann.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">agentlib_config</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Generated AgentLib-MPC Config:&quot;</span><span class="p">)</span>
