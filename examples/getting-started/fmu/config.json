@@ -1,0 +1,24 @@
+{
+    "id": "SimAgent",
+    "modules": [
+        {"module_id": "Ag3Com", "type": "local_broadcast"},
+        {
+            "module_id": "SimRoom",
+            "type": "simulator",
+            "model": {
+                "type": "fmu",
+                "path": "fmu/simple_building.fmu"
+            },
+            "result_causalities": ["input", "output", "local", "parameter"],
+            "measurement_uncertainty": 0.0001,
+            "t_sample": 5,
+            "update_inputs_on_callback": true,
+            "save_results": true,
+            "inputs": [
+                {"name": "Q_in", "value": 0}
+            ],
+            "outputs": [{"name": "T_zone"}],
+            "states": [{"name": "roomCapacity.T"}]
+        }
+    ]
+}

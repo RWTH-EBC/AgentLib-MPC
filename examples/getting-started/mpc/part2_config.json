@@ -1,0 +1,50 @@
+{
+    "id": "myMPCAgent",
+    "modules": [
+        {"module_id": "Ag1Com", "type": "local_broadcast"},
+        {
+            "module_id": "myMPC",
+            "type": "agentlib_mpc.mpc",
+            "optimization_backend": {
+                "type": "casadi",
+                "model": {"type": {"file": "mpc/part2_simple_mpc_model.py", "class_name": "SimpleRoom"}},
+                "results_file": "results/mpc_simple_building_local_broadcast.csv",
+                "overwrite_result_file": true,
+                "discretization_options": {
+                    "collocation_order": 1,
+                    "collocation_method": "radau"
+                },
+                "solver": {
+                    "name": "ipopt",
+                    "options": {
+                        "ipopt": {
+                            "max_iter": 30,
+                            "tol": 0.00001,
+                            "acceptable_tol": 1,
+                            "acceptable_constr_viol_tol": 1,
+                            "acceptable_iter": 3,
+                            "acceptable_compl_inf_tol": 1,
+                            "print_level": 0
+                        }
+                    }
+                }
+            },
+            "time_step": 900,
+            "prediction_horizon": 8,
+            "parameters": [
+                {"name": "s_T", "value": 1000},
+                {"name": "r_pel", "value": 0.1}
+            ],
+            "inputs": [
+                {"name": "T_upper", "value": 299, "interpolation_method": "previous"},
+                {"name": "T_lower", "value": 290, "interpolation_method": "previous"},
+                {"name": "T_amb", "value": 278.15}
+            ],
+            "controls": [{"name": "Q_in", "value": 100, "ub": 200, "lb": -100}],
+            "states": [
+                {"name": "T_zone", "value": 294.15, "ub": 303.15, "lb": 288.15}
+            ],
+            "outputs": [{"name": "P_el","value":0}]
+        }
+    ]
+}
