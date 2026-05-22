@@ -17,22 +17,20 @@ logger = logging.getLogger(__name__)
 
 
 class SimpleRoomModelConfig(CasadiModelConfig):
+
     inputs: List[CasadiInput] = [
-        # controls
         CasadiInput(
             name="Q_in",
             value=100,
             unit="W",
             description="Electrical power of heating rod",
         ),
-        # disturbances
         CasadiInput(
             name="T_amb",
             value=290.15,
             unit="K",
             description="Ambient air temperature",
         ),
-        # settings
         CasadiInput(
             name="T_upper",
             value=294.15,
@@ -44,19 +42,16 @@ class SimpleRoomModelConfig(CasadiModelConfig):
             value=290.15,
             unit="K",
             description="Lower boundary (soft) for T.",
-        )
+        ),
     ]
 
     states: List[CasadiState] = [
-        # differential
         CasadiState(
             name="T_zone",
             value=293.15,
             unit="K",
             description="Temperature of zone",
         ),
-        # algebraic
-        # slack variables
         CasadiState(
             name="T_slack",
             value=0,
@@ -91,12 +86,14 @@ class SimpleRoomModelConfig(CasadiModelConfig):
             description="Weight for P_el in objective function",
         ),
         CasadiParameter(
-            name="Q_sol",
-            value=0
-        ),
-        CasadiParameter(
             name="COP",
             value=3
+        ),
+        CasadiParameter(
+            name="switch",
+            value=3600,
+            unit="s",
+            description="Time threshold for conditional objectives",
         )
     ]
 
@@ -110,31 +107,34 @@ class SimpleRoom(CasadiModel):
     config: SimpleRoomModelConfig
 
     def setup_system(self):
-        # Define ode
-        self.T_zone.ode = (self.Q_in - self.U * (self.T_zone - self.T_amb) + self.Q_sol) / self.C
+        self.T_zone.ode = (self.Q_in - self.U * (self.T_zone - self.T_amb)) / self.C
 
-        # Define algebraic equation
+        self.P_el.alg = ca.fabs(self.Q_in.sym)/self.COP
 
-        self.P_el.alg = ca.fabs(self.Q_in.sym)/self.COP  # casadi fabs = absolute value
-
-        # Constraints: List[(lower bound, function, upper bound)]
         self.constraints = [
-            # soft constraints
+
             (-inf, self.T_zone - self.T_slack, self.T_upper),
             (self.T_lower, self.T_zone + self.T_slack, inf),
             (0, self.T_slack, inf),
-            # hard constraints
+
             (-100, self.Q_in, 200),
             (0, self.P_el, inf)
         ]
 
-        # Objective function
-        objective = sum(
-            [
-                self.T_slack ** 2 * self.s_T,
-                self.P_el * self.r_pel,
-            ]
+        obj_slack_basic = self.create_sub_objective(
+            expressions=self.T_slack**2,
+            weight=self.s_T,
+            name="temp_slack_basic",
+        )
+        obj_power_basic = self.create_sub_objective(
+            expressions=self.P_el,
+            weight=self.r_pel,
+            name="power_basic",
+        )
+        combined_objective_basic = self.create_combined_objective(
+            obj_slack_basic,
+            obj_power_basic,
+            normalization=1,
         )
 
-        return objective
-
+        return combined_objective_basic

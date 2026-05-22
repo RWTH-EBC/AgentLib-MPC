@@ -1,9 +1,8 @@
 '''
-In this example we will present more ways to define objective functions.
+In this example we will present different ways to define objective functions. 
+Check the setup_system function to see how objective functions are defined and returned.
 
 '''
-
-
 
 
 import logging
@@ -129,8 +128,11 @@ class SimpleRoom(CasadiModel):
             (0, self.P_el, inf)
         ]
 
-        # This is one way of defining the objective function. Later tutorials will present more alternatives.
-        # In the first tutorial objective was defined as
+
+
+        # CombinedObjective:
+        #
+        # In part 1 of the tutorial, the objective was defined as
         # 
         #   objective = sum(
         #       [
@@ -139,10 +141,10 @@ class SimpleRoom(CasadiModel):
         #       ]
         #   )
         #
-        # This notation however is deprecated.
-        # The objective function should rather be defined as a CombinedObjective or a
-        # ConditionalObjective. For example, the same objective as above can be
-        # defined as a CombinedObjective as follows:
+        # This notation however is deprecated (but still supported).
+        # The objective function should rather be defined as a CombinedObjective for example. The same objective as above can be
+        # defined as a CombinedObjective, which simply sums up different terms with their respective weights. 
+        # For that, these terms get created as SubObjective objects and then combined via a CombinedObjective:
 
         obj_slack_basic = self.create_sub_objective(
             expressions=self.T_slack**2,
@@ -159,9 +161,16 @@ class SimpleRoom(CasadiModel):
             obj_power_basic,
             normalization=1,
         )
+        # return combined_objective_basic
 
-        # A ConditionalObjective can switch between different combined objectives.
-        # Here, we penalize slack more strongly after 12 hours (43200 seconds).
+
+
+
+
+        # ConditionalObjective:
+        #
+        # A ConditionalObjective can switch between different combined objectives, according to a condition.
+        # Here, we penalize slack more heavily after 12 hours (43200 seconds).
         # For that, we define a second combined objective with higher weight on the slack and then switch between the two objectives based on the time.
         obj_power = self.create_sub_objective(
             expressions=self.P_el,
@@ -180,7 +189,6 @@ class SimpleRoom(CasadiModel):
         )
         obj_slack_high = obj_slack_high * 50
 
-
         # First Objective
         combined_objective = self.create_combined_objective(
             obj_slack,
@@ -193,15 +201,21 @@ class SimpleRoom(CasadiModel):
             obj_power,
             normalization=1,
         )
-
         # Conditional objective
         objective = self.create_conditional_objective(
             (self.time < 43200, combined_objective),
             default_objective=combined_objective_high,
         )
+        # return objective
 
+
+
+
+
+        # Nesting:
+        #
         # In theory, objectives can be nested in arbitrary fashion. 
-        # For example, we could define objectives like in the following.
+        # For example, we could define objectives like shown in the following.
         # Here, the combined objectives used for the final objective are trivial, but they could be more complex like in the examples above.
         obj2_power = self.create_sub_objective(
             expressions=self.P_el,
@@ -231,5 +245,27 @@ class SimpleRoom(CasadiModel):
             (condition, combined_objective_basic),
             default_objective=objective2,
         )
+        return nested_objective_example
+
+
+
+
+
+        # ChangePenaltyObjective:
+        #
+        # Besides these classic objectives, you can define a ChangePenaltyObjective to penalize changes in a control variable.
+        # This creates a specific subtype of SubObjective and therefore can be used in a CombinedObjective or ConditionalObjective just like the other SubObjectives.
+        # Here, we penalize changes in the control input Q_in to avoid aggressive changes in the control trajectory.
+        delta_qin = self.create_change_penalty(
+            expressions=self.Q_in,
+            weight=1,
+            name="delta_qin",
+        )
+        combined_with_delta = self.create_combined_objective(
+            combined_objective_basic,
+            delta_qin,
+            normalization=1,
+        )
+        return combined_with_delta
 
         return objective

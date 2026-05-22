@@ -6,8 +6,9 @@ In this tutorial we learn about:
 - Setting up a multi-agent system with three agents: a simulator agent, predictor agent, and an MPC agent.
 - Running the multi-agent system and retrieving the results.
 
-Run this file to see the multi-agent system in action. 
-In a next step, refer to the simple_mpc_model.py for the details of the MPC agent and to the simple_predictor.py for the details of the predictor agent.
+Run this file to see the multi-agent system in action.
+To understand the structure of the system that is modelled in this tutorial, we recommend to check out the simple_predictor.py file before proceeding.
+Then, you can refer to the part1_simple_mpc_model.py for the first details of the MPC agent.
 """
 
 

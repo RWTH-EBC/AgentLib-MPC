@@ -1,16 +1,34 @@
+"""
+This is part three of the tutorial. 
+In this part we learn about some advanced settings for the MPC agent, in particular:
+    - Changing/setting the solver settings for the MPC agent.
+    - Changing/setting the discretization options for the MPC agent.
+
+All these settings can be specified in the respective configuration. 
+For this part, refer to the configuration in mpc/part3_config.py.
+
+
+"""
+
+
 import logging
 import matplotlib.pyplot as plt
 from agentlib.utils.multi_agent_system import LocalMASAgency
+
+from mpc.part3_config import get_config as get_part3_config
+
 
 
 env_config = {"rt": False}
 
 
+
 agent_configs = [
     "fmu//config.json",
-    "mpc//config.json",
+    get_part3_config(),
     "predictor//config.json",
 ]
+
 
 def run_example():
     logging.basicConfig(level=logging.INFO)
@@ -30,11 +48,10 @@ def run_example():
 
 
 
+# Plotting function for the results of this example.
+# Will produce a helpful plot, but can be ignored for this tutorial.
 
-
-# Plotting function for the results of the example. This is not part of the example itself, but just a simple way to visualize the results.
 def plot_results(results, until):
-    # Simple plots: simulated zone temperature + controlled input.
     sim = results["SimAgent"]["SimRoom"].copy()
     if sim.index.nlevels > 1:
         sim = sim[sim.index.get_level_values(1) == 0].reset_index(level=1, drop=True)
