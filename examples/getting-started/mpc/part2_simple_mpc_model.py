@@ -245,7 +245,7 @@ class SimpleRoom(CasadiModel):
             (condition, combined_objective_basic),
             default_objective=objective2,
         )
-        return nested_objective_example
+        # return nested_objective_example
 
 
 
@@ -266,6 +266,6 @@ class SimpleRoom(CasadiModel):
             delta_qin,
             normalization=1,
         )
-        return combined_with_delta
+        # return combined_with_delta
 
         return objective
