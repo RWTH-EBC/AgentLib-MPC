@@ -4,7 +4,7 @@ Further random variables could be added by defining them in the outputs field.
 You also need to reference them in the config.json which uses this module.
 Optionally, the variable can be changed dynamically by changing the value in the process function.
 
-For example, the solar energy could be added as an additional variable:
+For example, the solar radiation could be added as an additional variable:
 
     al.AgentVariable(
         name="Q_sol", description="Solar radiation in W"

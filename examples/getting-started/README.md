@@ -2,7 +2,8 @@
 
 This is a getting-started tutorial for the AgentLib **AgentLib-MPC** plug-in.
 
-Before starting this tutorial, it helps to complete the AgentLib getting-started tutorial from the main AgentLib repository.
+Before starting this tutorial, it helps to complete the AgentLib getting-started tutorial from the main AgentLib repository:
+https://github.com/RWTH-EBC/AgentLib/tree/main/examples/getting-started
 
 ## Tutorial Structure
 
@@ -12,7 +13,23 @@ This tutorial is split into three parts:
 2. Defining objective functions
 3. Advanced configuration settings for the MPC module
 
-For every part, you will find a dedicated main file and a dedicated mpc module within the mpc folder. The main file hold all basic instructions for their respective part of the tutorial.
+For every part, you will find a dedicated main file and a dedicated MPC module within the `mpc` folder. The main file holds all basic instructions for their respective part of the tutorial.
+
+## General MPC Settings
+
+1. In the configurations you need to define the time step and the prediction horizon of an MPC
+   - `time_step`: Time step after which the optimization problem is solved again
+   - `prediction_horizon`: The prediction horizon over which the MPC looks into the future and over which the optimization is performed
+2. Discretization: The MPC optimization is discretized either with
+   - Multiple Shooting ```"discretization_options": {
+                    "method": "multiple_shooting"
+                }```
+   - Collocation ```"discretization_options": {
+                    "collocation_order": 2,
+                    "collocation_method": "radau"
+                }```
+     - Possible Collocation Methods: radau or legendre
+- Further information to discretization and solver settings can be found in `main_part3.py`
 
 ## Notes
 
@@ -37,4 +54,4 @@ you need to write
 }
 ```
 
-where 60 is just an arbitrary time and can be set to whatever. If you are using AgentLib 0.8.9 or newer, apply this change before proceeding with the tutorial.
+where `60` is just an example value and can be adjusted according to the specific use case. If you are using AgentLib 0.8.9 or newer, apply this change before proceeding with the tutorial.

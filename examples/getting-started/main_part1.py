@@ -21,7 +21,7 @@ from agentlib.utils.multi_agent_system import LocalMASAgency
 env_config = {"rt": False}
 
 # Agents are specified in the same way as it is known from the agentlib.
-# For better structure and readability, we chose to define agents in seperate json files.
+# For better structure and readability, we chose to define agents in separate json files.
 
 agent_configs = [
     "fmu//config.json",
@@ -47,7 +47,6 @@ def run_example():
 
 
     plot_results(results, until)
-
 
 
 

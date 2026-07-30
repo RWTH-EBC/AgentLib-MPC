@@ -138,11 +138,20 @@ class SimpleRoom(CasadiModel):
     config: SimpleRoomModelConfig
 
     def setup_system(self):
+
+        # -------------------
+        # MPC Processmodel
+        # -------------------
+
         # Define ode to represent the mpc's internal model of the system dynamics.
         self.T_zone.ode = (self.Q_in - self.U * (self.T_zone - self.T_amb)) / self.C
 
         # Define algebraic equation 
         self.P_el.alg = ca.fabs(self.Q_in.sym)/self.COP  # casadi fabs = absolute value
+
+        # -------------------
+        # Optimal Control Problem
+        # -------------------
 
         # Constraints: List[(lower bound, function, upper bound)]
         self.constraints = [
