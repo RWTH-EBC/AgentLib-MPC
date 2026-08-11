@@ -1,11 +1,26 @@
 '''
-This is the MPC model module. Its purpose is to define the system dynamics,
-constraints, and objective that the MPC agent optimizes. Further variables can be
-added by defining them in the `inputs`, `states`, `parameters`, or `outputs` fields
-of the model config. You also need to reference them in the config.json that uses
-this module (here: examples/getting-started/mpc/config.json).
+This is the MPC model module. Its purpose is to define the system dynamics, constraints, 
+and objective that the MPC agent optimizes. A model prective control setup consists of a process model and an optimal control problem. 
+The process model is the internal model that is used to predict the future system behavior, while the optimal control problem defines the constraints
+and objective function that the MPC agent optimizes.
 
-For example, the solar energy could (and should) be added as an additional input:
+Constraints can be hard or soft.
+Hard constraints: represented directly as bounded tuples `(lower, expression, upper)` without any slack (for
+example `(-100, self.Q_in, 200)`). The solver must satisfy these exactly. 
+Soft constraints: implemented by introducing a slack variable (an algebraic `CasadiState`)
+so the inequality can be relaxed, e.g. `self.T_zone - self.T_slack <= self.T_upper`. Constrain the slack (e.g. `0 <= self.T_slack`) and
+add a penalty term to the objective function. Violations are allowed but penalized.
+
+The objective function is a weighted sum of the slack variables and other terms. It can be defined in different ways.
+In a following part of this tutorial, they will be demonstrated in more detail.
+All of the above characteristics are defined in the `setup_system` method of the model class (in this file).
+
+Further variables can be added to the model by defining them in the `inputs`, `states`, `parameters`, or `outputs` fields 
+of the model config class. You also need to reference them in the config.json file that uses this module
+(here: examples/getting-started/mpc/part1_config.json).
+
+As you can see in the fmu, the model features a solar radiation input. The internal process model of the mpc
+does not yet account for that. Therefore, the solar energy should be added as an additional input. For example, like:
 
     CasadiInput(
         name="Q_sol", 
@@ -14,19 +29,23 @@ For example, the solar energy could (and should) be added as an additional input
         description="Solar radiation"
     ),
 
-then you need to reference it in the config.json that will use this module (here: examples/getting-started/mpc/config.json). 
-There you could, for example, add this to the inputs list:
+Then you need to reference it in the config.json that uses this module (here: examples/getting-started/mpc/part1_config.json). 
+There you could, for example, add it to the inputs list like this:
 
     "inputs": [
-        {"name": "T_upper", "value": 299, "interpolation_method": "previous"},
-        {"name": "T_lower", "value": 290, "interpolation_method": "previous"},
+        {"name": "T_upper", "value": 298, "interpolation_method": "previous"},
+        {"name": "T_lower", "value": 296, "interpolation_method": "previous"},
         {"name": "T_amb", "value": 278.15},
         {"name": "Q_sol", "value": 0, "interpolation_method": "previous"}
     ],
 
-To add q_sol to the internal model you would have to modify the according ode. For example you could replace it by:
+To add q_sol to the internal model you would have to modify the according ode that is specified in the `setup_system` method
+in the model class. For example you could replace it by:
 
     self.T_zone.ode = (self.Q_in - self.U * (self.T_zone - self.T_amb) + self.Q_sol) / self.C
+
+which will mirror the way the solar radiation is accounted for in the fmu. Run the simulation again and see how
+the MPC agent now accounts for the solar radiation in its predictions and control actions.
 
 '''
 

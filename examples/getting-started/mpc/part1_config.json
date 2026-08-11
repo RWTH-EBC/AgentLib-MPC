@@ -36,8 +36,8 @@
                 {"name": "r_pel", "value": 0.1}
             ],
             "inputs": [
-                {"name": "T_upper", "value": 299, "interpolation_method": "previous"},
-                {"name": "T_lower", "value": 290, "interpolation_method": "previous"},
+                {"name": "T_upper", "value": 298, "interpolation_method": "previous"},
+                {"name": "T_lower", "value": 296, "interpolation_method": "previous"},
                 {"name": "T_amb", "value": 278.15}
             ],
             "controls": [{"name": "Q_in", "value": 100, "ub": 200, "lb": -100}],

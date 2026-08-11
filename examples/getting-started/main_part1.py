@@ -1,20 +1,22 @@
 """
-This is part one of the tutorial. 
+This is part one of the getting-started.
 It shows how to set up a simple multi-agent system with an FMU-based simulator and an MPC agent.
 
 In this tutorial we learn about:
 - Setting up a multi-agent system with three agents: a simulator agent, predictor agent, and an MPC agent.
 - Running the multi-agent system and retrieving the results.
 
-Run this file to see the multi-agent system in action.
-To understand the structure of the system that is modelled in this tutorial, we recommend to check out the simple_predictor.py file before proceeding.
-Then, you can refer to the part1_simple_mpc_model.py for the first details of the MPC agent.
+In this part:
+1. Run this file to see the multi-agent system in action.
+2. Check out the predictor/simple_predictor.py file to understand the structure of the system that is modelled in this tutorial.
+3. Go to mpc/part1_simple_mpc_model.py for the first details of the MPC agent and find out why the simulation is not (yet) correct.
 """
 
 
 import logging
 import matplotlib.pyplot as plt
 from agentlib.utils.multi_agent_system import LocalMASAgency
+from agentlib_mpc.utils.plotting.mpc import plot_mpc
 
 
 
@@ -64,17 +66,44 @@ def plot_results(results, until):
     if q_in.index.nlevels > 1:
         q_in = q_in[q_in.index.get_level_values(1) == 0].reset_index(level=1, drop=True)
 
-    fig, ax = plt.subplots(2, 1, sharex=True)
+    # The MPC results have a MultiIndex (time_step, inner_time) and columns
+    # (value_type, variable). value_type can be 'variable', 'parameter',
+    # 'lower' or 'upper'.
+    mpc.index = mpc.index.set_levels(
+        mpc.index.levels[0] - mpc.index.levels[0][0], level=0
+    )
+
+    fig, ax = plt.subplots(3, 1, figsize=(10, 10), sharex=True)
+
+    # 1) Simulated temperature and its bounds
     ax[0].plot(sim["T_zone"], label="T_zone")
+    ax[0].plot(mpc["parameter"]["T_upper"].groupby(level=0).first(), label="T_upper")
+    ax[0].plot(mpc["parameter"]["T_lower"].groupby(level=0).first(), label="T_lower")
     ax[0].set_ylabel("T_zone in K")
+    ax[0].set_title("Simulated temperature and bounds")
     ax[0].legend()
 
+    # 2) Control input
     ax[1].plot(q_in, label="Q_in")
     ax[1].set_ylabel("Q_in")
-    ax[1].set_xlabel("Time")
+    ax[1].set_title("Control input")
     ax[1].legend()
 
+    # 3) MPC estimated/predicted temperature trajectory over the horizon.
+    #    prediction_step reduces clutter by only plotting every nth trajectory.
+    plot_mpc(
+        series=mpc["variable"]["T_zone"],
+        ax=ax[2],
+        plot_actual_values=True,
+        plot_predictions=True,
+        prediction_step=8,
+    )
+    ax[2].set_ylabel("T_zone in K")
+    ax[2].set_title("MPC estimated temperature trajectory")
+
+    ax[2].set_xlabel("Time")
     plt.xlim([0, until])
+    plt.tight_layout()
     plt.show()
 
 

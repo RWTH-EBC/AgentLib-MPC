@@ -1,7 +1,14 @@
 '''
-In this example we will present different ways to define objective functions. 
+In this example we will present different ways to define objective functions.
 Check the setup_system function to see how objective functions are defined and returned.
 
+The following objective types are demonstrated:
+- CombinedObjective: sum of weighted SubObjectives
+- ConditionalObjective: switch between objectives based on a condition (e.g. time)
+- Nesting: combine objectives in arbitrary fashion
+- ChangePenaltyObjective: penalize changes in a control variable
+
+Each example is commented out; uncomment the one you want to use and return it.
 '''
 
 
@@ -49,6 +56,12 @@ class SimpleRoomModelConfig(CasadiModelConfig):
             value=290.15,
             unit="K",
             description="Lower boundary (soft) for T.",
+        ),
+        CasadiInput(
+            name="Q_sol",
+            value=0,
+            unit="W",
+            description="Solar radiation",
         ),
     ]
 
@@ -114,7 +127,9 @@ class SimpleRoom(CasadiModel):
     config: SimpleRoomModelConfig
 
     def setup_system(self):
-        self.T_zone.ode = (self.Q_in - self.U * (self.T_zone - self.T_amb)) / self.C
+        self.T_zone.ode = (
+            self.Q_in - self.U * (self.T_zone - self.T_amb) + self.Q_sol
+        ) / self.C
 
         self.P_el.alg = ca.fabs(self.Q_in.sym)/self.COP
 
@@ -261,8 +276,9 @@ class SimpleRoom(CasadiModel):
             weight=1,
             name="delta_qin",
         )
+        # A ChangePenaltyObjective is a SubObjective, so it must be wrapped in a
+        # CombinedObjective before being returned (like any other SubObjective).
         combined_with_delta = self.create_combined_objective(
-            combined_objective_basic,
             delta_qin,
             normalization=1,
         )

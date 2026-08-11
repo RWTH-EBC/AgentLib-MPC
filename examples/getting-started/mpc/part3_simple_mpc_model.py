@@ -1,3 +1,11 @@
+'''
+This is the MPC model module for part three of the getting-started.
+The model itself is identical to part 2 (see mpc/part2_simple_mpc_model.py).
+The focus of this part is on the advanced solver and discretization settings,
+which are configured in mpc/part3_config.py rather than in this model file.
+'''
+
+
 import logging
 from typing import List
 import matplotlib.pyplot as plt
@@ -42,6 +50,12 @@ class SimpleRoomModelConfig(CasadiModelConfig):
             value=290.15,
             unit="K",
             description="Lower boundary (soft) for T.",
+        ),
+        CasadiInput(
+            name="Q_sol",
+            value=0,
+            unit="W",
+            description="Solar radiation",
         ),
     ]
 
@@ -107,7 +121,9 @@ class SimpleRoom(CasadiModel):
     config: SimpleRoomModelConfig
 
     def setup_system(self):
-        self.T_zone.ode = (self.Q_in - self.U * (self.T_zone - self.T_amb)) / self.C
+        self.T_zone.ode = (
+            self.Q_in - self.U * (self.T_zone - self.T_amb) + self.Q_sol
+        ) / self.C
 
         self.P_el.alg = ca.fabs(self.Q_in.sym)/self.COP
 

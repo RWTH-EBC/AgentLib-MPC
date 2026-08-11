@@ -15,6 +15,8 @@ This tutorial is split into three parts:
 
 For every part, you will find a dedicated main file and a dedicated MPC module within the `mpc` folder. The main file holds all basic instructions for their respective part of the tutorial.
 
+In part 2, after the static plots are shown, an interactive dashboard is opened. It displays the MPC results and, if available, the solver statistics. This is a helpful tool to further test out how the different objective terms affect the MPC behavior.
+
 ## General MPC Settings
 
 1. In the configurations you need to define the time step and the prediction horizon of an MPC
@@ -29,7 +31,7 @@ For every part, you will find a dedicated main file and a dedicated MPC module w
                     "collocation_method": "radau"
                 }```
      - Possible Collocation Methods: radau or legendre
-- Further information to discretization and solver settings can be found in `main_part3.py`
+- Further information to discretization and solver settings can be found in `mpc/part3_config.py`
 
 ## Notes
 

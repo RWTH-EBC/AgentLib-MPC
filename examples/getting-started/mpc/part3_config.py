@@ -52,15 +52,20 @@ def get_config() -> dict[str, Any]:
                 "inputs": [
                     {
                         "name": "T_upper",
-                        "value": 299,
+                        "value": 298,
                         "interpolation_method": "previous",
                     },
                     {
                         "name": "T_lower",
-                        "value": 290,
+                        "value": 296,
                         "interpolation_method": "previous",
                     },
                     {"name": "T_amb", "value": 278.15},
+                    {
+                        "name": "Q_sol",
+                        "value": 0,
+                        "interpolation_method": "previous",
+                    },
                 ],
                 "controls": [{"name": "Q_in", "value": 100, "ub": 200, "lb": -100}],
                 "states": [
