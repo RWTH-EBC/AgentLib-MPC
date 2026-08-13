@@ -2,7 +2,6 @@ import logging
 import os
 from pathlib import Path
 from typing import List
-
 import pandas as pd
 
 from agentlib_mpc.models.casadi_model import (
