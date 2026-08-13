@@ -1,0 +1,21 @@
+{
+    "id": "myPredictorAgent",
+    "modules": [
+        {"module_id": "Ag2Com", "type": "local_broadcast"},
+        {
+            "module_id": "MyPredictor",
+            "type": {"file": "predictor/simple_predictor.py", "class_name": "PredictorModule"},
+            "parameters": [
+                {"name": "sampling_time", "value": 10},
+                {"name": "time_step","value": 900},
+                {"name": "prediction_horizon","value": 9}
+            ],
+            "outputs": [
+                {"name": "T_amb", "value": 273.15},
+                {"name": "T_upper", "value": 298},
+                {"name": "T_lower", "value": 296},
+                {"name": "Q_sol", "value": 0}
+            ]
+        }
+    ]
+}

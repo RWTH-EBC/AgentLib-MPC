@@ -51,6 +51,7 @@ def plot_mpc(
     plot_predictions: bool = False,
     step: bool = False,
     convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds",
+    prediction_step: int = 1,
 ):
     """
 
@@ -61,6 +62,9 @@ def plot_mpc(
          optimization should be plotted (default True)
         plot_predictions: whether all predicted trajectories should be plotted
         step:
+        prediction_step: Only plot every nth predicted trajectory (e.g. 2 plots every
+         second prediction). Useful to reduce clutter when many predictions overlap.
+         Defaults to 1 (plot all predictions).
         convert_to: Will convert the index of the returned series to the specified unit
          (seconds, minutes, hours, days)
 
@@ -85,7 +89,7 @@ def plot_mpc(
             convert_to
         ]
 
-        if plot_predictions:
+        if plot_predictions and i % prediction_step == 0:
             progress = i / number_of_predictions
             prediction_color = interpolate_colors(
                 progress=progress,
