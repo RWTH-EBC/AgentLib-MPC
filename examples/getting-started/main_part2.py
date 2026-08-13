@@ -98,6 +98,7 @@ def plot_results(results, until):
     ax[2].set_xlabel("Time")
     plt.xlim([0, until])
     plt.tight_layout()
+    plt.savefig("test.png")
     plt.show()
 
     # DASHBOARD

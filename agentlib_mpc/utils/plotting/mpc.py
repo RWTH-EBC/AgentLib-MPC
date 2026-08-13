@@ -50,8 +50,8 @@ def plot_mpc(
     plot_actual_values: bool = True,
     plot_predictions: bool = False,
     step: bool = False,
-    prediction_step: int = 1,
     convert_to: Literal["seconds", "minutes", "hours", "days"] = "seconds",
+    prediction_step: int = 1,
 ):
     """
 

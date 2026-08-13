@@ -8,7 +8,6 @@ which are configured in mpc/part3_config.py rather than in this model file.
 
 import logging
 from typing import List
-import matplotlib.pyplot as plt
 from agentlib_mpc.models.casadi_model import (
     CasadiModel,
     CasadiInput,
@@ -17,7 +16,6 @@ from agentlib_mpc.models.casadi_model import (
     CasadiOutput,
     CasadiModelConfig,
 )
-from agentlib.utils.multi_agent_system import LocalMASAgency
 from math import inf
 import casadi as ca
 

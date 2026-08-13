@@ -1,6 +1,6 @@
 """
-This is the predictor module. Its purpose is to provide random variables to the MPC agent. Its a manually written module and 
-is referenced in the according config.json file (here: examples/getting-started/predictor/config.json). There are three parameters
+This is the predictor module. Its purpose is to provide random variables to the MPC agent. It's a manually written module and
+is referenced in the corresponding config.json file (here: examples/getting-started/predictor/config.json). There are three parameters
 that influence the prediction: time_step, prediction_horizon and sampling_time. time_step determines the time interval between predictions,
 prediction_horizon specifies the number of future time steps to predict, and sampling_time controls how often a new prediction is generated.
 All three parameters therefore also influence the prediction that will be generated in the MPC module.

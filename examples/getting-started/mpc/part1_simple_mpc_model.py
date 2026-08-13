@@ -54,7 +54,6 @@ the MPC agent now accounts for the solar radiation in its predictions and contro
 
 import logging
 from typing import List
-import matplotlib.pyplot as plt
 from agentlib_mpc.models.casadi_model import (
     CasadiModel,
     CasadiInput,
@@ -63,7 +62,6 @@ from agentlib_mpc.models.casadi_model import (
     CasadiOutput,
     CasadiModelConfig,
 )
-from agentlib.utils.multi_agent_system import LocalMASAgency
 from math import inf
 import casadi as ca
 
