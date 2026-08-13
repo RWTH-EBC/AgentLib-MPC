@@ -43,9 +43,6 @@ def run_example():
 
     plot_results(results, until)
 
-
-
-
 # Plotting function for the results of this example.
 # Will produce a helpful plot, but can be ignored for this tutorial.
 
