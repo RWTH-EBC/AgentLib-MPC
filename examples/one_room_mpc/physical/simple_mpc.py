@@ -22,7 +22,6 @@ logger = logging.getLogger(__name__)
 ub = 295.15
 prediction_horizon = 300 * 15
 
-
 class MyCasadiModelConfig(CasadiModelConfig):
     inputs: List[CasadiInput] = [
         # controls
