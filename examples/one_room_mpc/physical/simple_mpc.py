@@ -15,7 +15,6 @@ from agentlib_mpc.models.casadi_model import (
 from agentlib.utils.multi_agent_system import LocalMASAgency
 from agentlib_mpc.utils.plotting.interactive import show_dashboard
 
-
 logger = logging.getLogger(__name__)
 
 # script variables
