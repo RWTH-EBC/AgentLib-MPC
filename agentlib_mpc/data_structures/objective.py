@@ -149,7 +149,9 @@ def _replace_ternary(eval_str):
             + f"where({cond_str}, {true_str}, {false_str})"
             + eval_str[false_end:]
         )
-    return eval_strclass SubObjective:
+    return eval_str
+
+class SubObjective:
 
     _warned_names = set()
 
@@ -683,10 +685,11 @@ class ConditionalObjective:
             Boolean Series with True where condition is true
         """
         condition_str = str(condition)
-        
+
         if "@" in condition_str:
             condition_str = _replace_subexpressions(condition_str)
-		if "?" in condition_str:
+
+        if "?" in condition_str:
             condition_str = _replace_ternary(condition_str)
 
         # Replace CasADi logical operators with Python equivalents for eval
