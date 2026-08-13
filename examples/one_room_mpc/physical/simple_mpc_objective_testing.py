@@ -163,18 +163,6 @@ class MyCasadiModel(CasadiModel):
 
         # Conditional objective based on time
         condition = self.time < self.switch.sym
-        
-        condition = self.time <= self.switch.sym
-        condition = self.time >= self.switch.sym
-        condition = self.time == self.switch.sym
-        condition = self.time != self.switch.sym
-        condition = ca.logic_and(self.time < self.switch.sym, self.time >= 0)
-        condition = ca.logic_or(self.time < self.switch.sym, self.time >= 7200)
-        condition = ca.logic_not(self.time < self.switch.sym)
-        condition = ca.if_else(self.time < self.switch.sym, 1, 0) > 0
-        
-        condition = ca.if_else(self.time < self.switch.sym, ca.if_else(self.time > 100, 1, ca.if_else(self.time == 0, 0, 1)), ca.if_else(self.time < 300, 0, 0)) > 0
-        
 
         objective = self.create_conditional_objective(
             (condition, objective1),
@@ -293,18 +281,18 @@ def run_example(
     mpc_results = results["myMPCAgent"]["myMPC"]
     sim_res = results["SimAgent"]["room"]
 
+
     if with_dashboard:
-        if with_dashboard:
-            from agentlib_mpc.utils.analysis import load_mpc_stats
+        from agentlib_mpc.utils.analysis import load_mpc_stats
 
-            mpc_result_file = "results//mpc.csv"
+        mpc_result_file = "results//mpc.csv"
 
-            try:
-                stats = load_mpc_stats(mpc_result_file)
-            except Exception:
-                stats = None
+        try:
+            stats = load_mpc_stats(mpc_result_file)
+        except Exception:
+            stats = None
 
-            show_dashboard(mpc_results, stats)
+        show_dashboard(mpc_results, stats)
 
     if with_plots:
         plot(mpc_results, sim_res, until)
@@ -326,7 +314,7 @@ def plot(mpc_results: pd.DataFrame, sim_res: pd.DataFrame, until: float):
         * 1
         / 3600
     )  # cp is 1
-    print(f"Absoulute integral error: {aie_kh} Kh.")
+    print(f"Absolute integral error: {aie_kh} Kh.")
     print(f"Cooling energy used: {energy_cost_kWh} kWh.")
 
     plot_mpc(
