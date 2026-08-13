@@ -9,8 +9,6 @@ In this part:
 3. Compare the result with part 1 if you want to see how the objective setup changed.
 
 """
-
-
 import logging
 import matplotlib.pyplot as plt
 from agentlib.utils.multi_agent_system import LocalMASAgency
