@@ -124,7 +124,7 @@ def configs(
                         "class_name": "PhysicalModel",
                     },
                 },
-                "t_sample": t_sample_sim,
+                "t_sample_simulation": t_sample_sim,
                 "save_results": plot_results,
                 "result_filename": "results//simulation_data.csv",
                 "result_causalities": ["local", "input", "output"],
@@ -139,7 +139,7 @@ def configs(
             {
                 "module_id": "input_generator",
                 "type": "simulator",
-                "t_sample": step_size,
+                "t_sample_simulation": step_size,
                 "model": {"type": {"file": __file__, "class_name": "InputGenerator"}},
                 "outputs": [
                     # {"name": "mDot"},

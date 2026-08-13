@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.3 
+- Bug fix: circular import of objective in casadi model
+
+## 1.0.2
+- Bug fix: The code should not fail if objective logging cannot evaluate the expression.
+
+## 1.0.1
+- Bugfixes
 
 ## 1.0.0
 - New objective handling: Introduce subobjective classes for more intuitive parameterization of weights. As well as for reading out the solved subobjective functions.

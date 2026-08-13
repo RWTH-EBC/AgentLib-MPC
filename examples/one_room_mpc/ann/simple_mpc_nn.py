@@ -108,7 +108,7 @@ def run_example(with_plots=True, log_level=logging.INFO, until=8000, testing=Fal
         ann_path = list(Path.cwd().glob("anns/*/ml_model.json"))[-1]
     except IndexError:
         # if there is none, we have to perform the training first
-        import examples.one_room_mpc.ann.training_nn as training
+        import training_nn as training
 
         training.main(training_time=3600 * 24 * 1, plot_results=False, step_size=300)
         ann_path = list(Path.cwd().glob("anns/*/ml_model.json"))[-1]

@@ -116,7 +116,7 @@ class MyCasadiModel(CasadiModel):
         )
 
         obj2 = self.create_sub_objective(
-            expressions=self.T_slack**2, weight=1000, name="temp_slack"
+            expressions=self.T_slack**2, weight=self.s_T, name="temp_slack"
         )
 
         objective = self.create_combined_objective(obj1, obj2, normalization=1)
@@ -164,8 +164,8 @@ AGENT_MPC = {
             "time_step": 300,
             "prediction_horizon": 15,
             "parameters": [
-                {"name": "s_T", "value": 0.01},
-                {"name": "r_mDot", "value": 0.001},
+                {"name": "s_T", "value": 0.001},
+                {"name": "r_mDot", "value": 0.01},
             ],
             "inputs": [
                 {"name": "T_in", "value": 290.15},

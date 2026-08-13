@@ -115,7 +115,8 @@ def create_optimization_backend(optimization_backend, agent_id):
             "Given model config does not contain key 'type' (type of the model)."
         )
     _type = optimization_backend.pop("type")
-    optimization_backend["name"] = agent_id
+    optimization_backend["name"] = agent_id if "name" not in optimization_backend \
+        else optimization_backend["name"]
     if isinstance(_type, dict):
         custom_cls = custom_injection(config=_type)
         backend = custom_cls(config=optimization_backend)
@@ -347,7 +348,7 @@ class BaseMPC(BaseModule):
             ub = self.get(control).ub
             lb = self.get(control).lb
             # take the first entry of the control trajectory
-            actuation = float(solution[control][0])
+            actuation = solution[control][0].item()
             # if variables only slightly breach boundaries, clip
             if ub < actuation < ub + tolerance:
                 actuation = ub

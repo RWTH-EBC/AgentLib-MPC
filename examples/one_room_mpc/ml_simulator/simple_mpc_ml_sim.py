@@ -46,7 +46,7 @@ def agent_configs(ml_model_mpc_path: str, ml_model_sim_path: str) -> list[dict]:
                     "overwrite_result_file": True,
                     "solver": {"name": "ipopt"},
                 },
-                "time_step": 300,
+                "time_step": 600,
                 "prediction_horizon": 15,
                 "parameters": [
                     {"name": "s_T", "value": 10},
@@ -77,7 +77,8 @@ def agent_configs(ml_model_mpc_path: str, ml_model_sim_path: str) -> list[dict]:
                     },
                     "ml_model_sources": [ml_model_sim_path],
                 },
-                "t_sample": 50,
+                "t_sample_simulation": 50,
+                "t_sample_communication": 50,
                 "save_results": True,
                 "result_causalities": ["input", "output", "local"],
                 "update_inputs_on_callback": False,

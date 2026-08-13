@@ -174,9 +174,17 @@ class CoordinatedADMM(MiniEmployee, ADMM):
         cons_traj = {}
         exchange_traj = {}
         for coup in self.config.couplings:
-            cons_traj[coup.alias] = self._result[coup.name].ravel()
+            result = self._result[coup.name]
+            if isinstance(result, pd.Series):
+                result = result.to_numpy()
+            result = result.ravel()
+            cons_traj[coup.alias] = result
         for exchange in self.config.exchange:
-            exchange_traj[exchange.alias] = self._result[exchange.name].ravel()
+            result = self._result[exchange.name]
+            if isinstance(result, pd.Series):
+                result = result.to_numpy()
+            result = result.ravel()
+            exchange_traj[exchange.alias] = result
 
         opt_return = adt.AgentToCoordinator(
             local_trajectory=cons_traj, local_exchange_trajectory=exchange_traj

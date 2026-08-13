@@ -86,6 +86,12 @@ if __name__ == "__main__":
     To simulate this in a new directory, first use 'trainmodel.py' to generate
     serialized ANNs. The Serialized ANNs are not uploaded to not pollute git
     """
+    import warnings
+
+    warnings.warn(
+        "This example is currently broken, although the core feature (data-driven "
+        "ADMM) should work in theory. Wait for future updates to resolve."
+    )
     start = time.perf_counter()
     run_example(
         with_plots=True,
