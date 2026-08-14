@@ -79,7 +79,7 @@
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/data_structures/admm_datatypes.py: Fatal error while checking &#39;agentlib_mpc/data_structures/admm_datatypes.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-08.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/data_structures/admm_datatypes.py: Fatal error while checking &#39;agentlib_mpc/data_structures/admm_datatypes.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-20.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -103,7 +103,7 @@
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/data_structures/casadi_utils.py: Fatal error while checking &#39;agentlib_mpc/data_structures/casadi_utils.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-02.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/data_structures/casadi_utils.py: Fatal error while checking &#39;agentlib_mpc/data_structures/casadi_utils.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-12.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -385,7 +385,7 @@
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/data_structures/ml_model_datatypes.py: Fatal error while checking &#39;agentlib_mpc/data_structures/ml_model_datatypes.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-08.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/data_structures/ml_model_datatypes.py: Fatal error while checking &#39;agentlib_mpc/data_structures/ml_model_datatypes.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-20.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -409,7 +409,7 @@
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/data_structures/mpc_datamodels.py: Fatal error while checking &#39;agentlib_mpc/data_structures/mpc_datamodels.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-08.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/data_structures/mpc_datamodels.py: Fatal error while checking &#39;agentlib_mpc/data_structures/mpc_datamodels.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-20.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -453,7 +453,7 @@
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/data_structures/objective.py: Fatal error while checking &#39;agentlib_mpc/data_structures/objective.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-08.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/data_structures/objective.py: Fatal error while checking &#39;agentlib_mpc/data_structures/objective.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-20.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -581,7 +581,7 @@
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py: Fatal error while checking &#39;agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-08.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py: Fatal error while checking &#39;agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-21.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -647,7 +647,9 @@
             denotation=&#34;rho&#34;,
             variables=[CasadiParameter(name=&#34;penalty_factor&#34;)],
             ref_list=[&#34;penalty_factor&#34;],
-        )</pre></td>
+        )
+
+        # add admm terms to objective function</pre></td>
             </tr>
             
             <tr>
@@ -696,19 +698,20 @@
             ref_list=var_ref.parameters,
         )
         self.initial_state = OptimizationParameter.declare(
-            denotation=&#34;initial_state&#34;,
+            denotation=&#34;initial_state&#34;,  # append the 0 as a convention to get initial guess
             variables=model.get_states(var_ref.states),
             ref_list=var_ref.states,
             use_in_stage_function=False,
             assert_complete=True,
         )
         self.last_control = OptimizationParameter.declare(
-            denotation=&#34;initial_control&#34;,
+            denotation=&#34;initial_control&#34;,  # append the 0 as a convention to get initial guess
             variables=model.get_inputs(var_ref.controls),
             ref_list=var_ref.controls,
             use_in_stage_function=False,
             assert_complete=True,
-        )</pre></td>
+        )
+</pre></td>
             </tr>
             
             <tr>
@@ -825,7 +828,7 @@
             output_denotations,
         )
 
-    def _create_lag_structure_for_denotations(self, system: CasadiMLSystem):</pre></td>
+</pre></td>
             </tr>
             
             <tr>
@@ -1036,18 +1039,18 @@
                 <td><pre>Similar lines in 2 files
 ==agentlib_mpc.utils.plotting.interactive:[453:483]
 ==agentlib_mpc.utils.plotting.mpc_dashboard:[316:353]
-                        ),
-                        style={
-                            &#34;min-width&#34;: &#34;600px&#34;,
-                            &#34;min-height&#34;: &#34;400px&#34;,
-                            &#34;max-width&#34;: &#34;900px&#34;,
-                            &#34;max-height&#34;: &#34;450px&#34;,
-                        },
-                    ),
-                ],
-                className=&#34;draggable&#34;,
-            )
-        )
+                                ),
+                                style={
+                                    &#34;min-width&#34;: &#34;600px&#34;,
+                                    &#34;min-height&#34;: &#34;400px&#34;,
+                                    &#34;max-width&#34;: &#34;900px&#34;,
+                                    &#34;max-height&#34;: &#34;450px&#34;,
+                                },
+                            ),
+                        ],
+                        className=&#34;draggable&#34;,
+                    )
+                )
 
     return html.Div(
         components,
@@ -1063,9 +1066,16 @@
     )
 
 
-def obj_plot(
-    data, convert_to: Literal[&#34;seconds&#34;, &#34;minutes&#34;, &#34;hours&#34;, &#34;days&#34;] = &#34;seconds&#34;
-) -&gt; dcc.Graph:</pre></td>
+def detect_index_type(data: pd.DataFrame) -&gt; Tuple[bool, bool]:
+    &#34;&#34;&#34;
+    Detect the type of index in the DataFrame.
+
+    Args:
+        data: DataFrame to check
+
+    Returns:
+        Tuple of (is_multi_index, is_datetime)
+    &#34;&#34;&#34;</pre></td>
             </tr>
             
             <tr>
@@ -1348,7 +1358,7 @@ def obj_plot(
         constraint_lb_denotations = [LB_PREFIX + k for k in constraints]
         constraint_ub_denotations = [UB_PREFIX + k for k in constraints]
 
-        # aggregate outputs</pre></td>
+        # create a dictionary which holds all the inputs for the sim step of the model</pre></td>
             </tr>
             
             <tr>
@@ -1452,7 +1462,7 @@ class MultipleShooting(basic.MultipleShooting):
             self.k += 1
             self.pred_time = ts * self.k
 
-            # New NLP variable for differential state at end of interval
+            # New NLP variables at end of interval
             xk = self.add_opt_var(sys.states)
 
             # Add continuity constraint
@@ -1562,32 +1572,31 @@ class MultipleShooting(basic.MultipleShooting):
         ),
         xaxis_title=x_axis_label,
         yaxis_title=y_axis_label,
-        uirevision=&#34;same&#34;,  # Add this line
+        uirevision=&#34;same&#34;,
     )
 
     return fig
 
 
-def plot_admm_plotly(
-    series: pd.Series,
-    plot_actual_values: bool = True,
-    plot_predictions: bool = False,
+def make_components(
+    data: pd.DataFrame,
+    convert_to: str,
+    stats: Optional[pd.DataFrame] = None,
+    use_datetime: bool = False,
     step: bool = False,
-    convert_to: Literal[&#34;seconds&#34;, &#34;minutes&#34;, &#34;hours&#34;, &#34;days&#34;] = &#34;seconds&#34;,
-):
+) -&gt; html.Div:
     &#34;&#34;&#34;
+    Create dashboard components from MPC data and stats.
+
     Args:
-        series: A column of the MPC results Dataframe
-        fig: Plotly figure to plot on
-        plot_actual_values: whether the closed loop actual values at the start of each
-         optimization should be plotted (default True)
-        plot_predictions: whether all predicted trajectories should be plotted
-        step: whether to use a step plot or a line plot
-        convert_to: Will convert the index of the returned series to the specified unit
-         (seconds, minutes, hours, days)
+        data: DataFrame with MPC data
+        convert_to: Time unit for plotting
+        stats: Optional DataFrame with MPC statistics
+        use_datetime: Whether to interpret timestamps as datetime
+        step: Whether to use step plots
 
     Returns:
-        None
+        Dash HTML Div containing all components
     &#34;&#34;&#34;</pre></td>
             </tr>
             
@@ -1619,7 +1628,10 @@ def plot_admm_plotly(
     def quantities(self) -&gt; list[Union[OptimizationParameter, OptimizationVariable]]:
         return self.variables + self.parameters
 
-</pre></td>
+    @property
+    def sim_step_quantities(
+        self,
+    ) -&gt; dict[str, Union[OptimizationParameter, OptimizationVariable]]:</pre></td>
             </tr>
             
             <tr>
@@ -1684,18 +1696,20 @@ def plot_admm_plotly(
                 <td><pre>Similar lines in 2 files
 ==agentlib_mpc.utils.plotting.interactive:[179:191]
 ==agentlib_mpc.utils.plotting.mpc_dashboard:[154:168]
-            actual_values[time_converted] = prediction.loc[0]
-        except KeyError:
-            pass
-        prediction.index = (prediction.index + time_seconds) / TIME_CONVERSION[
-            convert_to
-        ]
+                actual_values[time_converted] = prediction.loc[0]
+            except KeyError:
+                pass
+            prediction.index = (prediction.index + time_seconds) / TIME_CONVERSION[
+                convert_to
+            ]
 
         progress = i / number_of_predictions
         prediction_color = interpolate_colors(
             progress=progress,
             colors=[EBCColors.red, EBCColors.dark_grey],
-        )</pre></td>
+        )
+
+        # For MHE data, use a different line style to visually distinguish from MPC</pre></td>
             </tr>
             
             <tr>
@@ -1781,18 +1795,18 @@ from agentlib_mpc.optimization_backends.casadi_.core.system import System
                 <td><pre>Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.mhe:[458:470]
 ==agentlib_mpc.utils.sampling:[79:91]
-        target_grid_length = len(grid)
-        if isinstance(trajectory, (float, int)):
-            # return constant trajectory for scalars
-            return [trajectory] * target_grid_length
-        if isinstance(trajectory, list):
-            # return lists of matching length without timestamps
-            if len(trajectory) == target_grid_length:
-                return trajectory
-            raise ValueError(
-                f&#34;Passed list with length {len(trajectory)} &#34;
-                f&#34;does not match target ({target_grid_length}).&#34;
-            )</pre></td>
+    target_grid_length = len(grid)
+    if isinstance(trajectory, (float, int)):
+        # return constant trajectory for scalars
+        return [trajectory] * target_grid_length
+    if isinstance(trajectory, list):
+        # return lists of matching length without timestamps
+        if len(trajectory) == target_grid_length:
+            return trajectory
+        raise ValueError(
+            f&#34;Passed list with length {len(trajectory)} &#34;
+            f&#34;does not match target ({target_grid_length}).&#34;
+        )</pre></td>
             </tr>
             
             <tr>
@@ -1861,7 +1875,8 @@ from agentlib_mpc.optimization_backends.casadi_.core.system import System
         all_input_variables = {}
         lagged_inputs: dict[int, dict[str, ca.MX]] = {}
         # dict[lag, dict[denotation, list[var_name]]]
-        lagged_input_names: dict[int, dict[str, list[str]]] = {}</pre></td>
+        lagged_input_names: dict[int, dict[str, list[str]]] = {}
+</pre></td>
             </tr>
             
             <tr>
@@ -2187,6 +2202,7 @@ class DirectCollocation(Discretization):
 ==agentlib_mpc.optimization_backends.casadi_.admm:[144:155]
 ==agentlib_mpc.optimization_backends.casadi_.full:[121:130]
         while self.k &lt; n:
+            # New NLP variable for the control
             u_prev = uk
             uk = self.add_opt_var(sys.controls)
 
@@ -2194,7 +2210,8 @@ class DirectCollocation(Discretization):
                 self.objective_function += delta_u.get_objective(
                     sys, delta_obj, u_prev, uk, const_par
                 )
-</pre></td>
+
+            # perform inner collocation loop</pre></td>
             </tr>
             
             <tr>
@@ -2219,8 +2236,7 @@ class DirectCollocation(Discretization):
         uk = self.add_opt_par(sys.last_control)
 
         # Parameters that are constant over the horizon
-        const_par = self.add_opt_par(sys.model_parameters)
-</pre></td>
+        const_par = self.add_opt_par(sys.model_parameters)</pre></td>
             </tr>
             
             <tr>
@@ -2335,20 +2351,16 @@ class DirectCollocation(Discretization):
                 <td><pre>Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.mhe:[532:542]
 ==agentlib_mpc.utils.sampling:[154:168]
-    )
+            )
 
-    # extrapolate sequence with last available value if necessary
-    interpolated_trajectory = (
-        [values[0]] * number_of_missing_old_entries
-        + sequence_new
-        + [values[-1]] * number_of_missing_new_entries
-    )
+        # extrapolate sequence with last available value if necessary
+        interpolated_trajectory = (
+            [values[0]] * number_of_missing_old_entries
+            + sequence_new
+            + [values[-1]] * number_of_missing_new_entries
+        )
 
-    return interpolated_trajectory
-
-
-def pairwise(iterable: Iterable):
-    &#34;s -&gt; (s0,s1), (s1,s2), (s2, s3), ...&#34;</pre></td>
+        return interpolated_trajectory</pre></td>
             </tr>
             
             <tr>
@@ -2439,6 +2451,7 @@ class DirectCollocation(basic.DirectCollocation):
         ode = sys.ode
         # create inputs
         x = sys.states.full_symbolic
+        # the order of elements here is important when calling the integrator!
         p = ca.vertcat(
             sys.controls.full_symbolic,</pre></td>
             </tr>
@@ -2478,7 +2491,7 @@ class DirectCollocation(basic.DirectCollocation):
         constraint_lb_denotations = [LB_PREFIX + k for k in constraints]
         constraint_ub_denotations = [UB_PREFIX + k for k in constraints]
 
-        # aggregate outputs</pre></td>
+        # create a dictionary which holds all the inputs for the sim step of the model</pre></td>
             </tr>
             
             <tr>
@@ -2559,7 +2572,9 @@ class DirectCollocation(basic.DirectCollocation):
 
         # Parameters that are constant over the horizon
         const_par = self.add_opt_par(sys.model_parameters)
-</pre></td>
+
+        # Formulate the NLP
+        # loop over prediction horizon</pre></td>
             </tr>
             
             <tr>
@@ -2741,12 +2756,12 @@ from agentlib_mpc.data_structures.casadi_utils import (
                 <td><pre>Similar lines in 2 files
 ==agentlib_mpc.utils.plotting.interactive:[444:450]
 ==agentlib_mpc.utils.plotting.mpc_dashboard:[277:283]
-                components.append(
-                    html.Div(
-                        [
-                            dcc.Graph(
-                                id=f&#34;plot-{column}&#34;,
-                                figure=plot_mpc_plotly(</pre></td>
+        components.append(
+            html.Div(
+                [
+                    dcc.Graph(
+                        id=f&#34;plot-{column}&#34;,
+                        figure=plot_mpc_plotly(</pre></td>
             </tr>
             
             <tr>
@@ -2807,14 +2822,14 @@ def load_agent_data(directory: str) -&gt; Dict[str, pd.DataFrame]:
                 <td><pre>Similar lines in 2 files
 ==agentlib_mpc.optimization_backends.casadi_.mhe:[473:481]
 ==agentlib_mpc.utils.sampling:[103:111]
-    else:
-        raise TypeError(
-            f&#34;Passed trajectory of type &#39;{type(trajectory)}&#39; &#34; f&#34;cannot be sampled.&#34;
-        )
-    target_grid = np.array(grid) + current
+        else:
+            raise TypeError(
+                f&#34;Passed trajectory of type &#39;{type(trajectory)}&#39; &#34; f&#34;cannot be sampled.&#34;
+            )
+        target_grid = np.array(grid) + current
 
-    # expand scalar values
-    if len(source_grid) == 1:</pre></td>
+        # expand scalar values
+        if len(source_grid) == 1:</pre></td>
             </tr>
             
             <tr>
@@ -2853,7 +2868,9 @@ def load_agent_data(directory: str) -&gt; Dict[str, pd.DataFrame]:
 
         # Initial State
         x0 = self.add_opt_par(sys.initial_state)
-        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)</pre></td>
+        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)
+
+        # Parameters that are constant over the horizon</pre></td>
             </tr>
             
             <tr>
@@ -2892,7 +2909,9 @@ def load_agent_data(directory: str) -&gt; Dict[str, pd.DataFrame]:
 
         # Initial State
         x0 = self.add_opt_par(sys.initial_state)
-        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)</pre></td>
+        xk = self.add_opt_var(sys.states, lb=x0, ub=x0, guess=x0)
+
+        # Parameters that are constant over the horizon</pre></td>
             </tr>
             
             <tr>
@@ -2946,7 +2965,8 @@ def load_agent_data(directory: str) -&gt; Dict[str, pd.DataFrame]:
         if not results_file:
             return
         os.remove(results_file)
-        os.remove(mpc_datamodels.stats_path(results_file))</pre></td>
+        os.remove(mpc_datamodels.stats_path(results_file))
+</pre></td>
             </tr>
             
             <tr>
@@ -2997,11 +3017,11 @@ def load_agent_data(directory: str) -&gt; Dict[str, pd.DataFrame]:
                 <td><pre>Similar lines in 2 files
 ==agentlib_mpc.utils.plotting.admm_dashboard:[532:537]
 ==agentlib_mpc.utils.plotting.interactive:[36:41]
-                xref=&#34;paper&#34;,
-                yref=&#34;paper&#34;,
-                x=0.5,
-                y=0.5,
-                showarrow=False,</pre></td>
+            xref=&#34;paper&#34;,
+            yref=&#34;paper&#34;,
+            x=0.5,
+            y=0.5,
+            showarrow=False,</pre></td>
             </tr>
             
             <tr>
@@ -3212,7 +3232,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py: Fatal error while checking &#39;agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-08.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py: Fatal error while checking &#39;agentlib_mpc/machine_learning_plugins/physXAI/model_generation.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-20.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -3440,7 +3460,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/models/casadi_ml_model.py: Fatal error while checking &#39;agentlib_mpc/models/casadi_ml_model.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-02.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/models/casadi_ml_model.py: Fatal error while checking &#39;agentlib_mpc/models/casadi_ml_model.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-12.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -3514,7 +3534,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/models/casadi_model.py: Fatal error while checking &#39;agentlib_mpc/models/casadi_model.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-02.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/models/casadi_model.py: Fatal error while checking &#39;agentlib_mpc/models/casadi_model.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-13.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -3668,7 +3688,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/models/casadi_predictor.py: Fatal error while checking &#39;agentlib_mpc/models/casadi_predictor.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-02.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/models/casadi_predictor.py: Fatal error while checking &#39;agentlib_mpc/models/casadi_predictor.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-12.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -3992,7 +4012,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/models/serialized_ml_model.py: Fatal error while checking &#39;agentlib_mpc/models/serialized_ml_model.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-02.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/models/serialized_ml_model.py: Fatal error while checking &#39;agentlib_mpc/models/serialized_ml_model.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-13.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -4418,7 +4438,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/modules/data_source.py: Fatal error while checking &#39;agentlib_mpc/modules/data_source.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-04.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/modules/data_source.py: Fatal error while checking &#39;agentlib_mpc/modules/data_source.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-15.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -4532,7 +4552,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py: Fatal error while checking &#39;agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-05.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py: Fatal error while checking &#39;agentlib_mpc/modules/deactivate_mpc/deactivate_mpc.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-17.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -4606,7 +4626,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/modules/deactivate_mpc/fallback_pid.py: Fatal error while checking &#39;agentlib_mpc/modules/deactivate_mpc/fallback_pid.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-05.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/modules/deactivate_mpc/fallback_pid.py: Fatal error while checking &#39;agentlib_mpc/modules/deactivate_mpc/fallback_pid.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-17.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -4674,7 +4694,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/modules/dmpc/admm/admm.py: Fatal error while checking &#39;agentlib_mpc/modules/dmpc/admm/admm.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-05.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/modules/dmpc/admm/admm.py: Fatal error while checking &#39;agentlib_mpc/modules/dmpc/admm/admm.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-16.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -4698,7 +4718,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/modules/dmpc/admm/admm_coordinated.py: Fatal error while checking &#39;agentlib_mpc/modules/dmpc/admm/admm_coordinated.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-05.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/modules/dmpc/admm/admm_coordinated.py: Fatal error while checking &#39;agentlib_mpc/modules/dmpc/admm/admm_coordinated.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-16.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -4722,7 +4742,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/modules/dmpc/admm/admm_coordinator.py: Fatal error while checking &#39;agentlib_mpc/modules/dmpc/admm/admm_coordinator.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-05.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/modules/dmpc/admm/admm_coordinator.py: Fatal error while checking &#39;agentlib_mpc/modules/dmpc/admm/admm_coordinator.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-16.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -4766,7 +4786,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/modules/dmpc/coordinator.py: Fatal error while checking &#39;agentlib_mpc/modules/dmpc/coordinator.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-04.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/modules/dmpc/coordinator.py: Fatal error while checking &#39;agentlib_mpc/modules/dmpc/coordinator.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-15.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -4984,7 +5004,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/modules/estimation/mhe.py: Fatal error while checking &#39;agentlib_mpc/modules/estimation/mhe.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-05.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/modules/estimation/mhe.py: Fatal error while checking &#39;agentlib_mpc/modules/estimation/mhe.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-17.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -5346,7 +5366,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/modules/ml_model_training/ml_model_trainer.py: Fatal error while checking &#39;agentlib_mpc/modules/ml_model_training/ml_model_trainer.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-05.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/modules/ml_model_training/ml_model_trainer.py: Fatal error while checking &#39;agentlib_mpc/modules/ml_model_training/ml_model_trainer.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-16.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -5400,7 +5420,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/modules/ml_model_training/setpoint_generator.py: Fatal error while checking &#39;agentlib_mpc/modules/ml_model_training/setpoint_generator.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-05.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/modules/ml_model_training/setpoint_generator.py: Fatal error while checking &#39;agentlib_mpc/modules/ml_model_training/setpoint_generator.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-16.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -5548,7 +5568,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/modules/mpc/mpc.py: Fatal error while checking &#39;agentlib_mpc/modules/mpc/mpc.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-06.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/modules/mpc/mpc.py: Fatal error while checking &#39;agentlib_mpc/modules/mpc/mpc.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-17.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -5646,7 +5666,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/modules/mpc/skippable_mixin.py: Fatal error while checking &#39;agentlib_mpc/modules/mpc/skippable_mixin.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-06.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/modules/mpc/skippable_mixin.py: Fatal error while checking &#39;agentlib_mpc/modules/mpc/skippable_mixin.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-17.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -5714,7 +5734,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/optimization_backends/backend.py: Fatal error while checking &#39;agentlib_mpc/optimization_backends/backend.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-06.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/optimization_backends/backend.py: Fatal error while checking &#39;agentlib_mpc/optimization_backends/backend.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-18.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -6446,7 +6466,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py: Fatal error while checking &#39;agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-07.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py: Fatal error while checking &#39;agentlib_mpc/optimization_backends/casadi_/casadi_admm_ml.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-19.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -6490,7 +6510,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/optimization_backends/casadi_/casadi_ml.py: Fatal error while checking &#39;agentlib_mpc/optimization_backends/casadi_/casadi_ml.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-06.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/optimization_backends/casadi_/casadi_ml.py: Fatal error while checking &#39;agentlib_mpc/optimization_backends/casadi_/casadi_ml.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-18.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -6628,7 +6648,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py: Fatal error while checking &#39;agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-07.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py: Fatal error while checking &#39;agentlib_mpc/optimization_backends/casadi_/core/casadi_backend.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-19.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -6786,7 +6806,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/optimization_backends/casadi_/core/discretization.py: Fatal error while checking &#39;agentlib_mpc/optimization_backends/casadi_/core/discretization.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-07.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/optimization_backends/casadi_/core/discretization.py: Fatal error while checking &#39;agentlib_mpc/optimization_backends/casadi_/core/discretization.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-20.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -6810,7 +6830,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/optimization_backends/casadi_/core/system.py: Fatal error while checking &#39;agentlib_mpc/optimization_backends/casadi_/core/system.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-07.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/optimization_backends/casadi_/core/system.py: Fatal error while checking &#39;agentlib_mpc/optimization_backends/casadi_/core/system.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-19.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -7088,7 +7108,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/optimization_backends/casadi_/mhe.py: Fatal error while checking &#39;agentlib_mpc/optimization_backends/casadi_/mhe.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-07.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/optimization_backends/casadi_/mhe.py: Fatal error while checking &#39;agentlib_mpc/optimization_backends/casadi_/mhe.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-18.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -7376,7 +7396,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/optimization_backends/casadi_/minlp_cia.py: Fatal error while checking &#39;agentlib_mpc/optimization_backends/casadi_/minlp_cia.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-07.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/optimization_backends/casadi_/minlp_cia.py: Fatal error while checking &#39;agentlib_mpc/optimization_backends/casadi_/minlp_cia.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-19.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -7410,7 +7430,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/utils/__init__.py: Fatal error while checking &#39;agentlib_mpc/utils/__init__.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-03.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/utils/__init__.py: Fatal error while checking &#39;agentlib_mpc/utils/__init__.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-14.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -7444,7 +7464,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/utils/analysis.py: Fatal error while checking &#39;agentlib_mpc/utils/analysis.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-03.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/utils/analysis.py: Fatal error while checking &#39;agentlib_mpc/utils/analysis.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-13.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -7518,7 +7538,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/utils/plotting/admm_animation.py: Fatal error while checking &#39;agentlib_mpc/utils/plotting/admm_animation.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-04.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/utils/plotting/admm_animation.py: Fatal error while checking &#39;agentlib_mpc/utils/plotting/admm_animation.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-14.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -7706,7 +7726,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/utils/plotting/admm_dashboard.py: Fatal error while checking &#39;agentlib_mpc/utils/plotting/admm_dashboard.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-03.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/utils/plotting/admm_dashboard.py: Fatal error while checking &#39;agentlib_mpc/utils/plotting/admm_dashboard.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-14.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -7800,7 +7820,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/utils/plotting/admm_residuals.py: Fatal error while checking &#39;agentlib_mpc/utils/plotting/admm_residuals.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-04.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/utils/plotting/admm_residuals.py: Fatal error while checking &#39;agentlib_mpc/utils/plotting/admm_residuals.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-14.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -7874,7 +7894,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/utils/plotting/basic.py: Fatal error while checking &#39;agentlib_mpc/utils/plotting/basic.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-01.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/utils/plotting/basic.py: Fatal error while checking &#39;agentlib_mpc/utils/plotting/basic.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-11.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -7908,7 +7928,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/utils/plotting/discretization_structure.py: Fatal error while checking &#39;agentlib_mpc/utils/plotting/discretization_structure.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-04.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/utils/plotting/discretization_structure.py: Fatal error while checking &#39;agentlib_mpc/utils/plotting/discretization_structure.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-14.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -7992,7 +8012,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/utils/plotting/interactive.py: Fatal error while checking &#39;agentlib_mpc/utils/plotting/interactive.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-04.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/utils/plotting/interactive.py: Fatal error while checking &#39;agentlib_mpc/utils/plotting/interactive.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-15.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -8026,7 +8046,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/utils/plotting/ml_model_test.py: Fatal error while checking &#39;agentlib_mpc/utils/plotting/ml_model_test.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-03.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/utils/plotting/ml_model_test.py: Fatal error while checking &#39;agentlib_mpc/utils/plotting/ml_model_test.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-14.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -8080,7 +8100,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/utils/plotting/mpc.py: Fatal error while checking &#39;agentlib_mpc/utils/plotting/mpc.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-04.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/utils/plotting/mpc.py: Fatal error while checking &#39;agentlib_mpc/utils/plotting/mpc.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-15.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -8114,7 +8134,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/utils/plotting/mpc_dashboard.py: Fatal error while checking &#39;agentlib_mpc/utils/plotting/mpc_dashboard.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-03.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/utils/plotting/mpc_dashboard.py: Fatal error while checking &#39;agentlib_mpc/utils/plotting/mpc_dashboard.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-14.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -8188,7 +8208,7 @@ try:
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>agentlib_mpc/utils/sampling.py: Fatal error while checking &#39;agentlib_mpc/utils/sampling.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-13-15-05-03.txt&#39;.</pre></td>
+                <td><pre>agentlib_mpc/utils/sampling.py: Fatal error while checking &#39;agentlib_mpc/utils/sampling.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-08-14-07-12-14.txt&#39;.</pre></td>
             </tr>
             
             <tr>
