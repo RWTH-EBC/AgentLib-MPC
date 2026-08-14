@@ -283,7 +283,6 @@ def plot(mpc_results: pd.DataFrame, sim_res: pd.DataFrame, until: float):
     ax[1].set_xlim([0, until])
     plt.show()
 
-
 if __name__ == "__main__":
     run_example(
         with_plots=True, with_dashboard=True, until=7200, log_level=logging.INFO
