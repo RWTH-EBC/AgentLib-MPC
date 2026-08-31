@@ -89,26 +89,26 @@
     <span class="c1"># plot_actual_values: bool = False,</span>
     <span class="c1"># step: bool = False,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        series:</span>
 
 <span class="sd">    Returns:</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;parameter&quot;</span><span class="p">][</span><span class="n">adt</span><span class="o">.</span><span class="n">MEAN_PREFIX</span> <span class="o">+</span> <span class="n">name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="s2">"parameter"</span><span class="p">][</span><span class="n">adt</span><span class="o">.</span><span class="n">MEAN_PREFIX</span> <span class="o">+</span> <span class="n">name</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">local</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;variable&quot;</span><span class="p">][</span><span class="n">adt</span><span class="o">.</span><span class="n">LOCAL_PREFIX</span> <span class="o">+</span> <span class="n">name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="s2">"variable"</span><span class="p">][</span><span class="n">adt</span><span class="o">.</span><span class="n">LOCAL_PREFIX</span> <span class="o">+</span> <span class="n">name</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">lmbda</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;parameter&quot;</span><span class="p">][</span><span class="n">adt</span><span class="o">.</span><span class="n">MULTIPLIER_PREFIX</span> <span class="o">+</span> <span class="n">name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="s2">"parameter"</span><span class="p">][</span><span class="n">adt</span><span class="o">.</span><span class="n">MULTIPLIER_PREFIX</span> <span class="o">+</span> <span class="n">name</span><span class="p">]</span>
 
-    <span class="n">room_2</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;CooledRoom_nn2&quot;</span><span class="p">][</span><span class="s2">&quot;admm_module&quot;</span><span class="p">]</span>
+    <span class="n">room_2</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s2">"CooledRoom_nn2"</span><span class="p">][</span><span class="s2">"admm_module"</span><span class="p">]</span>
     <span class="n">trajectories</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span><span class="p">:</span> <span class="n">admm_at_time_step</span><span class="p">(</span><span class="n">srs</span><span class="p">)</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">srs</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
     <span class="c1"># check the number of iterations on a random trajectory</span>
@@ -137,14 +137,14 @@
         <span class="c1"># if not step:</span>
         <span class="c1">#     prediction.plot(ax=ax, color=prediction_color)</span>
         <span class="c1"># else:</span>
-        <span class="c1">#     prediction.plot(ax=ax, color=prediction_color, drawstyle=&quot;steps-post&quot;)</span>
+        <span class="c1">#     prediction.plot(ax=ax, color=prediction_color, drawstyle="steps-post")</span>
 
     <span class="c1"># if plot_actual_values:</span>
     <span class="c1">#     actual_series = pd.Series(actual_values)</span>
     <span class="c1">#     if not step:</span>
-    <span class="c1">#         actual_series.plot(ax=ax, color=&quot;black&quot;)</span>
+    <span class="c1">#         actual_series.plot(ax=ax, color="black")</span>
     <span class="c1">#     else:</span>
-    <span class="c1">#         actual_series.plot(ax=ax, color=EBCColors.dark_red, drawstyle=&quot;steps-post&quot;)</span>
+    <span class="c1">#         actual_series.plot(ax=ax, color=EBCColors.dark_red, drawstyle="steps-post")</span>
 
     <span class="c1"># last_index = prediction.index[-1]</span>
     <span class="c1"># num_iters = last_index[1]</span>

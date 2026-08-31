@@ -72,7 +72,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for agentlib_mpc.optimization_backends.casadi_.core.discretization</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Holds classes that implement different transcriptions of the OCP&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""Holds classes that implement different transcriptions of the OCP"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
@@ -115,15 +115,15 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_variable_name_to_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable_lookup</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">iters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;iterations&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;obj&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">iters</span><span class="p">[</span><span class="s2">&quot;obj&quot;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">iters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"iterations"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"obj"</span><span class="p">]</span> <span class="o">=</span> <span class="n">iters</span><span class="p">[</span><span class="s2">"obj"</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">pass</span>
-        <span class="k">if</span> <span class="s2">&quot;fatrop&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;ng&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;nu&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;nx&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;fatrop&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"fatrop"</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"ng"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"nu"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"nx"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"fatrop"</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span><span class="p">[</span>
@@ -131,10 +131,10 @@
         <span class="p">]</span><span class="o">.</span><span class="n">toarray</span><span class="p">(</span><span class="n">simplify</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Results.variable_lookup"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.variable_lookup">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">variable_lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a mapping from variable names to the column index in the Matrix&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Creates a mapping from variable names to the column index in the Matrix"""</span>
         <span class="n">lookup</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">label</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;variable&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">label</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"variable"</span><span class="p">:</span>
                 <span class="n">lookup</span><span class="p">[</span><span class="n">label</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">index</span>
         <span class="k">return</span> <span class="n">lookup</span></div>
 
@@ -147,36 +147,36 @@
         <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Results.write_combined_stats_columns"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.write_combined_stats_columns">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_combined_stats_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">objective_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write headers for combined stats and objective data with prefixes&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Write headers for combined stats and objective data with prefixes"""</span>
         <span class="c1"># Add prefixes to distinguish objective from stats columns</span>
-        <span class="n">tagged_obj_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;obj_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">objective_names</span><span class="p">]</span>
-        <span class="n">tagged_stats_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;stats_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
-        <span class="n">combined_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">tagged_obj_names</span> <span class="o">+</span> <span class="n">tagged_stats_names</span>
-        <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;,</span><span class="si">{</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">combined_names</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">tagged_obj_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"obj_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">objective_names</span><span class="p">]</span>
+        <span class="n">tagged_stats_names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"stats_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+        <span class="n">combined_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"time"</span><span class="p">]</span> <span class="o">+</span> <span class="n">tagged_obj_names</span> <span class="o">+</span> <span class="n">tagged_stats_names</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">""",</span><span class="si">{</span><span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">combined_names</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="si">}</span><span class="se">\n</span><span class="s2">"""</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Results.combined_stats_line"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.combined_stats_line">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">combined_stats_line</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">objective_values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">objective_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a line with both objective and stats values&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Generate a line with both objective and stats values"""</span>
         <span class="c1"># Use the same order as in the headers</span>
-        <span class="n">obj_values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">objective_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">objective_names</span><span class="p">]</span>
+        <span class="n">obj_values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">objective_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">""</span><span class="p">))</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">objective_names</span><span class="p">]</span>
         <span class="n">stats_values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
         <span class="n">combined_values</span> <span class="o">=</span> <span class="n">obj_values</span> <span class="o">+</span> <span class="n">stats_values</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">&quot;,</span><span class="si">{</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">combined_values</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">",</span><span class="si">{</span><span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">combined_values</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s1">'</span></div>
 
 <div class="viewcode-block" id="Results.write_stats_columns"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.write_stats_columns">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_stats_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
-        <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;,</span><span class="si">{</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">""",</span><span class="si">{</span><span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">"""</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Results.stats_line"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Results.stats_line">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">stats_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;&quot;</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;,</span><span class="si">{</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;&quot;&quot;</span></div></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">""""</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">",</span><span class="si">{</span><span class="s2">","</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span><span class="si">}</span><span class="se">\n</span><span class="s2">"""</span></div></div>
 
 
 <div class="viewcode-block" id="Discretization"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Discretization</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    opt_vars: holds symbolic variables during problem creation</span>
 <span class="sd">    opt_vars_lb: holds symbolic variables during problem creation</span>
 <span class="sd">    opt_vars_ub: holds symbolic variables during problem creation</span>
@@ -190,7 +190,7 @@
 <span class="sd">        problem creation sorted by type as in system_variables</span>
 <span class="sd">    mpc_opt_pars (dict): holds the symbolic variables and grids during</span>
 <span class="sd">        problem creation sorted by type as in system_parameters</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">_stage_function</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span>
     <span class="n">_mpc_inputs_to_nlp_inputs</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span>
@@ -228,8 +228,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="Discretization.initialize"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.initialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">,</span> <span class="n">solver_factory</span><span class="p">:</span> <span class="n">SolverFactory</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the trajectory optimization problem, creating all symbolic</span>
-<span class="sd">        variables of the OCP, the mapping function and the numerical solver.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Initializes the trajectory optimization problem, creating all symbolic</span>
+<span class="sd">        variables of the OCP, the mapping function and the numerical solver."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_discretize</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_finished_discretization</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_nlp_in_out_mapping</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
@@ -237,11 +237,11 @@
 
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_discretize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="n">System</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Specifies the discretization of direct optimization methods like</span>
+<span class="w">        </span><span class="sd">"""Specifies the discretization of direct optimization methods like</span>
 <span class="sd">        collocation, multiple shooting etc. This function creates the lists of</span>
 <span class="sd">        variables, parameters, constraints etc. by using the self.add_opt_var functions.</span>
 <span class="sd">        For an example see optimization_backends.casadi_.basic</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="o">...</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solver_factory</span><span class="p">:</span> <span class="n">SolverFactory</span><span class="p">):</span>
@@ -250,7 +250,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Discretization.solve"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.solve">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mpc_inputs</span><span class="p">:</span> <span class="n">MPCInputs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Results</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Solves the discretized trajectory optimization problem.</span>
 
 <span class="sd">        Args:</span>
@@ -267,7 +267,7 @@
 <span class="sd">                variable and parameter over the prediction horizon, as well as solve</span>
 <span class="sd">                statistics.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># collect and format inputs</span>
         <span class="n">guesses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_determine_initial_guess</span><span class="p">(</span><span class="n">mpc_inputs</span><span class="p">)</span>
         <span class="n">mpc_inputs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">guesses</span><span class="p">)</span>
@@ -277,26 +277,26 @@
         <span class="n">nlp_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="p">(</span><span class="o">**</span><span class="n">nlp_inputs</span><span class="p">)</span>
 
         <span class="c1"># format and return solution</span>
-        <span class="n">mpc_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nlp_outputs_to_mpc_outputs</span><span class="p">(</span><span class="n">vars_at_optimum</span><span class="o">=</span><span class="n">nlp_output</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">])</span>
+        <span class="n">mpc_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nlp_outputs_to_mpc_outputs</span><span class="p">(</span><span class="n">vars_at_optimum</span><span class="o">=</span><span class="n">nlp_output</span><span class="p">[</span><span class="s2">"x"</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_remember_solution</span><span class="p">(</span><span class="n">mpc_output</span><span class="p">)</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_solution</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">mpc_inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">mpc_output</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_determine_initial_guess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mpc_inputs</span><span class="p">:</span> <span class="n">MPCInputs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MPCInputs</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Collects initial guesses for all mpc variables. If possible, uses result</span>
 <span class="sd">        of last optimization.</span>
 <span class="sd">        If not available, the current measurement is used for states, and the mean of</span>
 <span class="sd">        the upper and lower bound is used otherwise.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">guesses</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">for</span> <span class="n">denotation</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpc_opt_vars</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">guess</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">opt</span>
             <span class="k">if</span> <span class="n">guess</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># if initial value is available, assume it is constant and make guess</span>
-                <span class="n">guess_denotation</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;initial_</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">guess_denotation</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"initial_</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">"</span>
                 <span class="k">if</span> <span class="n">guess_denotation</span> <span class="ow">in</span> <span class="n">mpc_inputs</span><span class="p">:</span>
                     <span class="c1"># changes here because of the long guess.array caused by np.tile for lags</span>
                     <span class="k">if</span> <span class="n">mpc_inputs</span><span class="p">[</span><span class="n">guess_denotation</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -309,8 +309,8 @@
                     <span class="n">guess</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
                         <span class="mf">0.5</span>
                         <span class="o">*</span> <span class="p">(</span>
-                            <span class="n">mpc_inputs</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;lb_</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
-                            <span class="o">+</span> <span class="n">mpc_inputs</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;ub_</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+                            <span class="n">mpc_inputs</span><span class="p">[</span><span class="sa">f</span><span class="s2">"lb_</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
+                            <span class="o">+</span> <span class="n">mpc_inputs</span><span class="p">[</span><span class="sa">f</span><span class="s2">"ub_</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">"</span><span class="p">]</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
                     <span class="n">guess</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">guess</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=-</span><span class="mi">0</span><span class="p">)</span>
@@ -319,20 +319,20 @@
         <span class="k">return</span> <span class="n">guesses</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_remember_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optimum</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">]):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Saves the last optimal solution for all optimization variables</span>
-<span class="sd">        sorted by type.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Saves the last optimal solution for all optimization variables</span>
+<span class="sd">        sorted by type."""</span>
         <span class="k">for</span> <span class="n">den</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpc_opt_vars</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">var</span><span class="o">.</span><span class="n">opt</span> <span class="o">=</span> <span class="n">optimum</span><span class="p">[</span><span class="n">den</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_process_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Results</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        If self.result_file is not empty,</span>
 <span class="sd">        collect all inputs and outputs of the optimization problem and format</span>
 <span class="sd">        them as DataFrames and pass them to OptimizationBackend.save_df().</span>
 <span class="sd">        Args:</span>
 <span class="sd">            inputs: mpc_inputs dict returned from _get_current_mpc_inputs</span>
 <span class="sd">            outputs: mpc_output from self._nlp_outputs_to_mpc_outputs</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># update the guess values at the variable positions with the outputs</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>
@@ -340,7 +340,7 @@
                 <span class="n">out_key</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">GUESS_PREFIX</span><span class="p">)</span> <span class="p">:]</span>
                 <span class="n">inputs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">outputs</span><span class="p">[</span><span class="n">out_key</span><span class="p">]</span>
 
-        <span class="n">result_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_map</span><span class="p">(</span><span class="o">**</span><span class="n">inputs</span><span class="p">)[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
+        <span class="n">result_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_map</span><span class="p">(</span><span class="o">**</span><span class="n">inputs</span><span class="p">)[</span><span class="s2">"result"</span><span class="p">]</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_results</span><span class="p">(</span>
             <span class="n">result_matrix</span><span class="p">,</span>
@@ -349,11 +349,11 @@
         <span class="k">return</span> <span class="n">result</span>
 
 <div class="viewcode-block" id="Discretization.create_nlp_in_out_mapping"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.create_nlp_in_out_mapping">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_nlp_in_out_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Function creating mapping functions between the MPC variables ordered</span>
 <span class="sd">        by type (as defined in `declare_quantities` and the raw input/output</span>
 <span class="sd">        vector of the CasADi NLP.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Concatenate nlp variables to CasADi MX vectors</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">opt_vars</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">opt_vars</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">)</span>
@@ -374,12 +374,12 @@
             <span class="n">constraints_ub</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="n">nlp_input_denotations</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;p&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;x0&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;lbx&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;ubx&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;lbg&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;ubg&quot;</span><span class="p">,</span>
+            <span class="s2">"p"</span><span class="p">,</span>
+            <span class="s2">"x0"</span><span class="p">,</span>
+            <span class="s2">"lbx"</span><span class="p">,</span>
+            <span class="s2">"ubx"</span><span class="p">,</span>
+            <span class="s2">"lbg"</span><span class="p">,</span>
+            <span class="s2">"ubg"</span><span class="p">,</span>
         <span class="p">]</span>
 
         <span class="c1"># create empty lists to store all nlp inputs and outputs</span>
@@ -402,7 +402,7 @@
             <span class="n">guess</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">horzcat</span><span class="p">(</span><span class="o">*</span><span class="n">opt_var</span><span class="o">.</span><span class="n">guess</span><span class="p">)</span>
             <span class="n">mpc_inputs</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">lb</span><span class="p">,</span> <span class="n">ub</span><span class="p">,</span> <span class="n">guess</span><span class="p">])</span>
             <span class="n">mpc_input_denotations</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-                <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;lb_</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;ub_</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">GUESS_PREFIX</span> <span class="o">+</span> <span class="n">denotation</span><span class="p">]</span>
+                <span class="p">[</span><span class="sa">f</span><span class="s2">"lb_</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"ub_</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">GUESS_PREFIX</span> <span class="o">+</span> <span class="n">denotation</span><span class="p">]</span>
             <span class="p">)</span>
 
         <span class="c1"># Concatenate mpc inputs to CasADi MX matrices</span>
@@ -414,7 +414,7 @@
 
         <span class="c1"># Mapping function that rearranges the variables for input into the NLP</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mpc_inputs_to_nlp_inputs</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span>
-            <span class="s2">&quot;mpc_inputs_to_nlp_inputs&quot;</span><span class="p">,</span>
+            <span class="s2">"mpc_inputs_to_nlp_inputs"</span><span class="p">,</span>
             <span class="n">mpc_inputs</span><span class="p">,</span>
             <span class="n">nlp_inputs</span><span class="p">,</span>
             <span class="n">mpc_input_denotations</span><span class="p">,</span>
@@ -424,16 +424,16 @@
         <span class="c1"># Mapping function that rearranges the output of the nlp and sorts</span>
         <span class="c1"># by denotation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nlp_outputs_to_mpc_outputs</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span>
-            <span class="s2">&quot;nlp_outputs_to_mpc_outputs&quot;</span><span class="p">,</span>
+            <span class="s2">"nlp_outputs_to_mpc_outputs"</span><span class="p">,</span>
             <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">opt_vars</span><span class="p">],</span>
             <span class="n">mpc_outputs</span><span class="p">,</span>
-            <span class="p">[</span><span class="s2">&quot;vars_at_optimum&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="s2">"vars_at_optimum"</span><span class="p">],</span>
             <span class="n">mpc_output_denotations</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">matrix</span><span class="p">,</span> <span class="n">col_index</span><span class="p">,</span> <span class="n">full_grid</span><span class="p">,</span> <span class="n">var_grids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_result_format</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_result_map</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span>
-            <span class="s2">&quot;result_map&quot;</span><span class="p">,</span> <span class="n">mpc_inputs</span><span class="p">,</span> <span class="p">[</span><span class="n">matrix</span><span class="p">],</span> <span class="n">mpc_input_denotations</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
+            <span class="s2">"result_map"</span><span class="p">,</span> <span class="n">mpc_inputs</span><span class="p">,</span> <span class="p">[</span><span class="n">matrix</span><span class="p">],</span> <span class="n">mpc_input_denotations</span><span class="p">,</span> <span class="p">[</span><span class="s2">"result"</span><span class="p">]</span>
         <span class="p">)</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">make_results_view</span><span class="p">(</span>
@@ -452,27 +452,27 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">nlp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The nlp dict that casadi solvers need for instantiation&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""The nlp dict that casadi solvers need for instantiation"""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finished_discretization</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;You have to initialize first&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"You have to initialize first"</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">opt_vars</span><span class="p">,</span>
-            <span class="s2">&quot;f&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span><span class="p">,</span>
-            <span class="s2">&quot;g&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">,</span>
-            <span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">opt_pars</span><span class="p">,</span>
+            <span class="s2">"x"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">opt_vars</span><span class="p">,</span>
+            <span class="s2">"f"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span><span class="p">,</span>
+            <span class="s2">"g"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">,</span>
+            <span class="s2">"p"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">opt_pars</span><span class="p">,</span>
         <span class="p">}</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">binary_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List specifying for every optimization variable, whether it is binary.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""List specifying for every optimization variable, whether it is binary."""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finished_discretization</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;You have to initialize first&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"You have to initialize first"</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">binary_opt_vars</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_result_format</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">System</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Creates an MX matrix that includes all inputs and outputs of the nlp</span>
 <span class="sd">        in an ordered format.</span>
 <span class="sd">        Sets the _result_columns and _full_index private attributes.</span>
@@ -495,13 +495,13 @@
 <span class="sd">            A dict specifying the row index with non-nan values for all variables</span>
 <span class="sd">                (not parameters)</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">make_column</span><span class="p">(</span><span class="n">vars_in_quantity</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">grid</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;Creates a matrix with the width of the number of variables in a quantity</span>
+<span class="w">            </span><span class="sd">"""Creates a matrix with the width of the number of variables in a quantity</span>
 <span class="sd">            group, and the length of the full grid. Also returns the indexes of this</span>
 <span class="sd">             variable group that point to non-nan entries. The indices are used in</span>
-<span class="sd">             slices of the results object.&quot;&quot;&quot;</span>
+<span class="sd">             slices of the results object."""</span>
             <span class="n">col</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">non_nan_entries</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">index_full</span><span class="p">,</span> <span class="n">time</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">full_grid</span><span class="p">):</span>
@@ -524,14 +524,14 @@
             <span class="n">full_grid</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">quant_type</span><span class="o">.</span><span class="n">grid</span><span class="p">))</span>
         <span class="n">full_grid</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">full_grid</span><span class="p">)</span>
         <span class="n">columns</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">output_matrix</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="s2">&quot;Results&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">full_grid</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">output_matrix</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="s2">"Results"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">full_grid</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">sys_pars</span> <span class="ow">in</span> <span class="n">system</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
             <span class="n">names_list</span> <span class="o">=</span> <span class="n">sys_pars</span><span class="o">.</span><span class="n">full_names</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">names_list</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="n">columns</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;parameter&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="n">names_list</span><span class="p">)))</span>
+            <span class="n">columns</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="s2">"parameter"</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="n">names_list</span><span class="p">)))</span>
             <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">sys_pars</span><span class="p">)</span>
             <span class="n">mx_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpc_opt_pars</span><span class="p">[</span><span class="n">sys_pars</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">var</span>
             <span class="n">column</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">make_column</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">names_list</span><span class="p">),</span> <span class="n">grid</span><span class="p">)</span>
@@ -544,14 +544,14 @@
                 <span class="k">continue</span>
 
             <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">sys_vars</span><span class="p">)</span>
-            <span class="n">iterator</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;var&quot;</span><span class="p">,</span> <span class="s2">&quot;variable&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;ub&quot;</span><span class="p">,</span> <span class="s2">&quot;upper&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;lb&quot;</span><span class="p">,</span> <span class="s2">&quot;lower&quot;</span><span class="p">)]</span>
+            <span class="n">iterator</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">"var"</span><span class="p">,</span> <span class="s2">"variable"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"ub"</span><span class="p">,</span> <span class="s2">"upper"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"lb"</span><span class="p">,</span> <span class="s2">"lower"</span><span class="p">)]</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">header</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">:</span>
                 <span class="n">columns</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="n">names_list</span><span class="p">)))</span>
                 <span class="n">mx_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpc_opt_vars</span><span class="p">[</span><span class="n">sys_vars</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
                 <span class="n">column</span><span class="p">,</span> <span class="n">grid_indices</span> <span class="o">=</span> <span class="n">make_column</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">names_list</span><span class="p">),</span> <span class="n">grid</span><span class="p">)</span>
                 <span class="n">output_matrix</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">horzcat</span><span class="p">(</span><span class="n">output_matrix</span><span class="p">,</span> <span class="n">column</span><span class="p">)</span>
 
-                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;var&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">"var"</span><span class="p">:</span>
                     <span class="n">variable_grids</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">n</span><span class="p">:</span> <span class="n">grid_indices</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names_list</span><span class="p">})</span>
 
         <span class="n">result_columns</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
@@ -563,9 +563,9 @@
         <span class="n">lb</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">ub</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">guess</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">post_den</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">post_den</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create an optimization variable and append to all the associated</span>
 <span class="sd">        lists. If lb or ub are given, they override the values provided at</span>
 <span class="sd">        runtime! The usual application of this is, to fix the initial value</span>
@@ -577,15 +577,15 @@
 <span class="sd">            ub: upper bound of the variable</span>
 <span class="sd">            guess: default for the initial guess</span>
 <span class="sd">            post_den: string to add to casadi MX after denotation (for debugging)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># get dimension</span>
         <span class="n">dimension</span> <span class="o">=</span> <span class="n">quantity</span><span class="o">.</span><span class="n">dim</span>
         <span class="n">denotation</span> <span class="o">=</span> <span class="n">quantity</span><span class="o">.</span><span class="n">name</span>
 
         <span class="c1"># create symbolic variables</span>
-        <span class="n">opt_var</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span><span class="si">}{</span><span class="n">post_den</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dimension</span><span class="p">)</span>
-        <span class="n">lower</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;lb_</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span><span class="si">}{</span><span class="n">post_den</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dimension</span><span class="p">)</span>
-        <span class="n">upper</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ub_</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span><span class="si">}{</span><span class="n">post_den</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dimension</span><span class="p">)</span>
+        <span class="n">opt_var</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span><span class="si">}{</span><span class="n">post_den</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">dimension</span><span class="p">)</span>
+        <span class="n">lower</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="sa">f</span><span class="s2">"lb_</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span><span class="si">}{</span><span class="n">post_den</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">dimension</span><span class="p">)</span>
+        <span class="n">upper</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="sa">f</span><span class="s2">"ub_</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span><span class="si">}{</span><span class="n">post_den</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">dimension</span><span class="p">)</span>
 
         <span class="c1"># if are not given (generally true), use the default variable for nlp lists</span>
         <span class="k">if</span> <span class="n">lb</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -612,20 +612,20 @@
 
         <span class="k">return</span> <span class="n">opt_var</span></div>
 
-<div class="viewcode-block" id="Discretization.add_opt_par"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.add_opt_par">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_opt_par</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quantity</span><span class="p">:</span> <span class="n">OptimizationParameter</span><span class="p">,</span> <span class="n">post_den</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Discretization.add_opt_par"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.add_opt_par">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_opt_par</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quantity</span><span class="p">:</span> <span class="n">OptimizationParameter</span><span class="p">,</span> <span class="n">post_den</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create an optimization parameter and append to all the associated lists.</span>
 
-<span class="sd">        denotation[str]: the key of the parameter, e.g. &#39;P&#39;, &#39;Q&#39;, ...</span>
+<span class="sd">        denotation[str]: the key of the parameter, e.g. 'P', 'Q', ...</span>
 <span class="sd">        dimension[int]: the dimension of the parameter</span>
 <span class="sd">        post_den[str]: string to add to casadi MX after denotation (for debugging)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># get dimension</span>
         <span class="n">dimension</span> <span class="o">=</span> <span class="n">quantity</span><span class="o">.</span><span class="n">dim</span>
         <span class="n">denotation</span> <span class="o">=</span> <span class="n">quantity</span><span class="o">.</span><span class="n">name</span>
 
         <span class="c1"># create symbolic variables</span>
-        <span class="n">opt_par</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span><span class="si">}{</span><span class="n">post_den</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dimension</span><span class="p">)</span>
+        <span class="n">opt_par</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">denotation</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span><span class="si">}{</span><span class="n">post_den</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">dimension</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">opt_pars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">opt_par</span><span class="p">)</span>
 
         <span class="c1"># append to variable specific lists</span>
@@ -643,10 +643,10 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">gap_closing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Add a constraint to the optimization problem. If no bounds are given,</span>
 <span class="sd">        adds an equality constraint.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># set equality for fatrop</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">equalities</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">gap_closing</span><span class="p">]</span> <span class="o">*</span> <span class="n">constraint_function</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
@@ -669,7 +669,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpc_opt_pars</span><span class="p">[</span><span class="n">denotation</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span></div></div>
 
 
-<span class="n">DiscretizationT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;DiscretizationT&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Discretization</span><span class="p">)</span>
+<span class="n">DiscretizationT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"DiscretizationT"</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Discretization</span><span class="p">)</span>
 </pre></div>
 
            </div>

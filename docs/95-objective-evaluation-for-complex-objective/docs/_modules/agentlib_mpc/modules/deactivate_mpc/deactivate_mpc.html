@@ -85,34 +85,34 @@
     <span class="n">active</span><span class="p">:</span> <span class="n">AgentVariable</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="n">AgentVariable</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MPC_FLAG_ACTIVE</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;MPC is active&quot;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"MPC is active"</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">"bool"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">shared</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">),</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Variable used to activate or deactivate the MPC operation&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Variable used to activate or deactivate the MPC operation"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">inputs</span><span class="p">:</span> <span class="n">AgentVariables</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Inputs based on which switch decisions can be made.&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Inputs based on which switch decisions can be made."</span>
     <span class="p">)</span>
     <span class="n">t_sample</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Sends the active variable every other t_sample&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Sends the active variable every other t_sample"</span>
     <span class="p">)</span>
     <span class="n">public_active_message</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AgentVariable</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;If needed, specify an AgentVariable that is sent when the MPC is active, for example to suppress a local controller.&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"If needed, specify an AgentVariable that is sent when the MPC is active, for example to suppress a local controller."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">public_inactive_message</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AgentVariable</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;If needed, specify an AgentVariable that is sent when the MPC is inactive, for example to awaken a local controller.&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"If needed, specify an AgentVariable that is sent when the MPC is inactive, for example to awaken a local controller."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">controls_when_deactivated</span><span class="p">:</span> <span class="n">AgentVariables</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;List of AgentVariables to send as Fallback Controls.&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">description</span><span class="o">=</span><span class="s2">"List of AgentVariables to send as Fallback Controls."</span>
     <span class="p">)</span>
 
     <span class="n">shared_variable_fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;public_active_message&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;controls_when_deactivated&quot;</span><span class="p">,</span>
+        <span class="s2">"public_active_message"</span><span class="p">,</span>
+        <span class="s2">"controls_when_deactivated"</span><span class="p">,</span>
     <span class="p">]</span></div>
 
 
@@ -129,8 +129,8 @@
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">t_sample</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MPCOnOff.deactivate_mpc"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.deactivate_mpc.html#agentlib_mpc.modules.deactivate_mpc.deactivate_mpc.MPCOnOff.deactivate_mpc">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">deactivate_mpc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs mpc deactivation. Sends the deactivation signal, as well as</span>
-<span class="sd">        default control signals.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Performs mpc deactivation. Sends the deactivation signal, as well as</span>
+<span class="sd">        default control signals."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">active</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">agent_variable</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">controls_when_deactivated</span><span class="p">:</span>
             <span class="c1"># actively resend this variable</span>
@@ -142,8 +142,8 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="MPCOnOff.activate_mpc"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.deactivate_mpc.html#agentlib_mpc.modules.deactivate_mpc.deactivate_mpc.MPCOnOff.activate_mpc">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">activate_mpc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Performs mpc activation. Sends activation signal, as well as the public</span>
-<span class="sd">        active message.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Performs mpc activation. Sends activation signal, as well as the public</span>
+<span class="sd">        active message."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">active</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">public_active_message</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
@@ -152,36 +152,36 @@
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="MPCOnOff.check_mpc_deactivation"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.deactivate_mpc.html#agentlib_mpc.modules.deactivate_mpc.deactivate_mpc.MPCOnOff.check_mpc_deactivation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_mpc_deactivation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;This function can be overridden, to define conditions based on which an</span>
+<span class="w">        </span><span class="sd">"""This function can be overridden, to define conditions based on which an</span>
 <span class="sd">        MPC module within this agent should be deactivated. Returns True if MPC</span>
-<span class="sd">        should be deactivated, and False if it should be active.&quot;&quot;&quot;</span></div>
+<span class="sd">        should be deactivated, and False if it should be active."""</span></div>
 
 <div class="viewcode-block" id="MPCOnOff.register_callbacks"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.deactivate_mpc.html#agentlib_mpc.modules.deactivate_mpc.deactivate_mpc.MPCOnOff.register_callbacks">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">register_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;This function can be overridden to check the deactivation in an</span>
-<span class="sd">        event-based manner.&quot;&quot;&quot;</span></div></div>
+<span class="w">        </span><span class="sd">"""This function can be overridden to check the deactivation in an</span>
+<span class="sd">        event-based manner."""</span></div></div>
 
 
 <div class="viewcode-block" id="SkipMPCInIntervalsConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.deactivate_mpc.html#agentlib_mpc.modules.deactivate_mpc.deactivate_mpc.SkipMPCInIntervalsConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SkipMPCInIntervalsConfig</span><span class="p">(</span><span class="n">MPCOnOffConfig</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Config for a module which deactivates any MPC by sending the variable</span>
 <span class="sd">    `active` in the specified intervals.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">intervals</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;If environment time is within these intervals&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">description</span><span class="o">=</span><span class="s2">"If environment time is within these intervals"</span>
     <span class="p">)</span>
     <span class="n">time_unit</span><span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">TimeConversionTypes</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;seconds&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Specifies the unit of the given &quot;</span>
-        <span class="s2">&quot;`skip_mpc_in_intervals`, e.g. seconds or days.&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"seconds"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Specifies the unit of the given "</span>
+        <span class="s2">"`skip_mpc_in_intervals`, e.g. seconds or days."</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SkipMPCInIntervals"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.deactivate_mpc.html#agentlib_mpc.modules.deactivate_mpc.deactivate_mpc.SkipMPCInIntervals">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SkipMPCInIntervals</span><span class="p">(</span><span class="n">MPCOnOff</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Module which deactivates any MPC by sending the variable</span>
 <span class="sd">    `active` in the specified intervals.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">config</span><span class="p">:</span> <span class="n">SkipMPCInIntervalsConfig</span>
 
@@ -191,7 +191,7 @@
             <span class="n">intervals</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">intervals</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="s2">&quot;Current time is in skip_mpc_in_intervals, sending active=False to MPC&quot;</span>
+                <span class="s2">"Current time is in skip_mpc_in_intervals, sending active=False to MPC"</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span></div></div>

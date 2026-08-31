@@ -86,38 +86,38 @@
 
 <span class="c1">############################## Uncoordinated ADMM ##################################</span>
 
-<span class="n">ADMM_PREFIX</span> <span class="o">=</span> <span class="s2">&quot;admm&quot;</span>
-<span class="n">MULTIPLIER_PREFIX</span> <span class="o">=</span> <span class="n">ADMM_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;_lambda&quot;</span>
-<span class="n">LOCAL_PREFIX</span> <span class="o">=</span> <span class="n">ADMM_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;_coupling&quot;</span>
-<span class="n">MEAN_PREFIX</span> <span class="o">=</span> <span class="n">ADMM_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;_coupling_mean&quot;</span>
-<span class="n">LAG_PREFIX</span> <span class="o">=</span> <span class="n">ADMM_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;_lag&quot;</span>
-<span class="n">EXCHANGE_MULTIPLIER_PREFIX</span> <span class="o">=</span> <span class="n">ADMM_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;_exchange_lambda&quot;</span>
-<span class="n">EXCHANGE_LOCAL_PREFIX</span> <span class="o">=</span> <span class="n">ADMM_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;_exchange&quot;</span>
-<span class="n">EXCHANGE_MEAN_PREFIX</span> <span class="o">=</span> <span class="n">ADMM_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;_exchange_mean&quot;</span>
+<span class="n">ADMM_PREFIX</span> <span class="o">=</span> <span class="s2">"admm"</span>
+<span class="n">MULTIPLIER_PREFIX</span> <span class="o">=</span> <span class="n">ADMM_PREFIX</span> <span class="o">+</span> <span class="s2">"_lambda"</span>
+<span class="n">LOCAL_PREFIX</span> <span class="o">=</span> <span class="n">ADMM_PREFIX</span> <span class="o">+</span> <span class="s2">"_coupling"</span>
+<span class="n">MEAN_PREFIX</span> <span class="o">=</span> <span class="n">ADMM_PREFIX</span> <span class="o">+</span> <span class="s2">"_coupling_mean"</span>
+<span class="n">LAG_PREFIX</span> <span class="o">=</span> <span class="n">ADMM_PREFIX</span> <span class="o">+</span> <span class="s2">"_lag"</span>
+<span class="n">EXCHANGE_MULTIPLIER_PREFIX</span> <span class="o">=</span> <span class="n">ADMM_PREFIX</span> <span class="o">+</span> <span class="s2">"_exchange_lambda"</span>
+<span class="n">EXCHANGE_LOCAL_PREFIX</span> <span class="o">=</span> <span class="n">ADMM_PREFIX</span> <span class="o">+</span> <span class="s2">"_exchange"</span>
+<span class="n">EXCHANGE_MEAN_PREFIX</span> <span class="o">=</span> <span class="n">ADMM_PREFIX</span> <span class="o">+</span> <span class="s2">"_exchange_mean"</span>
 
 
 <div class="viewcode-block" id="CouplingEntry"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingEntry">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CouplingEntry</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Holds naming conventions for different optimizatin variables / parameters</span>
-<span class="sd">    associated with a coupling variable in consensus ADMM.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Holds naming conventions for different optimizatin variables / parameters</span>
+<span class="sd">    associated with a coupling variable in consensus ADMM."""</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">local</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">LOCAL_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">LOCAL_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">MEAN_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">MEAN_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">multiplier</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">MULTIPLIER_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">MULTIPLIER_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">lagged</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">LAG_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">LAG_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 
 <div class="viewcode-block" id="CouplingEntry.admm_variables"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingEntry.admm_variables">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">admm_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lagged</span><span class="p">]</span></div></div>
@@ -125,26 +125,26 @@
 
 <div class="viewcode-block" id="ExchangeEntry"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ExchangeEntry">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExchangeEntry</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Holds naming conventions for different optimizatin variables / parameters</span>
-<span class="sd">    associated with a coupling variable in exchange ADMM.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Holds naming conventions for different optimizatin variables / parameters</span>
+<span class="sd">    associated with a coupling variable in exchange ADMM."""</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">local</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">EXCHANGE_LOCAL_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">EXCHANGE_LOCAL_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">mean_diff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">EXCHANGE_MEAN_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">EXCHANGE_MEAN_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">multiplier</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">EXCHANGE_MULTIPLIER_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">EXCHANGE_MULTIPLIER_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">lagged</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">LAG_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">LAG_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 
 <div class="viewcode-block" id="ExchangeEntry.admm_variables"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ExchangeEntry.admm_variables">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">admm_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_diff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lagged</span><span class="p">]</span></div></div>
@@ -152,26 +152,26 @@
 
 <div class="viewcode-block" id="VariableReference"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.VariableReference">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">VariableReference</span><span class="p">(</span><span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">VariableReference</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Holds info about all variables of an MPC and their role in the optimization</span>
-<span class="sd">    problem.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Holds info about all variables of an MPC and their role in the optimization</span>
+<span class="sd">    problem."""</span>
 
     <span class="n">couplings</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CouplingEntry</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
     <span class="n">exchange</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ExchangeEntry</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
 <div class="viewcode-block" id="VariableReference.from_config"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.VariableReference.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">BaseModuleConfigClass</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an instance from a pydantic values dict which includes lists of</span>
-<span class="sd">        AgentVariables with the keys corresponding to &#39;states&#39;, &#39;inputs&#39;, etc..&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Creates an instance from a pydantic values dict which includes lists of</span>
+<span class="sd">        AgentVariables with the keys corresponding to 'states', 'inputs', etc.."""</span>
         <span class="n">var_ref</span><span class="p">:</span> <span class="bp">cls</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
         <span class="n">var_ref</span><span class="o">.</span><span class="n">couplings</span> <span class="o">=</span> <span class="p">[</span><span class="n">CouplingEntry</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">couplings</span><span class="p">]</span>
         <span class="n">var_ref</span><span class="o">.</span><span class="n">exchange</span> <span class="o">=</span> <span class="p">[</span><span class="n">ExchangeEntry</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">exchange</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">var_ref</span></div>
 
 <div class="viewcode-block" id="VariableReference.all_variables"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.VariableReference.all_variables">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">all_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of all variables registered in the var_ref&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns a list of all variables registered in the var_ref"""</span>
         <span class="n">full_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">couplings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">CouplingEntry</span><span class="p">]</span> <span class="o">=</span> <span class="n">full_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;couplings&quot;</span><span class="p">)</span>
-        <span class="n">exchange</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">CouplingEntry</span><span class="p">]</span> <span class="o">=</span> <span class="n">full_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;exchange&quot;</span><span class="p">)</span>
+        <span class="n">couplings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">CouplingEntry</span><span class="p">]</span> <span class="o">=</span> <span class="n">full_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"couplings"</span><span class="p">)</span>
+        <span class="n">exchange</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">CouplingEntry</span><span class="p">]</span> <span class="o">=</span> <span class="n">full_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"exchange"</span><span class="p">)</span>
         <span class="n">coup_vars</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">coup</span> <span class="ow">in</span> <span class="n">couplings</span> <span class="o">+</span> <span class="n">exchange</span><span class="p">:</span>
             <span class="n">coup_vars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coup</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -183,31 +183,31 @@
 
 
 <div class="viewcode-block" id="coupling_alias"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.coupling_alias">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">coupling_alias</span><span class="p">(</span><span class="n">alias</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Naming convention for local variables to send and receive.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">LOCAL_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">&quot;</span></div>
+<span class="w">    </span><span class="sd">"""Naming convention for local variables to send and receive."""</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">LOCAL_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">"</span></div>
 
 
 <div class="viewcode-block" id="exchange_alias"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.exchange_alias">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">exchange_alias</span><span class="p">(</span><span class="n">alias</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Naming convention for local exchange variables to send and receive.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">EXCHANGE_LOCAL_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">&quot;</span></div>
+<span class="w">    </span><span class="sd">"""Naming convention for local exchange variables to send and receive."""</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">EXCHANGE_LOCAL_PREFIX</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">alias</span><span class="si">}</span><span class="s2">"</span></div>
 
 
 <span class="c1">############################## Coordinated ADMM ##################################</span>
 
 <span class="c1"># ALIASES</span>
-<span class="n">ADMM_COMMUNICATION</span> <span class="o">=</span> <span class="s2">&quot;admm_communication&quot;</span>
-<span class="n">ADMM_SIGNUP_REQUEST</span> <span class="o">=</span> <span class="s2">&quot;admm_signup_request&quot;</span>
+<span class="n">ADMM_COMMUNICATION</span> <span class="o">=</span> <span class="s2">"admm_communication"</span>
+<span class="n">ADMM_SIGNUP_REQUEST</span> <span class="o">=</span> <span class="s2">"admm_signup_request"</span>
 
 
-<span class="n">glob_params</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;penalty_factor&quot;</span><span class="p">,</span> <span class="s2">&quot;prediction_horizon&quot;</span><span class="p">,</span> <span class="s2">&quot;time_step&quot;</span><span class="p">]</span>
+<span class="n">glob_params</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"penalty_factor"</span><span class="p">,</span> <span class="s2">"prediction_horizon"</span><span class="p">,</span> <span class="s2">"time_step"</span><span class="p">]</span>
 
-<span class="n">PENALTY_FACTOR</span> <span class="o">=</span> <span class="s2">&quot;penalty_factor&quot;</span>
+<span class="n">PENALTY_FACTOR</span> <span class="o">=</span> <span class="s2">"penalty_factor"</span>
 
 
 <div class="viewcode-block" id="AgentDictEntry"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.AgentDictEntry">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AgentDictEntry</span><span class="p">(</span><span class="n">cdt</span><span class="o">.</span><span class="n">AgentDictEntry</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Holds participating coupling variables (consensus and exchange) of a single</span>
-<span class="sd">    agent in ADMM. Used in the coordinator.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Holds participating coupling variables (consensus and exchange) of a single</span>
+<span class="sd">    agent in ADMM. Used in the coordinator."""</span>
 
     <span class="n">coup_vars</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
     <span class="n">exchange_vars</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span></div>
@@ -215,7 +215,7 @@
 
 <div class="viewcode-block" id="ADMMParameters"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ADMMParameters">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ADMMParameters</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collection of parameters which have to be shared across all agents in ADMM.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Collection of parameters which have to be shared across all agents in ADMM."""</span>
 
     <span class="n">penalty_factor</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">prediction_horizon</span><span class="p">:</span> <span class="nb">int</span>
@@ -224,7 +224,7 @@
 
 <div class="viewcode-block" id="ADMMParticipation"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ADMMParticipation">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ADMMParticipation</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper class to organize ADMM participants.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Helper class to organize ADMM participants."""</span>
 
     <span class="n">source</span><span class="p">:</span> <span class="n">al</span><span class="o">.</span><span class="n">Source</span>
     <span class="n">ready</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -233,7 +233,7 @@
 
 <div class="viewcode-block" id="CouplingVariable"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingVariable">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CouplingVariable</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Holds information about a phy&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Holds information about a phy"""</span>
 
     <span class="n">local_trajectories</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">al</span><span class="o">.</span><span class="n">Source</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
     <span class="n">mean_trajectory</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -252,11 +252,11 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">participants</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns all agent sources that are registered to this coupling.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns all agent sources that are registered to this coupling."""</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">local_trajectories</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
 <div class="viewcode-block" id="CouplingVariable.flat_locals"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingVariable.flat_locals">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">flat_locals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">al</span><span class="o">.</span><span class="n">Source</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the flattened array of all local variables and their multipliers.</span>
 
 <span class="sd">        Args:</span>
@@ -265,7 +265,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            flat lists of local variables and multipliers (locals, multipliers)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">sources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_relevant_sources</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">sources</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
@@ -273,7 +273,7 @@
         <span class="k">return</span> <span class="n">local_vars</span></div>
 
 <div class="viewcode-block" id="CouplingVariable.get_residual"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingVariable.get_residual">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_residual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rho</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the primal and dual residual of the last iteration as a tuple</span>
 <span class="sd">        of flattened Arrays.</span>
 <span class="sd">        Args:</span>
@@ -281,7 +281,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            (primal residual, dual residual)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">primal_residual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primal_residual</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
         <span class="n">dual_residual</span> <span class="o">=</span> <span class="p">(</span><span class="n">rho</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_mean</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">primal_residual</span><span class="p">,</span> <span class="n">dual_residual</span></div></div>
@@ -292,13 +292,13 @@
     <span class="n">multipliers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">al</span><span class="o">.</span><span class="n">Source</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{})</span>
 
 <div class="viewcode-block" id="ConsensusVariable.update_mean_trajectory"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ConsensusVariable.update_mean_trajectory">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_mean_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">al</span><span class="o">.</span><span class="n">Source</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Calculates a new mean of this variable.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            sources: List of sources that should be included in the update.</span>
 <span class="sd">                If none is given, use all variables.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">sources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_relevant_sources</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">sources</span><span class="p">:</span>
             <span class="k">return</span>
@@ -309,7 +309,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mean_trajectory</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ConsensusVariable.update_multipliers"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ConsensusVariable.update_multipliers">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_multipliers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rho</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sources</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">al</span><span class="o">.</span><span class="n">Source</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Performs the multiplier update.</span>
 
 <span class="sd">        Args:</span>
@@ -319,7 +319,7 @@
 
 <span class="sd">        Returns:</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">sources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_relevant_sources</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">sources</span><span class="p">:</span>
             <span class="k">return</span>
@@ -346,7 +346,7 @@
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">multipliers</span><span class="p">[</span><span class="n">ls</span><span class="p">]</span> <span class="k">for</span> <span class="n">ls</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">]))</span></div>
 
 <div class="viewcode-block" id="ConsensusVariable.shift_values_by_one"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ConsensusVariable.shift_values_by_one">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">shift_values_by_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Shifts the trajectories&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Shifts the trajectories"""</span>
         <span class="n">mean_traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_trajectory</span>
         <span class="n">shift_by</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mean_traj</span><span class="p">)</span> <span class="o">/</span> <span class="n">horizon</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mean_trajectory</span> <span class="o">=</span> <span class="n">mean_traj</span><span class="p">[</span><span class="n">shift_by</span><span class="p">:]</span> <span class="o">+</span> <span class="n">mean_traj</span><span class="p">[</span><span class="o">-</span><span class="n">shift_by</span><span class="p">:]</span>
@@ -363,13 +363,13 @@
     <span class="n">multiplier</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ExchangeVariable.update_diff_trajectories"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ExchangeVariable.update_diff_trajectories">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_diff_trajectories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sources</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">al</span><span class="o">.</span><span class="n">Source</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Calculates a new mean of this variable.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            sources: List of sources that should be included in the update.</span>
 <span class="sd">                If none is given, use all variables.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">sources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_relevant_sources</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">sources</span><span class="p">:</span>
             <span class="k">return</span>
@@ -382,7 +382,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">diff_trajectories</span><span class="p">[</span><span class="n">src</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">local_trajectories</span><span class="p">[</span><span class="n">src</span><span class="p">]</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ExchangeVariable.update_multiplier"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ExchangeVariable.update_multiplier">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">update_multiplier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rho</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Performs the multiplier update.</span>
 
 <span class="sd">        Args:</span>
@@ -390,14 +390,14 @@
 
 <span class="sd">        Returns:</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># perform the update</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">primal_residual</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mean_trajectory</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span> <span class="o">+</span> <span class="n">rho</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">primal_residual</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ExchangeVariable.shift_values_by_one"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.ExchangeVariable.shift_values_by_one">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">shift_values_by_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">horizon</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Shifts the trajectories&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Shifts the trajectories"""</span>
         <span class="n">shift_by</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span><span class="p">)</span> <span class="o">/</span> <span class="n">horizon</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span><span class="p">[</span><span class="n">shift_by</span><span class="p">:]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span><span class="p">[</span><span class="o">-</span><span class="n">shift_by</span><span class="p">:]</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">diff</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">diff_trajectories</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -406,11 +406,11 @@
 
 <div class="viewcode-block" id="StructuredValue"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.StructuredValue">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">StructuredValue</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base Class to specify the structure of an AgentVariable Value. It will</span>
-<span class="sd">    be efficiently sent and deserialized.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Base Class to specify the structure of an AgentVariable Value. It will</span>
+<span class="sd">    be efficiently sent and deserialized."""</span>
 
 <div class="viewcode-block" id="StructuredValue.to_json"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.StructuredValue.to_json">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialize self to json bytes, can be used by the communicator.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Serialize self to json bytes, can be used by the communicator."""</span>
         <span class="k">return</span> <span class="n">orjson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="n">orjson</span><span class="o">.</span><span class="n">OPT_SERIALIZE_NUMPY</span> <span class="o">|</span> <span class="n">orjson</span><span class="o">.</span><span class="n">OPT_SERIALIZE_DATACLASS</span>
         <span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span></div>

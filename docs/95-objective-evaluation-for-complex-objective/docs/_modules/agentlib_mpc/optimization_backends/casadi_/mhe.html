@@ -126,35 +126,35 @@
 <div class="viewcode-block" id="MHESystem.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.mhe.MHESystem.initialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">CasadiModel</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">MHEVariableReference</span><span class="p">):</span>
         <span class="c1"># define variables</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="n">OptimizationVariable</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
-            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;states&quot;</span><span class="p">,</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">"states"</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_states</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">states</span><span class="p">),</span>
             <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">states</span><span class="p">,</span>
             <span class="n">assert_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">estimated_inputs</span> <span class="o">=</span> <span class="n">OptimizationVariable</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
-            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;estimated_inputs&quot;</span><span class="p">,</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">"estimated_inputs"</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">estimated_inputs</span><span class="p">),</span>
             <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">estimated_inputs</span><span class="p">,</span>
             <span class="n">assert_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">estimated_parameters</span> <span class="o">=</span> <span class="n">OptimizationVariable</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
-            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;estimated_parameters&quot;</span><span class="p">,</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">"estimated_parameters"</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">estimated_parameters</span><span class="p">),</span>
             <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">estimated_parameters</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">algebraics</span> <span class="o">=</span> <span class="n">OptimizationVariable</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
-            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;algebraics&quot;</span><span class="p">,</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">"algebraics"</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">auxiliaries</span><span class="p">,</span>
             <span class="n">ref_list</span><span class="o">=</span><span class="p">[],</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">OptimizationVariable</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
-            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;outputs&quot;</span><span class="p">,</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">"outputs"</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span>
             <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">known_inputs</span> <span class="o">=</span> <span class="n">OptimizationParameter</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
-            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;known_inputs&quot;</span><span class="p">,</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">"known_inputs"</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">known_inputs</span><span class="p">),</span>
             <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">known_inputs</span><span class="p">,</span>
             <span class="n">assert_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -163,18 +163,18 @@
             <span class="n">var_ref</span><span class="o">.</span><span class="n">estimated_parameters</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">known_parameters</span> <span class="o">=</span> <span class="n">OptimizationParameter</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
-            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;known_parameters&quot;</span><span class="p">,</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">"known_parameters"</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">known_parameter_names</span><span class="p">)),</span>
             <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">known_parameters</span><span class="p">,</span>
             <span class="n">assert_complete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">measured_states</span> <span class="o">=</span> <span class="n">OptimizationParameter</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
-            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;measured_states&quot;</span><span class="p">,</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">"measured_states"</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="n">CasadiInput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">var_ref</span><span class="o">.</span><span class="n">measured_states</span><span class="p">],</span>
             <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">measured_states</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">weights_states</span> <span class="o">=</span> <span class="n">OptimizationParameter</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
-            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;weight_states&quot;</span><span class="p">,</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">"weight_states"</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="n">CasadiInput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">var_ref</span><span class="o">.</span><span class="n">weights_states</span><span class="p">],</span>
             <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">weights_states</span><span class="p">,</span>
         <span class="p">)</span>
@@ -210,10 +210,10 @@
     <span class="n">only_positive_times_in_results</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_discretize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="n">MHESystem</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Defines a direct collocation discretization.</span>
 <span class="sd">        # pylint: disable=invalid-name</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># setup the polynomial base</span>
         <span class="n">collocation_matrices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collocation_polynomial</span><span class="p">()</span>
@@ -270,7 +270,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span><span class="n">xk_end</span> <span class="o">-</span> <span class="n">xk</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_construct_stage_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">MHESystem</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Combine information from the model and the var_ref to create CasADi</span>
 <span class="sd">        functions which describe the system dynamics and constraints at each</span>
 <span class="sd">        stage of the optimization problem. Sets the stage function. It has</span>
@@ -279,17 +279,17 @@
 <span class="sd">        per constraint (constraint, lb_constraint, ub_constraint).</span>
 
 <span class="sd">        In the basic case, it has the form:</span>
-<span class="sd">        CasadiFunction: [&#39;x&#39;, &#39;z&#39;, &#39;u&#39;, &#39;y&#39;, &#39;d&#39;, &#39;p&#39;] -&gt;</span>
-<span class="sd">            [&#39;ode&#39;, &#39;cost_function&#39;, &#39;model_constraints&#39;,</span>
-<span class="sd">            &#39;ub_model_constraints&#39;, &#39;lb_model_constraints&#39;]</span>
+<span class="sd">        CasadiFunction: ['x', 'z', 'u', 'y', 'd', 'p'] -&gt;</span>
+<span class="sd">            ['ode', 'cost_function', 'model_constraints',</span>
+<span class="sd">            'ub_model_constraints', 'lb_model_constraints']</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            system</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">all_system_quantities</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">OptimizationQuantity</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">system</span><span class="o">.</span><span class="n">quantities</span>
         <span class="p">}</span>
-        <span class="n">constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model_constraints&quot;</span><span class="p">:</span> <span class="n">system</span><span class="o">.</span><span class="n">model_constraints</span><span class="p">}</span>
+        <span class="n">constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"model_constraints"</span><span class="p">:</span> <span class="n">system</span><span class="o">.</span><span class="n">model_constraints</span><span class="p">}</span>
 
         <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">q</span><span class="o">.</span><span class="n">full_symbolic</span>
@@ -319,8 +319,8 @@
             <span class="o">*</span><span class="n">constraints_ub</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="n">output_denotations</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;ode&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;cost_function&quot;</span><span class="p">,</span>
+            <span class="s2">"ode"</span><span class="p">,</span>
+            <span class="s2">"cost_function"</span><span class="p">,</span>
             <span class="o">*</span><span class="n">constraint_denotations</span><span class="p">,</span>
             <span class="o">*</span><span class="n">constraint_lb_denotations</span><span class="p">,</span>
             <span class="o">*</span><span class="n">constraint_ub_denotations</span><span class="p">,</span>
@@ -328,7 +328,7 @@
 
         <span class="c1"># function describing system dynamics and cost function</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stage_function</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span>
-            <span class="s2">&quot;f&quot;</span><span class="p">,</span>
+            <span class="s2">"f"</span><span class="p">,</span>
             <span class="n">inputs</span><span class="p">,</span>
             <span class="n">outputs</span><span class="p">,</span>
             <span class="c1"># input handles to make kwarg use possible and to debug</span>
@@ -338,8 +338,8 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="DirectCollocation.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.mhe.DirectCollocation.initialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">MHESystem</span><span class="p">,</span> <span class="n">solver_factory</span><span class="p">:</span> <span class="n">SolverFactory</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the trajectory optimization problem, creating all symbolic</span>
-<span class="sd">        variables of the OCP, the mapping function and the numerical solver.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Initializes the trajectory optimization problem, creating all symbolic</span>
+<span class="sd">        variables of the OCP, the mapping function and the numerical solver."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_construct_stage_function</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">system</span><span class="o">=</span><span class="n">system</span><span class="p">,</span> <span class="n">solver_factory</span><span class="o">=</span><span class="n">solver_factory</span><span class="p">)</span></div>
 
@@ -352,7 +352,7 @@
         <span class="n">opt_pars</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">OptimizationParameter</span><span class="p">],</span>
         <span class="n">const</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">OptimizationQuantity</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Constructs the inner loop of a collocation discretization. Takes the</span>
 
 <span class="sd">        Args</span>
@@ -369,7 +369,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            state_k_end[MX]: state at the end of collocation interval</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">constants</span> <span class="o">=</span> <span class="p">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">mx</span> <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">mx</span> <span class="ow">in</span> <span class="n">const</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
         <span class="c1"># remember time at start of collocation loop</span>
@@ -389,17 +389,17 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span> <span class="o">=</span> <span class="n">start_time</span> <span class="o">+</span> <span class="n">collocation</span><span class="o">.</span><span class="n">root</span><span class="p">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">ts</span>
 
             <span class="c1"># differential state</span>
-            <span class="n">state_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">post_den</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">state_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">post_den</span><span class="o">=</span><span class="sa">f</span><span class="s2">"_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="n">state_collocation</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state_kj</span><span class="p">)</span>
 
             <span class="n">opt_vars_collocation</span><span class="o">.</span><span class="n">append</span><span class="p">({})</span>
             <span class="k">for</span> <span class="n">opt_var</span> <span class="ow">in</span> <span class="n">opt_vars</span><span class="p">:</span>
-                <span class="n">var_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">opt_var</span><span class="p">,</span> <span class="n">post_den</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">var_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">opt_var</span><span class="p">,</span> <span class="n">post_den</span><span class="o">=</span><span class="sa">f</span><span class="s2">"_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="n">opt_vars_collocation</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">opt_var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">var_kj</span><span class="p">})</span>
 
             <span class="n">opt_pars_collocation</span><span class="o">.</span><span class="n">append</span><span class="p">({})</span>
             <span class="k">for</span> <span class="n">opt_par</span> <span class="ow">in</span> <span class="n">opt_pars</span><span class="p">:</span>
-                <span class="n">par_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">opt_par</span><span class="p">,</span> <span class="n">post_den</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">par_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">opt_par</span><span class="p">,</span> <span class="n">post_den</span><span class="o">=</span><span class="sa">f</span><span class="s2">"_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="n">opt_pars_collocation</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">opt_par</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">par_kj</span><span class="p">})</span>
 
         <span class="c1"># Loop over collocation points</span>
@@ -417,25 +417,25 @@
                 <span class="o">**</span><span class="n">constants</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span><span class="n">ts</span> <span class="o">*</span> <span class="n">stage</span><span class="p">[</span><span class="s2">&quot;ode&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">xp</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span><span class="n">ts</span> <span class="o">*</span> <span class="n">stage</span><span class="p">[</span><span class="s2">"ode"</span><span class="p">]</span> <span class="o">-</span> <span class="n">xp</span><span class="p">)</span>
 
             <span class="c1"># Append inequality constraints</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span>
-                <span class="n">stage</span><span class="p">[</span><span class="s2">&quot;model_constraints&quot;</span><span class="p">],</span>
-                <span class="n">lb</span><span class="o">=</span><span class="n">stage</span><span class="p">[</span><span class="s2">&quot;lb_model_constraints&quot;</span><span class="p">],</span>
-                <span class="n">ub</span><span class="o">=</span><span class="n">stage</span><span class="p">[</span><span class="s2">&quot;ub_model_constraints&quot;</span><span class="p">],</span>
+                <span class="n">stage</span><span class="p">[</span><span class="s2">"model_constraints"</span><span class="p">],</span>
+                <span class="n">lb</span><span class="o">=</span><span class="n">stage</span><span class="p">[</span><span class="s2">"lb_model_constraints"</span><span class="p">],</span>
+                <span class="n">ub</span><span class="o">=</span><span class="n">stage</span><span class="p">[</span><span class="s2">"ub_model_constraints"</span><span class="p">],</span>
             <span class="p">)</span>
 
             <span class="c1"># Add contribution to the end state</span>
             <span class="n">state_k_end</span> <span class="o">=</span> <span class="n">state_k_end</span> <span class="o">+</span> <span class="n">collocation</span><span class="o">.</span><span class="n">D</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">state_collocation</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
 
             <span class="c1"># Add contribution to quadrature function</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">collocation</span><span class="o">.</span><span class="n">B</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">stage</span><span class="p">[</span><span class="s2">&quot;cost_function&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ts</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">collocation</span><span class="o">.</span><span class="n">B</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">stage</span><span class="p">[</span><span class="s2">"cost_function"</span><span class="p">]</span> <span class="o">*</span> <span class="n">ts</span>
 
         <span class="k">return</span> <span class="n">state_k_end</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_collocation_polynomial</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CollocationMatrices</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the matrices needed for direct collocation discretization.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the matrices needed for direct collocation discretization."""</span>
         <span class="c1"># Degree of interpolating polynomial</span>
         <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">collocation_order</span>
         <span class="n">polynomial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">collocation_method</span>
@@ -486,9 +486,9 @@
 
 
 <div class="viewcode-block" id="MHEBackend"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.mhe.MHEBackend">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MHEBackend</span><span class="p">(</span><span class="n">CasADiBackend</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Class doing optimization of ADMM subproblems with CasADi.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">system_type</span> <span class="o">=</span> <span class="n">MHESystem</span>
     <span class="n">discretization_types</span> <span class="o">=</span> <span class="p">{</span>
@@ -501,22 +501,22 @@
         <span class="n">trajectory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]],</span>
         <span class="n">grid</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
         <span class="n">current</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"linear"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Obtain the specified portion of the trajectory.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            trajectory:  The trajectory to be sampled. Scalars will be</span>
 <span class="sd">                expanded onto the grid. Lists need to exactly match the provided</span>
 <span class="sd">                grid. Otherwise, a list of tuples is accepted with the form (</span>
-<span class="sd">                timestamp, value). A dict with the keys &#39;grid&#39; and &#39;value&#39; is also</span>
+<span class="sd">                timestamp, value). A dict with the keys 'grid' and 'value' is also</span>
 <span class="sd">                accepted.</span>
 <span class="sd">            current: start time of requested trajectory</span>
 <span class="sd">            grid: target interpolation grid in seconds in relative terms (i.e.</span>
 <span class="sd">                starting from 0 usually)</span>
-<span class="sd">            method: interpolation method, currently accepted: &#39;linear&#39;,</span>
-<span class="sd">                &#39;spline&#39;, &#39;previous&#39;</span>
+<span class="sd">            method: interpolation method, currently accepted: 'linear',</span>
+<span class="sd">                'spline', 'previous'</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Sampled list of values.</span>
@@ -529,7 +529,7 @@
 <span class="sd">        Raises:</span>
 <span class="sd">            ValueError</span>
 <span class="sd">            TypeError</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">target_grid_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
             <span class="c1"># return constant trajectory for scalars</span>
@@ -539,15 +539,15 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span> <span class="o">==</span> <span class="n">target_grid_length</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">trajectory</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Passed list with length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;does not match target (</span><span class="si">{</span><span class="n">target_grid_length</span><span class="si">}</span><span class="s2">).&quot;</span>
+                <span class="sa">f</span><span class="s2">"Passed list with length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span><span class="si">}</span><span class="s2"> "</span>
+                <span class="sa">f</span><span class="s2">"does not match target (</span><span class="si">{</span><span class="n">target_grid_length</span><span class="si">}</span><span class="s2">)."</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
             <span class="n">source_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">trajectory</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
             <span class="n">values</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">values</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Passed trajectory of type &#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; &quot;</span> <span class="sa">f</span><span class="s2">&quot;cannot be sampled.&quot;</span>
+                <span class="sa">f</span><span class="s2">"Passed trajectory of type '</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span><span class="si">}</span><span class="s2">' "</span> <span class="sa">f</span><span class="s2">"cannot be sampled."</span>
             <span class="p">)</span>
         <span class="n">target_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span> <span class="o">+</span> <span class="n">current</span>
 
@@ -566,8 +566,8 @@
             <span class="c1"># return the last value of the trajectory if requested sample</span>
             <span class="c1"># starts out of range</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s2">&quot;Latest value of source grid </span><span class="si">%s</span><span class="s2"> is older than &quot;</span>
-                <span class="s2">&quot;current time (</span><span class="si">%s</span><span class="s2">. Returning latest value anyway.&quot;</span><span class="p">,</span>
+                <span class="s2">"Latest value of source grid </span><span class="si">%s</span><span class="s2"> is older than "</span>
+                <span class="s2">"current time (</span><span class="si">%s</span><span class="s2">. Returning latest value anyway."</span><span class="p">,</span>
                 <span class="n">source_grid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
                 <span class="n">current</span><span class="p">,</span>
             <span class="p">)</span>
@@ -590,20 +590,20 @@
         <span class="n">target_grid</span> <span class="o">=</span> <span class="n">target_grid</span><span class="p">[</span><span class="n">source_is_recent_enough</span> <span class="o">*</span> <span class="n">source_is_old_enough</span><span class="p">]</span>
 
         <span class="c1"># interpolate data to match new grid</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
-            <span class="n">tck</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">source_grid</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"linear"</span><span class="p">:</span>
+            <span class="n">tck</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">source_grid</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"linear"</span><span class="p">)</span>
             <span class="n">sequence_new</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tck</span><span class="p">(</span><span class="n">target_grid</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;spline&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"spline"</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="s2">&quot;Spline interpolation is currently not &quot;</span> <span class="s2">&quot;supported&quot;</span>
+                <span class="s2">"Spline interpolation is currently not "</span> <span class="s2">"supported"</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;previous&quot;</span><span class="p">:</span>
-            <span class="n">tck</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">source_grid</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;previous&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"previous"</span><span class="p">:</span>
+            <span class="n">tck</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">source_grid</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"previous"</span><span class="p">)</span>
             <span class="n">sequence_new</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">tck</span><span class="p">(</span><span class="n">target_grid</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Chosen &#39;method&#39; </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> is not a valid method. &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;Currently supported: linear, spline, previous&quot;</span>
+                <span class="sa">f</span><span class="s2">"Chosen 'method' </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> is not a valid method. "</span>
+                <span class="sa">f</span><span class="s2">"Currently supported: linear, spline, previous"</span>
             <span class="p">)</span>
 
         <span class="c1"># extrapolate sequence with last available value if necessary</span>

@@ -77,62 +77,62 @@
 
 
 <div class="viewcode-block" id="BackendImport"><a class="viewcode-back" href="../../code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.BackendImport">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">BackendImport</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Data-Class to import a given python file</span>
 <span class="sd">    from ``import_path`` and load the given</span>
 <span class="sd">    ``class_name``</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">import_path</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Import the Module with class_name from the import path&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Import the Module with class_name from the import path"""</span>
         <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">import_path</span><span class="p">)</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <span class="n">backend_types</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;casadi_basic&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
-        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.basic&quot;</span><span class="p">,</span>
-        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CasADiBaseBackend&quot;</span><span class="p">,</span>
+    <span class="s2">"casadi_basic"</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">"agentlib_mpc.optimization_backends.casadi_.basic"</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">"CasADiBaseBackend"</span><span class="p">,</span>
     <span class="p">),</span>
-    <span class="s2">&quot;casadi&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
-        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.full&quot;</span><span class="p">,</span>
-        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CasADiFullBackend&quot;</span><span class="p">,</span>
+    <span class="s2">"casadi"</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">"agentlib_mpc.optimization_backends.casadi_.full"</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">"CasADiFullBackend"</span><span class="p">,</span>
     <span class="p">),</span>
-    <span class="s2">&quot;casadi_admm&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
-        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.admm&quot;</span><span class="p">,</span>
-        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CasADiADMMBackend&quot;</span><span class="p">,</span>
+    <span class="s2">"casadi_admm"</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">"agentlib_mpc.optimization_backends.casadi_.admm"</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">"CasADiADMMBackend"</span><span class="p">,</span>
     <span class="p">),</span>
-    <span class="s2">&quot;casadi_minlp&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
-        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.minlp&quot;</span><span class="p">,</span>
-        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CasADiMINLPBackend&quot;</span><span class="p">,</span>
+    <span class="s2">"casadi_minlp"</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">"agentlib_mpc.optimization_backends.casadi_.minlp"</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">"CasADiMINLPBackend"</span><span class="p">,</span>
     <span class="p">),</span>
-    <span class="s2">&quot;casadi_cia&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
-        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.minlp_cia&quot;</span><span class="p">,</span>
-        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CasADiCIABackend&quot;</span><span class="p">,</span>
+    <span class="s2">"casadi_cia"</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">"agentlib_mpc.optimization_backends.casadi_.minlp_cia"</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">"CasADiCIABackend"</span><span class="p">,</span>
     <span class="p">),</span>
-    <span class="s2">&quot;casadi_ml&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
-        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.casadi_ml&quot;</span><span class="p">,</span>
-        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CasADiBBBackend&quot;</span><span class="p">,</span>
+    <span class="s2">"casadi_ml"</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">"agentlib_mpc.optimization_backends.casadi_.casadi_ml"</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">"CasADiBBBackend"</span><span class="p">,</span>
     <span class="p">),</span>
-    <span class="s2">&quot;casadi_admm_ml&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
-        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml&quot;</span><span class="p">,</span>
-        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CasADiADMMBackend_NN&quot;</span><span class="p">,</span>
+    <span class="s2">"casadi_admm_ml"</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">"agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml"</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">"CasADiADMMBackend_NN"</span><span class="p">,</span>
     <span class="p">),</span>
-    <span class="s2">&quot;casadi_nn&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
-        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.casadi_ml&quot;</span><span class="p">,</span>
-        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CasADiBBBackend&quot;</span><span class="p">,</span>
+    <span class="s2">"casadi_nn"</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">"agentlib_mpc.optimization_backends.casadi_.casadi_ml"</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">"CasADiBBBackend"</span><span class="p">,</span>
     <span class="p">),</span>
-    <span class="s2">&quot;casadi_admm_nn&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
-        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml&quot;</span><span class="p">,</span>
-        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;CasADiADMMBackend_NN&quot;</span><span class="p">,</span>
+    <span class="s2">"casadi_admm_nn"</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">"agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml"</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">"CasADiADMMBackend_NN"</span><span class="p">,</span>
     <span class="p">),</span>
-    <span class="s2">&quot;casadi_mhe&quot;</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
-        <span class="n">import_path</span><span class="o">=</span><span class="s2">&quot;agentlib_mpc.optimization_backends.casadi_.mhe&quot;</span><span class="p">,</span>
-        <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;MHEBackend&quot;</span><span class="p">,</span>
+    <span class="s2">"casadi_mhe"</span><span class="p">:</span> <span class="n">BackendImport</span><span class="p">(</span>
+        <span class="n">import_path</span><span class="o">=</span><span class="s2">"agentlib_mpc.optimization_backends.casadi_.mhe"</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="o">=</span><span class="s2">"MHEBackend"</span><span class="p">,</span>
     <span class="p">),</span>
 <span class="p">}</span>
 

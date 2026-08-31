@@ -97,9 +97,9 @@
 
 <div class="viewcode-block" id="MiniEmployeeConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.employee.MiniEmployeeConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MiniEmployeeConfig</span><span class="p">(</span><span class="n">SkippableMixinConfig</span><span class="p">):</span>
     <span class="n">request_frequency</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Wait time between signup_requests&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Wait time between signup_requests"</span>
     <span class="p">)</span>
-    <span class="n">coordinator</span><span class="p">:</span> <span class="n">Source</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Define the agents coordinator&quot;</span><span class="p">)</span>
+    <span class="n">coordinator</span><span class="p">:</span> <span class="n">Source</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">"Define the agents coordinator"</span><span class="p">)</span>
     <span class="n">messages_in</span><span class="p">:</span> <span class="n">AgentVariables</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">AgentVariable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">cdt</span><span class="o">.</span><span class="n">REGISTRATION_C2A</span><span class="p">),</span>
         <span class="n">AgentVariable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">cdt</span><span class="o">.</span><span class="n">START_ITERATION_C2A</span><span class="p">),</span>
@@ -113,9 +113,9 @@
     <span class="n">registration_interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
         <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Interval in seconds after which a registration attempt is made.&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Interval in seconds after which a registration attempt is made."</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">shared_variable_fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;messages_out&quot;</span><span class="p">]</span></div>
+    <span class="n">shared_variable_fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"messages_out"</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="MiniEmployee"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.employee.MiniEmployee">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MiniEmployee</span><span class="p">(</span><span class="n">SkippableMixin</span><span class="p">):</span>
@@ -159,24 +159,24 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="MiniEmployee.pre_computation_hook"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.employee.MiniEmployee.pre_computation_hook">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">pre_computation_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This method is called in every computation step before the optimization starts.</span>
 <span class="sd">        Overwrite this method in a derived subclass if you want to take some actions each time before the optimal control problem is solved.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="MiniEmployee.init_iteration_callback"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.employee.MiniEmployee.init_iteration_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_iteration_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Callback that processes the coordinators &#39;startIteration&#39; flag.</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Callback that processes the coordinators 'startIteration' flag.</span>
 <span class="sd">        Args:</span>
 <span class="sd">            variable:</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># value is True on start</span>
         <span class="n">should_step_be_skipped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_if_should_be_skipped</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">should_step_be_skipped</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;DMPC participant was externally told to to skip.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"DMPC participant was externally told to to skip."</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cdt</span><span class="o">.</span><span class="n">START_ITERATION_A2C</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
             <span class="k">return</span>
 
@@ -190,7 +190,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">pre_computation_hook</span><span class="p">()</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cdt</span><span class="o">.</span><span class="n">START_ITERATION_A2C</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sent &#39;StartIteration&#39; True.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Sent 'StartIteration' True."</span><span class="p">)</span>
 
         <span class="c1"># value is False on convergence/iteration limit</span>
         <span class="k">else</span><span class="p">:</span>
@@ -199,11 +199,11 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_result_obtained</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="MiniEmployee.get_new_measurement"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.employee.MiniEmployee.get_new_measurement">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_new_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Retrieve new measurement from relevant sensors</span>
 <span class="sd">        Returns:</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="o">...</span></div>
         <span class="c1"># raise NotImplementedError</span>
 
@@ -211,20 +211,20 @@
 
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_finish_optimization</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Finalize an iteration. Usually, this includes setting the actuation.</span>
 <span class="sd">        Returns:</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
 <div class="viewcode-block" id="MiniEmployee.optimize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.employee.MiniEmployee.optimize">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Performs the optimization given the information from the coordinator.</span>
 <span class="sd">        Replies with local information.</span>
 <span class="sd">        Returns:</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">variables</span> <span class="o">=</span> <span class="n">cdt</span><span class="o">.</span><span class="n">OptimizationData</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">variable</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
         <span class="c1"># perform optimization</span>
@@ -232,24 +232,24 @@
         <span class="c1"># optimization</span>
 
         <span class="n">value</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sent optimal solution.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Sent optimal solution."</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_result_obtained</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">cdt</span><span class="o">.</span><span class="n">OPTIMIZATION_A2C</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MiniEmployee.shift_trajectories"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.employee.MiniEmployee.shift_trajectories">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">shift_trajectories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Shifts algorithm specific trajectories.</span>
 <span class="sd">        Returns:</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="o">...</span></div>
         <span class="c1"># raise NotImplementedError</span>
 
 <div class="viewcode-block" id="MiniEmployee.registration_callback"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.employee.MiniEmployee.registration_callback">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">registration_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;callback for registration&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""callback for registration"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;receiving </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"receiving </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="c1"># global parameters to define optimisation problem</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">RegistrationMessage</span><span class="p">(</span><span class="o">**</span><span class="n">variable</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
@@ -263,7 +263,7 @@
         <span class="n">answer</span> <span class="o">=</span> <span class="n">RegistrationMessage</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">cdt</span><span class="o">.</span><span class="n">AgentStatus</span><span class="o">.</span><span class="n">standby</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_registered_coordinator</span> <span class="o">=</span> <span class="n">variable</span><span class="o">.</span><span class="n">source</span>
         <span class="k">if</span> <span class="n">status</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;registrationOut&quot;</span><span class="p">,</span> <span class="n">asdict</span><span class="p">(</span><span class="n">answer</span><span class="p">))</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"registrationOut"</span><span class="p">,</span> <span class="n">asdict</span><span class="p">(</span><span class="n">answer</span><span class="p">))</span></div></div>
 </pre></div>
 
            </div>

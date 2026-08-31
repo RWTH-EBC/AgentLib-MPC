@@ -93,40 +93,40 @@
     <span class="kn">import</span><span class="w"> </span><span class="nn">dash_daq</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">daq</span>
 <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="k">raise</span> <span class="n">OptionalDependencyError</span><span class="p">(</span>
-        <span class="n">dependency_name</span><span class="o">=</span><span class="s2">&quot;interactive&quot;</span><span class="p">,</span>
-        <span class="n">dependency_install</span><span class="o">=</span><span class="s2">&quot;plotly, dash&quot;</span><span class="p">,</span>
-        <span class="n">used_object</span><span class="o">=</span><span class="s2">&quot;interactive&quot;</span><span class="p">,</span>
+        <span class="n">dependency_name</span><span class="o">=</span><span class="s2">"interactive"</span><span class="p">,</span>
+        <span class="n">dependency_install</span><span class="o">=</span><span class="s2">"plotly, dash"</span><span class="p">,</span>
+        <span class="n">used_object</span><span class="o">=</span><span class="s2">"interactive"</span><span class="p">,</span>
     <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
 
 <div class="viewcode-block" id="load_agent_data"><a class="viewcode-back" href="../../../../code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.admm_dashboard.load_agent_data">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">load_agent_data</span><span class="p">(</span><span class="n">directory</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Load MPC data for multiple agents from files containing &#39;admm&#39; in their name.</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Load MPC data for multiple agents from files containing 'admm' in their name.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">    directory (str): Directory path containing the data files.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">    Dict[str, pd.DataFrame]: Dictionary with agent names as keys and their data as values.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">agent_data</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span>
-            <span class="s2">&quot;admm&quot;</span> <span class="ow">in</span> <span class="n">filename</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span>
-            <span class="ow">and</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.csv&quot;</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="s2">&quot;stats&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filename</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span>
+            <span class="s2">"admm"</span> <span class="ow">in</span> <span class="n">filename</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">".csv"</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="s2">"stats"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">filename</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span>
         <span class="p">):</span>
             <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-            <span class="n">agent_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Agent_</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">agent_data</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">agent_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"Agent_</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">agent_data</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">agent_data</span><span class="p">[</span><span class="n">agent_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">load_mpc</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading file </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error loading file </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">agent_data</span></div>
 
 
 <div class="viewcode-block" id="get_coupling_variables"><a class="viewcode-back" href="../../../../code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.admm_dashboard.get_coupling_variables">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_coupling_variables</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Identify coupling variables in the dataframe.</span>
 
 <span class="sd">    Args:</span>
@@ -134,12 +134,12 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">    List[str]: List of coupling variable names.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">coupling_vars</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">col</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;parameter&quot;</span> <span class="ow">and</span> <span class="n">col</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;admm_coupling_mean_&quot;</span><span class="p">):</span>
-            <span class="n">var_name</span> <span class="o">=</span> <span class="n">col</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;admm_coupling_mean_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;variable&quot;</span><span class="p">,</span> <span class="n">var_name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">col</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"parameter"</span> <span class="ow">and</span> <span class="n">col</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"admm_coupling_mean_"</span><span class="p">):</span>
+            <span class="n">var_name</span> <span class="o">=</span> <span class="n">col</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"admm_coupling_mean_"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="s2">"variable"</span><span class="p">,</span> <span class="n">var_name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                 <span class="n">coupling_vars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">coupling_vars</span></div>
 
@@ -150,7 +150,7 @@
     <span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">coupling_var</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Extract data for the coupling variable plot.</span>
 
 <span class="sd">    Args:</span>
@@ -161,25 +161,25 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">    Dict[str, List[float]]: Dictionary with agent names as keys and their values as lists.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">plot_data</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">prediction_grid</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">for</span> <span class="n">agent_name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">agent_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">agent_data_at_step</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">time_step</span><span class="p">,</span> <span class="n">iteration</span><span class="p">)]</span>
-            <span class="n">agent_values</span> <span class="o">=</span> <span class="n">agent_data_at_step</span><span class="p">[(</span><span class="s2">&quot;variable&quot;</span><span class="p">,</span> <span class="n">coupling_var</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">agent_values</span> <span class="o">=</span> <span class="n">agent_data_at_step</span><span class="p">[(</span><span class="s2">"variable"</span><span class="p">,</span> <span class="n">coupling_var</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
             <span class="n">plot_data</span><span class="p">[</span><span class="n">agent_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">agent_values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="n">prediction_grid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">prediction_grid</span> <span class="o">=</span> <span class="n">agent_data_at_step</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
-            <span class="c1"># Get mean value (assuming it&#39;s the same for all agents)</span>
-            <span class="k">if</span> <span class="s2">&quot;Mean&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">plot_data</span><span class="p">:</span>
+            <span class="c1"># Get mean value (assuming it's the same for all agents)</span>
+            <span class="k">if</span> <span class="s2">"Mean"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">plot_data</span><span class="p">:</span>
                 <span class="n">mean_values</span> <span class="o">=</span> <span class="n">agent_data_at_step</span><span class="p">[</span>
-                    <span class="p">(</span><span class="s2">&quot;parameter&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;admm_coupling_mean_</span><span class="si">{</span><span class="n">coupling_var</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="p">(</span><span class="s2">"parameter"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"admm_coupling_mean_</span><span class="si">{</span><span class="n">coupling_var</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="p">]</span><span class="o">.</span><span class="n">values</span>
-                <span class="n">plot_data</span><span class="p">[</span><span class="s2">&quot;Mean&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean_values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+                <span class="n">plot_data</span><span class="p">[</span><span class="s2">"Mean"</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean_values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">continue</span>  <span class="c1"># Skip this agent if data is not available for the selected time step and iteration</span>
 
@@ -189,7 +189,7 @@
 <div class="viewcode-block" id="create_coupling_var_plot"><a class="viewcode-back" href="../../../../code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.admm_dashboard.create_coupling_var_plot">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">create_coupling_var_plot</span><span class="p">(</span>
     <span class="n">plot_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="n">prediction_grid</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">coupling_var</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Create a plotly figure for the coupling variable plot.</span>
 
 <span class="sd">    Args:</span>
@@ -199,12 +199,12 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">    go.Figure: Plotly figure object.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">()</span>
 
     <span class="k">for</span> <span class="n">agent_name</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">plot_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">agent_name</span> <span class="o">==</span> <span class="s2">&quot;Mean&quot;</span><span class="p">:</span>
-            <span class="n">line_style</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">dash</span><span class="o">=</span><span class="s2">&quot;dash&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">agent_name</span> <span class="o">==</span> <span class="s2">"Mean"</span><span class="p">:</span>
+            <span class="n">line_style</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">"red"</span><span class="p">,</span> <span class="n">dash</span><span class="o">=</span><span class="s2">"dash"</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">line_style</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
@@ -212,18 +212,18 @@
             <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
                 <span class="n">x</span><span class="o">=</span><span class="n">prediction_grid</span><span class="p">,</span>
                 <span class="n">y</span><span class="o">=</span><span class="n">values</span><span class="p">,</span>
-                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;lines&quot;</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">"lines"</span><span class="p">,</span>
                 <span class="n">name</span><span class="o">=</span><span class="n">agent_name</span><span class="p">,</span>
                 <span class="n">line</span><span class="o">=</span><span class="n">line_style</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
     <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Coupling Variable: </span><span class="si">{</span><span class="n">coupling_var</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="n">xaxis_title</span><span class="o">=</span><span class="s2">&quot;Prediction Grid&quot;</span><span class="p">,</span>
-        <span class="n">yaxis_title</span><span class="o">=</span><span class="s2">&quot;Value&quot;</span><span class="p">,</span>
-        <span class="n">legend_title</span><span class="o">=</span><span class="s2">&quot;Legend&quot;</span><span class="p">,</span>
-        <span class="n">legend</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">yanchor</span><span class="o">=</span><span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">xanchor</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.01</span><span class="p">),</span>
+        <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">"Coupling Variable: </span><span class="si">{</span><span class="n">coupling_var</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+        <span class="n">xaxis_title</span><span class="o">=</span><span class="s2">"Prediction Grid"</span><span class="p">,</span>
+        <span class="n">yaxis_title</span><span class="o">=</span><span class="s2">"Value"</span><span class="p">,</span>
+        <span class="n">legend_title</span><span class="o">=</span><span class="s2">"Legend"</span><span class="p">,</span>
+        <span class="n">legend</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">yanchor</span><span class="o">=</span><span class="s2">"top"</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">xanchor</span><span class="o">=</span><span class="s2">"left"</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mf">0.01</span><span class="p">),</span>
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">fig</span></div>
@@ -245,7 +245,7 @@
 
 
 <div class="viewcode-block" id="create_residuals_plot"><a class="viewcode-back" href="../../../../code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.admm_dashboard.create_residuals_plot">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">create_residuals_plot</span><span class="p">(</span><span class="n">residuals_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">time_step</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Create a plotly figure for the residuals plot.</span>
 
 <span class="sd">    Args:</span>
@@ -254,21 +254,21 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">    go.Figure: Plotly figure object.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">()</span>
 
     <span class="n">residuals_data</span> <span class="o">=</span> <span class="n">residuals_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">time_step</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">residuals_data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Only one iteration (iteration = 0)</span>
-        <span class="n">primal_residual</span> <span class="o">=</span> <span class="n">residuals_data</span><span class="p">[</span><span class="s2">&quot;primal_residual&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">dual_residual</span> <span class="o">=</span> <span class="n">residuals_data</span><span class="p">[</span><span class="s2">&quot;dual_residual&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">primal_residual</span> <span class="o">=</span> <span class="n">residuals_data</span><span class="p">[</span><span class="s2">"primal_residual"</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">dual_residual</span> <span class="o">=</span> <span class="n">residuals_data</span><span class="p">[</span><span class="s2">"dual_residual"</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
             <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
                 <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
                 <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="n">primal_residual</span><span class="p">,</span> <span class="n">primal_residual</span><span class="p">],</span>
-                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;lines&quot;</span><span class="p">,</span>
-                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Primal Residual&quot;</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">"lines"</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">"Primal Residual"</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
@@ -276,54 +276,54 @@
             <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
                 <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
                 <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="n">dual_residual</span><span class="p">,</span> <span class="n">dual_residual</span><span class="p">],</span>
-                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;lines&quot;</span><span class="p">,</span>
-                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Dual Residual&quot;</span><span class="p">,</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">"lines"</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">"Dual Residual"</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
         <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
             <span class="n">xaxis_range</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
-            <span class="n">xaxis_title</span><span class="o">=</span><span class="s2">&quot;Iteration&quot;</span><span class="p">,</span>
+            <span class="n">xaxis_title</span><span class="o">=</span><span class="s2">"Iteration"</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
             <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
                 <span class="n">x</span><span class="o">=</span><span class="n">residuals_data</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
-                <span class="n">y</span><span class="o">=</span><span class="n">residuals_data</span><span class="p">[</span><span class="s2">&quot;primal_residual&quot;</span><span class="p">],</span>
-                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;lines&quot;</span><span class="p">,</span>
-                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Primal Residual&quot;</span><span class="p">,</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">residuals_data</span><span class="p">[</span><span class="s2">"primal_residual"</span><span class="p">],</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">"lines"</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">"Primal Residual"</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
         <span class="n">fig</span><span class="o">.</span><span class="n">add_trace</span><span class="p">(</span>
             <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
                 <span class="n">x</span><span class="o">=</span><span class="n">residuals_data</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
-                <span class="n">y</span><span class="o">=</span><span class="n">residuals_data</span><span class="p">[</span><span class="s2">&quot;dual_residual&quot;</span><span class="p">],</span>
-                <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;lines&quot;</span><span class="p">,</span>
-                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Dual Residual&quot;</span><span class="p">,</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">residuals_data</span><span class="p">[</span><span class="s2">"dual_residual"</span><span class="p">],</span>
+                <span class="n">mode</span><span class="o">=</span><span class="s2">"lines"</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">"Dual Residual"</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
         <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
-            <span class="n">xaxis_title</span><span class="o">=</span><span class="s2">&quot;Iteration&quot;</span><span class="p">,</span>
+            <span class="n">xaxis_title</span><span class="o">=</span><span class="s2">"Iteration"</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Primal and Dual Residuals&quot;</span><span class="p">,</span>
-        <span class="n">yaxis_title</span><span class="o">=</span><span class="s2">&quot;Residual Value&quot;</span><span class="p">,</span>
-        <span class="n">yaxis_type</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Primal and Dual Residuals"</span><span class="p">,</span>
+        <span class="n">yaxis_title</span><span class="o">=</span><span class="s2">"Residual Value"</span><span class="p">,</span>
+        <span class="n">yaxis_type</span><span class="o">=</span><span class="s2">"log"</span><span class="p">,</span>
         <span class="n">yaxis</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-            <span class="n">tickformat</span><span class="o">=</span><span class="s2">&quot;.2e&quot;</span><span class="p">,</span>  <span class="c1"># Use scientific notation with 2 decimal places</span>
-            <span class="n">exponentformat</span><span class="o">=</span><span class="s2">&quot;e&quot;</span><span class="p">,</span>  <span class="c1"># Use &quot;e&quot; notation for exponents</span>
+            <span class="n">tickformat</span><span class="o">=</span><span class="s2">".2e"</span><span class="p">,</span>  <span class="c1"># Use scientific notation with 2 decimal places</span>
+            <span class="n">exponentformat</span><span class="o">=</span><span class="s2">"e"</span><span class="p">,</span>  <span class="c1"># Use "e" notation for exponents</span>
         <span class="p">),</span>
-        <span class="n">legend_title</span><span class="o">=</span><span class="s2">&quot;Legend&quot;</span><span class="p">,</span>
+        <span class="n">legend_title</span><span class="o">=</span><span class="s2">"Legend"</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">fig</span></div>
 
 
 <div class="viewcode-block" id="create_app"><a class="viewcode-back" href="../../../../code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.admm_dashboard.create_app">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">(</span><span class="n">agent_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span> <span class="n">residuals_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Create and configure the Dash app.</span>
 
 <span class="sd">    Args:</span>
@@ -332,7 +332,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">    dash.Dash: Configured Dash app.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">app</span> <span class="o">=</span> <span class="n">dash</span><span class="o">.</span><span class="n">Dash</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
     <span class="c1"># Get time steps and iteration numbers</span>
@@ -346,22 +346,22 @@
 
     <span class="n">app</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">(</span>
         <span class="p">[</span>
-            <span class="n">html</span><span class="o">.</span><span class="n">H1</span><span class="p">(</span><span class="s2">&quot;Distributed MPC with ADMM Dashboard&quot;</span><span class="p">),</span>
+            <span class="n">html</span><span class="o">.</span><span class="n">H1</span><span class="p">(</span><span class="s2">"Distributed MPC with ADMM Dashboard"</span><span class="p">),</span>
             <span class="c1"># time step slider</span>
             <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">(</span>
                 <span class="p">[</span>
-                    <span class="n">html</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="s2">&quot;Time Step&quot;</span><span class="p">),</span>
+                    <span class="n">html</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="s2">"Time Step"</span><span class="p">),</span>
                     <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">(</span>
                         <span class="p">[</span>
                             <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">(</span>
                                 <span class="p">[</span>
                                     <span class="n">dcc</span><span class="o">.</span><span class="n">Slider</span><span class="p">(</span>
-                                        <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;time-step-slider&quot;</span><span class="p">,</span>
+                                        <span class="nb">id</span><span class="o">=</span><span class="s2">"time-step-slider"</span><span class="p">,</span>
                                         <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                                         <span class="nb">max</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">time_steps</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
                                         <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                                         <span class="n">marks</span><span class="o">=</span><span class="p">{</span>
-                                            <span class="n">i</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">time_steps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+                                            <span class="n">i</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">time_steps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span>
                                             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span>
                                                 <span class="mi">0</span><span class="p">,</span>
                                                 <span class="nb">len</span><span class="p">(</span><span class="n">time_steps</span><span class="p">),</span>
@@ -372,34 +372,34 @@
                                     <span class="p">)</span>
                                 <span class="p">],</span>
                                 <span class="n">style</span><span class="o">=</span><span class="p">{</span>
-                                    <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="s2">&quot;80%&quot;</span><span class="p">,</span>
-                                    <span class="s2">&quot;display&quot;</span><span class="p">:</span> <span class="s2">&quot;inline-block&quot;</span><span class="p">,</span>
-                                    <span class="s2">&quot;verticalAlign&quot;</span><span class="p">:</span> <span class="s2">&quot;middle&quot;</span><span class="p">,</span>
+                                    <span class="s2">"width"</span><span class="p">:</span> <span class="s2">"80%"</span><span class="p">,</span>
+                                    <span class="s2">"display"</span><span class="p">:</span> <span class="s2">"inline-block"</span><span class="p">,</span>
+                                    <span class="s2">"verticalAlign"</span><span class="p">:</span> <span class="s2">"middle"</span><span class="p">,</span>
                                 <span class="p">},</span>
                             <span class="p">),</span>
                             <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">(</span>
                                 <span class="p">[</span>
                                     <span class="n">html</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span>
-                                        <span class="s2">&quot;◀&quot;</span><span class="p">,</span>
-                                        <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;prev-time-step&quot;</span><span class="p">,</span>
+                                        <span class="s2">"◀"</span><span class="p">,</span>
+                                        <span class="nb">id</span><span class="o">=</span><span class="s2">"prev-time-step"</span><span class="p">,</span>
                                         <span class="n">n_clicks</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                                        <span class="n">style</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;marginRight&quot;</span><span class="p">:</span> <span class="s2">&quot;5px&quot;</span><span class="p">},</span>
+                                        <span class="n">style</span><span class="o">=</span><span class="p">{</span><span class="s2">"marginRight"</span><span class="p">:</span> <span class="s2">"5px"</span><span class="p">},</span>
                                     <span class="p">),</span>
                                     <span class="n">html</span><span class="o">.</span><span class="n">Button</span><span class="p">(</span>
-                                        <span class="s2">&quot;▶&quot;</span><span class="p">,</span>
-                                        <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;next-time-step&quot;</span><span class="p">,</span>
+                                        <span class="s2">"▶"</span><span class="p">,</span>
+                                        <span class="nb">id</span><span class="o">=</span><span class="s2">"next-time-step"</span><span class="p">,</span>
                                         <span class="n">n_clicks</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                                        <span class="n">style</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;marginRight&quot;</span><span class="p">:</span> <span class="s2">&quot;5px&quot;</span><span class="p">},</span>
+                                        <span class="n">style</span><span class="o">=</span><span class="p">{</span><span class="s2">"marginRight"</span><span class="p">:</span> <span class="s2">"5px"</span><span class="p">},</span>
                                     <span class="p">),</span>
                                     <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">(</span>
-                                        <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;time-step-display&quot;</span><span class="p">,</span>
+                                        <span class="nb">id</span><span class="o">=</span><span class="s2">"time-step-display"</span><span class="p">,</span>
                                         <span class="n">style</span><span class="o">=</span><span class="p">{</span>
-                                            <span class="s2">&quot;display&quot;</span><span class="p">:</span> <span class="s2">&quot;inline-block&quot;</span><span class="p">,</span>
-                                            <span class="s2">&quot;marginRight&quot;</span><span class="p">:</span> <span class="s2">&quot;10px&quot;</span><span class="p">,</span>
+                                            <span class="s2">"display"</span><span class="p">:</span> <span class="s2">"inline-block"</span><span class="p">,</span>
+                                            <span class="s2">"marginRight"</span><span class="p">:</span> <span class="s2">"10px"</span><span class="p">,</span>
                                         <span class="p">},</span>
                                     <span class="p">),</span>
                                     <span class="n">daq</span><span class="o">.</span><span class="n">NumericInput</span><span class="p">(</span>
-                                        <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;time-step-input&quot;</span><span class="p">,</span>
+                                        <span class="nb">id</span><span class="o">=</span><span class="s2">"time-step-input"</span><span class="p">,</span>
                                         <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                                         <span class="nb">max</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">time_steps</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
                                         <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -407,10 +407,10 @@
                                     <span class="p">),</span>
                                 <span class="p">],</span>
                                 <span class="n">style</span><span class="o">=</span><span class="p">{</span>
-                                    <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="s2">&quot;20%&quot;</span><span class="p">,</span>
-                                    <span class="s2">&quot;display&quot;</span><span class="p">:</span> <span class="s2">&quot;inline-block&quot;</span><span class="p">,</span>
-                                    <span class="s2">&quot;verticalAlign&quot;</span><span class="p">:</span> <span class="s2">&quot;middle&quot;</span><span class="p">,</span>
-                                    <span class="s2">&quot;textAlign&quot;</span><span class="p">:</span> <span class="s2">&quot;right&quot;</span><span class="p">,</span>
+                                    <span class="s2">"width"</span><span class="p">:</span> <span class="s2">"20%"</span><span class="p">,</span>
+                                    <span class="s2">"display"</span><span class="p">:</span> <span class="s2">"inline-block"</span><span class="p">,</span>
+                                    <span class="s2">"verticalAlign"</span><span class="p">:</span> <span class="s2">"middle"</span><span class="p">,</span>
+                                    <span class="s2">"textAlign"</span><span class="p">:</span> <span class="s2">"right"</span><span class="p">,</span>
                                 <span class="p">},</span>
                             <span class="p">),</span>
                         <span class="p">]</span>
@@ -420,13 +420,13 @@
             <span class="c1"># iteration slide</span>
             <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">(</span>
                 <span class="p">[</span>
-                    <span class="n">html</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="s2">&quot;Iteration Number&quot;</span><span class="p">),</span>
+                    <span class="n">html</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="s2">"Iteration Number"</span><span class="p">),</span>
                     <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">(</span>
                         <span class="p">[</span>
                             <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">(</span>
                                 <span class="p">[</span>
                                     <span class="n">dcc</span><span class="o">.</span><span class="n">Slider</span><span class="p">(</span>
-                                        <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;iteration-slider&quot;</span><span class="p">,</span>
+                                        <span class="nb">id</span><span class="o">=</span><span class="s2">"iteration-slider"</span><span class="p">,</span>
                                         <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                                         <span class="nb">max</span><span class="o">=</span><span class="n">overall_max_iterations</span><span class="p">,</span>
                                         <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -442,15 +442,15 @@
                                     <span class="p">)</span>
                                 <span class="p">],</span>
                                 <span class="n">style</span><span class="o">=</span><span class="p">{</span>
-                                    <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="s2">&quot;80%&quot;</span><span class="p">,</span>
-                                    <span class="s2">&quot;display&quot;</span><span class="p">:</span> <span class="s2">&quot;inline-block&quot;</span><span class="p">,</span>
-                                    <span class="s2">&quot;verticalAlign&quot;</span><span class="p">:</span> <span class="s2">&quot;middle&quot;</span><span class="p">,</span>
+                                    <span class="s2">"width"</span><span class="p">:</span> <span class="s2">"80%"</span><span class="p">,</span>
+                                    <span class="s2">"display"</span><span class="p">:</span> <span class="s2">"inline-block"</span><span class="p">,</span>
+                                    <span class="s2">"verticalAlign"</span><span class="p">:</span> <span class="s2">"middle"</span><span class="p">,</span>
                                 <span class="p">},</span>
                             <span class="p">),</span>
                             <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">(</span>
                                 <span class="p">[</span>
                                     <span class="n">daq</span><span class="o">.</span><span class="n">NumericInput</span><span class="p">(</span>
-                                        <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;iteration-input&quot;</span><span class="p">,</span>
+                                        <span class="nb">id</span><span class="o">=</span><span class="s2">"iteration-input"</span><span class="p">,</span>
                                         <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                                         <span class="nb">max</span><span class="o">=</span><span class="n">overall_max_iterations</span><span class="p">,</span>
                                         <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
@@ -458,10 +458,10 @@
                                     <span class="p">)</span>
                                 <span class="p">],</span>
                                 <span class="n">style</span><span class="o">=</span><span class="p">{</span>
-                                    <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="s2">&quot;20%&quot;</span><span class="p">,</span>
-                                    <span class="s2">&quot;display&quot;</span><span class="p">:</span> <span class="s2">&quot;inline-block&quot;</span><span class="p">,</span>
-                                    <span class="s2">&quot;verticalAlign&quot;</span><span class="p">:</span> <span class="s2">&quot;middle&quot;</span><span class="p">,</span>
-                                    <span class="s2">&quot;textAlign&quot;</span><span class="p">:</span> <span class="s2">&quot;right&quot;</span><span class="p">,</span>
+                                    <span class="s2">"width"</span><span class="p">:</span> <span class="s2">"20%"</span><span class="p">,</span>
+                                    <span class="s2">"display"</span><span class="p">:</span> <span class="s2">"inline-block"</span><span class="p">,</span>
+                                    <span class="s2">"verticalAlign"</span><span class="p">:</span> <span class="s2">"middle"</span><span class="p">,</span>
+                                    <span class="s2">"textAlign"</span><span class="p">:</span> <span class="s2">"right"</span><span class="p">,</span>
                                 <span class="p">},</span>
                             <span class="p">),</span>
                         <span class="p">]</span>
@@ -470,33 +470,33 @@
             <span class="p">),</span>
             <span class="n">html</span><span class="o">.</span><span class="n">Div</span><span class="p">(</span>
                 <span class="p">[</span>
-                    <span class="n">html</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="s2">&quot;Coupling Variable&quot;</span><span class="p">),</span>
+                    <span class="n">html</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="s2">"Coupling Variable"</span><span class="p">),</span>
                     <span class="n">dcc</span><span class="o">.</span><span class="n">Dropdown</span><span class="p">(</span>
-                        <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;coupling-var-dropdown&quot;</span><span class="p">,</span>
-                        <span class="n">options</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">var</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">var</span><span class="p">}</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">coupling_vars</span><span class="p">],</span>
+                        <span class="nb">id</span><span class="o">=</span><span class="s2">"coupling-var-dropdown"</span><span class="p">,</span>
+                        <span class="n">options</span><span class="o">=</span><span class="p">[{</span><span class="s2">"label"</span><span class="p">:</span> <span class="n">var</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">:</span> <span class="n">var</span><span class="p">}</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">coupling_vars</span><span class="p">],</span>
                         <span class="n">value</span><span class="o">=</span><span class="n">coupling_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">coupling_vars</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="p">),</span>
                 <span class="p">]</span>
             <span class="p">),</span>
-            <span class="n">dcc</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;coupling-var-plot&quot;</span><span class="p">),</span>
-            <span class="n">dcc</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;residuals-plot&quot;</span><span class="p">),</span>
-            <span class="n">dcc</span><span class="o">.</span><span class="n">Store</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;y-axis-range&quot;</span><span class="p">),</span>
+            <span class="n">dcc</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">"coupling-var-plot"</span><span class="p">),</span>
+            <span class="n">dcc</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">"residuals-plot"</span><span class="p">),</span>
+            <span class="n">dcc</span><span class="o">.</span><span class="n">Store</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">"y-axis-range"</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
 
     <span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
         <span class="p">[</span>
-            <span class="n">Output</span><span class="p">(</span><span class="s2">&quot;time-step-input&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">),</span>
-            <span class="n">Output</span><span class="p">(</span><span class="s2">&quot;time-step-display&quot;</span><span class="p">,</span> <span class="s2">&quot;children&quot;</span><span class="p">),</span>
-            <span class="n">Output</span><span class="p">(</span><span class="s2">&quot;time-step-slider&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">),</span>
+            <span class="n">Output</span><span class="p">(</span><span class="s2">"time-step-input"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">),</span>
+            <span class="n">Output</span><span class="p">(</span><span class="s2">"time-step-display"</span><span class="p">,</span> <span class="s2">"children"</span><span class="p">),</span>
+            <span class="n">Output</span><span class="p">(</span><span class="s2">"time-step-slider"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">),</span>
         <span class="p">],</span>
         <span class="p">[</span>
-            <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;time-step-slider&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">),</span>
-            <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;prev-time-step&quot;</span><span class="p">,</span> <span class="s2">&quot;n_clicks&quot;</span><span class="p">),</span>
-            <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;next-time-step&quot;</span><span class="p">,</span> <span class="s2">&quot;n_clicks&quot;</span><span class="p">),</span>
-            <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;time-step-input&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">),</span>
+            <span class="n">Input</span><span class="p">(</span><span class="s2">"time-step-slider"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">),</span>
+            <span class="n">Input</span><span class="p">(</span><span class="s2">"prev-time-step"</span><span class="p">,</span> <span class="s2">"n_clicks"</span><span class="p">),</span>
+            <span class="n">Input</span><span class="p">(</span><span class="s2">"next-time-step"</span><span class="p">,</span> <span class="s2">"n_clicks"</span><span class="p">),</span>
+            <span class="n">Input</span><span class="p">(</span><span class="s2">"time-step-input"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">),</span>
         <span class="p">],</span>
-        <span class="p">[</span><span class="n">State</span><span class="p">(</span><span class="s2">&quot;time-step-input&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)],</span>
+        <span class="p">[</span><span class="n">State</span><span class="p">(</span><span class="s2">"time-step-input"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">)],</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_time_step</span><span class="p">(</span>
         <span class="n">slider_value</span><span class="p">,</span> <span class="n">prev_clicks</span><span class="p">,</span> <span class="n">next_clicks</span><span class="p">,</span> <span class="n">input_value</span><span class="p">,</span> <span class="n">current_value</span>
@@ -505,32 +505,32 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ctx</span><span class="o">.</span><span class="n">triggered</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span>
                 <span class="n">current_value</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s2">&quot;Current time step: </span><span class="si">{</span><span class="n">time_steps</span><span class="p">[</span><span class="n">current_value</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"Current time step: </span><span class="si">{</span><span class="n">time_steps</span><span class="p">[</span><span class="n">current_value</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="n">current_value</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="n">input_id</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">triggered</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;prop_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">input_id</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">triggered</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"prop_id"</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="n">input_id</span> <span class="o">==</span> <span class="s2">&quot;time-step-slider&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">input_id</span> <span class="o">==</span> <span class="s2">"time-step-slider"</span><span class="p">:</span>
             <span class="n">new_value</span> <span class="o">=</span> <span class="n">slider_value</span>
-        <span class="k">elif</span> <span class="n">input_id</span> <span class="o">==</span> <span class="s2">&quot;prev-time-step&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">input_id</span> <span class="o">==</span> <span class="s2">"prev-time-step"</span><span class="p">:</span>
             <span class="n">new_value</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">current_value</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">input_id</span> <span class="o">==</span> <span class="s2">&quot;next-time-step&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">input_id</span> <span class="o">==</span> <span class="s2">"next-time-step"</span><span class="p">:</span>
             <span class="n">new_value</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time_steps</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">current_value</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">input_id</span> <span class="o">==</span> <span class="s2">&quot;time-step-input&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">input_id</span> <span class="o">==</span> <span class="s2">"time-step-input"</span><span class="p">:</span>
             <span class="n">new_value</span> <span class="o">=</span> <span class="n">input_value</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">new_value</span> <span class="o">=</span> <span class="n">current_value</span>
 
-        <span class="k">return</span> <span class="n">new_value</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Current time step: </span><span class="si">{</span><span class="n">time_steps</span><span class="p">[</span><span class="n">new_value</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">new_value</span>
+        <span class="k">return</span> <span class="n">new_value</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"Current time step: </span><span class="si">{</span><span class="n">time_steps</span><span class="p">[</span><span class="n">new_value</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">new_value</span>
 
     <span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
         <span class="p">[</span>
-            <span class="n">Output</span><span class="p">(</span><span class="s2">&quot;iteration-slider&quot;</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">),</span>
-            <span class="n">Output</span><span class="p">(</span><span class="s2">&quot;iteration-slider&quot;</span><span class="p">,</span> <span class="s2">&quot;marks&quot;</span><span class="p">),</span>
-            <span class="n">Output</span><span class="p">(</span><span class="s2">&quot;iteration-input&quot;</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">),</span>
+            <span class="n">Output</span><span class="p">(</span><span class="s2">"iteration-slider"</span><span class="p">,</span> <span class="s2">"max"</span><span class="p">),</span>
+            <span class="n">Output</span><span class="p">(</span><span class="s2">"iteration-slider"</span><span class="p">,</span> <span class="s2">"marks"</span><span class="p">),</span>
+            <span class="n">Output</span><span class="p">(</span><span class="s2">"iteration-input"</span><span class="p">,</span> <span class="s2">"max"</span><span class="p">),</span>
         <span class="p">],</span>
-        <span class="p">[</span><span class="n">Input</span><span class="p">(</span><span class="s2">&quot;time-step-input&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)],</span>
+        <span class="p">[</span><span class="n">Input</span><span class="p">(</span><span class="s2">"time-step-input"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">)],</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_iteration_range</span><span class="p">(</span><span class="n">time_step_index</span><span class="p">):</span>
         <span class="n">time_step</span> <span class="o">=</span> <span class="n">time_steps</span><span class="p">[</span><span class="n">time_step_index</span><span class="p">]</span>
@@ -539,12 +539,12 @@
         <span class="k">return</span> <span class="n">max_iter</span><span class="p">,</span> <span class="n">marks</span><span class="p">,</span> <span class="n">max_iter</span>
 
     <span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-        <span class="n">Output</span><span class="p">(</span><span class="s2">&quot;coupling-var-plot&quot;</span><span class="p">,</span> <span class="s2">&quot;figure&quot;</span><span class="p">),</span>
+        <span class="n">Output</span><span class="p">(</span><span class="s2">"coupling-var-plot"</span><span class="p">,</span> <span class="s2">"figure"</span><span class="p">),</span>
         <span class="p">[</span>
-            <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;time-step-input&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">),</span>
-            <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;iteration-input&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">),</span>
-            <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;coupling-var-dropdown&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">),</span>
-            <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;y-axis-range&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">),</span>
+            <span class="n">Input</span><span class="p">(</span><span class="s2">"time-step-input"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">),</span>
+            <span class="n">Input</span><span class="p">(</span><span class="s2">"iteration-input"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">),</span>
+            <span class="n">Input</span><span class="p">(</span><span class="s2">"coupling-var-dropdown"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">),</span>
+            <span class="n">Input</span><span class="p">(</span><span class="s2">"y-axis-range"</span><span class="p">,</span> <span class="s2">"data"</span><span class="p">),</span>
         <span class="p">],</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_coupling_var_plot</span><span class="p">(</span><span class="n">time_step_index</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="n">coupling_var</span><span class="p">,</span> <span class="n">y_range</span><span class="p">):</span>
@@ -566,8 +566,8 @@
         <span class="k">return</span> <span class="n">fig</span>
 
     <span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-        <span class="n">Output</span><span class="p">(</span><span class="s2">&quot;y-axis-range&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">),</span>
-        <span class="p">[</span><span class="n">Input</span><span class="p">(</span><span class="s2">&quot;time-step-input&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">),</span> <span class="n">Input</span><span class="p">(</span><span class="s2">&quot;coupling-var-dropdown&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)],</span>
+        <span class="n">Output</span><span class="p">(</span><span class="s2">"y-axis-range"</span><span class="p">,</span> <span class="s2">"data"</span><span class="p">),</span>
+        <span class="p">[</span><span class="n">Input</span><span class="p">(</span><span class="s2">"time-step-input"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">),</span> <span class="n">Input</span><span class="p">(</span><span class="s2">"coupling-var-dropdown"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">)],</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_y_axis_range</span><span class="p">(</span><span class="n">time_step_index</span><span class="p">,</span> <span class="n">coupling_var</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">coupling_var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -579,7 +579,7 @@
         <span class="n">min_vals</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">agent</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">agent_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">step_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[(</span><span class="s2">&quot;variable&quot;</span><span class="p">,</span> <span class="n">coupling_var</span><span class="p">)][</span><span class="n">time_step</span><span class="p">]</span>
+                <span class="n">step_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[(</span><span class="s2">"variable"</span><span class="p">,</span> <span class="n">coupling_var</span><span class="p">)][</span><span class="n">time_step</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="n">max_vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_data</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
@@ -592,8 +592,8 @@
         <span class="k">return</span> <span class="n">y_range</span>
 
     <span class="nd">@app</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span>
-        <span class="n">Output</span><span class="p">(</span><span class="s2">&quot;residuals-plot&quot;</span><span class="p">,</span> <span class="s2">&quot;figure&quot;</span><span class="p">),</span>
-        <span class="p">[</span><span class="n">Input</span><span class="p">(</span><span class="s2">&quot;time-step-input&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)],</span>
+        <span class="n">Output</span><span class="p">(</span><span class="s2">"residuals-plot"</span><span class="p">,</span> <span class="s2">"figure"</span><span class="p">),</span>
+        <span class="p">[</span><span class="n">Input</span><span class="p">(</span><span class="s2">"time-step-input"</span><span class="p">,</span> <span class="s2">"value"</span><span class="p">)],</span>
     <span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_residuals_plot</span><span class="p">(</span><span class="n">time_step_index</span><span class="p">):</span>
         <span class="n">time_step</span> <span class="o">=</span> <span class="n">time_steps</span><span class="p">[</span><span class="n">time_step_index</span><span class="p">]</span>
@@ -603,9 +603,9 @@
             <span class="c1"># If no data, return an empty figure with a message</span>
             <span class="n">fig</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">()</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">add_annotation</span><span class="p">(</span>
-                <span class="n">text</span><span class="o">=</span><span class="s2">&quot;No residuals data available for this time step&quot;</span><span class="p">,</span>
-                <span class="n">xref</span><span class="o">=</span><span class="s2">&quot;paper&quot;</span><span class="p">,</span>
-                <span class="n">yref</span><span class="o">=</span><span class="s2">&quot;paper&quot;</span><span class="p">,</span>
+                <span class="n">text</span><span class="o">=</span><span class="s2">"No residuals data available for this time step"</span><span class="p">,</span>
+                <span class="n">xref</span><span class="o">=</span><span class="s2">"paper"</span><span class="p">,</span>
+                <span class="n">yref</span><span class="o">=</span><span class="s2">"paper"</span><span class="p">,</span>
                 <span class="n">x</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
                 <span class="n">y</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
                 <span class="n">showarrow</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -619,19 +619,19 @@
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../../code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.admm_dashboard.main">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="c1"># Specify the directory containing the data files</span>
-    <span class="n">data_directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;D:\repos\juelich_mpc\juelich_mpc\mpc\simple_model\results&quot;</span><span class="p">)</span>
+    <span class="n">data_directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s2">"D:\repos\juelich_mpc\juelich_mpc\mpc\simple_model\results"</span><span class="p">)</span>
 
     <span class="c1"># Load agent data</span>
     <span class="n">agent_data</span> <span class="o">=</span> <span class="n">load_agent_data</span><span class="p">(</span><span class="n">data_directory</span><span class="p">)</span>
-    <span class="n">agent_data</span><span class="p">[</span><span class="s2">&quot;heating&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">load_mpc</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">data_directory</span><span class="p">,</span> <span class="s2">&quot;heating_agent_res.csv&quot;</span><span class="p">))</span>
-    <span class="c1"># &quot;room_1&quot;: load_mpc(Path(data_directory, &quot;room_1_admm.csv&quot;)),</span>
-    <span class="c1"># &quot;room_2&quot;: load_mpc(Path(data_directory, &quot;room_2_admm.csv&quot;)),</span>
-    <span class="c1"># &quot;room_3&quot;: load_mpc(Path(data_directory, &quot;room_3_admm.csv&quot;)),</span>
-    <span class="c1"># &quot;heating&quot;: load_mpc(Path(data_directory, &quot;heating_agent_res.csv&quot;)),</span>
+    <span class="n">agent_data</span><span class="p">[</span><span class="s2">"heating"</span><span class="p">]</span> <span class="o">=</span> <span class="n">load_mpc</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">data_directory</span><span class="p">,</span> <span class="s2">"heating_agent_res.csv"</span><span class="p">))</span>
+    <span class="c1"># "room_1": load_mpc(Path(data_directory, "room_1_admm.csv")),</span>
+    <span class="c1"># "room_2": load_mpc(Path(data_directory, "room_2_admm.csv")),</span>
+    <span class="c1"># "room_3": load_mpc(Path(data_directory, "room_3_admm.csv")),</span>
+    <span class="c1"># "heating": load_mpc(Path(data_directory, "heating_agent_res.csv")),</span>
 
     <span class="c1"># Load residuals data</span>
     <span class="n">residuals_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-        <span class="n">data_directory</span><span class="p">,</span> <span class="s2">&quot;residuals.csv&quot;</span>
+        <span class="n">data_directory</span><span class="p">,</span> <span class="s2">"residuals.csv"</span>
     <span class="p">)</span>  <span class="c1"># Adjust the filename as needed</span>
     <span class="n">residuals_df</span> <span class="o">=</span> <span class="n">load_residuals</span><span class="p">(</span><span class="n">residuals_file</span><span class="p">)</span>
 
@@ -639,23 +639,23 @@
     <span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">(</span><span class="n">agent_data</span><span class="p">,</span> <span class="n">residuals_df</span><span class="p">)</span>
     <span class="n">port</span> <span class="o">=</span> <span class="n">get_port</span><span class="p">()</span>
 
-    <span class="n">webbrowser</span><span class="o">.</span><span class="n">open_new_tab</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;http://localhost:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">webbrowser</span><span class="o">.</span><span class="n">open_new_tab</span><span class="p">(</span><span class="sa">f</span><span class="s2">"http://localhost:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">app</span><span class="o">.</span><span class="n">run_server</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="show_admm_dashboard"><a class="viewcode-back" href="../../../../code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.admm_dashboard.show_admm_dashboard">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">show_admm_dashboard</span><span class="p">(</span>
     <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
     <span class="n">residuals</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">scale</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;minutes&quot;</span><span class="p">,</span> <span class="s2">&quot;hours&quot;</span><span class="p">,</span> <span class="s2">&quot;days&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;seconds&quot;</span><span class="p">,</span>
+    <span class="n">scale</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"seconds"</span><span class="p">,</span> <span class="s2">"minutes"</span><span class="p">,</span> <span class="s2">"hours"</span><span class="p">,</span> <span class="s2">"days"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"seconds"</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">residuals</span><span class="p">)</span>
     <span class="n">port</span> <span class="o">=</span> <span class="n">get_port</span><span class="p">()</span>
 
-    <span class="n">webbrowser</span><span class="o">.</span><span class="n">open_new_tab</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;http://localhost:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">webbrowser</span><span class="o">.</span><span class="n">open_new_tab</span><span class="p">(</span><span class="sa">f</span><span class="s2">"http://localhost:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">app</span><span class="o">.</span><span class="n">run_server</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span></div>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 

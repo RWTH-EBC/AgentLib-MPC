@@ -118,41 +118,41 @@
     <span class="n">solver</span><span class="p">:</span> <span class="n">SolverOptions</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">SolverOptions</span><span class="p">)</span>
     <span class="n">build_batch_bat</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path to a batch file, which can compile C code on windows.&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Path to a batch file, which can compile C code on windows."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">do_jit</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Boolean to turn JIT of the optimization problems on or off.&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Boolean to turn JIT of the optimization problems on or off."</span><span class="p">,</span>
         <span class="n">validate_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">save_only_stats</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;If results should be saved, setting this to True will only save&quot;</span>
-        <span class="s2">&quot;the optimization statistics. May be useful for longer timespans,&quot;</span>
-        <span class="s2">&quot;if the results with all predictions gets too large.&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"If results should be saved, setting this to True will only save"</span>
+        <span class="s2">"the optimization statistics. May be useful for longer timespans,"</span>
+        <span class="s2">"if the results with all predictions gets too large."</span><span class="p">,</span>
     <span class="p">)</span>
 
-<div class="viewcode-block" id="CasadiBackendConfig.validate_compile"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasadiBackendConfig.validate_compile">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">&quot;do_jit&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="CasadiBackendConfig.validate_compile"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasadiBackendConfig.validate_compile">[docs]</a>    <span class="nd">@pydantic</span><span class="o">.</span><span class="n">field_validator</span><span class="p">(</span><span class="s2">"do_jit"</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_compile</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">do_jit</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">FieldValidationInfo</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks whether code compilation should be done.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Checks whether code compilation should be done."""</span>
 
-        <span class="c1"># if we&#39;re on Linux, we cannot generate the code as of now</span>
-        <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Linux&quot;</span><span class="p">:</span>
+        <span class="c1"># if we're on Linux, we cannot generate the code as of now</span>
+        <span class="k">if</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"Linux"</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">do_jit</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                    <span class="s2">&quot;C Code generation not implemented yet for linux.&quot;</span>
+                    <span class="s2">"C Code generation not implemented yet for linux."</span>
                 <span class="p">)</span>
             <span class="c1"># if not specified or False, we do not do jit</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="c1"># assume we&#39;re on Windows. If there is no batch file, we have to return False</span>
-        <span class="n">bat_file</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;build_batch_bat&quot;</span><span class="p">]</span>
+        <span class="c1"># assume we're on Windows. If there is no batch file, we have to return False</span>
+        <span class="n">bat_file</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"build_batch_bat"</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">bat_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">do_jit</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
-                    <span class="s2">&quot;Cannot do C-Code generation on Windows without specifying a &quot;</span>
-                    <span class="s2">&quot;proper batch file through the &#39;build_batch_bat&#39; option.&quot;</span>
+                    <span class="s2">"Cannot do C-Code generation on Windows without specifying a "</span>
+                    <span class="s2">"proper batch file through the 'build_batch_bat' option."</span>
                 <span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
@@ -167,27 +167,27 @@
 
 
 <div class="viewcode-block" id="CasADiBackend"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CasADiBackend</span><span class="p">(</span><span class="n">OptimizationBackend</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    OptimizationBackend for solving the optimization problem with CasADi.</span>
 <span class="sd">    Requires the model to be a CasADi model.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">system_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">system</span><span class="o">.</span><span class="n">SystemT</span><span class="p">]</span>
     <span class="n">system</span><span class="p">:</span> <span class="n">system</span><span class="o">.</span><span class="n">SystemT</span>
     <span class="n">discretization_types</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">DiscretizationMethod</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">DiscretizationT</span><span class="p">]]</span>
     <span class="n">discretization</span><span class="p">:</span> <span class="n">DiscretizationT</span>
-    <span class="n">_supported_models</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;CasadiModel&quot;</span><span class="p">:</span> <span class="n">CasadiModel</span><span class="p">}</span>
+    <span class="n">_supported_models</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"CasadiModel"</span><span class="p">:</span> <span class="n">CasadiModel</span><span class="p">}</span>
     <span class="n">config_type</span> <span class="o">=</span> <span class="n">CasadiBackendConfig</span>
 
 <div class="viewcode-block" id="CasADiBackend.setup_optimization"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.setup_optimization">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup_optimization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">VariableReference</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Performs all necessary steps to make the ``solve`` method usable.</span>
 <span class="sd">        To do this, it calls several auxiliary functions. These functions can</span>
 <span class="sd">        be overloaded to change the resulting optimization problem.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            var_ref: class with variable name lists sorted by function in the mpc.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setup_optimization</span><span class="p">(</span><span class="n">var_ref</span><span class="o">=</span><span class="n">var_ref</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset_setup_attributes</span><span class="p">()</span>
 
@@ -215,7 +215,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_current_mpc_inputs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">agent_variables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MPCVariable</span><span class="p">],</span> <span class="n">now</span><span class="p">:</span> <span class="nb">float</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Reads the value from all received AgentVariables and performs the</span>
 <span class="sd">        necessary expansion/interpolation of values onto the correct grid.</span>
 
@@ -227,12 +227,12 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            dictionary with keys matching the required input for</span>
 <span class="sd">                self._mpc_inputs_to_nlp_inputs()</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">get_variable_boundaries</span><span class="p">(</span><span class="n">var</span><span class="p">:</span> <span class="n">OptimizationVariable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">]:</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">"""</span>
 <span class="sd">            Gets boundaries and initial guesses for all optimization</span>
-<span class="sd">            variables of denotation &#39;of&#39;. Currently, initial guesses are used</span>
+<span class="sd">            variables of denotation 'of'. Currently, initial guesses are used</span>
 <span class="sd">            without shifting.</span>
 
 <span class="sd">            Args:</span>
@@ -240,7 +240,7 @@
 
 <span class="sd">            Returns:</span>
 <span class="sd">                dict of the form {lb_&lt;den&gt;: ca.MX, ub_&lt;den&gt;: ca.MX, guess_&lt;den&gt;: ca.MX}</span>
-<span class="sd">            &quot;&quot;&quot;</span>
+<span class="sd">            """</span>
             <span class="n">ref_list</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">ref_names</span>
             <span class="n">input_map</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">input_map</span>
             <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">discretization</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
@@ -270,15 +270,15 @@
             <span class="k">return</span> <span class="n">boundaries</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">get_parameter_values</span><span class="p">(</span><span class="n">par</span><span class="p">:</span> <span class="n">OptimizationParameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">]:</span>
-<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Gets values for all optimization parameters of denotation &#39;of&#39;</span>
+<span class="w">            </span><span class="sd">"""</span>
+<span class="sd">            Gets values for all optimization parameters of denotation 'of'</span>
 
 <span class="sd">            Args:</span>
 <span class="sd">                par: denotation matching the variable type that is gathered</span>
 
 <span class="sd">            Returns:</span>
 <span class="sd">                dict of the form {&lt;den&gt;: ca.MX}</span>
-<span class="sd">            &quot;&quot;&quot;</span>
+<span class="sd">            """</span>
             <span class="n">ref_list</span> <span class="o">=</span> <span class="n">par</span><span class="o">.</span><span class="n">ref_names</span>
             <span class="n">input_map</span> <span class="o">=</span> <span class="n">par</span><span class="o">.</span><span class="n">add_default_values</span>
             <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">discretization</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">par</span><span class="p">)</span>
@@ -289,8 +289,8 @@
                 <span class="n">value</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">value</span>
                 <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Input for variable </span><span class="si">{</span><span class="n">ref</span><span class="si">}</span><span class="s2"> is empty. &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;Cannot solve optimization problem.&quot;</span>
+                        <span class="sa">f</span><span class="s2">"Input for variable </span><span class="si">{</span><span class="n">ref</span><span class="si">}</span><span class="s2"> is empty. "</span>
+                        <span class="sa">f</span><span class="s2">"Cannot solve optimization problem."</span>
                     <span class="p">)</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">interpolation_method</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">interpolation_method</span>
@@ -299,10 +299,10 @@
                     <span class="c1"># optimization input, possibly due to subclassing the MPC class</span>
                     <span class="c1"># and dynamically changing the MPC input</span>
                     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;The variable </span><span class="si">{</span><span class="n">ref</span><span class="si">}</span><span class="s2"> does not have an interpolationmethod. All &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;Variables used in MPC need to be of type MPCVariable &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;(subclass of AgentVariable). This is likely caused by an &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;error in a custom module.&quot;</span>
+                        <span class="sa">f</span><span class="s2">"The variable </span><span class="si">{</span><span class="n">ref</span><span class="si">}</span><span class="s2"> does not have an interpolationmethod. All "</span>
+                        <span class="sa">f</span><span class="s2">"Variables used in MPC need to be of type MPCVariable "</span>
+                        <span class="sa">f</span><span class="s2">"(subclass of AgentVariable). This is likely caused by an "</span>
+                        <span class="sa">f</span><span class="s2">"error in a custom module."</span>
                     <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
                 <span class="n">input_matrix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="n">sampling</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
@@ -327,7 +327,7 @@
         <span class="k">return</span> <span class="n">mpc_inputs</span>
 
 <div class="viewcode-block" id="CasADiBackend.reset_setup_attributes"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.reset_setup_attributes">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">reset_setup_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cleans all attributes that are used for optimization setup.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Cleans all attributes that are used for optimization setup."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">system</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_type</span><span class="p">()</span>
         <span class="n">opts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span>
         <span class="n">method</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">method</span>
@@ -339,7 +339,7 @@
         <span class="n">results</span><span class="p">:</span> <span class="n">Results</span><span class="p">,</span>
         <span class="n">now</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">         Save the results of `solve` into a dataframe at each time step.</span>
 
 <span class="sd">        Example results dataframe:</span>
@@ -356,7 +356,7 @@
 <span class="sd">            now:</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_results</span><span class="p">:</span>
             <span class="k">return</span>
 
@@ -366,7 +366,7 @@
         <span class="n">df</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">df</span>
         
         <span class="c1"># Skip objective calculation for legacy objectives</span>
-        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">objective</span><span class="p">,</span> <span class="s1">&#39;_is_legacy_wrapped&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">objective</span><span class="p">,</span> <span class="s1">'_is_legacy_wrapped'</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
             <span class="n">objective_names</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">objective_values</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">else</span><span class="p">:</span>
@@ -377,17 +377,17 @@
                 <span class="n">results</span><span class="o">.</span><span class="n">write_columns</span><span class="p">(</span><span class="n">res_file</span><span class="p">)</span>
             <span class="n">results</span><span class="o">.</span><span class="n">write_combined_stats_columns</span><span class="p">(</span><span class="n">stats_path</span><span class="p">(</span><span class="n">res_file</span><span class="p">),</span> <span class="n">objective_names</span><span class="p">)</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">stats_path</span><span class="p">(</span><span class="n">res_file</span><span class="p">),</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">stats_path</span><span class="p">(</span><span class="n">res_file</span><span class="p">),</span> <span class="s2">"a"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span>
                 <span class="n">results</span><span class="o">.</span><span class="n">combined_stats_line</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">now</span><span class="p">),</span> <span class="n">objective_values</span><span class="p">,</span> <span class="n">objective_names</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">save_only_stats</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">((</span><span class="n">now</span><span class="p">,</span> <span class="n">x</span><span class="p">)),</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
-        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">res_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">res_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">"a"</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CasADiBackend.approximate_objective"><a class="viewcode-back" href="../../../../../code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.approximate_objective">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">approximate_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the approximate objective value of this MPC step.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the approximate objective value of this MPC step."""</span>
         <span class="n">objective</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">objective</span>
 
         <span class="c1"># approximate objective over multiple shooting grid. This introduces slight but usually unimportant errors when actual objective is calculated with a different discretization.</span>
@@ -398,7 +398,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span><span class="o">.</span><span class="n">time_step</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">objective_values</span> <span class="o">=</span> <span class="n">objective</span><span class="o">.</span><span class="n">calculate_values</span><span class="p">(</span><span class="n">results_df</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
-        <span class="n">objective_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objective</span><span class="o">.</span><span class="n">objectives</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span>
+        <span class="n">objective_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objective</span><span class="o">.</span><span class="n">objectives</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">"total"</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">objective_names</span><span class="p">,</span> <span class="n">objective_values</span></div></div>
 </pre></div>

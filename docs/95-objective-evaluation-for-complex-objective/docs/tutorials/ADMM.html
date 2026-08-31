@@ -115,14 +115,14 @@ for the true parallelism that would take place in a real-world MAS. However,
 this also requires the condition that simulations are performed in Realtime,
 since time is now the common variable between systems that keeps them in sync.
 Now onto the main script.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">env_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;rt&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-              <span class="s2">&quot;strict&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-              <span class="s2">&quot;factor&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
-              <span class="s2">&quot;t_sample&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">}</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">env_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"rt"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+              <span class="s2">"strict"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+              <span class="s2">"factor"</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+              <span class="s2">"t_sample"</span><span class="p">:</span> <span class="mi">60</span><span class="p">}</span>
 
-<span class="n">mas</span> <span class="o">=</span> <span class="n">MultiProcessingMAS</span><span class="p">(</span><span class="n">agent_configs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;configs</span><span class="se">\\</span><span class="s1">cooler.json&#39;</span><span class="p">,</span>
-                                        <span class="s1">&#39;configs</span><span class="se">\\</span><span class="s1">cooled_room.json&#39;</span><span class="p">,</span>
-                                        <span class="s1">&#39;configs</span><span class="se">\\</span><span class="s1">simulator.json&#39;</span><span class="p">],</span>
+<span class="n">mas</span> <span class="o">=</span> <span class="n">MultiProcessingMAS</span><span class="p">(</span><span class="n">agent_configs</span><span class="o">=</span><span class="p">[</span><span class="s1">'configs</span><span class="se">\\</span><span class="s1">cooler.json'</span><span class="p">,</span>
+                                        <span class="s1">'configs</span><span class="se">\\</span><span class="s1">cooled_room.json'</span><span class="p">,</span>
+                                        <span class="s1">'configs</span><span class="se">\\</span><span class="s1">simulator.json'</span><span class="p">],</span>
                          <span class="n">env</span><span class="o">=</span><span class="n">env_config</span><span class="p">,</span>
                          <span class="n">variable_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">mas</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">until</span><span class="o">=</span><span class="n">until</span><span class="p">)</span>
@@ -161,10 +161,10 @@ more complicated than the local_broadcast. After providing
 an id and specifying the type to “mqtt”, there are some parameters to provide:“url” and “subscriptions”. For small test scripts, the url from the snippet
 below will do.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;module_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ag1Com&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mqtt&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mqtt://test.mosquitto.org&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;subscriptions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Cooler&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Simulation&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="nt">"module_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Ag1Com"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mqtt"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mqtt://test.mosquitto.org"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"subscriptions"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"Cooler"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Simulation"</span><span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -186,27 +186,27 @@ we see a file path in the list of modules, which points to our communicator
 config. The root of relative filepaths is the directory, where the main
 script is run.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CooledRoom&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;modules&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">            </span><span class="s2">&quot;configs/communicators/cooled_room_mqtt.json&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CooledRoom"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"modules"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">"configs/communicators/cooled_room_mqtt.json"</span><span class="p">,</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;module_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admm_module&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admm&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;optimization_backend&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;casadi_admm&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;model&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;models/ca_room_model.py&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;class_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CaCooledRoom&quot;</span>
+<span class="w">      </span><span class="nt">"module_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"admm_module"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"admm"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"optimization_backend"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"casadi_admm"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"model"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"models/ca_room_model.py"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"class_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CaCooledRoom"</span>
 <span class="w">          </span><span class="p">}</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;solver&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">          </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ipopt&quot;</span><span class="p">,</span>
-<span class="w">          </span><span class="nt">&quot;options&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;print_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="nt">"solver"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ipopt"</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">"options"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"print_level"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
 <span class="w">          </span><span class="p">}</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;results_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;admm_opt.csv&quot;</span>
+<span class="w">        </span><span class="nt">"results_file"</span><span class="p">:</span><span class="w"> </span><span class="s2">"admm_opt.csv"</span>
 <span class="w">      </span><span class="p">},</span>
 </pre></div>
 </div>
@@ -235,23 +235,23 @@ Currently, this is not validated automatically, so care should be taken when
 writing the config. The <code class="docutils literal notranslate"><span class="pre">timeout</span></code>, <code class="docutils literal notranslate"><span class="pre">registration_period</span></code> and
 <code class="docutils literal notranslate"><span class="pre">admm_iter_max</span></code> parameters should also be the same our similar.</p>
 </div>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;controls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">"controls"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="p">],</span>
-<span class="nt">&quot;states&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="nt">"states"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;T_0&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">298.16</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;ub&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">303.15</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;lb&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">288.15</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"T_0"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mf">298.16</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"ub"</span><span class="p">:</span><span class="w"> </span><span class="mf">303.15</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"lb"</span><span class="p">:</span><span class="w"> </span><span class="mf">288.15</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">],</span>
-<span class="nt">&quot;couplings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="nt">"couplings"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mDot_0&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;alias&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mDotCoolAir&quot;</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.05</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;ub&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;lb&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">}</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mDot_0"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"alias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mDotCoolAir"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.05</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"ub"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"lb"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">controls</span></code> list is now empty, as the air mass flow is not determined by
@@ -266,21 +266,21 @@ agent, so care should be taken to make sure the alias matches. In this case,
 the default alias of “T_0” will match, since the name exists in the
 simulation model.</p>
 <p>Now let’s see the config on the side of the cooler:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">&quot;controls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="nt">"controls"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mDot&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.02</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;ub&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;lb&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mDot"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.02</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"ub"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"lb"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">],</span>
-<span class="w">  </span><span class="nt">&quot;states&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="nt">"states"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">  </span><span class="p">],</span>
-<span class="w">  </span><span class="nt">&quot;couplings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="nt">"couplings"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mDot_out&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;alias&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;mDotCoolAir&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.05</span>
+<span class="w">      </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mDot_out"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"alias"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mDotCoolAir"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"value"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.05</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">]</span>
 <span class="p">},</span>
