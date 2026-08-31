@@ -70,6 +70,31 @@ class CompositeWeight:
 
         return result
 
+def _split_top_level(s, sep=","):
+    """
+    Split a string on `sep`, but only at nesting depth 0 (i.e. not inside
+    parentheses or brackets). Used to parse CasADi's printed expressions,
+    where subexpression definitions are comma-separated at the top level
+    but may themselves contain commas (e.g. function calls like
+    `if_else(a, b, c)`).
+    """
+    parts = []
+    depth = 0
+    current = []
+    for ch in s:
+        if ch in "([":
+            depth += 1
+        elif ch in ")]":
+            depth -= 1
+        if ch == sep and depth == 0:
+            parts.append("".join(current))
+            current = []
+        else:
+            current.append(ch)
+    parts.append("".join(current))
+    return parts
+
+
 def _replace_subexpressions(expr_str, verbose=False):
     """
     Replace CasADi subexpression definitions (marked with @N=...) in an expression string
@@ -78,18 +103,35 @@ def _replace_subexpressions(expr_str, verbose=False):
     """
     if "@" not in expr_str:
         return expr_str
-    
-    # Extract all subexpression definitions using regex
-    defs = dict(re.findall(r"(@\d+)=(.*?),\s*", expr_str))
-    
-    # Remove the definitions from the expression string
-    clean_expr = re.sub(r"@\d+=.*?,\s*", "", expr_str)
-    
+
+    # Split into top-level comma-separated segments: each is either a
+    # `@N=<definition>` or (for the last segment) the main expression.
+    # Splitting at top level only (not inside parentheses) ensures
+    # definitions containing commas, e.g. if_else(a, b, c), stay intact.
+    parts = _split_top_level(expr_str)
+
+    defs = {}
+    remainder_parts = []
+    for part in parts:
+        part = part.strip()
+        match = re.match(r"^(@\d+)=(.*)$", part, re.DOTALL)
+        if match:
+            defs[match.group(1)] = match.group(2)
+        else:
+            remainder_parts.append(part)
+
+    clean_expr = ", ".join(remainder_parts)
+
     # Inline subexpressions into the main expression
-    # Process in order to handle nested references (@2 might reference @1)
+    # Process in order to handle nested references (@2 might reference @1),
+    # substituting into both the main expression and any remaining
+    # (not-yet-resolved) definitions.
     for subexpr in sorted(defs.keys(), key=lambda x: int(x[1:])):
-        clean_expr = clean_expr.replace(subexpr, f"({defs[subexpr]})")
-    
+        definition = f"({defs[subexpr]})"
+        clean_expr = clean_expr.replace(subexpr, definition)
+        for other in defs:
+            defs[other] = defs[other].replace(subexpr, definition)
+
     if verbose:
         print("Subexpressions found in objective expression:")
         for subexpr, definition in defs.items():
@@ -150,6 +192,30 @@ def _replace_ternary(eval_str):
             + eval_str[false_end:]
         )
     return eval_str
+
+def _replace_sq_calls(expr_str):
+    """
+    Replace CasADi's sq(x) (square) calls with (x)**2, matching each call's
+    own closing parenthesis rather than assuming sq(...) spans the whole
+    expression - so terms like r*x + s*sq(y) only square the y term.
+    """
+    while True:
+        idx = expr_str.find("sq(")
+        if idx == -1:
+            break
+        start = idx + len("sq(")
+        depth = 1
+        i = start
+        while depth > 0:
+            if expr_str[i] == "(":
+                depth += 1
+            elif expr_str[i] == ")":
+                depth -= 1
+            i += 1
+        inner = expr_str[start : i - 1]
+        expr_str = expr_str[:idx] + f"({inner})**2" + expr_str[i:]
+    return expr_str
+
 
 class SubObjective:
 
@@ -271,11 +337,7 @@ class SubObjective:
         }
 
         # Apply replacements
-        eval_str = expr_str
-        is_square = False
-        if "sq(" in eval_str:
-            is_square = True
-            eval_str = eval_str.replace("sq(", "(")
+        eval_str = _replace_sq_calls(expr_str)
 
         for casadi_func, replacement in casadi_replacements.items():
             if casadi_func != "sq(":  # already handled above
@@ -339,10 +401,6 @@ class SubObjective:
                 eval_str = eval_str[1:-1]
 
             result = eval(eval_str, {"__builtins__": {}}, safe_dict)
-
-            # Apply square if it was sq() function
-            if is_square:
-                result = result**2
 
             return result
 

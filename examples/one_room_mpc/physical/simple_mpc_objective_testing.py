@@ -156,10 +156,23 @@ class MyCasadiModel(CasadiModel):
             expressions=self.T_slack**2,
             name="temperature_slack_2"
         )
+
+        # Regression test for _replace_subexpressions: reusing the same fmin()
+        # node forces CasADi to factor it into a shared subexpression, printed
+        # as "@1=fmin(mDot,T_slack), (@1+sq(@1))". The comma inside fmin(...)
+        # must not be mistaken for the end of the @1 definition.
+        shared_min = ca.fmin(self.mDot.sym, self.T_slack.sym)
+        obj2_comma_regression = self.create_sub_objective(
+            expressions=shared_min + shared_min**2,
+            weight=1,
+            name="comma_in_subexpression_regression"
+        )
+
         objective2_1 = self.create_combined_objective(obj2_mDot)
         objective2_2 = self.create_combined_objective(obj2_slack)
+        objective2_3 = self.create_combined_objective(obj2_comma_regression)
 
-        objective2 = objective2_1 + objective2_2*self.s_T
+        objective2 = objective2_1 + objective2_2*self.s_T + objective2_3
 
         # Conditional objective based on time
         condition = self.time < self.switch.sym
