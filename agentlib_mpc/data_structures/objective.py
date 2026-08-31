@@ -70,6 +70,152 @@ class CompositeWeight:
 
         return result
 
+def _split_top_level(s, sep=","):
+    """
+    Split a string on `sep`, but only at nesting depth 0 (i.e. not inside
+    parentheses or brackets). Used to parse CasADi's printed expressions,
+    where subexpression definitions are comma-separated at the top level
+    but may themselves contain commas (e.g. function calls like
+    `if_else(a, b, c)`).
+    """
+    parts = []
+    depth = 0
+    current = []
+    for ch in s:
+        if ch in "([":
+            depth += 1
+        elif ch in ")]":
+            depth -= 1
+        if ch == sep and depth == 0:
+            parts.append("".join(current))
+            current = []
+        else:
+            current.append(ch)
+    parts.append("".join(current))
+    return parts
+
+
+def _replace_subexpressions(expr_str, verbose=False):
+    """
+    Replace CasADi subexpression definitions (marked with @N=...) in an expression string
+    with their actual definitions and inline them into the main expression.
+
+    """
+    if "@" not in expr_str:
+        return expr_str
+
+    # Split into top-level comma-separated segments: each is either a
+    # `@N=<definition>` or (for the last segment) the main expression.
+    # Splitting at top level only (not inside parentheses) ensures
+    # definitions containing commas, e.g. if_else(a, b, c), stay intact.
+    parts = _split_top_level(expr_str)
+
+    defs = {}
+    remainder_parts = []
+    for part in parts:
+        part = part.strip()
+        match = re.match(r"^(@\d+)=(.*)$", part, re.DOTALL)
+        if match:
+            defs[match.group(1)] = match.group(2)
+        else:
+            remainder_parts.append(part)
+
+    clean_expr = ", ".join(remainder_parts)
+
+    # Inline subexpressions into the main expression
+    # Process in order to handle nested references (@2 might reference @1),
+    # substituting into both the main expression and any remaining
+    # (not-yet-resolved) definitions.
+    for subexpr in sorted(defs.keys(), key=lambda x: int(x[1:])):
+        definition = f"({defs[subexpr]})"
+        clean_expr = clean_expr.replace(subexpr, definition)
+        for other in defs:
+            defs[other] = defs[other].replace(subexpr, definition)
+
+    if verbose:
+        print("Subexpressions found in objective expression:")
+        for subexpr, definition in defs.items():
+            print(f"  {subexpr} = {definition}")
+        print(f"Expression before removing subexpressions: {expr_str}")
+        print(f"Cleaned expression after removing subexpressions: {clean_expr}")
+    
+    return clean_expr
+
+
+def _replace_ternary(eval_str):
+    """
+    Replace CasADi ternary expressions like (cond)?true:false with where(cond, true, false).
+    """
+    while "?" in eval_str:
+        q_idx = eval_str.rfind("?")
+        c_idx = eval_str.find(":", q_idx)
+        if q_idx == -1 or c_idx == -1:
+            break
+            
+        # Backward search for condition
+        pares = 0
+        cond_start = 0
+        for i in range(q_idx - 1, -1, -1):
+            if eval_str[i] == ")":
+                pares += 1
+            elif eval_str[i] == "(":
+                pares -= 1
+                if pares < 0:
+                    cond_start = i + 1
+                    break
+        else:
+            cond_start = 0
+                    
+        # Forward search for false_val
+        pares = 0
+        false_end = len(eval_str)
+        for i in range(c_idx + 1, len(eval_str)):
+            if eval_str[i] == "(":
+                pares += 1
+            elif eval_str[i] == ")":
+                pares -= 1
+                if pares < 0:
+                    false_end = i
+                    break
+            elif pares == 0 and eval_str[i] in "+-*/,@":
+                if i > c_idx + 1:
+                    false_end = i
+                    break
+                    
+        cond_str = eval_str[cond_start:q_idx]
+        true_str = eval_str[q_idx + 1 : c_idx]
+        false_str = eval_str[c_idx + 1 : false_end]
+        
+        eval_str = (
+            eval_str[:cond_start]
+            + f"where({cond_str}, {true_str}, {false_str})"
+            + eval_str[false_end:]
+        )
+    return eval_str
+
+def _replace_sq_calls(expr_str):
+    """
+    Replace CasADi's sq(x) (square) calls with (x)**2, matching each call's
+    own closing parenthesis rather than assuming sq(...) spans the whole
+    expression - so terms like r*x + s*sq(y) only square the y term.
+    """
+    while True:
+        idx = expr_str.find("sq(")
+        if idx == -1:
+            break
+        start = idx + len("sq(")
+        depth = 1
+        i = start
+        while depth > 0:
+            if expr_str[i] == "(":
+                depth += 1
+            elif expr_str[i] == ")":
+                depth -= 1
+            i += 1
+        inner = expr_str[start : i - 1]
+        expr_str = expr_str[:idx] + f"({inner})**2" + expr_str[i:]
+    return expr_str
+
 
 class SubObjective:
 
@@ -145,11 +291,21 @@ class SubObjective:
         direct expression with a casadi function and map from the available variables"""
         # Handle simple named variables first
         var_name = expr.name
+
         for col_type in ["variable", "parameter"]:
             if (col_type, var_name) in df.columns:
                 return df.loc[:, (col_type, var_name)].values[:-1]
 
         expr_str = str(expr)
+
+        if "@" in expr_str:
+            expr_str = _replace_subexpressions(expr_str)
+
+        if "?" in expr_str:
+            expr_str = _replace_ternary(expr_str)
+            
+        # Replace logical NOT '!' with bitwise NOT '~' for NumPy arrays
+        expr_str = re.sub(r"(?<![<>=!])!(?!=)", "~", expr_str)
 
         # Handle common CasADi functions with simple replacements
         casadi_replacements = {
@@ -158,34 +314,41 @@ class SubObjective:
             "sqrt(": "sqrt(",
             "sin(": "sin(",
             "cos(": "cos(",
+            "tan(": "tan(",
+            "asin(": "arcsin(",
+            "acos(": "arccos(",
+            "atan(": "arctan(",
+            "atan2(": "arctan2(",
+            "sinh(": "sinh(",
+            "cosh(": "cosh(",
+            "tanh(": "tanh(",
+            "asinh(": "arcsinh(",
+            "acosh(": "arccosh(",
+            "atanh(": "arctanh(",
             "exp(": "exp(",
             "log(": "log(",
+            "log10(": "log10(",
+            "pow(": "power(",
+            "floor(": "floor(",
+            "ceil(": "ceil(",
+            "sign(": "sign(",
+            "fmin(": "minimum(",
+            "fmax(": "maximum(",
         }
 
         # Apply replacements
-        eval_str = expr_str
-        is_square = False
-        if "sq(" in eval_str:
-            is_square = True
-            eval_str = eval_str.replace("sq(", "(")
+        eval_str = _replace_sq_calls(expr_str)
 
         for casadi_func, replacement in casadi_replacements.items():
             if casadi_func != "sq(":  # already handled above
                 eval_str = eval_str.replace(casadi_func, replacement)
 
         # Extract variable names, filtering out CasADi function names
-        casadi_functions = [
-            "sq",
-            "fabs",
-            "sqrt",
-            "sin",
-            "cos",
-            "exp",
-            "log",
-            "abs",
-            "max",
-            "min",
-        ]
+        base_funcs = [k.rstrip("(") for k in casadi_replacements.keys()]
+        replaced_funcs = [v.rstrip("(") for v in casadi_replacements.values() if v.endswith("(")]
+        extra_funcs = ["round", "max", "min", "minimum", "maximum", "where", "abs", "power"]
+        casadi_functions = list(set(base_funcs + replaced_funcs + extra_funcs))
+        
         var_names = re.findall(r"[a-zA-Z][a-zA-Z0-9_]*", expr_str)
         var_names = [name for name in var_names if name not in casadi_functions]
 
@@ -206,10 +369,30 @@ class SubObjective:
                     "sqrt": np.sqrt,
                     "sin": np.sin,
                     "cos": np.cos,
+                    "tan": np.tan,
+                    "arcsin": np.arcsin,
+                    "arccos": np.arccos,
+                    "arctan": np.arctan,
+                    "arctan2": np.arctan2,
+                    "sinh": np.sinh,
+                    "cosh": np.cosh,
+                    "tanh": np.tanh,
+                    "arcsinh": np.arcsinh,
+                    "arccosh": np.arccosh,
+                    "arctanh": np.arctanh,
                     "exp": np.exp,
                     "log": np.log,
+                    "log10": np.log10,
+                    "power": np.power,
+                    "floor": np.floor,
+                    "ceil": np.ceil,
+                    "round": np.round,
+                    "sign": np.sign,
+                    "minimum": np.minimum,
+                    "maximum": np.maximum,
                     "max": np.maximum,
                     "min": np.minimum,
+                    "where": np.where,
                 }
             )
 
@@ -218,10 +401,6 @@ class SubObjective:
                 eval_str = eval_str[1:-1]
 
             result = eval(eval_str, {"__builtins__": {}}, safe_dict)
-
-            # Apply square if it was sq() function
-            if is_square:
-                result = result**2
 
             return result
 
@@ -565,7 +744,18 @@ class ConditionalObjective:
         """
         condition_str = str(condition)
 
-        identifier_pattern = r"[a-zA-Z_][a-zA-Z0-9_]*"
+        if "@" in condition_str:
+            condition_str = _replace_subexpressions(condition_str)
+
+        if "?" in condition_str:
+            condition_str = _replace_ternary(condition_str)
+
+        # Replace CasADi logical operators with Python equivalents for eval
+        condition_str = condition_str.replace("&&", " and ")
+        condition_str = condition_str.replace("||", " or ")
+        condition_str = re.sub(r"(?<![<>=!])!(?!=)", " not ", condition_str)
+
+        identifier_pattern = r'[a-zA-Z_][a-zA-Z0-9_]*'
         potential_vars = re.findall(identifier_pattern, condition_str)
 
         operators_keywords = {
@@ -607,11 +797,7 @@ class ConditionalObjective:
                 local_vars[var_name] = values[i]
             try:
                 eval_str = condition_str
-                result = eval(
-                    eval_str,
-                    {"__builtins__": {}, "abs": abs, "min": min, "max": max},
-                    local_vars,
-                )
+                result = eval(eval_str, {"__builtins__": {}, "abs": abs, "min": min, "max": max, "where": np.where}, local_vars)
                 mask[i] = bool(result)
 
             except Exception as e:
