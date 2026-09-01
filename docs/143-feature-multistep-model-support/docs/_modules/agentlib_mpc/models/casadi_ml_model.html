@@ -94,7 +94,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ml_model_datatypes</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.ml_model_datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">OutputType</span><span class="p">,</span> <span class="n">name_with_lag</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_predictor</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiPredictor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_predictor</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiPredictor</span><span class="p">,</span> <span class="n">CasadiRNN</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">CasadiModel</span><span class="p">,</span>
     <span class="n">CasadiModelConfig</span><span class="p">,</span>
@@ -103,11 +103,52 @@
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.serialized_ml_model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">SerializedMLModel</span><span class="p">,</span>
+    <span class="n">SerializedKerasRNN</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.utils.sampling</span><span class="w"> </span><span class="kn">import</span> <span class="n">sample</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">CASADI_VERSION</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">__version__</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+
+<span class="c1"># suffix of the output of the step function that holds a hidden state of a recurrent</span>
+<span class="c1"># model at the next time step</span>
+<span class="n">RNN_NEXT_STATE_SUFFIX</span> <span class="o">=</span> <span class="s2">"_next"</span>
+
+
+<div class="viewcode-block" id="rnn_state_name"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.rnn_state_name">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">rnn_state_name</span><span class="p">(</span><span class="n">model_output_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Name of the symbolic variable holding a hidden state of a recurrent model."""</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">model_output_name</span><span class="si">}</span><span class="s2">_rnn_state_</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">"</span></div>
+
+
+<div class="viewcode-block" id="warm_up_rnn_states"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.warm_up_rnn_states">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">warm_up_rnn_states</span><span class="p">(</span>
+    <span class="n">warmup_step</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">,</span>
+    <span class="n">trajectories</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span>
+    <span class="n">input_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">dimension</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Determines the hidden states of the recurrent models at the start of the</span>
+<span class="sd">    prediction horizon.</span>
+
+<span class="sd">    Starting from zeros, the recurrent models are applied ``steps`` times on the past</span>
+<span class="sd">    values of their inputs.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        warmup_step: Function performing a single warmup step of all recurrent models.</span>
+<span class="sd">        trajectories: Past values of the model inputs, sampled on the warmup grid.</span>
+<span class="sd">        input_names: The inputs of the recurrent models, in the order the warmup step</span>
+<span class="sd">            function expects them.</span>
+<span class="sd">        steps: Number of warmup steps.</span>
+<span class="sd">        dimension: Total number of hidden states.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The hidden states at the start of the prediction horizon.</span>
+<span class="sd">    """</span>
+    <span class="n">states</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">dimension</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">([</span><span class="n">trajectories</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">step</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">input_names</span><span class="p">])</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="n">warmup_step</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="n">features</span><span class="p">,</span> <span class="n">states</span><span class="o">=</span><span class="n">states</span><span class="p">)[</span><span class="s2">"next_states"</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">states</span></div>
 
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"T"</span><span class="p">)</span>
@@ -243,6 +284,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ml_model_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SerializedMLModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">ml_model_dict</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">casadi_ml_model_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CasadiPredictor</span><span class="p">]</span> <span class="o">=</span> <span class="n">casadi_ml_model_dict</span>
 
+        <span class="c1"># Register the hidden states of recurrent (multi step) models</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_register_rnn_states</span><span class="p">()</span>
+
         <span class="c1"># Register lagged variables</span>
         <span class="n">lags_dict</span><span class="p">,</span> <span class="n">max_lag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_lags_dict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lags_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">lags_dict</span>
@@ -254,6 +298,7 @@
 
         <span class="c1"># construct a stage function for optimization and simulation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sim_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_unified_predict_function</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_step_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_rnn_warmup_step_function</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_forbidden_variable_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">(</span>
@@ -268,6 +313,10 @@
                     <span class="s2">"lags_dict"</span><span class="p">,</span>
                     <span class="s2">"ml_model_dict"</span><span class="p">,</span>
                     <span class="s2">"casadi_ml_model_dict"</span><span class="p">,</span>
+                    <span class="s2">"rnn_state_variables"</span><span class="p">,</span>
+                    <span class="s2">"rnn_warmup_steps"</span><span class="p">,</span>
+                    <span class="s2">"rnn_warmup_input_names"</span><span class="p">,</span>
+                    <span class="s2">"rnn_warmup_step_function"</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">)</span>
         <span class="p">)</span>
@@ -300,20 +349,41 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lags_dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_lag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_lags_dict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_past_values</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ml_model_dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">casadi_ml_model_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">register_ml_models</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_register_rnn_states</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sim_step</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_unified_predict_function</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_step_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_rnn_warmup_step_function</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_assert_outputs_are_defined</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">history_lags_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Number of past values (the current one included) that have to be kept for</span>
+<span class="sd">        each variable.</span>
+
+<span class="sd">        These are the lags the ML-models use as inputs, plus the past values the</span>
+<span class="sd">        recurrent models need to warm up their hidden states.</span>
+<span class="sd">        """</span>
+        <span class="n">lags</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lags_dict</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_input_names</span><span class="p">:</span>
+            <span class="n">lags</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">lags</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">lags</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">history_max_lag</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Length of the history that has to be kept, in time steps."""</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history_lags_dict</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_past_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Generates new columns and deletes old ones in the time series data, when the</span>
 <span class="sd">        MLModels are updated."""</span>
-        <span class="n">new_columns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lags_dict</span><span class="p">)</span>
+        <span class="n">history_lags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_lags_dict</span>
+        <span class="n">new_columns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">history_lags</span><span class="p">)</span>
         <span class="n">old_columns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">past_values</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
 
         <span class="n">columns_to_remove</span> <span class="o">=</span> <span class="n">old_columns</span> <span class="o">-</span> <span class="n">new_columns</span>
         <span class="n">columns_to_add</span> <span class="o">=</span> <span class="n">new_columns</span> <span class="o">-</span> <span class="n">old_columns</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">past_values</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns_to_remove</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="n">time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">*</span> <span class="n">lag</span> <span class="k">for</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_lag</span><span class="p">)]</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="n">time</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">*</span> <span class="n">lag</span> <span class="k">for</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history_max_lag</span><span class="p">)]</span>
         <span class="n">index</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">columns_to_add</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">col</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
@@ -323,10 +393,11 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_past_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Creates a collection which saves a history of the model's variables that</span>
 <span class="sd">        are required in the lags. Must be executed after _create_lags_dict"""</span>
-        <span class="n">last_values</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lags_dict</span><span class="p">)</span>
-        <span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dt</span> <span class="o">*</span> <span class="n">lag</span> <span class="k">for</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_lag</span><span class="p">)]</span>
+        <span class="n">history_lags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_lags_dict</span>
+        <span class="n">last_values</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">history_lags</span><span class="p">)</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dt</span> <span class="o">*</span> <span class="n">lag</span> <span class="k">for</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history_max_lag</span><span class="p">)]</span>
         <span class="n">index</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
-        <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lags_dict</span><span class="p">]</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="n">history_lags</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">index</span><span class="p">:</span>
             <span class="n">last_values</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
         <span class="k">return</span> <span class="n">last_values</span>
@@ -372,6 +443,8 @@
 <span class="sd">        """</span>
         <span class="n">all_inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_inputs</span><span class="p">()</span>
         <span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">differentials</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span>
+        <span class="c1"># the hidden states of recurrent models are not part of the white box model</span>
+        <span class="n">exclude</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn_state_variables</span><span class="p">)</span>
         <span class="c1"># take the mean of start/finish values of variables that have already been</span>
         <span class="c1"># integrated by a discrete blackbox function</span>
         <span class="k">if</span> <span class="n">bb_results</span><span class="p">:</span>
@@ -461,15 +534,152 @@
         <span class="p">}</span>
         <span class="n">ml_model_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SerializedMLModel</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
+        <span class="c1"># a model which defines multiple outputs is only translated once, so all its</span>
+        <span class="c1"># outputs share the same predictor object</span>
+        <span class="n">predictors</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">CasadiPredictor</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">outputs</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">states</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">serialized_output_names</span><span class="p">,</span> <span class="n">ml_model</span> <span class="ow">in</span> <span class="n">ml_model_sources_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">serialized_output_names</span><span class="p">:</span>
-                    <span class="n">output_to_ml_model</span><span class="p">[</span>
-                        <span class="n">output</span><span class="o">.</span><span class="n">name</span>
-                    <span class="p">]</span> <span class="o">=</span> <span class="n">CasadiPredictor</span><span class="o">.</span><span class="n">from_serialized_model</span><span class="p">(</span><span class="n">ml_model</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">serialized_output_names</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">predictors</span><span class="p">:</span>
+                        <span class="n">predictors</span><span class="p">[</span>
+                            <span class="n">serialized_output_names</span>
+                        <span class="p">]</span> <span class="o">=</span> <span class="n">CasadiPredictor</span><span class="o">.</span><span class="n">from_serialized_model</span><span class="p">(</span><span class="n">ml_model</span><span class="p">)</span>
+                    <span class="n">output_to_ml_model</span><span class="p">[</span><span class="n">output</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">predictors</span><span class="p">[</span>
+                        <span class="n">serialized_output_names</span>
+                    <span class="p">]</span>
                     <span class="n">ml_model_dict</span><span class="p">[</span><span class="n">output</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ml_model</span>
         <span class="n">casadi_ml_model_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CasadiPredictor</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_to_ml_model</span>
         <span class="k">return</span> <span class="n">ml_model_dict</span><span class="p">,</span> <span class="n">casadi_ml_model_dict</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_register_rnn_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Creates the symbolic variables for the hidden states of all recurrent</span>
+<span class="sd">        (multi step) ML-models.</span>
+
+<span class="sd">        To keep the multiple shooting structure of the MPC, recurrent hidden states are treated</span>
+<span class="sd">        like any other state of the model: They are an in- and an output of the step</span>
+<span class="sd">        function, and the optimization backend links them over the horizon with</span>
+<span class="sd">        equality constraints.</span>
+<span class="sd">        """</span>
+        <span class="n">state_variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CasadiState</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">states_of_predictor</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">CasadiState</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">recurrent_outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">warmup_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">warmup_input_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">model_variable_names</span> <span class="o">=</span> <span class="p">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">output_name</span><span class="p">,</span> <span class="n">serialized_ml_model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml_model_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">,</span> <span class="n">SerializedKerasRNN</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">predictor</span><span class="p">:</span> <span class="n">CasadiRNN</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">casadi_ml_model_dict</span><span class="p">[</span><span class="n">output_name</span><span class="p">]</span>
+            <span class="n">warmup_steps</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">warmup_steps</span><span class="p">,</span> <span class="n">serialized_ml_model</span><span class="o">.</span><span class="n">warmup_steps</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">feature_name</span> <span class="ow">in</span> <span class="n">serialized_ml_model</span><span class="o">.</span><span class="n">rnn_inputs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">feature_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">warmup_input_names</span><span class="p">:</span>
+                    <span class="n">warmup_input_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feature_name</span><span class="p">)</span>
+
+            <span class="c1"># a model with multiple outputs shares one set of hidden states</span>
+            <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">predictor</span><span class="p">)</span> <span class="ow">in</span> <span class="n">states_of_predictor</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">states</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">predictor</span><span class="o">.</span><span class="n">state_dimension</span><span class="p">):</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">rnn_state_name</span><span class="p">(</span><span class="n">output_name</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">model_variable_names</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"The name '</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">' is needed for a hidden state of the "</span>
+                        <span class="sa">f</span><span class="s2">"recurrent model of '</span><span class="si">{</span><span class="n">output_name</span><span class="si">}</span><span class="s2">', but it is already used "</span>
+                        <span class="sa">f</span><span class="s2">"by a variable of the model. Please rename that variable."</span>
+                    <span class="p">)</span>
+                <span class="n">states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CasadiState</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">lb</span><span class="o">=-</span><span class="n">ca</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">ub</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+            <span class="n">states_of_predictor</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="n">predictor</span><span class="p">)]</span> <span class="o">=</span> <span class="n">states</span>
+            <span class="n">state_variables</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">states</span><span class="p">)</span>
+            <span class="n">recurrent_outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">output_name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rnn_state_variables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CasadiState</span><span class="p">]</span> <span class="o">=</span> <span class="n">state_variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rnn_states_of_predictor</span> <span class="o">=</span> <span class="n">states_of_predictor</span>
+        <span class="c1"># one output per recurrent model, in the order in which the hidden states of</span>
+        <span class="c1"># the models are stacked in 'rnn_state_variables'</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rnn_output_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">recurrent_outputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">warmup_steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_input_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">warmup_input_names</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rnn_states</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">CasadiState</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Returns the hidden state variables of the recurrent model of an output."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rnn_states_of_predictor</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">casadi_ml_model_dict</span><span class="p">[</span><span class="n">output_name</span><span class="p">])]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rnn_step</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">output_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">feature_values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">],</span>
+        <span class="n">states</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Performs a single symbolic step of a recurrent model.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            output_name: Name of an output that is predicted by the recurrent model.</span>
+<span class="sd">            feature_values: The values of all model variables the recurrent model uses</span>
+<span class="sd">                as input, at the time step that is evaluated.</span>
+<span class="sd">            states: The hidden states at the evaluated time step. Defaults to the</span>
+<span class="sd">                symbolic hidden state variables of the model.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The predictions of the model for the next time step, and the hidden states</span>
+<span class="sd">            of the next time step stacked into a single column vector.</span>
+<span class="sd">        """</span>
+        <span class="n">serialized_ml_model</span><span class="p">:</span> <span class="n">SerializedKerasRNN</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml_model_dict</span><span class="p">[</span><span class="n">output_name</span><span class="p">]</span>
+        <span class="n">predictor</span><span class="p">:</span> <span class="n">CasadiRNN</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">casadi_ml_model_dict</span><span class="p">[</span><span class="n">output_name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">states</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">states</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">var</span><span class="o">.</span><span class="n">sym</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rnn_states</span><span class="p">(</span><span class="n">output_name</span><span class="p">)])</span>
+        <span class="n">model_input</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span>
+            <span class="o">*</span><span class="p">[</span><span class="n">feature_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">serialized_ml_model</span><span class="o">.</span><span class="n">rnn_inputs</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">predictions</span><span class="p">,</span> <span class="n">next_states</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model_input</span><span class="p">,</span> <span class="n">states</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">next_states</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_make_rnn_warmup_step_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Creates a function that performs a single warmup step of all recurrent</span>
+<span class="sd">        models.</span>
+
+<span class="sd">        The hidden states of a recurrent model are initialized with zeros</span>
+<span class="sd">        ``rnn_warmup_steps`` time steps in the past and rolled out recursively over</span>
+<span class="sd">        measured data with this function, so that they have converged when the</span>
+<span class="sd">        prediction horizon starts. In contrast to the step function used inside the</span>
+<span class="sd">        horizon, no prediction is returned, since the past values of the outputs are</span>
+<span class="sd">        known from measurements.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A function mapping the stacked values of ``rnn_warmup_input_names`` and the</span>
+<span class="sd">            stacked hidden states of one time step to the stacked hidden states of the</span>
+<span class="sd">            next time step. None, if the model has no recurrent models.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn_state_variables</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">features</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="s2">"features"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_input_names</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">feature_values</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">name</span><span class="p">:</span> <span class="n">features</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_input_names</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="s2">"states"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rnn_state_variables</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">next_states</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">output_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rnn_output_names</span><span class="p">:</span>
+            <span class="n">dimension</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rnn_states</span><span class="p">(</span><span class="n">output_name</span><span class="p">))</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">next_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rnn_step</span><span class="p">(</span>
+                <span class="n">output_name</span><span class="p">,</span>
+                <span class="n">feature_values</span><span class="p">,</span>
+                <span class="n">states</span><span class="o">=</span><span class="n">states</span><span class="p">[</span><span class="n">offset</span> <span class="p">:</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">dimension</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">next_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">next_state</span><span class="p">)</span>
+            <span class="n">offset</span> <span class="o">+=</span> <span class="n">dimension</span>
+
+        <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span>
+            <span class="s2">"rnn_warmup_step"</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">features</span><span class="p">,</span> <span class="n">states</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="n">next_states</span><span class="p">)],</span>
+            <span class="p">[</span><span class="s2">"features"</span><span class="p">,</span> <span class="s2">"states"</span><span class="p">],</span>
+            <span class="p">[</span><span class="s2">"next_states"</span><span class="p">],</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_fill_algebraic_equations_with_bb_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Fills empty algebraic equations with the function defined by the</span>
@@ -478,6 +688,13 @@
             <span class="c1"># recursive features are more like an ode, they don't represent outputs</span>
             <span class="k">if</span> <span class="n">serialized_ml_model</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="n">variable_name</span><span class="p">]</span><span class="o">.</span><span class="n">recursive</span><span class="p">:</span>
                 <span class="k">continue</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">,</span> <span class="n">SerializedKerasRNN</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"The recurrent ML-model of '</span><span class="si">{</span><span class="n">variable_name</span><span class="si">}</span><span class="s2">' declares a "</span>
+                    <span class="sa">f</span><span class="s2">"non-recursive output. Recurrent models carry their memory in "</span>
+                    <span class="sa">f</span><span class="s2">"hidden states, so their outputs have to be states of the model. "</span>
+                    <span class="sa">f</span><span class="s2">"Please set 'recursive' to true."</span>
+                <span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">variable_name</span><span class="p">)</span><span class="o">.</span><span class="n">alg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
             <span class="n">inputs</span> <span class="o">=</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">column_order</span><span class="p">(</span>
@@ -490,7 +707,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_evaluate_bb_models_symbolically</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">bb_inputs_mx</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the CasADi MX-Expressions that result from evaluating all black-box</span>
 <span class="sd">        models symbolically.</span>
@@ -503,13 +720,15 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Two dictionaries:</span>
-<span class="sd">                - The first one contains all black-box outputs of the model with their</span>
-<span class="sd">                 respective symbolic variable.</span>
-<span class="sd">                - The second one contains the same outputs, with an MX-Expression that</span>
-<span class="sd">                 defines the evaluation of the black-box model</span>
+<span class="sd">                - The first one contains all recursive black-box outputs of the model</span>
+<span class="sd">                 with the MX-Expression that defines the evaluation of the black-box</span>
+<span class="sd">                 model.</span>
+<span class="sd">                - The second one contains the hidden states of all recurrent models at</span>
+<span class="sd">                 the next time step.</span>
 <span class="sd">        """</span>
 
         <span class="n">bb_result_mx</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">rnn_next_states_mx</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1"># inputs from all MLModels of the black-box model are considered</span>
         <span class="k">for</span> <span class="n">output_name</span><span class="p">,</span> <span class="n">serialized_ml_model</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ml_model_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">serialized_ml_model</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="n">output_name</span><span class="p">]</span><span class="o">.</span><span class="n">recursive</span><span class="p">:</span>
@@ -517,17 +736,31 @@
                 <span class="c1"># integrator for simulation, or as constraints in MPC, so we skip them</span>
                 <span class="k">continue</span>
 
-            <span class="c1"># for every input variable of the MLModel, create a CasAdi symbolic</span>
-            <span class="n">casadi_ml_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">casadi_ml_model_dict</span><span class="p">[</span><span class="n">output_name</span><span class="p">]</span>
-            <span class="n">columns_ordered</span> <span class="o">=</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">column_order</span><span class="p">(</span>
-                <span class="n">inputs</span><span class="o">=</span><span class="n">serialized_ml_model</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">serialized_ml_model</span><span class="o">.</span><span class="n">output</span>
-            <span class="p">)</span>
-            <span class="c1"># todo tanja: here, we need to lookup what the user specified for the ANN as input, instead of the original mx variable</span>
-            <span class="n">ca_nn_input</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">bb_inputs_mx</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">columns_ordered</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="p">,</span> <span class="n">SerializedKerasRNN</span><span class="p">):</span>
+                <span class="c1"># recurrent models are evaluated for a single time step, their memory</span>
+                <span class="c1"># is passed on through the hidden states instead of lagged inputs</span>
+                <span class="n">predictions</span><span class="p">,</span> <span class="n">next_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rnn_step</span><span class="p">(</span><span class="n">output_name</span><span class="p">,</span> <span class="n">bb_inputs_mx</span><span class="p">)</span>
+                <span class="n">output_index</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="o">.</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">output_name</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="n">output_index</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">state</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rnn_states</span><span class="p">(</span><span class="n">output_name</span><span class="p">)):</span>
+                    <span class="n">rnn_next_states_mx</span><span class="p">[</span>
+                        <span class="n">state</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="n">RNN_NEXT_STATE_SUFFIX</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="n">next_states</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># for every input variable of the MLModel, create a CasAdi symbolic</span>
+                <span class="n">casadi_ml_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">casadi_ml_model_dict</span><span class="p">[</span><span class="n">output_name</span><span class="p">]</span>
+                <span class="n">columns_ordered</span> <span class="o">=</span> <span class="n">ml_model_datatypes</span><span class="o">.</span><span class="n">column_order</span><span class="p">(</span>
+                    <span class="n">inputs</span><span class="o">=</span><span class="n">serialized_ml_model</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">serialized_ml_model</span><span class="o">.</span><span class="n">output</span>
+                <span class="p">)</span>
+                <span class="c1"># todo tanja: here, we need to lookup what the user specified for the ANN as input, instead of the original mx variable</span>
+                <span class="n">ca_nn_input</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span>
+                    <span class="o">*</span><span class="p">[</span><span class="n">bb_inputs_mx</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">columns_ordered</span><span class="p">]</span>
+                <span class="p">)</span>
 
-            <span class="c1"># predict the result with current MLModel and add the result to the stage function</span>
-            <span class="n">output_index</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="o">.</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">output_name</span><span class="p">)</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">casadi_ml_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">ca_nn_input</span><span class="p">)[</span><span class="n">output_index</span><span class="p">]</span>
+                <span class="c1"># predict the result with current MLModel and add the result to the stage function</span>
+                <span class="n">output_index</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">serialized_ml_model</span><span class="o">.</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">output_name</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">casadi_ml_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">ca_nn_input</span><span class="p">)[</span><span class="n">output_index</span><span class="p">]</span>
+
             <span class="k">if</span> <span class="p">(</span>
                 <span class="n">serialized_ml_model</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="n">output_name</span><span class="p">]</span><span class="o">.</span><span class="n">output_type</span>
                 <span class="o">==</span> <span class="n">OutputType</span><span class="o">.</span><span class="n">difference</span>
@@ -535,7 +768,7 @@
                 <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="n">bb_inputs_mx</span><span class="p">[</span><span class="n">output_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
             <span class="n">bb_result_mx</span><span class="p">[</span><span class="n">output_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
-        <span class="k">return</span> <span class="n">bb_result_mx</span>
+        <span class="k">return</span> <span class="n">bb_result_mx</span><span class="p">,</span> <span class="n">rnn_next_states_mx</span>
 
 <div class="viewcode-block" id="CasadiMLModel.make_predict_function_for_mpc"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.make_predict_function_for_mpc">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">make_predict_function_for_mpc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Creates a prediction step function which is suitable for MPC with multiple</span>
@@ -564,6 +797,9 @@
 <span class="sd">        their corresponding symbolic CasADi-variable."""</span>
         <span class="n">all_variables</span> <span class="o">=</span> <span class="p">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">var</span><span class="o">.</span><span class="n">sym</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">}</span>
         <span class="n">all_variables</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_black_box_inputs</span><span class="p">())</span>
+        <span class="c1"># the hidden states of recurrent models are no variables of the model config,</span>
+        <span class="c1"># but they have to be supplied to the step function</span>
+        <span class="n">all_variables</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">var</span><span class="o">.</span><span class="n">sym</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn_state_variables</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">all_variables</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_make_unified_predict_function</span><span class="p">(</span>
@@ -589,7 +825,9 @@
         <span class="n">bb_inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_black_box_inputs</span><span class="p">()</span>
         <span class="n">all_variables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_inputs</span><span class="p">()</span>
         <span class="c1"># evaluate the black box models</span>
-        <span class="n">bb_result_mx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_bb_models_symbolically</span><span class="p">(</span><span class="n">bb_inputs</span><span class="p">)</span>
+        <span class="n">bb_result_mx</span><span class="p">,</span> <span class="n">rnn_next_states_mx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_bb_models_symbolically</span><span class="p">(</span>
+            <span class="n">bb_inputs</span>
+        <span class="p">)</span>
         <span class="n">wb_inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fixed_during_integration</span><span class="p">(</span><span class="n">bb_result_mx</span><span class="p">)</span>
 
         <span class="c1"># prepare functions that order the integrator inputs and outputs when supplied</span>
@@ -643,9 +881,13 @@
             <span class="nb">list</span><span class="p">(</span><span class="n">all_variables</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">+</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">],</span>
             <span class="nb">list</span><span class="p">(</span><span class="n">x_names</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
             <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">z_names</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-            <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">bb_result_mx</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+            <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">bb_result_mx</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">rnn_next_states_mx</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
             <span class="nb">list</span><span class="p">(</span><span class="n">all_variables</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s2">"__time"</span><span class="p">],</span>
-            <span class="nb">list</span><span class="p">(</span><span class="n">x_names</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">z_names</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">bb_result_mx</span><span class="p">),</span>
+            <span class="nb">list</span><span class="p">(</span><span class="n">x_names</span><span class="p">)</span>
+            <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">z_names</span><span class="p">)</span>
+            <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">bb_result_mx</span><span class="p">)</span>
+            <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">rnn_next_states_mx</span><span class="p">),</span>
             <span class="n">opts</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -667,11 +909,50 @@
             <span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">var</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span> <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="p">}</span>
         <span class="n">full_input</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ml_model_input</span><span class="p">)</span>
+        <span class="n">full_input</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_rnn_state_values</span><span class="p">(</span><span class="n">t_start</span><span class="p">))</span>
 
         <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_step</span><span class="p">(</span><span class="o">**</span><span class="n">full_input</span><span class="p">)</span>
         <span class="n">end_time</span> <span class="o">=</span> <span class="n">t_start</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
         <span class="k">for</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">var_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">RNN_NEXT_STATE_SUFFIX</span><span class="p">):</span>
+                <span class="c1"># the hidden states are recomputed from the past at every step, so</span>
+                <span class="c1"># they don't have to be stored</span>
+                <span class="k">continue</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_with_timestamp</span><span class="p">(</span><span class="n">var_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">end_time</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CasadiMLModel.get_rnn_state_values"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.get_rnn_state_values">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_rnn_state_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Determines the hidden states of all recurrent models at the given time.</span>
+
+<span class="sd">        The states are initialized with zeros ``rnn_warmup_steps`` time steps in the</span>
+<span class="sd">        past and rolled out over the recorded past values of the model inputs.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            time: The time for which the hidden states are determined.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn_state_variables</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_grid</span>
+        <span class="n">trajectories</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">name</span><span class="p">:</span> <span class="n">sample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">past_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">current</span><span class="o">=</span><span class="n">time</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_input_names</span> <span class="k">if</span> <span class="n">grid</span> <span class="k">else</span> <span class="p">())</span>
+        <span class="p">}</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="n">warm_up_rnn_states</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_step_function</span><span class="p">,</span>
+            <span class="n">trajectories</span><span class="o">=</span><span class="n">trajectories</span><span class="p">,</span>
+            <span class="n">input_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_input_names</span><span class="p">,</span>
+            <span class="n">steps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_steps</span><span class="p">,</span>
+            <span class="n">dimension</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rnn_state_variables</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">states</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rnn_state_variables</span><span class="p">)</span>
+        <span class="p">}</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rnn_warmup_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Times relative to the start of the horizon at which the model inputs are</span>
+<span class="sd">        needed to warm up the hidden states."""</span>
+        <span class="k">return</span> <span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">*</span> <span class="n">lag</span> <span class="k">for</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_steps</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
 
 <div class="viewcode-block" id="CasadiMLModel.get_ml_model_values"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.get_ml_model_values">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_ml_model_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>

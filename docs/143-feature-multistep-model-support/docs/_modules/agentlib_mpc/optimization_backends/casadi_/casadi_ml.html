@@ -73,8 +73,10 @@
              
   <h1>Source code for agentlib_mpc.optimization_backends.casadi_.casadi_ml</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">casadi</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ca</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib.core.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigurationError</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.casadi_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">LB_PREFIX</span><span class="p">,</span>
@@ -85,9 +87,15 @@
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.ml_model_datatypes</span><span class="w"> </span><span class="kn">import</span> <span class="n">name_with_lag</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.data_structures.mpc_datamodels</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">MPCVariable</span><span class="p">,</span>
     <span class="n">VariableReference</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_ml_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">CasadiMLModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.models.casadi_ml_model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CasadiMLModel</span><span class="p">,</span>
+    <span class="n">RNN_NEXT_STATE_SUFFIX</span><span class="p">,</span>
+    <span class="n">warm_up_rnn_states</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">sampling</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">agentlib_mpc.optimization_backends.casadi_.core.VariableGroup</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">OptimizationQuantity</span><span class="p">,</span>
     <span class="n">OptimizationVariable</span><span class="p">,</span>
@@ -107,6 +115,19 @@
     <span class="n">model</span><span class="p">:</span> <span class="n">CasadiMLModel</span>
     <span class="n">lags_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
     <span class="n">sim_step</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span>
+
+    <span class="c1"># hidden states of recurrent (multi step) ML-models. Stays None for systems which</span>
+    <span class="c1"># do not support recurrent models.</span>
+    <span class="n">rnn_states</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">OptimizationVariable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">initial_rnn_states</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">OptimizationParameter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">rnn_warmup_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">rnn_warmup_input_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">rnn_warmup_step</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_rnn_states</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Whether any of the ML-models of this system is a recurrent model."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn_states</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn_states</span><span class="o">.</span><span class="n">dim</span> <span class="o">&gt;</span> <span class="mi">0</span>
 
 <div class="viewcode-block" id="CasadiMLSystem.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.initialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">CasadiMLModel</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">VariableReference</span><span class="p">):</span>
         <span class="c1"># define variables</span>
@@ -164,6 +185,29 @@
             <span class="n">lb</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">lb</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">()]),</span>
             <span class="n">ub</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">ub</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">()]),</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">rnn_state_variables</span><span class="p">:</span>
+            <span class="c1"># the hidden states of recurrent models are internal to the ML-model, so</span>
+            <span class="c1"># they are not part of the results. The quantity is only declared if there</span>
+            <span class="c1"># are recurrent models, since an empty group would be treated as a regular</span>
+            <span class="c1"># (but never discretized) system variable.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rnn_states</span> <span class="o">=</span> <span class="n">OptimizationVariable</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
+                <span class="n">denotation</span><span class="o">=</span><span class="s2">"rnn_state"</span><span class="p">,</span>
+                <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">rnn_state_variables</span><span class="p">,</span>
+                <span class="n">ref_list</span><span class="o">=</span><span class="p">[],</span>
+                <span class="n">include_in_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># the hidden states at the start of the horizon follow from measured</span>
+            <span class="c1"># data alone, so they enter the optimization problem as a parameter</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initial_rnn_states</span> <span class="o">=</span> <span class="n">OptimizationParameter</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
+                <span class="n">denotation</span><span class="o">=</span><span class="s2">"initial_rnn_state"</span><span class="p">,</span>
+                <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">rnn_state_variables</span><span class="p">,</span>
+                <span class="n">ref_list</span><span class="o">=</span><span class="p">[],</span>
+                <span class="n">use_in_stage_function</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_steps</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">rnn_warmup_steps</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_input_names</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">rnn_warmup_input_names</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_step</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">rnn_warmup_step_function</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">sim_step</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">make_predict_function_for_mpc</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lags_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lags_dict</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lags_mx_store</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lags_mx_store</span>
@@ -247,6 +291,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span> <span class="o">+=</span> <span class="n">ts</span>
         <span class="n">mx_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="p">)}</span>
 
+        <span class="c1"># hidden states of recurrent models over the whole grid, including the</span>
+        <span class="c1"># warmup in the past</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">has_rnn_states</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_discretize_rnn_states</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="n">mx_dict</span><span class="p">)</span>
+
         <span class="n">all_quantities</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">all_system_quantities</span><span class="p">()</span>
         <span class="c1"># add constraints and create the objective function for all stages</span>
         <span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">prediction_grid</span><span class="p">:</span>
@@ -274,6 +323,8 @@
                 <span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">const_par</span><span class="p">,</span>
                 <span class="s2">"__time"</span><span class="p">:</span> <span class="n">time</span><span class="p">,</span>
             <span class="p">}</span>
+            <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">has_rnn_states</span><span class="p">:</span>
+                <span class="n">stage_arguments</span><span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">rnn_states</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">stage_mx</span><span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">rnn_states</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
 
             <span class="c1"># collect stage arguments for lagged variables</span>
             <span class="k">for</span> <span class="n">lag</span><span class="p">,</span> <span class="n">denotation_dict</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lagged_input_names</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -298,7 +349,41 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span>
                 <span class="n">stage_result</span><span class="p">[</span><span class="s2">"next_states"</span><span class="p">]</span> <span class="o">-</span> <span class="n">mx_dict</span><span class="p">[</span><span class="n">time</span> <span class="o">+</span> <span class="n">ts</span><span class="p">][</span><span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">has_rnn_states</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span>
+                    <span class="n">stage_result</span><span class="p">[</span><span class="s2">"next_rnn_states"</span><span class="p">]</span>
+                    <span class="o">-</span> <span class="n">mx_dict</span><span class="p">[</span><span class="n">time</span> <span class="o">+</span> <span class="n">ts</span><span class="p">][</span><span class="n">sys</span><span class="o">.</span><span class="n">rnn_states</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+                <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">stage_result</span><span class="p">[</span><span class="s2">"cost_function"</span><span class="p">]</span> <span class="o">*</span> <span class="n">ts</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_discretize_rnn_states</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="n">CasadiMLSystem</span><span class="p">,</span> <span class="n">mx_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">]]</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Adds the hidden states of all recurrent ML-models to the optimization</span>
+<span class="sd">        problem.</span>
+
+<span class="sd">        The hidden states are treated like any other state: they are optimization variables at every</span>
+<span class="sd">        point of the grid and are linked by multiple shooting constraints. </span>
+
+<span class="sd">        The hidden states at the start of the horizon are warmed up numerically by the backend and enter as a parameter, which</span>
+<span class="sd">        keeps the warmup out of the optimization problem entirely.</span>
+<span class="sd">        """</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">prediction_horizon</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">time_step</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">initial_states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">initial_rnn_states</span><span class="p">)</span>
+        <span class="n">mx_dict</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">sys</span><span class="o">.</span><span class="n">rnn_states</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">rnn_states</span><span class="p">,</span>
+            <span class="n">lb</span><span class="o">=</span><span class="n">initial_states</span><span class="p">,</span>
+            <span class="n">ub</span><span class="o">=</span><span class="n">initial_states</span><span class="p">,</span>
+            <span class="n">guess</span><span class="o">=</span><span class="n">initial_states</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span> <span class="o">=</span> <span class="n">ts</span> <span class="o">*</span> <span class="n">step</span>
+            <span class="n">mx_dict</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span><span class="p">,</span> <span class="p">{})[</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">rnn_states</span><span class="o">.</span><span class="n">name</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">rnn_states</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MultipleShooting_ML.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.casadi_ml.MultipleShooting_ML.initialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">CasadiMLSystem</span><span class="p">,</span> <span class="n">solver_factory</span><span class="p">:</span> <span class="n">SolverFactory</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Initializes the trajectory optimization problem, creating all symbolic</span>
@@ -403,6 +488,14 @@
             <span class="o">*</span><span class="n">constraint_ub_denotations</span><span class="p">,</span>
         <span class="p">]</span>
 
+        <span class="k">if</span> <span class="n">system</span><span class="o">.</span><span class="n">has_rnn_states</span><span class="p">:</span>
+            <span class="n">rnn_state_output_it</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">all_outputs</span><span class="p">[</span><span class="n">name</span> <span class="o">+</span> <span class="n">RNN_NEXT_STATE_SUFFIX</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">system</span><span class="o">.</span><span class="n">rnn_states</span><span class="o">.</span><span class="n">full_names</span>
+            <span class="p">)</span>
+            <span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="o">*</span><span class="n">rnn_state_output_it</span><span class="p">))</span>
+            <span class="n">output_denotations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"next_rnn_states"</span><span class="p">)</span>
+
         <span class="c1"># function describing system dynamics and cost function</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stage_function</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span>
             <span class="s2">"f"</span><span class="p">,</span>
@@ -455,20 +548,65 @@
     <span class="n">system_type</span> <span class="o">=</span> <span class="n">CasadiMLSystem</span>
     <span class="n">discretization_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">DiscretizationMethod</span><span class="o">.</span><span class="n">multiple_shooting</span><span class="p">:</span> <span class="n">MultipleShooting_ML</span><span class="p">}</span>
     <span class="n">system</span><span class="p">:</span> <span class="n">CasadiMLSystem</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">CasadiMLModel</span>
     <span class="c1"># a dictionary of collections of the variable lags</span>
     <span class="n">lag_collection</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">max_lag</span><span class="p">:</span> <span class="nb">int</span>
 
 <div class="viewcode-block" id="CasADiBBBackend.get_lags_per_variable"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasADiBBBackend.get_lags_per_variable">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_lags_per_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""Returns the name of variables which include lags and their lag. The MPC</span>
-<span class="sd">        module can use this information to save relevant past data of lagged</span>
-<span class="sd">        variables"""</span>
+<span class="w">        </span><span class="sd">"""Returns the name of variables whose past values are needed and how far the</span>
+<span class="sd">        past has to reach. The MPC module uses this information to save the relevant</span>
+<span class="sd">        past data. Next to the lags of the ML-models, this covers the past values that</span>
+<span class="sd">        recurrent models need to warm up their hidden states."""</span>
         <span class="n">ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span><span class="o">.</span><span class="n">time_step</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="n">name</span><span class="p">:</span> <span class="p">(</span><span class="n">lag</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">ts</span>
-            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">lag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">lags_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">lag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">history_lags_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_ref</span>
-        <span class="p">}</span></div></div>
+        <span class="p">}</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_current_mpc_inputs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">agent_variables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MPCVariable</span><span class="p">],</span> <span class="n">now</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">]:</span>
+        <span class="n">mpc_inputs</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_current_mpc_inputs</span><span class="p">(</span>
+            <span class="n">agent_variables</span><span class="o">=</span><span class="n">agent_variables</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="n">now</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">has_rnn_states</span><span class="p">:</span>
+            <span class="n">mpc_inputs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">initial_rnn_states</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_warm_up_rnn_states</span><span class="p">(</span>
+                <span class="n">agent_variables</span><span class="o">=</span><span class="n">agent_variables</span><span class="p">,</span> <span class="n">now</span><span class="o">=</span><span class="n">now</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">mpc_inputs</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_warm_up_rnn_states</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">agent_variables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MPCVariable</span><span class="p">],</span> <span class="n">now</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ca</span><span class="o">.</span><span class="n">DM</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Determines the hidden states of the recurrent ML-models at the start of the</span>
+<span class="sd">        prediction horizon from the measured past."""</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">discretization_options</span><span class="o">.</span><span class="n">time_step</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">ts</span> <span class="o">*</span> <span class="n">lag</span> <span class="k">for</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">rnn_warmup_steps</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+
+        <span class="n">trajectories</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">rnn_warmup_input_names</span> <span class="k">if</span> <span class="n">grid</span> <span class="k">else</span> <span class="p">():</span>
+            <span class="n">variable</span> <span class="o">=</span> <span class="n">agent_variables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">variable</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Input for variable </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is empty. It is needed to warm up the "</span>
+                    <span class="sa">f</span><span class="s2">"hidden states of a recurrent ML-model."</span>
+                <span class="p">)</span>
+            <span class="n">trajectories</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">sampling</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span>
+                <span class="n">trajectory</span><span class="o">=</span><span class="n">variable</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+                <span class="n">current</span><span class="o">=</span><span class="n">now</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">variable</span><span class="p">,</span> <span class="s2">"interpolation_method"</span><span class="p">,</span> <span class="s2">"linear"</span><span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">warm_up_rnn_states</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">rnn_warmup_step</span><span class="p">,</span>
+            <span class="n">trajectories</span><span class="o">=</span><span class="n">trajectories</span><span class="p">,</span>
+            <span class="n">input_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">rnn_warmup_input_names</span><span class="p">,</span>
+            <span class="n">steps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">rnn_warmup_steps</span><span class="p">,</span>
+            <span class="n">dimension</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">rnn_states</span><span class="o">.</span><span class="n">dim</span><span class="p">,</span>
+        <span class="p">)</span></div>
 </pre></div>
 
            </div>

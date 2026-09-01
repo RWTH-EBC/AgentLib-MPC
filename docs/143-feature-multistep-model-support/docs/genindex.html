@@ -913,6 +913,8 @@
 </li>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiPredictor.Config">CasadiPredictor.Config (class in agentlib_mpc.models.casadi_predictor)</a>
 </li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiRNN">CasadiRNN (class in agentlib_mpc.models.casadi_predictor)</a>
+</li>
       <li><a href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiState">CasadiState (class in agentlib_mpc.models.casadi_model)</a>, <a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiState">[1]</a>
 </li>
       <li><a href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiVariable">CasadiVariable (class in agentlib_mpc.models.casadi_model)</a>, <a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiVariable">[1]</a>
@@ -926,6 +928,8 @@
       <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.check_data_sources_exist">check_data_sources_exist() (agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig class method)</a>
 </li>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.check_dt">check_dt() (agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig class method)</a>
+</li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.check_features">check_features() (agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN method)</a>
 </li>
       <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.check_if_save_path_is_there">check_if_save_path_is_there() (agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig class method)</a>
 </li>
@@ -1005,10 +1009,10 @@
 </li>
       <li><a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.CombinedObjective">CombinedObjective (class in agentlib_mpc.data_structures.objective)</a>
 </li>
-      <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.compile_solver">compile_solver() (in module agentlib_mpc.data_structures.casadi_utils)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.compile_solver">[1]</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.compile_solver">compile_solver() (in module agentlib_mpc.data_structures.casadi_utils)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.compile_solver">[1]</a>
+</li>
       <li><a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.CompositeWeight">CompositeWeight (class in agentlib_mpc.data_structures.objective)</a>
 </li>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.compute_dupes">compute_dupes() (in module agentlib_mpc.models.casadi_ml_model)</a>
@@ -1249,6 +1253,8 @@
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedGPR.deserialize">(agentlib_mpc.models.serialized_ml_model.SerializedGPR method)</a>
 </li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasANN.deserialize">(agentlib_mpc.models.serialized_ml_model.SerializedKerasANN method)</a>
+</li>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.deserialize">(agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN method)</a>
 </li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedLinReg.deserialize">(agentlib_mpc.models.serialized_ml_model.SerializedLinReg method)</a>
 </li>
@@ -1512,8 +1518,6 @@
 </li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Flatten.forward">(agentlib_mpc.models.casadi_predictor.Flatten method)</a>
 </li>
-        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.FunctionalWrapper.forward">(agentlib_mpc.models.casadi_predictor.FunctionalWrapper method)</a>
-</li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.InputSliceLayer.forward">(agentlib_mpc.models.casadi_predictor.InputSliceLayer method)</a>
 </li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Layer.forward">(agentlib_mpc.models.casadi_predictor.Layer method)</a>
@@ -1526,11 +1530,11 @@
 </li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.RBF.forward">(agentlib_mpc.models.casadi_predictor.RBF method)</a>
 </li>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.RecurrentLayer.forward">(agentlib_mpc.models.casadi_predictor.RecurrentLayer method)</a>
+</li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Rescaling.forward">(agentlib_mpc.models.casadi_predictor.Rescaling method)</a>
 </li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Reshape.forward">(agentlib_mpc.models.casadi_predictor.Reshape method)</a>
-</li>
-        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.SequentialWrapper.forward">(agentlib_mpc.models.casadi_predictor.SequentialWrapper method)</a>
 </li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Subtract.forward">(agentlib_mpc.models.casadi_predictor.Subtract method)</a>
 </li>
@@ -1645,10 +1649,10 @@
 </li>
       <li><a href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.delta_u.get_objective">get_objective() (in module agentlib_mpc.optimization_backends.casadi_.core.delta_u)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.get_participants_values">get_participants_values() (agentlib_mpc.modules.dmpc.admm.admm.ADMM method)</a>, <a href="code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.get_participants_values">[1]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.interactive.get_port">get_port() (in module agentlib_mpc.utils.plotting.interactive)</a>
 </li>
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingVariable.get_residual">get_residual() (agentlib_mpc.data_structures.admm_datatypes.CouplingVariable method)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.admm_datatypes.CouplingVariable.get_residual">[1]</a>
@@ -1663,6 +1667,8 @@
         <li><a href="code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.mpc.BaseMPC.get_results">(agentlib_mpc.modules.mpc.mpc.BaseMPC method)</a>
 </li>
       </ul></li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.get_rnn_state_values">get_rnn_state_values() (agentlib_mpc.models.casadi_ml_model.CasadiMLModel method)</a>
+</li>
       <li><a href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.get_symbolic">get_symbolic() (in module agentlib_mpc.models.casadi_model)</a>, <a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.get_symbolic">[1]</a>
 </li>
       <li><a href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.get_time_steps">get_time_steps() (in module agentlib_mpc.utils.analysis)</a>, <a href="code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.get_time_steps">[1]</a>
@@ -1695,6 +1701,12 @@
       </ul></li>
       <li><a href="agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.grid">grid() (agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization method)</a>, <a href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.grid">[1]</a>
 </li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.GRU">GRU (agentlib_mpc.models.casadi_predictor.ANNLayerTypes attribute)</a>
+
+      <ul>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.GRU">(class in agentlib_mpc.models.casadi_predictor)</a>
+</li>
+      </ul></li>
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.OptVarMXContainer.guess">guess (agentlib_mpc.data_structures.casadi_utils.OptVarMXContainer attribute)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.OptVarMXContainer.guess">[1]</a>
 </li>
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers.gurobi">gurobi (agentlib_mpc.data_structures.casadi_utils.Solvers attribute)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers.gurobi">[1]</a>
@@ -1705,6 +1717,14 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.has_rnn_states">has_rnn_states (agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem property)</a>
+</li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.history_lags_dict">history_lags_dict (agentlib_mpc.models.casadi_ml_model.CasadiMLModel property)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.history_max_lag">history_max_lag (agentlib_mpc.models.casadi_ml_model.CasadiMLModel property)</a>
+</li>
       <li><a href="code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHEConfig.horizon">horizon (agentlib_mpc.modules.estimation.mhe.MHEConfig attribute)</a>
 </li>
   </ul></td>
@@ -1716,6 +1736,8 @@
       <li><a href="agentlib_mpc.modules.html#agentlib_mpc.modules.ModuleImport.import_class">import_class() (agentlib_mpc.modules.ModuleImport method)</a>, <a href="code/agentlib_mpc.modules.html#agentlib_mpc.modules.ModuleImport.import_class">[1]</a>
 </li>
       <li><a href="agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.BackendImport.import_path">import_path (agentlib_mpc.optimization_backends.BackendImport attribute)</a>, <a href="code/agentlib_mpc.optimization_backends.html#agentlib_mpc.optimization_backends.BackendImport.import_path">[1]</a>
+</li>
+      <li><a href="agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable.include_in_results">include_in_results (agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable attribute)</a>, <a href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable.include_in_results">[1]</a>
 </li>
       <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.data_reduction.InducingPoints">InducingPoints (class in agentlib_mpc.modules.ml_model_training.data_reduction)</a>
 </li>
@@ -1732,6 +1754,8 @@
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.CoordinatorStatus.init_iterations">init_iterations (agentlib_mpc.data_structures.coordinator_datatypes.CoordinatorStatus attribute)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.CoordinatorStatus.init_iterations">[1]</a>
 </li>
       <li><a href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.initial_guess">initial_guess (agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization attribute)</a>
+</li>
+      <li><a href="code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.initial_rnn_states">initial_rnn_states (agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem attribute)</a>
 </li>
       <li><a href="code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.admm.CasadiADMMSystem.initial_state">initial_state (agentlib_mpc.optimization_backends.casadi_.admm.CasadiADMMSystem attribute)</a>
 
@@ -1791,6 +1815,8 @@
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiLinReg.input_shape">(agentlib_mpc.models.casadi_predictor.CasadiLinReg property)</a>
 </li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiPredictor.input_shape">(agentlib_mpc.models.casadi_predictor.CasadiPredictor property)</a>
+</li>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiRNN.input_shape">(agentlib_mpc.models.casadi_predictor.CasadiRNN property)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1885,6 +1911,8 @@
 </li>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.MLModels.KerasANN">KerasANN (agentlib_mpc.models.serialized_ml_model.MLModels attribute)</a>
 </li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.MLModels.KerasRNN">KerasRNN (agentlib_mpc.models.serialized_ml_model.MLModels attribute)</a>
+</li>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedGPR.kernel_parameters">kernel_parameters (agentlib_mpc.models.serialized_ml_model.SerializedGPR attribute)</a>
 </li>
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.known_inputs">known_inputs (agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference attribute)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.known_inputs">[1]</a>
@@ -1973,10 +2001,10 @@
 </li>
       <li><a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.ml_model_datatypes.TrainingData.load">load() (agentlib_mpc.data_structures.ml_model_datatypes.TrainingData class method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.load_admm">load_admm() (in module agentlib_mpc.utils.analysis)</a>, <a href="code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.load_admm">[1]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.admm_dashboard.load_agent_data">load_agent_data() (in module agentlib_mpc.utils.plotting.admm_dashboard)</a>
 </li>
       <li><a href="agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.load_mpc">load_mpc() (in module agentlib_mpc.utils.analysis)</a>, <a href="code/agentlib_mpc.utils.html#agentlib_mpc.utils.analysis.load_mpc">[1]</a>
@@ -2037,6 +2065,12 @@
 </li>
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.logger">logger (agentlib_mpc.data_structures.casadi_utils.SolverFactory attribute)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.logger">[1]</a>
 </li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.LSTM">LSTM (agentlib_mpc.models.casadi_predictor.ANNLayerTypes attribute)</a>
+
+      <ul>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.LSTM">(class in agentlib_mpc.models.casadi_predictor)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -2184,6 +2218,8 @@
 </li>
         <li><a href="code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.CasADiBaseBackend.model">(agentlib_mpc.optimization_backends.casadi_.basic.CasADiBaseBackend attribute)</a>
 </li>
+        <li><a href="code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasADiBBBackend.model">(agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasADiBBBackend attribute)</a>
+</li>
         <li><a href="code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.model">(agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem attribute)</a>
 </li>
         <li><a href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend.model">(agentlib_mpc.optimization_backends.casadi_.core.casadi_backend.CasADiBackend attribute)</a>
@@ -2220,7 +2256,11 @@
 </li>
       </ul></li>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasANN.model_path">model_path (agentlib_mpc.models.serialized_ml_model.SerializedKerasANN attribute)</a>, <a href="code/agentlib_mpc.models.html#id2">[1]</a>
+
+      <ul>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.model_path">(agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN attribute)</a>, <a href="code/agentlib_mpc.models.html#id3">[1]</a>
 </li>
+      </ul></li>
       <li><a href="code/agentlib_mpc.machine_learning_plugins.physXAI.html#agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation.model_path_generation">model_path_generation() (in module agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation)</a>
 </li>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig.model_post_init">model_post_init() (agentlib_mpc.models.casadi_ml_model.CasadiMLModelConfig method)</a>
@@ -2281,6 +2321,8 @@
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedGPR.model_type">(agentlib_mpc.models.serialized_ml_model.SerializedGPR attribute)</a>
 </li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasANN.model_type">(agentlib_mpc.models.serialized_ml_model.SerializedKerasANN attribute)</a>
+</li>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.model_type">(agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN attribute)</a>
 </li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedLinReg.model_type">(agentlib_mpc.models.serialized_ml_model.SerializedLinReg attribute)</a>
 </li>
@@ -2486,6 +2528,8 @@
 </li>
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MPCVariable">MPCVariable (class in agentlib_mpc.data_structures.mpc_datamodels)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MPCVariable">[1]</a>
 </li>
+      <li><a href="code/agentlib_mpc.machine_learning_plugins.physXAI.html#agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation.multi_step_2_agentlib_json">multi_step_2_agentlib_json() (in module agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation)</a>
+</li>
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.DiscretizationMethod.multiple_shooting">multiple_shooting (agentlib_mpc.data_structures.casadi_utils.DiscretizationMethod attribute)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.DiscretizationMethod.multiple_shooting">[1]</a>
 </li>
       <li><a href="agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.MultipleShooting">MultipleShooting (class in agentlib_mpc.optimization_backends.casadi_.basic)</a>, <a href="code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.MultipleShooting">[1]</a>
@@ -2570,12 +2614,12 @@
 </li>
       <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig.night_ub">night_ub (agentlib_mpc.modules.ml_model_training.setpoint_generator.SetPointGeneratorConfig attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.nlp">nlp (agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization property)</a>, <a href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.discretization.Discretization.nlp">[1]</a>
 </li>
       <li><a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.interpolation.InterpolationMethods.no_interpolation">no_interpolation (agentlib_mpc.data_structures.interpolation.InterpolationMethods attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.GPRKernelParameters.noise_level">noise_level (agentlib_mpc.models.serialized_ml_model.GPRKernelParameters attribute)</a>
 
       <ul>
@@ -2618,6 +2662,16 @@
 </li>
       <li><a href="code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.admm.CasADiADMMBackend.now">now (agentlib_mpc.optimization_backends.casadi_.admm.CasADiADMMBackend attribute)</a>
 </li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.GRU.number_of_states">number_of_states (agentlib_mpc.models.casadi_predictor.GRU property)</a>
+
+      <ul>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.LSTM.number_of_states">(agentlib_mpc.models.casadi_predictor.LSTM property)</a>
+</li>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.RecurrentLayer.number_of_states">(agentlib_mpc.models.casadi_predictor.RecurrentLayer property)</a>
+</li>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.SimpleRNN.number_of_states">(agentlib_mpc.models.casadi_predictor.SimpleRNN property)</a>
+</li>
+      </ul></li>
       <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.data_reduction.NystroemReducer">NystroemReducer (class in agentlib_mpc.modules.ml_model_training.data_reduction)</a>
 </li>
   </ul></td>
@@ -2708,14 +2762,14 @@
 </li>
       <li><a href="agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable">OptimizationVariable (class in agentlib_mpc.optimization_backends.casadi_.core.VariableGroup)</a>, <a href="code/agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable">[1]</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM.optimize">optimize() (agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM method)</a>, <a href="code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM.optimize">[1]</a>
 
       <ul>
         <li><a href="agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.employee.MiniEmployee.optimize">(agentlib_mpc.modules.dmpc.employee.MiniEmployee method)</a>, <a href="code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.employee.MiniEmployee.optimize">[1]</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ModuleStatus.optimizing">optimizing (agentlib_mpc.modules.dmpc.admm.admm.ModuleStatus attribute)</a>, <a href="code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ModuleStatus.optimizing">[1]</a>
 </li>
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.options">options (agentlib_mpc.data_structures.casadi_utils.SolverFactory attribute)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.SolverFactory.options">[1]</a>
@@ -2747,7 +2801,11 @@
       <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.output_names">output_names (agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer property)</a>
 </li>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiPredictor.output_shape">output_shape (agentlib_mpc.models.casadi_predictor.CasadiPredictor property)</a>
+
+      <ul>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiRNN.output_shape">(agentlib_mpc.models.casadi_predictor.CasadiRNN property)</a>
 </li>
+      </ul></li>
       <li><a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.ml_model_datatypes.OutputFeature.output_type">output_type (agentlib_mpc.data_structures.ml_model_datatypes.OutputFeature attribute)</a>
 </li>
       <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.output_types">output_types (agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig attribute)</a>
@@ -2890,10 +2948,10 @@
 </li>
       <li><a href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.admm_residuals.plot_over_time">plot_over_time() (in module agentlib_mpc.utils.plotting.admm_residuals)</a>, <a href="code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.admm_residuals.plot_over_time">[1]</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.admm_residuals.plot_single_time_step">plot_single_time_step() (in module agentlib_mpc.utils.plotting.admm_residuals)</a>, <a href="code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.admm_residuals.plot_single_time_step">[1]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.POWER">POWER (agentlib_mpc.models.casadi_predictor.ANNLayerTypes attribute)</a>
 </li>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.Power">Power (class in agentlib_mpc.models.casadi_predictor)</a>
@@ -2911,6 +2969,8 @@
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiPredictor.predict">predict() (agentlib_mpc.models.casadi_predictor.CasadiPredictor method)</a>
 
       <ul>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiRNN.predict">(agentlib_mpc.models.casadi_predictor.CasadiRNN method)</a>
+</li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.CustomGPR.predict">(agentlib_mpc.models.serialized_ml_model.CustomGPR method)</a>
 </li>
       </ul></li>
@@ -3048,6 +3108,8 @@
       </ul></li>
       <li><a href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.receive_participant">receive_participant() (agentlib_mpc.modules.dmpc.admm.admm.ADMM method)</a>, <a href="code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.receive_participant">[1]</a>
 </li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.RecurrentLayer">RecurrentLayer (class in agentlib_mpc.models.casadi_predictor)</a>
+</li>
       <li><a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.ml_model_datatypes.OutputFeature.recursive">recursive (agentlib_mpc.data_structures.ml_model_datatypes.OutputFeature attribute)</a>
 </li>
       <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.recursive_outputs">recursive_outputs (agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig attribute)</a>
@@ -3100,8 +3162,6 @@
 </li>
       <li><a href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.registered_participants">registered_participants (agentlib_mpc.modules.dmpc.admm.admm.ADMM property)</a>, <a href="code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ADMM.registered_participants">[1]</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM.registration_callback">registration_callback() (agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM method)</a>, <a href="code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm_coordinated.CoordinatedADMM.registration_callback">[1]</a>
 
       <ul>
@@ -3112,6 +3172,8 @@
         <li><a href="agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.employee.MiniEmployee.registration_callback">(agentlib_mpc.modules.dmpc.employee.MiniEmployee method)</a>, <a href="code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.employee.MiniEmployee.registration_callback">[1]</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.LocalADMM.registration_delay">registration_delay (agentlib_mpc.modules.dmpc.admm.admm.LocalADMM property)</a>, <a href="code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.LocalADMM.registration_delay">[1]</a>
 
       <ul>
@@ -3187,6 +3249,20 @@
       <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer.retrain_model">retrain_model() (agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainer method)</a>
 </li>
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Integrators.rk">rk (agentlib_mpc.data_structures.casadi_utils.Integrators attribute)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Integrators.rk">[1]</a>
+</li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.rnn_inputs">rnn_inputs (agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN attribute)</a>, <a href="code/agentlib_mpc.models.html#id4">[1]</a>
+</li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.rnn_state_name">rnn_state_name() (in module agentlib_mpc.models.casadi_ml_model)</a>
+</li>
+      <li><a href="code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.rnn_states">rnn_states (agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem attribute)</a>
+</li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.rnn_warmup_grid">rnn_warmup_grid (agentlib_mpc.models.casadi_ml_model.CasadiMLModel property)</a>
+</li>
+      <li><a href="code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.rnn_warmup_input_names">rnn_warmup_input_names (agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem attribute)</a>
+</li>
+      <li><a href="code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.rnn_warmup_step">rnn_warmup_step (agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem attribute)</a>
+</li>
+      <li><a href="code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.rnn_warmup_steps">rnn_warmup_steps (agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem attribute)</a>
 </li>
       <li><a href="agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.CollocationMatrices.root">root (agentlib_mpc.optimization_backends.casadi_.basic.CollocationMatrices attribute)</a>, <a href="code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.CollocationMatrices.root">[1]</a>
 
@@ -3276,6 +3352,8 @@
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedGPR.serialize">(agentlib_mpc.models.serialized_ml_model.SerializedGPR class method)</a>
 </li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasANN.serialize">(agentlib_mpc.models.serialized_ml_model.SerializedKerasANN class method)</a>
+</li>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.serialize">(agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN class method)</a>
 </li>
         <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedLinReg.serialize">(agentlib_mpc.models.serialized_ml_model.SerializedLinReg class method)</a>
 </li>
@@ -3372,14 +3450,18 @@
 </li>
       <li><a href="code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.mpc_dashboard.show_multi_room_dashboard">show_multi_room_dashboard() (in module agentlib_mpc.utils.plotting.mpc_dashboard)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.sim_step">sim_step (agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem attribute)</a>
 </li>
       <li><a href="code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml.CasadiADMMNNSystem.sim_step_quantities">sim_step_quantities (agentlib_mpc.optimization_backends.casadi_.casadi_admm_ml.CasadiADMMNNSystem property)</a>
 </li>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_model.CasadiModelConfig.sim_time">sim_time (agentlib_mpc.models.casadi_model.CasadiModelConfig attribute)</a>
 </li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.SIMPLERNN">SIMPLERNN (agentlib_mpc.models.casadi_predictor.ANNLayerTypes attribute)</a>
+</li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.SimpleRNN">SimpleRNN (class in agentlib_mpc.models.casadi_predictor)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.LinRegParameters.singular">singular (agentlib_mpc.models.serialized_ml_model.LinRegParameters attribute)</a>
 </li>
       <li><a href="code/agentlib_mpc.modules.deactivate_mpc.html#agentlib_mpc.modules.deactivate_mpc.deactivate_mpc.SkipMPCInIntervals">SkipMPCInIntervals (class in agentlib_mpc.modules.deactivate_mpc.deactivate_mpc)</a>
@@ -3416,11 +3498,17 @@
 </li>
       <li><a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.interpolation.InterpolationMethods.spline3">spline3 (agentlib_mpc.data_structures.interpolation.InterpolationMethods attribute)</a>
 </li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiRNN.split_states">split_states() (agentlib_mpc.models.casadi_predictor.CasadiRNN method)</a>
+</li>
       <li><a href="code/agentlib_mpc.utils.plotting.html#agentlib_mpc.utils.plotting.discretization_structure.spy_structure">spy_structure() (in module agentlib_mpc.utils.plotting.discretization_structure)</a>
 </li>
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers.sqpmethod">sqpmethod (agentlib_mpc.data_structures.casadi_utils.Solvers attribute)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.casadi_utils.Solvers.sqpmethod">[1]</a>
 </li>
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.AgentStatus.standby">standby (agentlib_mpc.data_structures.coordinator_datatypes.AgentStatus attribute)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.AgentStatus.standby">[1]</a>
+</li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiRNN.state_dimension">state_dimension (agentlib_mpc.models.casadi_predictor.CasadiRNN property)</a>
+</li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiRNN.state_dimensions">state_dimensions (agentlib_mpc.models.casadi_predictor.CasadiRNN attribute)</a>
 </li>
       <li><a href="code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHEConfig.state_weights">state_weights (agentlib_mpc.modules.estimation.mhe.MHEConfig attribute)</a>
 </li>
@@ -3472,6 +3560,22 @@
       </ul></li>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.GPRDataHandlingParameters.std">std (agentlib_mpc.models.serialized_ml_model.GPRDataHandlingParameters attribute)</a>
 </li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.GRU.step">step() (agentlib_mpc.models.casadi_predictor.GRU method)</a>
+
+      <ul>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.LSTM.step">(agentlib_mpc.models.casadi_predictor.LSTM method)</a>
+</li>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.RecurrentLayer.step">(agentlib_mpc.models.casadi_predictor.RecurrentLayer method)</a>
+</li>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.SimpleRNN.step">(agentlib_mpc.models.casadi_predictor.SimpleRNN method)</a>
+</li>
+      </ul></li>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_predictor.CasadiRNN.step_model">step_model (agentlib_mpc.models.casadi_predictor.CasadiRNN attribute)</a>
+
+      <ul>
+        <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.step_model">(agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN attribute)</a>, <a href="code/agentlib_mpc.models.html#id5">[1]</a>
+</li>
+      </ul></li>
       <li><a href="code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig.step_size">step_size (agentlib_mpc.modules.ml_model_training.ml_model_trainer.MLModelTrainerConfig attribute)</a>
 </li>
       <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedANN.structure">structure (agentlib_mpc.models.serialized_ml_model.SerializedANN attribute)</a>, <a href="code/agentlib_mpc.models.html#id0">[1]</a>
@@ -3806,12 +3910,16 @@
 </li>
       <li><a href="agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ModuleStatus.waiting_for_other_agents">waiting_for_other_agents (agentlib_mpc.modules.dmpc.admm.admm.ModuleStatus attribute)</a>, <a href="code/agentlib_mpc.modules.dmpc.admm.html#agentlib_mpc.modules.dmpc.admm.admm.ModuleStatus.waiting_for_other_agents">[1]</a>
 </li>
-      <li><a href="code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.mpc.BaseMPC.warn_for_missed_solves">warn_for_missed_solves() (agentlib_mpc.modules.mpc.mpc.BaseMPC method)</a>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.warm_up_rnn_states">warm_up_rnn_states() (in module agentlib_mpc.models.casadi_ml_model)</a>
 </li>
-      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedANN.weights">weights (agentlib_mpc.models.serialized_ml_model.SerializedANN attribute)</a>, <a href="code/agentlib_mpc.models.html#id1">[1]</a>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.warmup_steps">warmup_steps (agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN attribute)</a>, <a href="code/agentlib_mpc.models.html#id10">[1]</a>
+</li>
+      <li><a href="code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.mpc.BaseMPC.warn_for_missed_solves">warn_for_missed_solves() (agentlib_mpc.modules.mpc.mpc.BaseMPC method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedANN.weights">weights (agentlib_mpc.models.serialized_ml_model.SerializedANN attribute)</a>, <a href="code/agentlib_mpc.models.html#id1">[1]</a>
+</li>
       <li><a href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.weights_states">weights_states (agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference attribute)</a>, <a href="code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.weights_states">[1]</a>
 </li>
       <li><a href="code/agentlib_mpc.modules.estimation.html#agentlib_mpc.modules.estimation.mhe.MHEConfig.wrapped">wrapped (agentlib_mpc.modules.estimation.mhe.MHEConfig attribute)</a>

@@ -542,6 +542,8 @@
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">names_list</span><span class="p">:</span>
                 <span class="k">continue</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">sys_vars</span><span class="o">.</span><span class="n">include_in_results</span><span class="p">:</span>
+                <span class="k">continue</span>
 
             <span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">sys_vars</span><span class="p">)</span>
             <span class="n">iterator</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">"var"</span><span class="p">,</span> <span class="s2">"variable"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"ub"</span><span class="p">,</span> <span class="s2">"upper"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"lb"</span><span class="p">,</span> <span class="s2">"lower"</span><span class="p">)]</span>

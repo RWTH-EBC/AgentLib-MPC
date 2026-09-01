@@ -99,29 +99,61 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation.physXAI_2_agentlib_json">
-<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation.</span></span><span class="sig-name descname"><span class="pre">physXAI_2_agentlib_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocessing_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ANN'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sweep_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.html#physXAI_2_agentlib_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation.physXAI_2_agentlib_json" title="Permalink to this definition"></a></dt>
-<dd><p>Converts physXAI model configurations to an AgentLib-MPC compatible JSON format.
-:param run_id: The unique identifier for the mpc run.
-:type run_id: str
-:param preprocessing_dict: The preprocessing configuration from physXAI.
-:type preprocessing_dict: dict
-:param model_dict: The model configuration from physXAI. Defaults to None.
-:type model_dict: dict, optional
-:param training_dict: The training configuration from physXAI. Defaults to None.
-:type training_dict: dict, optional
-:param model_name: The save name of the model. Defaults to None. If None, the output feature name is used.
-:type model_name: str, optional
-:param model_type: The type of model (‘ANN’ or ‘LinReg’). Defaults to ‘ANN’.
-:type model_type: str, optional
-:param sweep_id: Optional sweep identifier to organize model save folder. Defaults to ‘’.
-:type sweep_id: str, optional</p>
+<dt class="sig sig-object py" id="agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation.multi_step_2_agentlib_json">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation.</span></span><span class="sig-name descname"><span class="pre">multi_step_2_agentlib_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocessing_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sweep_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warmup_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.html#multi_step_2_agentlib_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation.multi_step_2_agentlib_json" title="Permalink to this definition"></a></dt>
+<dd><p>Completes the AgentLib-MPC config of a multi step (recurrent) physXAI model.</p>
+<p>The hidden states are warmed up on past data, which is expressed by ‘warmup_steps’.
+The initialization model physXAI trains alongside is not used by AgentLib-MPC,
+hence ‘init_features’ does not appear in the result.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The converted configuration in AgentLib-MPC JSON format.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>run_id</strong> (<em>str</em>) – The unique identifier for the mpc run.</p></li>
+<li><p><strong>preprocessing_dict</strong> (<em>dict</em>) – The preprocessing configuration from physXAI.</p></li>
+<li><p><strong>target_dict</strong> (<em>dict</em>) – The config in AgentLib-MPC format, with the general
+information already filled in.</p></li>
+<li><p><strong>model_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The save name of the model. Defaults to None. If None, the output feature name is used.</p></li>
+<li><p><strong>sweep_id</strong> (<em>str</em><em>, </em><em>optional</em>) – Optional sweep identifier to organize model save folder. Defaults to ‘’.</p></li>
+<li><p><strong>warmup_steps</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of warmup steps. Defaults to the warmup
+width used for training.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>dict</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The converted configuration in AgentLib-MPC JSON format.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation.physXAI_2_agentlib_json">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation.</span></span><span class="sig-name descname"><span class="pre">physXAI_2_agentlib_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocessing_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ANN'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sweep_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warmup_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/machine_learning_plugins/physXAI/model_config_creation.html#physXAI_2_agentlib_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation.physXAI_2_agentlib_json" title="Permalink to this definition"></a></dt>
+<dd><p>Converts physXAI model configurations to an AgentLib-MPC compatible JSON format.</p>
+<p>Single step models (‘PreprocessingSingleStep’) are translated into an ‘ANN’ or
+‘LinReg’ config, multi step models (‘PreprocessingMultiStep’, i.e. RNN / LSTM /
+GRU) into a ‘KerasRNN’ config.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>run_id</strong> (<em>str</em>) – The unique identifier for the mpc run.</p></li>
+<li><p><strong>preprocessing_dict</strong> (<em>dict</em>) – The preprocessing configuration from physXAI.</p></li>
+<li><p><strong>model_dict</strong> (<em>dict</em><em>, </em><em>optional</em>) – The model configuration from physXAI. Defaults to None.</p></li>
+<li><p><strong>training_dict</strong> (<em>dict</em><em>, </em><em>optional</em>) – The training configuration from physXAI. Defaults to None.</p></li>
+<li><p><strong>model_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The save name of the model. Defaults to None. If None, the output feature name is used.</p></li>
+<li><p><strong>model_type</strong> (<em>str</em><em>, </em><em>optional</em>) – The type of model (‘ANN’ or ‘LinReg’). Defaults to ‘ANN’.</p></li>
+<li><p><strong>sweep_id</strong> (<em>str</em><em>, </em><em>optional</em>) – Optional sweep identifier to organize model save folder. Defaults to ‘’.</p></li>
+<li><p><strong>warmup_steps</strong> (<em>int</em><em>, </em><em>optional</em>) – Multi step models only. Number of steps the hidden
+states of the recurrent model are warmed up on past data before the
+prediction horizon starts. Defaults to the warmup width used for training.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The converted configuration in AgentLib-MPC JSON format.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>

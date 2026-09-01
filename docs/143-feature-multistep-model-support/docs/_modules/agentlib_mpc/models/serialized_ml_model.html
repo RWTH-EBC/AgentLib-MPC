@@ -82,7 +82,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequential</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">keras.src</span><span class="w"> </span><span class="kn">import</span> <span class="n">Functional</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BaseModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">model_validator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.gaussian_process</span><span class="w"> </span><span class="kn">import</span> <span class="n">GaussianProcessRegressor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.gaussian_process.kernels</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConstantKernel</span><span class="p">,</span> <span class="n">WhiteKernel</span><span class="p">,</span> <span class="n">RBF</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
@@ -97,7 +97,8 @@
     <span class="n">ANN</span> <span class="o">=</span> <span class="s2">"ANN"</span>
     <span class="n">GPR</span> <span class="o">=</span> <span class="s2">"GPR"</span>
     <span class="n">LINREG</span> <span class="o">=</span> <span class="s2">"LinReg"</span>
-    <span class="n">KerasANN</span> <span class="o">=</span> <span class="s2">"KerasANN"</span></div>
+    <span class="n">KerasANN</span> <span class="o">=</span> <span class="s2">"KerasANN"</span>
+    <span class="n">KerasRNN</span> <span class="o">=</span> <span class="s2">"KerasRNN"</span></div>
 
 
 <div class="viewcode-block" id="SerializedMLModel"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedMLModel">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SerializedMLModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">,</span> <span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
@@ -782,11 +783,135 @@
         <span class="k">return</span> <span class="n">ann</span></div></div>
 
 
+<div class="viewcode-block" id="SerializedKerasRNN"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SerializedKerasRNN</span><span class="p">(</span><span class="n">SerializedMLModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Allows using a saved multi step Keras model (SimpleRNN / LSTM / GRU) in</span>
+<span class="sd">    agentlib_mpc.</span>
+
+<span class="sd">    Only the recurrent cell of the trained model is translated to CasADi and</span>
+<span class="sd">    evaluated one step at a time, with the hidden states appearing as additional</span>
+<span class="sd">    optimization variables that are linked by multiple shooting constraints.</span>
+
+<span class="sd">    The hidden states are initialized with zeros ``warmup_steps`` time steps before the</span>
+<span class="sd">    start of the prediction horizon and are then rolled out recursively over the</span>
+<span class="sd">    measured past.</span>
+<span class="sd">    The lags of all input features are therefore raised to at least</span>
+<span class="sd">    ``warmup_steps + 1``, which makes the MPC module collect the required history.</span>
+
+<span class="sd">    attributes:</span>
+<span class="sd">        model_path: Path to the saved Keras model.</span>
+<span class="sd">        warmup_steps: Number of recursive steps over past data used to initialize the</span>
+<span class="sd">            hidden states.</span>
+<span class="sd">        rnn_inputs: Names of the features in the order the recurrent model expects</span>
+<span class="sd">            them.</span>
+<span class="sd">        step_model: Name of the part of the model performing a single recurrent step.</span>
+<span class="sd">    """</span>
+
+    <span class="n">model_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Path, where the Keras model is saved."</span>
+    <span class="p">)</span>
+    <span class="n">warmup_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Number of time steps before the start of the prediction horizon, "</span>
+        <span class="s2">"at which the hidden states are initialized with zeros. From there, the model "</span>
+        <span class="s2">"is applied recursively on measured data to arrive at the hidden states of the "</span>
+        <span class="s2">"first stage of the prediction horizon. Should be at least as large as the "</span>
+        <span class="s2">"warmup width the model was trained with. The warmup runs on measured data "</span>
+        <span class="s2">"only, so it does not add variables to the optimization problem, but the MPC "</span>
+        <span class="s2">"has to collect this many past values of every input."</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">rnn_inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Names of the features in the order the recurrent model expects "</span>
+        <span class="s2">"them. Defaults to the order of 'input'."</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">step_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Name of the part of the saved model which performs a single "</span>
+        <span class="s2">"recurrent step, i.e. which maps [sequence, *states] to [prediction, *states]. "</span>
+        <span class="s2">"Only needed if the saved model contains more than one model with that "</span>
+        <span class="s2">"signature, otherwise it is identified automatically."</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">arbitrary_types_allowed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">model_type</span><span class="p">:</span> <span class="n">MLModels</span> <span class="o">=</span> <span class="n">MLModels</span><span class="o">.</span><span class="n">KerasRNN</span>
+
+<div class="viewcode-block" id="SerializedKerasRNN.check_features"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.check_features">[docs]</a>    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_features</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Fills the default input order and checks the declared features."""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn_inputs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rnn_inputs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="p">)</span>
+        <span class="n">unknown</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rnn_inputs</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">unknown</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"The 'rnn_inputs' of the recurrent model contain features which are "</span>
+                <span class="sa">f</span><span class="s2">"neither declared in 'input' nor in 'output': </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">unknown</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+
+        <span class="c1"># a recurrent model only sees the current time step, its memory of the past is</span>
+        <span class="c1"># held in the hidden states. The past values needed to warm those up are</span>
+        <span class="c1"># tracked separately from the lags, since they are not inputs of the model.</span>
+        <span class="n">lagged</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">name</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn_inputs</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="n">name</span><span class="p">])</span><span class="o">.</span><span class="n">lag</span> <span class="o">!=</span> <span class="mi">1</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">lagged</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"The inputs of a recurrent model are only used at the current time "</span>
+                <span class="sa">f</span><span class="s2">"step, so they must have a lag of 1. Set 'warmup_steps' to control "</span>
+                <span class="sa">f</span><span class="s2">"how far the hidden states are warmed up on past data instead. "</span>
+                <span class="sa">f</span><span class="s2">"Features with a different lag: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">lagged</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="SerializedKerasRNN.serialize"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.serialize">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">Functional</span><span class="p">],</span>
+        <span class="n">dt</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="nb">input</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Feature</span><span class="p">],</span>
+        <span class="n">output</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">OutputFeature</span><span class="p">],</span>
+        <span class="n">training_info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">warmup_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">rnn_inputs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">step_model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Saves the Keras model and returns a SerializedKerasRNN object"""</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">model_path</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">save_path</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">model_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"stored_models/model.keras"</span><span class="p">)</span>  <span class="c1"># default value</span>
+
+        <span class="n">directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">model_path</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+        <span class="n">directory</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model_path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">model_path</span><span class="o">=</span><span class="n">model_path</span><span class="p">,</span>
+            <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+            <span class="nb">input</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span>
+            <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
+            <span class="n">training_info</span><span class="o">=</span><span class="n">training_info</span><span class="p">,</span>
+            <span class="n">warmup_steps</span><span class="o">=</span><span class="n">warmup_steps</span><span class="p">,</span>
+            <span class="n">rnn_inputs</span><span class="o">=</span><span class="n">rnn_inputs</span><span class="p">,</span>
+            <span class="n">step_model</span><span class="o">=</span><span class="n">step_model</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="SerializedKerasRNN.deserialize"><a class="viewcode-back" href="../../../code/agentlib_mpc.models.html#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.deserialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequential</span><span class="p">,</span> <span class="n">Functional</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Loads the Keras model this object points to."""</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">keras</span>
+
+        <span class="k">return</span> <span class="n">keras</span><span class="o">.</span><span class="n">saving</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_path</span><span class="p">)</span></div></div>
+
+
 <span class="n">serialized_models</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">MLModels</span><span class="o">.</span><span class="n">ANN</span><span class="p">:</span> <span class="n">SerializedANN</span><span class="p">,</span>
     <span class="n">MLModels</span><span class="o">.</span><span class="n">GPR</span><span class="p">:</span> <span class="n">SerializedGPR</span><span class="p">,</span>
     <span class="n">MLModels</span><span class="o">.</span><span class="n">LINREG</span><span class="p">:</span> <span class="n">SerializedLinReg</span><span class="p">,</span>
     <span class="n">MLModels</span><span class="o">.</span><span class="n">KerasANN</span><span class="p">:</span> <span class="n">SerializedKerasANN</span><span class="p">,</span>
+    <span class="n">MLModels</span><span class="o">.</span><span class="n">KerasRNN</span><span class="p">:</span> <span class="n">SerializedKerasRNN</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 

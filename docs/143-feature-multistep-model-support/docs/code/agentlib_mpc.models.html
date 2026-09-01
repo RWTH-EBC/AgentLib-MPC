@@ -128,6 +128,34 @@ and white-box models can be used in the simulation to be combined into a grey-bo
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModel.get_rnn_state_values">
+<span class="sig-name descname"><span class="pre">get_rnn_state_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#CasadiMLModel.get_rnn_state_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.get_rnn_state_values" title="Permalink to this definition"></a></dt>
+<dd><p>Determines the hidden states of all recurrent models at the given time.</p>
+<p>The states are initialized with zeros <code class="docutils literal notranslate"><span class="pre">rnn_warmup_steps</span></code> time steps in the
+past and rolled out over the recorded past values of the model inputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> – The time for which the hidden states are determined.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModel.history_lags_dict">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">history_lags_dict</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.history_lags_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Number of past values (the current one included) that have to be kept for
+each variable.</p>
+<p>These are the lags the ML-models use as inputs, plus the past values the
+recurrent models need to warm up their hidden states.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModel.history_max_lag">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">history_max_lag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.history_max_lag" title="Permalink to this definition"></a></dt>
+<dd><p>Length of the history that has to be kept, in time steps.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModel.initialize">
 <span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">ignored</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#CasadiMLModel.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.initialize" title="Permalink to this definition"></a></dt>
 <dd><p>Prepare the black- and white-box models for CasADi backend optimization and
@@ -147,6 +175,13 @@ shooting.</p>
 <dd><p>Loads a serialized MLModel and find the output states of the MLModel
 Divides the differential states of the model into states determined by white-box
 model (self._differentials) and by black-box model (self._differentials_network)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.CasadiMLModel.rnn_warmup_grid">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rnn_warmup_grid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.CasadiMLModel.rnn_warmup_grid" title="Permalink to this definition"></a></dt>
+<dd><p>Times relative to the start of the horizon at which the model inputs are
+needed to warm up the hidden states.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -261,6 +296,36 @@ supplying ml_models, that make parts of other ml_models obsolete.</p>
 <dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.compute_dupes">
 <span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_ml_model.</span></span><span class="sig-name descname"><span class="pre">compute_dupes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#compute_dupes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.compute_dupes" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the duplicate elements in a collection</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.rnn_state_name">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_ml_model.</span></span><span class="sig-name descname"><span class="pre">rnn_state_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_output_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#rnn_state_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.rnn_state_name" title="Permalink to this definition"></a></dt>
+<dd><p>Name of the symbolic variable holding a hidden state of a recurrent model.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_ml_model.warm_up_rnn_states">
+<span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_ml_model.</span></span><span class="sig-name descname"><span class="pre">warm_up_rnn_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">warmup_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trajectories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DM</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_ml_model.html#warm_up_rnn_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_ml_model.warm_up_rnn_states" title="Permalink to this definition"></a></dt>
+<dd><p>Determines the hidden states of the recurrent models at the start of the
+prediction horizon.</p>
+<p>Starting from zeros, the recurrent models are applied <code class="docutils literal notranslate"><span class="pre">steps</span></code> times on the past
+values of their inputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>warmup_step</strong> – Function performing a single warmup step of all recurrent models.</p></li>
+<li><p><strong>trajectories</strong> – Past values of the model inputs, sampled on the warmup grid.</p></li>
+<li><p><strong>input_names</strong> – The inputs of the recurrent models, in the order the warmup step
+function expects them.</p></li>
+<li><p><strong>steps</strong> – Number of warmup steps.</p></li>
+<li><p><strong>dimension</strong> – Total number of hidden states.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The hidden states at the start of the prediction horizon.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -716,8 +781,18 @@ instance, and that its dimensions are consistent.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.ANNLayerTypes.GRU">
+<span class="sig-name descname"><span class="pre">GRU</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gru'</span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.GRU" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.ANNLayerTypes.INPUTSLICE">
 <span class="sig-name descname"><span class="pre">INPUTSLICE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'input_slice'</span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.INPUTSLICE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.ANNLayerTypes.LSTM">
+<span class="sig-name descname"><span class="pre">LSTM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lstm'</span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.LSTM" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -748,6 +823,11 @@ instance, and that its dimensions are consistent.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.ANNLayerTypes.RESHAPE">
 <span class="sig-name descname"><span class="pre">RESHAPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'reshape'</span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.RESHAPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.ANNLayerTypes.SIMPLERNN">
+<span class="sig-name descname"><span class="pre">SIMPLERNN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'simple_rnn'</span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.ANNLayerTypes.SIMPLERNN" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -923,6 +1003,86 @@ instance, and that its dimensions are consistent.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.CasadiRNN">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_predictor.</span></span><span class="sig-name descname"><span class="pre">CasadiRNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serialized_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN" title="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN"><span class="pre">SerializedKerasRNN</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#CasadiRNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.CasadiRNN" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.models.casadi_predictor.CasadiPredictor" title="agentlib_mpc.models.casadi_predictor.CasadiPredictor"><code class="xref py py-class docutils literal notranslate"><span class="pre">CasadiPredictor</span></code></a></p>
+<p>Translates a trained multi step keras model (SimpleRNN / LSTM / GRU) into a
+single step CasADi function.</p>
+<blockquote>
+<div><p>Only the recurrent cell of the model is translated here, and it is</p>
+</div></blockquote>
+<p>translated for a sequence length of one. The hidden states of the recurrent layer
+become additional in- and outputs of the prediction function, so the optimization
+backend can treat them like any other state and link them over the horizon with
+multiple shooting constraints.</p>
+<p>The translated part of the keras model is the part which performs a single
+recurrent step, i.e. the model that maps <code class="docutils literal notranslate"><span class="pre">[sequence,</span> <span class="pre">*states]</span></code> to
+<code class="docutils literal notranslate"><span class="pre">[prediction,</span> <span class="pre">*states]</span></code> for a sequence of arbitrary length. Multi step models
+are usually saved with that part as a nested model, next to a part that derives
+the initial states from a warmup sequence. The latter is not used here, since the
+optimization backend initializes the states with zeros and rolls them out over
+measured past data instead.</p>
+<p>The step model is identified by its signature. If a model contains several models
+with that signature, the one to use has to be named in the serialized model.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.CasadiRNN.step_model">
+<span class="sig-name descname"><span class="pre">step_model</span></span><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.CasadiRNN.step_model" title="Permalink to this definition"></a></dt>
+<dd><p>The keras model that performs a single recurrent step.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.CasadiRNN.state_dimensions">
+<span class="sig-name descname"><span class="pre">state_dimensions</span></span><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.CasadiRNN.state_dimensions" title="Permalink to this definition"></a></dt>
+<dd><p>Number of units of each state tensor the model carries over.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.CasadiRNN.input_shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">input_shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.CasadiRNN.input_shape" title="Permalink to this definition"></a></dt>
+<dd><p>Input shape of one time step of the predictor.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.CasadiRNN.output_shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">output_shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.CasadiRNN.output_shape" title="Permalink to this definition"></a></dt>
+<dd><p>Output shape of one time step of the predictor.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.CasadiRNN.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MX</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MX</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">casadi.casadi.DM</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">casadi.casadi.MX</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#CasadiRNN.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.CasadiRNN.predict" title="Permalink to this definition"></a></dt>
+<dd><p>Performs one time step of the recurrent model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – input features of the current time step.</p></li>
+<li><p><strong>states</strong> – all hidden states of the current time step, stacked into a single
+column vector. Defaults to zeros.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list holding the prediction for the next time step, followed by the
+hidden states of the next time step stacked into a single column vector.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.CasadiRNN.split_states">
+<span class="sig-name descname"><span class="pre">split_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">MX</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">casadi.casadi.MX</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#CasadiRNN.split_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.CasadiRNN.split_states" title="Permalink to this definition"></a></dt>
+<dd><p>Splits a stacked vector of hidden states into the state tensors of the
+recurrent layer.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.CasadiRNN.state_dimension">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">state_dimension</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.CasadiRNN.state_dimension" title="Permalink to this definition"></a></dt>
+<dd><p>Total number of scalar hidden states carried between two time steps.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.Concatenate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_predictor.</span></span><span class="sig-name descname"><span class="pre">Concatenate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Concatenate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#Concatenate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.Concatenate" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.models.casadi_predictor.Layer" title="agentlib_mpc.models.casadi_predictor.Layer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Layer</span></code></a></p>
@@ -981,11 +1141,26 @@ instance, and that its dimensions are consistent.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.FunctionalWrapper">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_predictor.</span></span><span class="sig-name descname"><span class="pre">FunctionalWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">functional</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Functional</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#FunctionalWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.FunctionalWrapper" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_ModelWrapper</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.GRU">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_predictor.</span></span><span class="sig-name descname"><span class="pre">GRU</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GRU</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#GRU"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.GRU" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.models.casadi_predictor.RecurrentLayer" title="agentlib_mpc.models.casadi_predictor.RecurrentLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">RecurrentLayer</span></code></a></p>
+<p>Gated recurrent unit.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.GRU.number_of_states">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">number_of_states</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.GRU.number_of_states" title="Permalink to this definition"></a></dt>
+<dd><p>Number of state tensors the layer carries between two time steps.</p>
+</dd></dl>
+
 <dl class="py method">
-<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.FunctionalWrapper.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#FunctionalWrapper.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.FunctionalWrapper.forward" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.GRU.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_prev</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#GRU.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.GRU.step" title="Permalink to this definition"></a></dt>
+<dd><p>Performs a single time step and returns the new states. Following keras,
+the first state is the layer output (h) by convention.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -997,6 +1172,26 @@ instance, and that its dimensions are consistent.</p>
 <dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.InputSliceLayer.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#InputSliceLayer.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.InputSliceLayer.forward" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.LSTM">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_predictor.</span></span><span class="sig-name descname"><span class="pre">LSTM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LSTM</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#LSTM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.LSTM" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.models.casadi_predictor.RecurrentLayer" title="agentlib_mpc.models.casadi_predictor.RecurrentLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">RecurrentLayer</span></code></a></p>
+<p>Long short term memory cell.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.LSTM.number_of_states">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">number_of_states</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.LSTM.number_of_states" title="Permalink to this definition"></a></dt>
+<dd><p>Number of state tensors the layer carries between two time steps.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.LSTM.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_prev</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_prev</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#LSTM.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.LSTM.step" title="Permalink to this definition"></a></dt>
+<dd><p>Performs a single time step and returns the new states. Following keras,
+the first state is the layer output (h) by convention.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -1068,6 +1263,36 @@ instance, and that its dimensions are consistent.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.RecurrentLayer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_predictor.</span></span><span class="sig-name descname"><span class="pre">RecurrentLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Layer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#RecurrentLayer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.RecurrentLayer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.models.casadi_predictor.Layer" title="agentlib_mpc.models.casadi_predictor.Layer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Layer</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Base class for recurrent layers.</p>
+<p>Recurrent layers are translated cell-wise, i.e. the forward pass unrolls the input
+sequence and applies <code class="docutils literal notranslate"><span class="pre">step</span></code> once per row of the input. The same implementation
+can therefore be used for a full sequence (as during training) and for a single
+time step, which is what multiple shooting in the MPC needs.</p>
+<p>The forward pass always returns a tuple <code class="docutils literal notranslate"><span class="pre">(output,</span> <span class="pre">*states)</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.RecurrentLayer.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">states</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#RecurrentLayer.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.RecurrentLayer.forward" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.RecurrentLayer.number_of_states">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">number_of_states</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.RecurrentLayer.number_of_states" title="Permalink to this definition"></a></dt>
+<dd><p>Number of state tensors the layer carries between two time steps.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.RecurrentLayer.step">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_t</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">states</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#RecurrentLayer.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.RecurrentLayer.step" title="Permalink to this definition"></a></dt>
+<dd><p>Performs a single time step and returns the new states. Following keras,
+the first state is the layer output (h) by convention.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.Rescaling">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_predictor.</span></span><span class="sig-name descname"><span class="pre">Rescaling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Rescaling</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#Rescaling"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.Rescaling" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.models.casadi_predictor.Layer" title="agentlib_mpc.models.casadi_predictor.Layer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Layer</span></code></a></p>
@@ -1092,11 +1317,26 @@ instance, and that its dimensions are consistent.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.SequentialWrapper">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_predictor.</span></span><span class="sig-name descname"><span class="pre">SequentialWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequential</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequential</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#SequentialWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.SequentialWrapper" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_ModelWrapper</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.SimpleRNN">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.casadi_predictor.</span></span><span class="sig-name descname"><span class="pre">SimpleRNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SimpleRNN</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#SimpleRNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.SimpleRNN" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.models.casadi_predictor.RecurrentLayer" title="agentlib_mpc.models.casadi_predictor.RecurrentLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">RecurrentLayer</span></code></a></p>
+<p>Fully connected recurrent unit.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.SimpleRNN.number_of_states">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">number_of_states</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.SimpleRNN.number_of_states" title="Permalink to this definition"></a></dt>
+<dd><p>Number of state tensors the layer carries between two time steps.</p>
+</dd></dl>
+
 <dl class="py method">
-<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.SequentialWrapper.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#SequentialWrapper.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.SequentialWrapper.forward" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="agentlib_mpc.models.casadi_predictor.SimpleRNN.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_prev</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/casadi_predictor.html#SimpleRNN.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.casadi_predictor.SimpleRNN.step" title="Permalink to this definition"></a></dt>
+<dd><p>Performs a single time step and returns the new states. Following keras,
+the first state is the layer output (h) by convention.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -1366,7 +1606,7 @@ parameters and not others.</p>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="agentlib_mpc.models.serialized_ml_model.GPRParameters.log_marginal_likelihood_value">
 <em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log_marginal_likelihood_value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#agentlib_mpc.models.serialized_ml_model.GPRParameters.log_marginal_likelihood_value" title="Permalink to this definition"></a></dt>
-<dd><p>The log-marginal-likelihood of <a href="#id3"><span class="problematic" id="id4">self.kernel_</span></a>.theta.</p>
+<dd><p>The log-marginal-likelihood of <a href="#id11"><span class="problematic" id="id12">self.kernel_</span></a>.theta.</p>
 </dd></dl>
 
 <dl class="py attribute pydantic_field">
@@ -1452,6 +1692,11 @@ parameters and not others.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="agentlib_mpc.models.serialized_ml_model.MLModels.KerasANN">
 <span class="sig-name descname"><span class="pre">KerasANN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KerasANN'</span></em><a class="headerlink" href="#agentlib_mpc.models.serialized_ml_model.MLModels.KerasANN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.models.serialized_ml_model.MLModels.KerasRNN">
+<span class="sig-name descname"><span class="pre">KerasRNN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'KerasRNN'</span></em><a class="headerlink" href="#agentlib_mpc.models.serialized_ml_model.MLModels.KerasRNN" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1654,6 +1899,157 @@ we need them recursively in MPC.) with their lag order.</p></li>
 <dt class="sig sig-object py" id="agentlib_mpc.models.serialized_ml_model.SerializedKerasANN.serialize">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequential</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Functional</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.ml_model_datatypes.Feature" title="agentlib_mpc.data_structures.ml_model_datatypes.Feature"><span class="pre">agentlib_mpc.data_structures.ml_model_datatypes.Feature</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.ml_model_datatypes.OutputFeature" title="agentlib_mpc.data_structures.ml_model_datatypes.OutputFeature"><span class="pre">agentlib_mpc.data_structures.ml_model_datatypes.OutputFeature</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/serialized_ml_model.html#SerializedKerasANN.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.serialized_ml_model.SerializedKerasANN.serialize" title="Permalink to this definition"></a></dt>
 <dd><p>Serializes path to Keras Sequential or Functional ANN and returns SerializedKerasANN object</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">agentlib_mpc.models.serialized_ml_model.</span></span><span class="sig-name descname"><span class="pre">SerializedKerasRNN</span></span><a class="reference internal" href="../_modules/agentlib_mpc/models/serialized_ml_model.html#SerializedKerasRNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agentlib_mpc.models.serialized_ml_model.SerializedMLModel" title="agentlib_mpc.models.serialized_ml_model.SerializedMLModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializedMLModel</span></code></a></p>
+<p>Allows using a saved multi step Keras model (SimpleRNN / LSTM / GRU) in
+agentlib_mpc.</p>
+<p>Only the recurrent cell of the trained model is translated to CasADi and
+evaluated one step at a time, with the hidden states appearing as additional
+optimization variables that are linked by multiple shooting constraints.</p>
+<p>The hidden states are initialized with zeros <code class="docutils literal notranslate"><span class="pre">warmup_steps</span></code> time steps before the
+start of the prediction horizon and are then rolled out recursively over the
+measured past.
+The lags of all input features are therefore raised to at least
+<code class="docutils literal notranslate"><span class="pre">warmup_steps</span> <span class="pre">+</span> <span class="pre">1</span></code>, which makes the MPC module collect the required history.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.model_path">
+<span class="sig-name descname"><span class="pre">model_path</span></span><a class="headerlink" href="#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.model_path" title="Permalink to this definition"></a></dt>
+<dd><p>Path to the saved Keras model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.warmup_steps">
+<span class="sig-name descname"><span class="pre">warmup_steps</span></span><a class="headerlink" href="#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.warmup_steps" title="Permalink to this definition"></a></dt>
+<dd><p>Number of recursive steps over past data used to initialize the
+hidden states.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.rnn_inputs">
+<span class="sig-name descname"><span class="pre">rnn_inputs</span></span><a class="headerlink" href="#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.rnn_inputs" title="Permalink to this definition"></a></dt>
+<dd><p>Names of the features in the order the recurrent model expects
+them.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.step_model">
+<span class="sig-name descname"><span class="pre">step_model</span></span><a class="headerlink" href="#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.step_model" title="Permalink to this definition"></a></dt>
+<dd><p>Name of the part of the model performing a single recurrent step.</p>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>protected_namespaces</strong>: <em>tuple = ()</em></p></li>
+<li><p><strong>arbitrary_types_allowed</strong>: <em>bool = True</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#id3" title="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.model_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_path</span> <span class="pre">(pathlib.Path)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.model_type" title="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.model_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">model_type</span> <span class="pre">(agentlib_mpc.models.serialized_ml_model.MLModels)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#id4" title="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.rnn_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rnn_inputs</span> <span class="pre">(list[str])</span></code></a></p></li>
+<li><p><a class="reference internal" href="#id5" title="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.step_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">step_model</span> <span class="pre">(str</span> <span class="pre">|</span> <span class="pre">None)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#id10" title="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.warmup_steps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">warmup_steps</span> <span class="pre">(int)</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-odd">Validators<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.check_features" title="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.check_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_features</span></code></a> » <code class="xref py py-obj docutils literal notranslate"><span class="pre">all</span> <span class="pre">fields</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="id3">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id3" title="Permalink to this definition"></a></dt>
+<dd><p>Path, where the Keras model is saved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Validated by<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.check_features" title="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.check_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_features</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.model_type">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#agentlib_mpc.models.serialized_ml_model.MLModels" title="agentlib_mpc.models.serialized_ml_model.MLModels"><span class="pre">MLModels</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">MLModels.KerasRNN</span></em><a class="headerlink" href="#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.model_type" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Validated by<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.check_features" title="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.check_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_features</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="id4">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rnn_inputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id4" title="Permalink to this definition"></a></dt>
+<dd><p>Names of the features in the order the recurrent model expects them. Defaults to the order of ‘input’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Validated by<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.check_features" title="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.check_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_features</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="id5">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">step_model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id5" title="Permalink to this definition"></a></dt>
+<dd><p>Name of the part of the saved model which performs a single recurrent step, i.e. which maps [sequence, <a href="#id6"><span class="problematic" id="id7">*</span></a>states] to [prediction, <a href="#id8"><span class="problematic" id="id9">*</span></a>states]. Only needed if the saved model contains more than one model with that signature, otherwise it is identified automatically.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Validated by<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.check_features" title="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.check_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_features</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="id10">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">warmup_steps</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id10" title="Permalink to this definition"></a></dt>
+<dd><p>Number of time steps before the start of the prediction horizon, at which the hidden states are initialized with zeros. From there, the model is applied recursively on measured data to arrive at the hidden states of the first stage of the prediction horizon. Should be at least as large as the warmup width the model was trained with. The warmup runs on measured data only, so it does not add variables to the optimization problem, but the MPC has to collect this many past values of every input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Constraints<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ge</strong> = 0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Validated by<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.check_features" title="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.check_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_features</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method pydantic_validator">
+<dt class="sig sig-object py" id="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.check_features">
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_features</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><em class="xref py py-obj"><span class="pre">all</span> <span class="pre">fields</span></em><a class="reference internal" href="../_modules/agentlib_mpc/models/serialized_ml_model.html#SerializedKerasRNN.check_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.check_features" title="Permalink to this definition"></a></dt>
+<dd><p>Fills the default input order and checks the declared features.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.deserialize">
+<span class="sig-name descname"><span class="pre">deserialize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Sequential</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Functional</span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/models/serialized_ml_model.html#SerializedKerasRNN.deserialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.deserialize" title="Permalink to this definition"></a></dt>
+<dd><p>Loads the Keras model this object points to.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.serialize">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequential</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Functional</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.ml_model_datatypes.Feature" title="agentlib_mpc.data_structures.ml_model_datatypes.Feature"><span class="pre">agentlib_mpc.data_structures.ml_model_datatypes.Feature</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.ml_model_datatypes.OutputFeature" title="agentlib_mpc.data_structures.ml_model_datatypes.OutputFeature"><span class="pre">agentlib_mpc.data_structures.ml_model_datatypes.OutputFeature</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">training_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warmup_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rnn_inputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/models/serialized_ml_model.html#SerializedKerasRNN.serialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.models.serialized_ml_model.SerializedKerasRNN.serialize" title="Permalink to this definition"></a></dt>
+<dd><p>Saves the Keras model and returns a SerializedKerasRNN object</p>
 </dd></dl>
 
 </dd></dl>

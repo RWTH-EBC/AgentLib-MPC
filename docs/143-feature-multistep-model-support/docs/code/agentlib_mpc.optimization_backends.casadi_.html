@@ -107,6 +107,7 @@
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable.dim"><code class="docutils literal notranslate"><span class="pre">OptimizationVariable.dim</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable.full_names"><code class="docutils literal notranslate"><span class="pre">OptimizationVariable.full_names</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable.full_symbolic"><code class="docutils literal notranslate"><span class="pre">OptimizationVariable.full_symbolic</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable.include_in_results"><code class="docutils literal notranslate"><span class="pre">OptimizationVariable.include_in_results</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable.input_map"><code class="docutils literal notranslate"><span class="pre">OptimizationVariable.input_map</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable.name"><code class="docutils literal notranslate"><span class="pre">OptimizationVariable.name</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable.output_map"><code class="docutils literal notranslate"><span class="pre">OptimizationVariable.output_map</span></code></a></li>
@@ -687,9 +688,10 @@ model again</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasADiBBBackend.get_lags_per_variable">
 <span class="sig-name descname"><span class="pre">get_lags_per_variable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/optimization_backends/casadi_/casadi_ml.html#CasADiBBBackend.get_lags_per_variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasADiBBBackend.get_lags_per_variable" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the name of variables which include lags and their lag. The MPC
-module can use this information to save relevant past data of lagged
-variables</p>
+<dd><p>Returns the name of variables whose past values are needed and how far the
+past has to reach. The MPC module uses this information to save the relevant
+past data. Next to the lags of the ML-models, this covers the past values that
+recurrent models need to warm up their hidden states.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -700,6 +702,11 @@ variables</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasADiBBBackend.max_lag">
 <span class="sig-name descname"><span class="pre">max_lag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasADiBBBackend.max_lag" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasADiBBBackend.model">
+<span class="sig-name descname"><span class="pre">model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.CasadiMLModel" title="agentlib_mpc.models.casadi_ml_model.CasadiMLModel"><span class="pre">CasadiMLModel</span></a></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasADiBBBackend.model" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -724,6 +731,17 @@ variables</p>
 <span class="sig-name descname"><span class="pre">all_system_quantities</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationQuantity" title="agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationQuantity"><span class="pre">agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationQuantity</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/agentlib_mpc/optimization_backends/casadi_/casadi_ml.html#CasadiMLSystem.all_system_quantities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.all_system_quantities" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.has_rnn_states">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_rnn_states</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.has_rnn_states" title="Permalink to this definition"></a></dt>
+<dd><p>Whether any of the ML-models of this system is a recurrent model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.initial_rnn_states">
+<span class="sig-name descname"><span class="pre">initial_rnn_states</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationParameter" title="agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationParameter"><span class="pre">OptimizationParameter</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.initial_rnn_states" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.initialize">
 <span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.CasadiMLModel" title="agentlib_mpc.models.casadi_ml_model.CasadiMLModel"><span class="pre">CasadiMLModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.VariableReference" title="agentlib_mpc.data_structures.mpc_datamodels.VariableReference"><span class="pre">VariableReference</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/agentlib_mpc/optimization_backends/casadi_/casadi_ml.html#CasadiMLSystem.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.initialize" title="Permalink to this definition"></a></dt>
@@ -742,6 +760,26 @@ variables</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.model">
 <span class="sig-name descname"><span class="pre">model</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.models.html#agentlib_mpc.models.casadi_ml_model.CasadiMLModel" title="agentlib_mpc.models.casadi_ml_model.CasadiMLModel"><span class="pre">CasadiMLModel</span></a></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.model" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.rnn_states">
+<span class="sig-name descname"><span class="pre">rnn_states</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="agentlib_mpc.optimization_backends.casadi_.core.html#agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable" title="agentlib_mpc.optimization_backends.casadi_.core.VariableGroup.OptimizationVariable"><span class="pre">OptimizationVariable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.rnn_states" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.rnn_warmup_input_names">
+<span class="sig-name descname"><span class="pre">rnn_warmup_input_names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.rnn_warmup_input_names" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.rnn_warmup_step">
+<span class="sig-name descname"><span class="pre">rnn_warmup_step</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Function</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.rnn_warmup_step" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.rnn_warmup_steps">
+<span class="sig-name descname"><span class="pre">rnn_warmup_steps</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#agentlib_mpc.optimization_backends.casadi_.casadi_ml.CasadiMLSystem.rnn_warmup_steps" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">

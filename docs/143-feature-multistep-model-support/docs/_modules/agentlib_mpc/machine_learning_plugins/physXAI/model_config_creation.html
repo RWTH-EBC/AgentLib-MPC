@@ -81,6 +81,7 @@
 <span class="n">output_type_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"Change\((.*)\)"</span>  <span class="c1"># Pattern to differentiate between 'absolute' and 'difference' outputs</span>
 <span class="n">lag_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">"_lag(\d+)$"</span>  <span class="c1"># Pattern to extract lag information from feature names</span>
 <span class="n">preprocessing_training_info</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"test_size"</span><span class="p">,</span> <span class="s2">"val_size"</span><span class="p">,</span> <span class="s2">"random_state"</span><span class="p">]</span>  <span class="c1"># Define relevant preprocessing info keys</span>
+<span class="n">multi_step_class_name</span> <span class="o">=</span> <span class="s2">"PreprocessingMultiStep"</span>  <span class="c1"># physXAI preprocessing of multi step (recurrent) models</span>
 
 
 <div class="viewcode-block" id="model_path_generation"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.physXAI.html#agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation.model_path_generation">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">model_path_generation</span><span class="p">(</span><span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sweep_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -97,9 +98,15 @@
 
 
 <div class="viewcode-block" id="physXAI_2_agentlib_json"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.physXAI.html#agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation.physXAI_2_agentlib_json">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">physXAI_2_agentlib_json</span><span class="p">(</span><span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">preprocessing_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">model_dict</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">training_dict</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                           <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">model_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'ANN'</span><span class="p">,</span> <span class="n">sweep_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+                           <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">model_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'ANN'</span><span class="p">,</span> <span class="n">sweep_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span>
+                           <span class="n">warmup_steps</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Converts physXAI model configurations to an AgentLib-MPC compatible JSON format.</span>
+
+<span class="sd">    Single step models ('PreprocessingSingleStep') are translated into an 'ANN' or</span>
+<span class="sd">    'LinReg' config, multi step models ('PreprocessingMultiStep', i.e. RNN / LSTM /</span>
+<span class="sd">    GRU) into a 'KerasRNN' config.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        run_id (str): The unique identifier for the mpc run.</span>
 <span class="sd">        preprocessing_dict (dict): The preprocessing configuration from physXAI.</span>
@@ -108,6 +115,9 @@
 <span class="sd">        model_name (str, optional): The save name of the model. Defaults to None. If None, the output feature name is used.</span>
 <span class="sd">        model_type (str, optional): The type of model ('ANN' or 'LinReg'). Defaults to 'ANN'.</span>
 <span class="sd">        sweep_id (str, optional): Optional sweep identifier to organize model save folder. Defaults to ''.</span>
+<span class="sd">        warmup_steps (int, optional): Multi step models only. Number of steps the hidden</span>
+<span class="sd">            states of the recurrent model are warmed up on past data before the</span>
+<span class="sd">            prediction horizon starts. Defaults to the warmup width used for training.</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        dict: The converted configuration in AgentLib-MPC JSON format.</span>
 <span class="sd">    """</span>
@@ -138,6 +148,13 @@
     <span class="n">default_shift</span> <span class="o">=</span> <span class="n">preprocessing_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"shift"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">default_shift</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Config Translation Error: Shift should be 1 to be used in AgentLib, but was </span><span class="si">{</span><span class="n">default_shift</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="c1"># Multi step (recurrent) models are handled separately, since they carry their</span>
+    <span class="c1"># memory in hidden states instead of lagged inputs</span>
+    <span class="k">if</span> <span class="n">preprocessing_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"__class_name__"</span><span class="p">)</span> <span class="o">==</span> <span class="n">multi_step_class_name</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">multi_step_2_agentlib_json</span><span class="p">(</span><span class="n">run_id</span><span class="p">,</span> <span class="n">preprocessing_dict</span><span class="p">,</span> <span class="n">target_dict</span><span class="p">,</span> <span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span>
+                                          <span class="n">sweep_id</span><span class="o">=</span><span class="n">sweep_id</span><span class="p">,</span> <span class="n">warmup_steps</span><span class="o">=</span><span class="n">warmup_steps</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">preprocessing_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"output"</span><span class="p">),</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">preprocessing_dict</span><span class="p">[</span><span class="s2">"output"</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Config Translation Error: Output should be a list with 1 element"</span><span class="p">)</span>
 
@@ -243,6 +260,86 @@
         <span class="k">if</span> <span class="n">model_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">model_name</span> <span class="o">=</span> <span class="n">output_key_name</span>
         <span class="n">target_dict</span><span class="p">[</span><span class="s2">"model_path"</span><span class="p">]</span> <span class="o">=</span> <span class="n">model_path_generation</span><span class="p">(</span><span class="n">run_id</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">sweep_id</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'.keras'</span>
+
+    <span class="k">return</span> <span class="n">target_dict</span></div>
+
+
+<div class="viewcode-block" id="multi_step_2_agentlib_json"><a class="viewcode-back" href="../../../../code/agentlib_mpc.machine_learning_plugins.physXAI.html#agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation.multi_step_2_agentlib_json">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">multi_step_2_agentlib_json</span><span class="p">(</span><span class="n">run_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">preprocessing_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">target_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+                               <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sweep_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span>
+                               <span class="n">warmup_steps</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Completes the AgentLib-MPC config of a multi step (recurrent) physXAI model.</span>
+
+<span class="sd">    The hidden states are warmed up on past data, which is expressed by 'warmup_steps'.</span>
+<span class="sd">    The initialization model physXAI trains alongside is not used by AgentLib-MPC,</span>
+<span class="sd">    hence 'init_features' does not appear in the result.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        run_id (str): The unique identifier for the mpc run.</span>
+<span class="sd">        preprocessing_dict (dict): The preprocessing configuration from physXAI.</span>
+<span class="sd">        target_dict (dict): The config in AgentLib-MPC format, with the general</span>
+<span class="sd">            information already filled in.</span>
+<span class="sd">        model_name (str, optional): The save name of the model. Defaults to None. If None, the output feature name is used.</span>
+<span class="sd">        sweep_id (str, optional): Optional sweep identifier to organize model save folder. Defaults to ''.</span>
+<span class="sd">        warmup_steps (int, optional): Number of warmup steps. Defaults to the warmup</span>
+<span class="sd">            width used for training.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: The converted configuration in AgentLib-MPC JSON format.</span>
+<span class="sd">    """</span>
+
+    <span class="n">inputs</span> <span class="o">=</span> <span class="n">preprocessing_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">)</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="n">preprocessing_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"output"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">inputs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Config Translation Error: Inputs should be a non empty list"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">outputs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Config Translation Error: Output should be a non empty list"</span><span class="p">)</span>
+
+    <span class="c1"># A recurrent model is evaluated one step at a time, so lagged features cannot be</span>
+    <span class="c1"># translated. The memory of the model is expressed by the warmup instead.</span>
+    <span class="n">lagged_inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">inputs</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">lag_pattern</span><span class="p">,</span> <span class="n">name</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">lagged_inputs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Config Translation Error: Multi step models do not support lagged inputs, "</span>
+            <span class="sa">f</span><span class="s2">"since their memory is held in the hidden states. Increase 'warmup_width' "</span>
+            <span class="sa">f</span><span class="s2">"instead. Lagged inputs: </span><span class="si">{</span><span class="n">lagged_inputs</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Extract output types</span>
+    <span class="n">output_features</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">output_str</span> <span class="ow">in</span> <span class="n">outputs</span><span class="p">:</span>
+        <span class="n">output_type</span> <span class="o">=</span> <span class="s2">"absolute"</span>
+        <span class="n">output_name</span> <span class="o">=</span> <span class="n">output_str</span>
+        <span class="n">change_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">output_type_pattern</span><span class="p">,</span> <span class="n">output_str</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">change_match</span><span class="p">:</span>
+            <span class="n">output_type</span> <span class="o">=</span> <span class="s2">"difference"</span>
+            <span class="n">output_name</span> <span class="o">=</span> <span class="n">change_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="c1"># The output of a recurrent model is always a state of the MPC, since the</span>
+        <span class="c1"># recursion runs through the hidden states.</span>
+        <span class="n">output_features</span><span class="p">[</span><span class="n">output_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"name"</span><span class="p">:</span> <span class="n">output_name</span><span class="p">,</span>
+            <span class="s2">"lag"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">"output_type"</span><span class="p">:</span> <span class="n">output_type</span><span class="p">,</span>
+            <span class="s2">"recursive"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="c1"># Inputs are only used at the current time step, hence they all have a lag of 1</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">output_features</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">target_dict</span><span class="p">[</span><span class="s2">"input"</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">"lag"</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+    <span class="n">target_dict</span><span class="p">[</span><span class="s2">"output"</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_features</span>
+
+    <span class="c1"># The order of the features is the order the recurrent model expects them in</span>
+    <span class="n">target_dict</span><span class="p">[</span><span class="s2">"rnn_inputs"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">warmup_steps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warmup_steps</span> <span class="o">=</span> <span class="n">preprocessing_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"warmup_width"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">target_dict</span><span class="p">[</span><span class="s2">"warmup_steps"</span><span class="p">]</span> <span class="o">=</span> <span class="n">warmup_steps</span>
+
+    <span class="n">target_dict</span><span class="p">[</span><span class="s2">"model_type"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"KerasRNN"</span>
+    <span class="k">if</span> <span class="n">model_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">output_features</span><span class="p">))</span>
+    <span class="n">target_dict</span><span class="p">[</span><span class="s2">"model_path"</span><span class="p">]</span> <span class="o">=</span> <span class="n">model_path_generation</span><span class="p">(</span><span class="n">run_id</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">sweep_id</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'.keras'</span>
 
     <span class="k">return</span> <span class="n">target_dict</span></div>
 </pre></div>
