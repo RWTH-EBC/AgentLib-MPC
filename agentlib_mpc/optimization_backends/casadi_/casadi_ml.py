@@ -141,6 +141,15 @@ class MultipleShooting_ML(MultipleShooting):
                 sys.states, lb=x_past, ub=x_past, guess=x_past
             )
             mx_dict[time][sys.initial_state.name] = x_past
+            y_past = self.add_opt_par(sys.outputs)
+            mx_dict[time][sys.outputs.name] = self.add_opt_var(
+                sys.outputs, lb=y_past, ub=y_past, guess=y_past
+            )
+            if sys.algebraics.full_names:  # only if there are algebraics
+                z_past = self.add_opt_par(sys.algebraics)
+                mx_dict[time][sys.algebraics.name] = self.add_opt_var(
+                    sys.algebraics, lb=z_past, ub=z_past, guess=z_past
+                )
 
         # add past inputs
         for time in pre_grid_inputs:
@@ -152,6 +161,17 @@ class MultipleShooting_ML(MultipleShooting):
                 sys.controls, lb=u_past, ub=u_past, guess=u_past
             )
             mx_dict[time][sys.last_control.name] = u_past
+
+            if time not in pre_grid_states:
+                y_past = self.add_opt_par(sys.outputs)
+                mx_dict[time][sys.outputs.name] = self.add_opt_var(
+                    sys.outputs, lb=y_past, ub=y_past, guess=y_past
+                )
+                if sys.algebraics.full_names:
+                    z_past = self.add_opt_par(sys.algebraics)
+                    mx_dict[time][sys.algebraics.name] = self.add_opt_var(
+                        sys.algebraics, lb=z_past, ub=z_past, guess=z_past
+                    )
 
         # add all variables over future grid
         for time in prediction_grid:

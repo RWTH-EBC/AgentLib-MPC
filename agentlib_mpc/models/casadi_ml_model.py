@@ -96,7 +96,7 @@ class CasadiMLModelConfig(CasadiModelConfig):
             )
         )
         output_names = [var.name for var in info.data["states"] + info.data["outputs"]]
-        input_names = [var.name for var in info.data["inputs"] + info.data["states"]]
+        input_names = [var.name for var in info.data["inputs"] + info.data["states"] + info.data["outputs"]]
 
         output_dupes = compute_dupes(all_outputs)
         if output_dupes:
