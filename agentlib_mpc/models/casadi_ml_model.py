@@ -21,7 +21,7 @@ from pydantic import (
 from agentlib_mpc.data_structures import ml_model_datatypes
 from agentlib_mpc.data_structures.ml_model_datatypes import OutputType, name_with_lag
 
-from agentlib_mpc.models.casadi_predictor import CasadiPredictor
+from agentlib_mpc.models.casadi_predictor import CasadiPredictor, CasadiRNN
 from agentlib_mpc.models.casadi_model import (
     CasadiModel,
     CasadiModelConfig,
@@ -30,11 +30,52 @@ from agentlib_mpc.models.casadi_model import (
 )
 from agentlib_mpc.models.serialized_ml_model import (
     SerializedMLModel,
+    SerializedKerasRNN,
 )
 from agentlib_mpc.utils.sampling import sample
 
 logger = logging.getLogger(__name__)
 CASADI_VERSION = float(ca.__version__[:3])
+
+# suffix of the output of the step function that holds a hidden state of a recurrent
+# model at the next time step
+RNN_NEXT_STATE_SUFFIX = "_next"
+
+
+def rnn_state_name(model_output_name: str, index: int) -> str:
+    """Name of the symbolic variable holding a hidden state of a recurrent model."""
+    return f"{model_output_name}_rnn_state_{index}"
+
+
+def warm_up_rnn_states(
+    warmup_step: ca.Function,
+    trajectories: dict[str, list[float]],
+    input_names: list[str],
+    steps: int,
+    dimension: int,
+) -> ca.DM:
+    """Determines the hidden states of the recurrent models at the start of the
+    prediction horizon.
+
+    Starting from zeros, the recurrent models are applied ``steps`` times on the past
+    values of their inputs.
+
+    Args:
+        warmup_step: Function performing a single warmup step of all recurrent models.
+        trajectories: Past values of the model inputs, sampled on the warmup grid.
+        input_names: The inputs of the recurrent models, in the order the warmup step
+            function expects them.
+        steps: Number of warmup steps.
+        dimension: Total number of hidden states.
+
+    Returns:
+        The hidden states at the start of the prediction horizon.
+    """
+    states = ca.DM.zeros(dimension, 1)
+    for step in range(steps):
+        features = ca.DM([trajectories[name][step] for name in input_names])
+        states = warmup_step(features=features, states=states)["next_states"]
+    return states
 
 
 T = TypeVar("T")
@@ -170,6 +211,9 @@ class CasadiMLModel(CasadiModel):
         self.ml_model_dict: Dict[str, SerializedMLModel] = ml_model_dict
         self.casadi_ml_model_dict: Dict[str, CasadiPredictor] = casadi_ml_model_dict
 
+        # Register the hidden states of recurrent (multi step) models
+        self._register_rnn_states()
+
         # Register lagged variables
         lags_dict, max_lag = self._create_lags_dict()
         self.lags_dict: dict[str, int] = lags_dict
@@ -181,6 +225,7 @@ class CasadiMLModel(CasadiModel):
 
         # construct a stage function for optimization and simulation
         self.sim_step = self._make_unified_predict_function()
+        self.rnn_warmup_step_function = self._make_rnn_warmup_step_function()
 
     def _get_forbidden_variable_names(self) -> set[str]:
         return (
@@ -195,6 +240,10 @@ class CasadiMLModel(CasadiModel):
                     "lags_dict",
                     "ml_model_dict",
                     "casadi_ml_model_dict",
+                    "rnn_state_variables",
+                    "rnn_warmup_steps",
+                    "rnn_warmup_input_names",
+                    "rnn_warmup_step_function",
                 }
             )
         )
@@ -227,20 +276,41 @@ class CasadiMLModel(CasadiModel):
         self.lags_dict, self.max_lag = self._create_lags_dict()
         self._update_past_values(time)
         self.ml_model_dict, self.casadi_ml_model_dict = self.register_ml_models()
+        self._register_rnn_states()
         self.sim_step = self._make_unified_predict_function()
+        self.rnn_warmup_step_function = self._make_rnn_warmup_step_function()
         self._assert_outputs_are_defined()
+
+    @property
+    def history_lags_dict(self) -> dict[str, int]:
+        """Number of past values (the current one included) that have to be kept for
+        each variable.
+
+        These are the lags the ML-models use as inputs, plus the past values the
+        recurrent models need to warm up their hidden states.
+        """
+        lags = dict(self.lags_dict)
+        for name in self.rnn_warmup_input_names:
+            lags[name] = max(lags.get(name, 1), self.rnn_warmup_steps + 1)
+        return lags
+
+    @property
+    def history_max_lag(self) -> int:
+        """Length of the history that has to be kept, in time steps."""
+        return max(self.history_lags_dict.values(), default=1)
 
     def _update_past_values(self, time: float):
         """Generates new columns and deletes old ones in the time series data, when the
         MLModels are updated."""
-        new_columns = set(self.lags_dict)
+        history_lags = self.history_lags_dict
+        new_columns = set(history_lags)
         old_columns = set(self.past_values.columns)
 
         columns_to_remove = old_columns - new_columns
         columns_to_add = new_columns - old_columns
 
         self.past_values.drop(columns_to_remove, inplace=True)
-        index = [time - self.dt * lag for lag in range(self.max_lag)]
+        index = [time - self.dt * lag for lag in range(self.history_max_lag)]
         index.reverse()
         for col in columns_to_add:
             value = self.get(col).value
@@ -250,10 +320,11 @@ class CasadiMLModel(CasadiModel):
     def _create_past_values(self) -> pd.DataFrame:
         """Creates a collection which saves a history of the model's variables that
         are required in the lags. Must be executed after _create_lags_dict"""
-        last_values = pd.DataFrame(columns=self.lags_dict)
-        index = [-self.config.dt * lag for lag in range(self.max_lag)]
+        history_lags = self.history_lags_dict
+        last_values = pd.DataFrame(columns=history_lags)
+        index = [-self.config.dt * lag for lag in range(self.history_max_lag)]
         index.reverse()
-        values = [self.get(var_name).value for var_name in self.lags_dict]
+        values = [self.get(var_name).value for var_name in history_lags]
         for time in index:
             last_values.loc[time] = values
         return last_values
@@ -299,6 +370,8 @@ class CasadiMLModel(CasadiModel):
         """
         all_inputs = self._all_inputs()
         exclude = [v.name for v in self.differentials + self.outputs]
+        # the hidden states of recurrent models are not part of the white box model
+        exclude.extend(var.name for var in self.rnn_state_variables)
         # take the mean of start/finish values of variables that have already been
         # integrated by a discrete blackbox function
         if bb_results:
@@ -388,15 +461,152 @@ class CasadiMLModel(CasadiModel):
         }
         ml_model_dict: Dict[str, SerializedMLModel] = {}
 
+        # a model which defines multiple outputs is only translated once, so all its
+        # outputs share the same predictor object
+        predictors: Dict[tuple, CasadiPredictor] = {}
         for output in self.config.outputs + self.config.states:
             for serialized_output_names, ml_model in ml_model_sources_dict.items():
                 if output.name in serialized_output_names:
-                    output_to_ml_model[
-                        output.name
-                    ] = CasadiPredictor.from_serialized_model(ml_model)
+                    if serialized_output_names not in predictors:
+                        predictors[
+                            serialized_output_names
+                        ] = CasadiPredictor.from_serialized_model(ml_model)
+                    output_to_ml_model[output.name] = predictors[
+                        serialized_output_names
+                    ]
                     ml_model_dict[output.name] = ml_model
         casadi_ml_model_dict: Dict[str, CasadiPredictor] = output_to_ml_model
         return ml_model_dict, casadi_ml_model_dict
+
+    def _register_rnn_states(self):
+        """Creates the symbolic variables for the hidden states of all recurrent
+        (multi step) ML-models.
+
+        To keep the multiple shooting structure of the MPC, recurrent hidden states are treated
+        like any other state of the model: They are an in- and an output of the step
+        function, and the optimization backend links them over the horizon with
+        equality constraints.
+        """
+        state_variables: list[CasadiState] = []
+        states_of_predictor: dict[int, list[CasadiState]] = {}
+        recurrent_outputs: list[str] = []
+        warmup_steps: int = 0
+        warmup_input_names: list[str] = []
+        model_variable_names = {var.name for var in self.variables}
+
+        for output_name, serialized_ml_model in self.ml_model_dict.items():
+            if not isinstance(serialized_ml_model, SerializedKerasRNN):
+                continue
+            predictor: CasadiRNN = self.casadi_ml_model_dict[output_name]
+            warmup_steps = max(warmup_steps, serialized_ml_model.warmup_steps)
+            for feature_name in serialized_ml_model.rnn_inputs:
+                if feature_name not in warmup_input_names:
+                    warmup_input_names.append(feature_name)
+
+            # a model with multiple outputs shares one set of hidden states
+            if id(predictor) in states_of_predictor:
+                continue
+
+            states = []
+            for index in range(predictor.state_dimension):
+                name = rnn_state_name(output_name, index)
+                if name in model_variable_names:
+                    raise ConfigurationError(
+                        f"The name '{name}' is needed for a hidden state of the "
+                        f"recurrent model of '{output_name}', but it is already used "
+                        f"by a variable of the model. Please rename that variable."
+                    )
+                states.append(CasadiState(name=name, value=0.0, lb=-ca.inf, ub=ca.inf))
+            states_of_predictor[id(predictor)] = states
+            state_variables.extend(states)
+            recurrent_outputs.append(output_name)
+
+        self.rnn_state_variables: list[CasadiState] = state_variables
+        self._rnn_states_of_predictor = states_of_predictor
+        # one output per recurrent model, in the order in which the hidden states of
+        # the models are stacked in 'rnn_state_variables'
+        self._rnn_output_names: list[str] = recurrent_outputs
+        self.rnn_warmup_steps: int = warmup_steps
+        self.rnn_warmup_input_names: list[str] = warmup_input_names
+
+    def _rnn_states(self, output_name: str) -> list[CasadiState]:
+        """Returns the hidden state variables of the recurrent model of an output."""
+        return self._rnn_states_of_predictor[id(self.casadi_ml_model_dict[output_name])]
+
+    def _rnn_step(
+        self,
+        output_name: str,
+        feature_values: dict[str, ca.MX],
+        states: ca.MX = None,
+    ) -> tuple[ca.MX, ca.MX]:
+        """Performs a single symbolic step of a recurrent model.
+
+        Args:
+            output_name: Name of an output that is predicted by the recurrent model.
+            feature_values: The values of all model variables the recurrent model uses
+                as input, at the time step that is evaluated.
+            states: The hidden states at the evaluated time step. Defaults to the
+                symbolic hidden state variables of the model.
+
+        Returns:
+            The predictions of the model for the next time step, and the hidden states
+            of the next time step stacked into a single column vector.
+        """
+        serialized_ml_model: SerializedKerasRNN = self.ml_model_dict[output_name]
+        predictor: CasadiRNN = self.casadi_ml_model_dict[output_name]
+        if states is None:
+            states = ca.vertcat(*[var.sym for var in self._rnn_states(output_name)])
+        model_input = ca.vertcat(
+            *[feature_values[name] for name in serialized_ml_model.rnn_inputs]
+        )
+        predictions, next_states = predictor.predict(model_input, states)
+        return predictions, next_states
+
+    def _make_rnn_warmup_step_function(self) -> Optional[ca.Function]:
+        """Creates a function that performs a single warmup step of all recurrent
+        models.
+
+        The hidden states of a recurrent model are initialized with zeros
+        ``rnn_warmup_steps`` time steps in the past and rolled out recursively over
+        measured data with this function, so that they have converged when the
+        prediction horizon starts. In contrast to the step function used inside the
+        horizon, no prediction is returned, since the past values of the outputs are
+        known from measurements.
+
+        Returns:
+            A function mapping the stacked values of ``rnn_warmup_input_names`` and the
+            stacked hidden states of one time step to the stacked hidden states of the
+            next time step. None, if the model has no recurrent models.
+        """
+        if not self.rnn_state_variables:
+            return None
+
+        features = ca.MX.sym("features", len(self.rnn_warmup_input_names), 1)
+        feature_values = {
+            name: features[index]
+            for index, name in enumerate(self.rnn_warmup_input_names)
+        }
+        states = ca.MX.sym("states", len(self.rnn_state_variables), 1)
+
+        next_states = []
+        offset = 0
+        for output_name in self._rnn_output_names:
+            dimension = len(self._rnn_states(output_name))
+            _, next_state = self._rnn_step(
+                output_name,
+                feature_values,
+                states=states[offset : offset + dimension],
+            )
+            next_states.append(next_state)
+            offset += dimension
+
+        return ca.Function(
+            "rnn_warmup_step",
+            [features, states],
+            [ca.vertcat(*next_states)],
+            ["features", "states"],
+            ["next_states"],
+        )
 
     def _fill_algebraic_equations_with_bb_output(self):
         """Fills empty algebraic equations with the function defined by the
@@ -405,6 +615,13 @@ class CasadiMLModel(CasadiModel):
             # recursive features are more like an ode, they don't represent outputs
             if serialized_ml_model.output[variable_name].recursive:
                 continue
+            if isinstance(serialized_ml_model, SerializedKerasRNN):
+                raise NotImplementedError(
+                    f"The recurrent ML-model of '{variable_name}' declares a "
+                    f"non-recursive output. Recurrent models carry their memory in "
+                    f"hidden states, so their outputs have to be states of the model. "
+                    f"Please set 'recursive' to true."
+                )
             if self.get(variable_name).alg is not None:
                 raise RuntimeError("")
             inputs = ml_model_datatypes.column_order(
@@ -417,7 +634,7 @@ class CasadiMLModel(CasadiModel):
 
     def _evaluate_bb_models_symbolically(
         self, bb_inputs_mx: dict[str, ca.MX]
-    ) -> dict[str, ca.MX]:
+    ) -> tuple[dict[str, ca.MX], dict[str, ca.MX]]:
         """
         Returns the CasADi MX-Expressions that result from evaluating all black-box
         models symbolically.
@@ -430,13 +647,15 @@ class CasadiMLModel(CasadiModel):
 
         Returns:
             Two dictionaries:
-                - The first one contains all black-box outputs of the model with their
-                 respective symbolic variable.
-                - The second one contains the same outputs, with an MX-Expression that
-                 defines the evaluation of the black-box model
+                - The first one contains all recursive black-box outputs of the model
+                 with the MX-Expression that defines the evaluation of the black-box
+                 model.
+                - The second one contains the hidden states of all recurrent models at
+                 the next time step.
         """
 
         bb_result_mx: dict[str, ca.MX] = {}
+        rnn_next_states_mx: dict[str, ca.MX] = {}
         # inputs from all MLModels of the black-box model are considered
         for output_name, serialized_ml_model in self.ml_model_dict.items():
             if not serialized_ml_model.output[output_name].recursive:
@@ -444,17 +663,31 @@ class CasadiMLModel(CasadiModel):
                 # integrator for simulation, or as constraints in MPC, so we skip them
                 continue
 
-            # for every input variable of the MLModel, create a CasAdi symbolic
-            casadi_ml_model = self.casadi_ml_model_dict[output_name]
-            columns_ordered = ml_model_datatypes.column_order(
-                inputs=serialized_ml_model.input, outputs=serialized_ml_model.output
-            )
-            # todo tanja: here, we need to lookup what the user specified for the ANN as input, instead of the original mx variable
-            ca_nn_input = ca.vertcat(*[bb_inputs_mx[name] for name in columns_ordered])
+            if isinstance(serialized_ml_model, SerializedKerasRNN):
+                # recurrent models are evaluated for a single time step, their memory
+                # is passed on through the hidden states instead of lagged inputs
+                predictions, next_states = self._rnn_step(output_name, bb_inputs_mx)
+                output_index = list(serialized_ml_model.output).index(output_name)
+                result = predictions[output_index]
+                for index, state in enumerate(self._rnn_states(output_name)):
+                    rnn_next_states_mx[
+                        state.name + RNN_NEXT_STATE_SUFFIX
+                    ] = next_states[index]
+            else:
+                # for every input variable of the MLModel, create a CasAdi symbolic
+                casadi_ml_model = self.casadi_ml_model_dict[output_name]
+                columns_ordered = ml_model_datatypes.column_order(
+                    inputs=serialized_ml_model.input, outputs=serialized_ml_model.output
+                )
+                # todo tanja: here, we need to lookup what the user specified for the ANN as input, instead of the original mx variable
+                ca_nn_input = ca.vertcat(
+                    *[bb_inputs_mx[name] for name in columns_ordered]
+                )
 
-            # predict the result with current MLModel and add the result to the stage function
-            output_index = list(serialized_ml_model.output).index(output_name)
-            result = casadi_ml_model.predict(ca_nn_input)[output_index]
+                # predict the result with current MLModel and add the result to the stage function
+                output_index = list(serialized_ml_model.output).index(output_name)
+                result = casadi_ml_model.predict(ca_nn_input)[output_index]
+
             if (
                 serialized_ml_model.output[output_name].output_type
                 == OutputType.difference
@@ -462,7 +695,7 @@ class CasadiMLModel(CasadiModel):
                 result = result + bb_inputs_mx[output_name][0]
 
             bb_result_mx[output_name] = result
-        return bb_result_mx
+        return bb_result_mx, rnn_next_states_mx
 
     def make_predict_function_for_mpc(self) -> ca.Function:
         """Creates a prediction step function which is suitable for MPC with multiple
@@ -491,6 +724,9 @@ class CasadiMLModel(CasadiModel):
         their corresponding symbolic CasADi-variable."""
         all_variables = {var.name: var.sym for var in self.variables}
         all_variables.update(self._black_box_inputs())
+        # the hidden states of recurrent models are no variables of the model config,
+        # but they have to be supplied to the step function
+        all_variables.update({var.name: var.sym for var in self.rnn_state_variables})
         return all_variables
 
     def _make_unified_predict_function(
@@ -516,7 +752,9 @@ class CasadiMLModel(CasadiModel):
         bb_inputs = self._black_box_inputs()
         all_variables = self._all_inputs()
         # evaluate the black box models
-        bb_result_mx = self._evaluate_bb_models_symbolically(bb_inputs)
+        bb_result_mx, rnn_next_states_mx = self._evaluate_bb_models_symbolically(
+            bb_inputs
+        )
         wb_inputs = self._fixed_during_integration(bb_result_mx)
 
         # prepare functions that order the integrator inputs and outputs when supplied
@@ -570,9 +808,13 @@ class CasadiMLModel(CasadiModel):
             list(all_variables.values()) + [self.time],
             list(x_names.values())
             + list(z_names.values())
-            + list(bb_result_mx.values()),
+            + list(bb_result_mx.values())
+            + list(rnn_next_states_mx.values()),
             list(all_variables) + ["__time"],
-            list(x_names) + list(z_names) + list(bb_result_mx),
+            list(x_names)
+            + list(z_names)
+            + list(bb_result_mx)
+            + list(rnn_next_states_mx),
             opts,
         )
 
@@ -594,11 +836,50 @@ class CasadiMLModel(CasadiModel):
             var.name: var.value for var in self.variables if var.value is not None
         }
         full_input.update(ml_model_input)
+        full_input.update(self.get_rnn_state_values(t_start))
 
         result = self.sim_step(**full_input)
         end_time = t_start + self.dt
         for var_name, value in result.items():
+            if var_name.endswith(RNN_NEXT_STATE_SUFFIX):
+                # the hidden states are recomputed from the past at every step, so
+                # they don't have to be stored
+                continue
             self.set_with_timestamp(var_name, value, end_time)
+
+    def get_rnn_state_values(self, time: float) -> dict[str, float]:
+        """Determines the hidden states of all recurrent models at the given time.
+
+        The states are initialized with zeros ``rnn_warmup_steps`` time steps in the
+        past and rolled out over the recorded past values of the model inputs.
+
+        Args:
+            time: The time for which the hidden states are determined.
+        """
+        if not self.rnn_state_variables:
+            return {}
+        grid = self.rnn_warmup_grid
+        trajectories = {
+            name: sample(self.past_values[name].dropna(), grid=grid, current=time)
+            for name in (self.rnn_warmup_input_names if grid else ())
+        }
+        states = warm_up_rnn_states(
+            self.rnn_warmup_step_function,
+            trajectories=trajectories,
+            input_names=self.rnn_warmup_input_names,
+            steps=self.rnn_warmup_steps,
+            dimension=len(self.rnn_state_variables),
+        )
+        return {
+            var.name: float(states[index])
+            for index, var in enumerate(self.rnn_state_variables)
+        }
+
+    @property
+    def rnn_warmup_grid(self) -> list[float]:
+        """Times relative to the start of the horizon at which the model inputs are
+        needed to warm up the hidden states."""
+        return [-self.dt * lag for lag in range(self.rnn_warmup_steps, 0, -1)]
 
     def get_ml_model_values(self, time: float):
         """

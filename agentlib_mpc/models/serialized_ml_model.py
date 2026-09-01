@@ -9,7 +9,7 @@ from copy import deepcopy
 from keras import Sequential
 from keras.src import Functional
 from pathlib import Path
-from pydantic import ConfigDict, Field, BaseModel
+from pydantic import ConfigDict, Field, BaseModel, model_validator
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import ConstantKernel, WhiteKernel, RBF
 from sklearn.linear_model import LinearRegression
@@ -25,6 +25,7 @@ class MLModels(str, Enum):
     GPR = "GPR"
     LINREG = "LinReg"
     KerasANN = "KerasANN"
+    KerasRNN = "KerasRNN"
 
 
 class SerializedMLModel(BaseModel, abc.ABC):
@@ -709,9 +710,133 @@ class SerializedKerasANN(SerializedMLModel):
         return ann
 
 
+class SerializedKerasRNN(SerializedMLModel):
+    """
+    Allows using a saved multi step Keras model (SimpleRNN / LSTM / GRU) in
+    agentlib_mpc.
+
+    Only the recurrent cell of the trained model is translated to CasADi and
+    evaluated one step at a time, with the hidden states appearing as additional
+    optimization variables that are linked by multiple shooting constraints.
+
+    The hidden states are initialized with zeros ``warmup_steps`` time steps before the
+    start of the prediction horizon and are then rolled out recursively over the
+    measured past.
+    The lags of all input features are therefore raised to at least
+    ``warmup_steps + 1``, which makes the MPC module collect the required history.
+
+    attributes:
+        model_path: Path to the saved Keras model.
+        warmup_steps: Number of recursive steps over past data used to initialize the
+            hidden states.
+        rnn_inputs: Names of the features in the order the recurrent model expects
+            them.
+        step_model: Name of the part of the model performing a single recurrent step.
+    """
+
+    model_path: Path = Field(
+        default=None, description="Path, where the Keras model is saved."
+    )
+    warmup_steps: int = Field(
+        default=0,
+        ge=0,
+        description="Number of time steps before the start of the prediction horizon, "
+        "at which the hidden states are initialized with zeros. From there, the model "
+        "is applied recursively on measured data to arrive at the hidden states of the "
+        "first stage of the prediction horizon. Should be at least as large as the "
+        "warmup width the model was trained with. The warmup runs on measured data "
+        "only, so it does not add variables to the optimization problem, but the MPC "
+        "has to collect this many past values of every input.",
+    )
+    rnn_inputs: list[str] = Field(
+        default=None,
+        description="Names of the features in the order the recurrent model expects "
+        "them. Defaults to the order of 'input'.",
+    )
+    step_model: Optional[str] = Field(
+        default=None,
+        description="Name of the part of the saved model which performs a single "
+        "recurrent step, i.e. which maps [sequence, *states] to [prediction, *states]. "
+        "Only needed if the saved model contains more than one model with that "
+        "signature, otherwise it is identified automatically.",
+    )
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_type: MLModels = MLModels.KerasRNN
+
+    @model_validator(mode="after")
+    def check_features(self):
+        """Fills the default input order and checks the declared features."""
+        if self.rnn_inputs is None:
+            self.rnn_inputs = list(self.input)
+        unknown = set(self.rnn_inputs) - set(self.input) - set(self.output)
+        if unknown:
+            raise ValueError(
+                f"The 'rnn_inputs' of the recurrent model contain features which are "
+                f"neither declared in 'input' nor in 'output': {sorted(unknown)}"
+            )
+
+        # a recurrent model only sees the current time step, its memory of the past is
+        # held in the hidden states. The past values needed to warm those up are
+        # tracked separately from the lags, since they are not inputs of the model.
+        lagged = [
+            name
+            for name in self.rnn_inputs
+            if (self.input.get(name) or self.output[name]).lag != 1
+        ]
+        if lagged:
+            raise ValueError(
+                f"The inputs of a recurrent model are only used at the current time "
+                f"step, so they must have a lag of 1. Set 'warmup_steps' to control "
+                f"how far the hidden states are warmed up on past data instead. "
+                f"Features with a different lag: {sorted(lagged)}"
+            )
+        return self
+
+    @classmethod
+    def serialize(
+        cls,
+        model: Union[Sequential, Functional],
+        dt: Union[float, int],
+        input: dict[str, Feature],
+        output: dict[str, OutputFeature],
+        training_info: Optional[dict] = None,
+        warmup_steps: int = 0,
+        rnn_inputs: Optional[list[str]] = None,
+        step_model: Optional[str] = None,
+    ):
+        """Saves the Keras model and returns a SerializedKerasRNN object"""
+
+        try:
+            model_path = model.save_path
+        except AttributeError:
+            model_path = Path("stored_models/model.keras")  # default value
+
+        directory = Path(model_path).parent
+        directory.mkdir(parents=True, exist_ok=True)
+        model.save(model_path)
+
+        return cls(
+            model_path=model_path,
+            dt=dt,
+            input=input,
+            output=output,
+            training_info=training_info,
+            warmup_steps=warmup_steps,
+            rnn_inputs=rnn_inputs,
+            step_model=step_model,
+        )
+
+    def deserialize(self) -> Union[Sequential, Functional]:
+        """Loads the Keras model this object points to."""
+        import keras
+
+        return keras.saving.load_model(self.model_path)
+
+
 serialized_models = {
     MLModels.ANN: SerializedANN,
     MLModels.GPR: SerializedGPR,
     MLModels.LINREG: SerializedLinReg,
     MLModels.KerasANN: SerializedKerasANN,
+    MLModels.KerasRNN: SerializedKerasRNN,
 }

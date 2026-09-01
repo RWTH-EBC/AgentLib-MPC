@@ -468,6 +468,8 @@ class Discretization(abc.ABC):
 
             if not names_list:
                 continue
+            if not sys_vars.include_in_results:
+                continue
 
             grid = self.grid(sys_vars)
             iterator = [("var", "variable"), ("ub", "upper"), ("lb", "lower")]

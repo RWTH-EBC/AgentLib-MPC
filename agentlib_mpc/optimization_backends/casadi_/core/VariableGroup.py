@@ -35,6 +35,7 @@ class OptimizationVariable(OptimizationQuantity):
     output_map: ca.Function  # get mpc outputs
     use_in_stage_function: bool
     binary: bool
+    include_in_results: bool = True
 
     @classmethod
     def declare(
@@ -45,6 +46,7 @@ class OptimizationVariable(OptimizationQuantity):
         use_in_stage_function: bool = True,
         assert_complete: bool = False,
         binary: bool = False,
+        include_in_results: bool = True,
     ) -> OptimizationVariable:
         """
         Declares a group of optimization variables that serve a purpose in
@@ -69,6 +71,9 @@ class OptimizationVariable(OptimizationQuantity):
                 discretization function.
             assert_complete: If True, throws an error if the ref_list does
                 not contain all variables.
+            include_in_results: If False, the variables are not added to the results
+                of the optimization. Useful for internal variables, which would only
+                blow up the result files.
         """
         full_symbolic = []
         full_names = []
@@ -134,6 +139,7 @@ class OptimizationVariable(OptimizationQuantity):
             input_map=input_mapping,
             output_map=output_mapping,
             binary=binary,
+            include_in_results=include_in_results,
         )
 
     def __hash__(self):

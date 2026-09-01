@@ -1,6 +1,7 @@
 from pathlib import Path
 import pytest
 from agentlib_mpc.machine_learning_plugins.physXAI.model_config_creation import physXAI_2_agentlib_json
+from agentlib_mpc.models.serialized_ml_model import SerializedKerasRNN, SerializedMLModel
 
 
 def test_physXAI_2_agentlib_json(monkeypatch):
@@ -197,3 +198,95 @@ def test_physXAI_2_agentlib_json(monkeypatch):
         physXAI_2_agentlib_json('08', source_8_error_lag_order)
 
     physXAI_2_agentlib_json('01', source_1_linreg, model_type='LinReg')
+
+
+def multi_step_source(**overrides) -> dict:
+    """Preprocessing config physXAI writes for a multi step (recurrent) model."""
+    source = {
+        "__class_name__": "PreprocessingMultiStep",
+        "inputs": [
+            "TDryBul",
+            "HDirNor",
+            "QTabs_set",
+        ],
+        "output": ["T_room"],
+        "label_width": 48,
+        "warmup_width": 24,
+        "init_features": ["T_room"],
+        "warmup_columns_input": [],
+        "warmup_columns_labels": ["T_room"],
+        "overlapping_sequences": True,
+        "batch_size": 32,
+        "time_step": 900,
+        "shift": 1,
+        "test_size": 0.15,
+        "val_size": 0.15,
+        "random_state": 42,
+    }
+    source.update(overrides)
+    return source
+
+
+def test_physXAI_multi_step_2_agentlib_json():
+    """A multi step config becomes a 'KerasRNN' config without lags."""
+    config = physXAI_2_agentlib_json(
+        "01",
+        multi_step_source(),
+        model_dict={"__class_name__": "RNNModel", "rnn_units": 32, "rnn_layer": "LSTM"},
+    )
+
+    assert config["model_type"] == "KerasRNN"
+    assert config["dt"] == 900
+    assert config["model_path"].endswith(".keras")
+    # the warmup replaces the lags, the model itself only sees the current time step
+    assert config["warmup_steps"] == 24
+    assert config["rnn_inputs"] == ["TDryBul", "HDirNor", "QTabs_set"]
+    assert all(feature["lag"] == 1 for feature in config["input"].values())
+    assert config["output"] == {
+        "T_room": {
+            "name": "T_room",
+            "lag": 1,
+            "output_type": "absolute",
+            "recursive": True,
+        }
+    }
+
+    # the result has to be loadable by agentlib_mpc
+    serialized = SerializedMLModel.load_serialized_model(config)
+    assert isinstance(serialized, SerializedKerasRNN)
+    assert serialized.rnn_inputs == config["rnn_inputs"]
+
+
+def test_physXAI_multi_step_options():
+    """Difference outputs, autoregressive inputs and an explicit warmup."""
+    config = physXAI_2_agentlib_json(
+        "01",
+        multi_step_source(
+            inputs=["TDryBul", "QTabs_set", "T_room"], output=["Change(T_room)"]
+        ),
+        warmup_steps=96,
+    )
+
+    assert config["warmup_steps"] == 96
+    # a feature that is also the output stays in the input order of the model, but is
+    # only declared once, as an output
+    assert config["rnn_inputs"] == ["TDryBul", "QTabs_set", "T_room"]
+    assert list(config["input"]) == ["TDryBul", "QTabs_set"]
+    assert config["output"]["T_room"]["output_type"] == "difference"
+
+    serialized = SerializedMLModel.load_serialized_model(config)
+    assert serialized.rnn_inputs == ["TDryBul", "QTabs_set", "T_room"]
+
+
+def test_physXAI_multi_step_errors():
+    """Lagged inputs cannot be expressed by a recurrent model."""
+    with pytest.raises(ValueError, match="lagged inputs"):
+        physXAI_2_agentlib_json(
+            "01", multi_step_source(inputs=["TDryBul", "TDryBul_lag1", "QTabs_set"])
+        )
+
+    with pytest.raises(ValueError, match="Shift"):
+        physXAI_2_agentlib_json("01", multi_step_source(shift=2))
+
+    with pytest.raises(ValueError, match="non empty list"):
+        physXAI_2_agentlib_json("01", multi_step_source(output=[]))

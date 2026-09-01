@@ -1,6 +1,8 @@
 import casadi as ca
-from typing import Dict
+from typing import Dict, Optional
 import collections
+
+from agentlib.core.errors import ConfigurationError
 
 from agentlib_mpc.data_structures.casadi_utils import (
     LB_PREFIX,
@@ -11,9 +13,15 @@ from agentlib_mpc.data_structures.casadi_utils import (
 )
 from agentlib_mpc.data_structures.ml_model_datatypes import name_with_lag
 from agentlib_mpc.data_structures.mpc_datamodels import (
+    MPCVariable,
     VariableReference,
 )
-from agentlib_mpc.models.casadi_ml_model import CasadiMLModel
+from agentlib_mpc.models.casadi_ml_model import (
+    CasadiMLModel,
+    RNN_NEXT_STATE_SUFFIX,
+    warm_up_rnn_states,
+)
+from agentlib_mpc.utils import sampling
 from agentlib_mpc.optimization_backends.casadi_.core.VariableGroup import (
     OptimizationQuantity,
     OptimizationVariable,
@@ -33,6 +41,19 @@ class CasadiMLSystem(FullSystem):
     model: CasadiMLModel
     lags_dict: dict[str, int]
     sim_step: ca.Function
+
+    # hidden states of recurrent (multi step) ML-models. Stays None for systems which
+    # do not support recurrent models.
+    rnn_states: Optional[OptimizationVariable] = None
+    initial_rnn_states: Optional[OptimizationParameter] = None
+    rnn_warmup_steps: int = 0
+    rnn_warmup_input_names: list[str] = ()
+    rnn_warmup_step: Optional[ca.Function] = None
+
+    @property
+    def has_rnn_states(self) -> bool:
+        """Whether any of the ML-models of this system is a recurrent model."""
+        return self.rnn_states is not None and self.rnn_states.dim > 0
 
     def initialize(self, model: CasadiMLModel, var_ref: VariableReference):
         # define variables
@@ -90,6 +111,29 @@ class CasadiMLSystem(FullSystem):
             lb=ca.vertcat(*[c.lb for c in model.get_constraints()]),
             ub=ca.vertcat(*[c.ub for c in model.get_constraints()]),
         )
+        if model.rnn_state_variables:
+            # the hidden states of recurrent models are internal to the ML-model, so
+            # they are not part of the results. The quantity is only declared if there
+            # are recurrent models, since an empty group would be treated as a regular
+            # (but never discretized) system variable.
+            self.rnn_states = OptimizationVariable.declare(
+                denotation="rnn_state",
+                variables=model.rnn_state_variables,
+                ref_list=[],
+                include_in_results=False,
+            )
+            # the hidden states at the start of the horizon follow from measured
+            # data alone, so they enter the optimization problem as a parameter
+            self.initial_rnn_states = OptimizationParameter.declare(
+                denotation="initial_rnn_state",
+                variables=model.rnn_state_variables,
+                ref_list=[],
+                use_in_stage_function=False,
+            )
+            self.rnn_warmup_steps = model.rnn_warmup_steps
+            self.rnn_warmup_input_names = model.rnn_warmup_input_names
+            self.rnn_warmup_step = model.rnn_warmup_step_function
+
         self.sim_step = model.make_predict_function_for_mpc()
         self.lags_dict: dict[str, int] = model.lags_dict
         self.lags_mx_store = model.lags_mx_store
@@ -173,6 +217,11 @@ class MultipleShooting_ML(MultipleShooting):
         self.pred_time += ts
         mx_dict[self.pred_time] = {sys.states.name: self.add_opt_var(sys.states)}
 
+        # hidden states of recurrent models over the whole grid, including the
+        # warmup in the past
+        if sys.has_rnn_states:
+            self._discretize_rnn_states(sys, mx_dict)
+
         all_quantities = sys.all_system_quantities()
         # add constraints and create the objective function for all stages
         for time in prediction_grid:
@@ -200,6 +249,8 @@ class MultipleShooting_ML(MultipleShooting):
                 sys.model_parameters.name: const_par,
                 "__time": time,
             }
+            if sys.has_rnn_states:
+                stage_arguments[sys.rnn_states.name] = stage_mx[sys.rnn_states.name]
 
             # collect stage arguments for lagged variables
             for lag, denotation_dict in self._lagged_input_names.items():
@@ -224,7 +275,41 @@ class MultipleShooting_ML(MultipleShooting):
             self.add_constraint(
                 stage_result["next_states"] - mx_dict[time + ts][sys.states.name]
             )
+            if sys.has_rnn_states:
+                self.add_constraint(
+                    stage_result["next_rnn_states"]
+                    - mx_dict[time + ts][sys.rnn_states.name]
+                )
             self.objective_function += stage_result["cost_function"] * ts
+
+    def _discretize_rnn_states(
+        self, sys: CasadiMLSystem, mx_dict: dict[float, dict[str, ca.MX]]
+    ):
+        """Adds the hidden states of all recurrent ML-models to the optimization
+        problem.
+
+        The hidden states are treated like any other state: they are optimization variables at every
+        point of the grid and are linked by multiple shooting constraints. 
+
+        The hidden states at the start of the horizon are warmed up numerically by the backend and enter as a parameter, which
+        keeps the warmup out of the optimization problem entirely.
+        """
+        n = self.options.prediction_horizon
+        ts = self.options.time_step
+
+        self.pred_time = 0
+        initial_states = self.add_opt_par(sys.initial_rnn_states)
+        mx_dict[0][sys.rnn_states.name] = self.add_opt_var(
+            sys.rnn_states,
+            lb=initial_states,
+            ub=initial_states,
+            guess=initial_states,
+        )
+        for step in range(1, n + 1):
+            self.pred_time = ts * step
+            mx_dict.setdefault(self.pred_time, {})[
+                sys.rnn_states.name
+            ] = self.add_opt_var(sys.rnn_states)
 
     def initialize(self, system: CasadiMLSystem, solver_factory: SolverFactory):
         """Initializes the trajectory optimization problem, creating all symbolic
@@ -329,6 +414,14 @@ class MultipleShooting_ML(MultipleShooting):
             *constraint_ub_denotations,
         ]
 
+        if system.has_rnn_states:
+            rnn_state_output_it = (
+                all_outputs[name + RNN_NEXT_STATE_SUFFIX]
+                for name in system.rnn_states.full_names
+            )
+            outputs.append(ca.vertcat(*rnn_state_output_it))
+            output_denotations.append("next_rnn_states")
+
         # function describing system dynamics and cost function
         self._stage_function = ca.Function(
             "f",
@@ -381,17 +474,62 @@ class CasADiBBBackend(CasADiBaseBackend):
     system_type = CasadiMLSystem
     discretization_types = {DiscretizationMethod.multiple_shooting: MultipleShooting_ML}
     system: CasadiMLSystem
+    model: CasadiMLModel
     # a dictionary of collections of the variable lags
     lag_collection: Dict[str, collections.deque] = {}
     max_lag: int
 
     def get_lags_per_variable(self) -> dict[str, float]:
-        """Returns the name of variables which include lags and their lag. The MPC
-        module can use this information to save relevant past data of lagged
-        variables"""
+        """Returns the name of variables whose past values are needed and how far the
+        past has to reach. The MPC module uses this information to save the relevant
+        past data. Next to the lags of the ML-models, this covers the past values that
+        recurrent models need to warm up their hidden states."""
         ts = self.config.discretization_options.time_step
         return {
             name: (lag - 1) * ts
-            for name, lag in self.system.lags_dict.items()
+            for name, lag in self.model.history_lags_dict.items()
             if name in self.var_ref
         }
+
+    def _get_current_mpc_inputs(
+        self, agent_variables: dict[str, MPCVariable], now: float
+    ) -> dict[str, ca.DM]:
+        mpc_inputs = super()._get_current_mpc_inputs(
+            agent_variables=agent_variables, now=now
+        )
+        if self.system.has_rnn_states:
+            mpc_inputs[self.system.initial_rnn_states.name] = self._warm_up_rnn_states(
+                agent_variables=agent_variables, now=now
+            )
+        return mpc_inputs
+
+    def _warm_up_rnn_states(
+        self, agent_variables: dict[str, MPCVariable], now: float
+    ) -> ca.DM:
+        """Determines the hidden states of the recurrent ML-models at the start of the
+        prediction horizon from the measured past."""
+        ts = self.config.discretization_options.time_step
+        grid = [-ts * lag for lag in range(self.system.rnn_warmup_steps, 0, -1)]
+
+        trajectories = {}
+        for name in self.system.rnn_warmup_input_names if grid else ():
+            variable = agent_variables[name]
+            if variable.value is None:
+                raise ValueError(
+                    f"Input for variable {name} is empty. It is needed to warm up the "
+                    f"hidden states of a recurrent ML-model."
+                )
+            trajectories[name] = sampling.sample(
+                trajectory=variable.value,
+                grid=grid,
+                current=now,
+                method=getattr(variable, "interpolation_method", "linear"),
+            )
+
+        return warm_up_rnn_states(
+            self.system.rnn_warmup_step,
+            trajectories=trajectories,
+            input_names=self.system.rnn_warmup_input_names,
+            steps=self.system.rnn_warmup_steps,
+            dimension=self.system.rnn_states.dim,
+        )

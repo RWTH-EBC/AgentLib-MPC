@@ -2,6 +2,7 @@ import logging
 from typing import Union
 
 import casadi as ca
+from agentlib.core.errors import ConfigurationError
 
 from agentlib_mpc.models.casadi_model import CasadiInput, CasadiParameter
 from agentlib_mpc.data_structures.casadi_utils import (
@@ -45,6 +46,12 @@ class CasadiADMMNNSystem(CasadiADMMSystem, CasadiMLSystem):
     def initialize(
         self, model: CasadiMLModel, var_ref: admm_datatypes.VariableReference
     ):
+        if model.rnn_state_variables:
+            raise ConfigurationError(
+                "Recurrent (multi step) ML-models are currently only supported by the "
+                "'casadi_ml' backend, not by the distributed one."
+            )
+
         # define variables
         self.states = OptimizationVariable.declare(
             denotation="state",

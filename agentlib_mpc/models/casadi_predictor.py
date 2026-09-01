@@ -1,20 +1,22 @@
 import abc
+import itertools
 from abc import abstractmethod
 import casadi as ca
 import numpy as np
+from agentlib.core.errors import ConfigurationError
 
 from enum import Enum
 from keras import layers
 from keras.src import Functional
 from keras import Sequential
-from typing import Union, TYPE_CHECKING
+from typing import Iterator, Optional, Union, TYPE_CHECKING
 
 from agentlib_mpc.models.serialized_ml_model import (
     SerializedMLModel,
     SerializedLinReg,
     SerializedGPR,
     SerializedANN,
-    MLModels, SerializedKerasANN,
+    MLModels, SerializedKerasANN, SerializedKerasRNN,
 )
 
 if TYPE_CHECKING:
@@ -212,6 +214,9 @@ class ANNLayerTypes(str, Enum):
     AVERAGE = "average"
     RESCALING = "rescaling"
     RBF = 'rbf'
+    LSTM = "lstm"
+    GRU = "gru"
+    SIMPLERNN = "simple_rnn"
 
 
 class Layer(abc.ABC):
@@ -491,8 +496,10 @@ class Rescaling(Layer):
 
     def __init__(self, layer: layers.Rescaling):
         super(Rescaling, self).__init__(layer)
-        self.offset = layer.offset
-        self.scale = layer.scale
+        # scale and offset can be keras tensors, e.g. when they are derived from the
+        # training data, so they are converted to numpy for the use with CasADi
+        self.offset = np.asarray(layer.offset, dtype=float)
+        self.scale = np.asarray(layer.scale, dtype=float)
 
     def forward(self, input):
         f = input * self.scale + self.offset
@@ -536,22 +543,237 @@ class RBF(Layer):
         return phi.T
 
 
-class FunctionalWrapper:
+class RecurrentLayer(Layer, abc.ABC):
+    """
+    Base class for recurrent layers.
+
+    Recurrent layers are translated cell-wise, i.e. the forward pass unrolls the input
+    sequence and applies ``step`` once per row of the input. The same implementation
+    can therefore be used for a full sequence (as during training) and for a single
+    time step, which is what multiple shooting in the MPC needs.
+
+    The forward pass always returns a tuple ``(output, *states)``.
+    """
+
+    def __init__(self, layer: layers.Layer):
+        super().__init__(layer)
+        self.units: int = self.config["units"]
+        self.activation = self.get_activation(self.config["activation"])
+        self.return_sequences: bool = self.config.get("return_sequences", False)
+        for unsupported in ("go_backwards", "stateful", "unroll"):
+            if self.config.get(unsupported):
+                raise NotImplementedError(
+                    f'Recurrent layer "{self.name}" was configured with '
+                    f"'{unsupported}=True', which is not supported in CasADi."
+                )
+
+    @property
+    @abstractmethod
+    def number_of_states(self) -> int:
+        """Number of state tensors the layer carries between two time steps."""
+
+    @abstractmethod
+    def step(self, x_t, *states):
+        """Performs a single time step and returns the new states. Following keras,
+        the first state is the layer output (h) by convention."""
+
+    def forward(self, x, *states):
+        if not states:
+            states = tuple(
+                np.zeros((1, self.units)) for _ in range(self.number_of_states)
+            )
+        if len(states) != self.number_of_states:
+            raise ValueError(
+                f'Recurrent layer "{self.name}" expects {self.number_of_states} '
+                f"initial states, but got {len(states)}."
+            )
+
+        outputs = []
+        for n in range(x.shape[0]):
+            states = self.step(x[n, :], *states)
+            outputs.append(states[0])
+
+        if self.return_sequences:
+            output = ca.vertcat(*outputs)
+        else:
+            output = states[0]
+        return (output, *states)
+
+
+class SimpleRNN(RecurrentLayer):
+    """Fully connected recurrent unit."""
+
+    def __init__(self, layer: layers.SimpleRNN):
+        super().__init__(layer)
+        weights = layer.get_weights()
+        self.W = weights[0]
+        self.W_rec = weights[1]
+        if len(weights) >= 3:
+            self.b = weights[2].reshape(1, -1)
+        else:
+            self.b = np.zeros((1, self.units))
+
+    @property
+    def number_of_states(self) -> int:
+        return 1
+
+    def step(self, x_t, h_prev):
+        h = self.activation(x_t @ self.W + self.b + h_prev @ self.W_rec)
+        return (h,)
+
+
+class LSTM(RecurrentLayer):
+    """Long short term memory cell."""
+
+    def __init__(self, layer: layers.LSTM):
+        super().__init__(layer)
+        self.recurrent_activation = self.get_activation(
+            self.config["recurrent_activation"]
+        )
+
+        weights = layer.get_weights()
+        kernel = weights[0]
+        recurrent_kernel = weights[1]
+        if len(weights) >= 3:
+            bias = weights[2]
+        else:
+            bias = np.zeros(self.units * 4)
+
+        u = self.units
+        # keras stores the gates in the order input, forget, cell, output
+        self.W_i, self.W_f, self.W_c, self.W_o = (
+            kernel[:, :u],
+            kernel[:, u : u * 2],
+            kernel[:, u * 2 : u * 3],
+            kernel[:, u * 3 :],
+        )
+        self.U_i, self.U_f, self.U_c, self.U_o = (
+            recurrent_kernel[:, :u],
+            recurrent_kernel[:, u : u * 2],
+            recurrent_kernel[:, u * 2 : u * 3],
+            recurrent_kernel[:, u * 3 :],
+        )
+        self.b_i, self.b_f, self.b_c, self.b_o = (
+            bias[:u].reshape(1, -1),
+            bias[u : u * 2].reshape(1, -1),
+            bias[u * 2 : u * 3].reshape(1, -1),
+            bias[u * 3 :].reshape(1, -1),
+        )
+
+    @property
+    def number_of_states(self) -> int:
+        return 2
+
+    def step(self, x_t, h_prev, c_prev):
+        i_t = self.recurrent_activation(x_t @ self.W_i + h_prev @ self.U_i + self.b_i)
+        f_t = self.recurrent_activation(x_t @ self.W_f + h_prev @ self.U_f + self.b_f)
+        o_t = self.recurrent_activation(x_t @ self.W_o + h_prev @ self.U_o + self.b_o)
+        c_hat = self.activation(x_t @ self.W_c + h_prev @ self.U_c + self.b_c)
+
+        c_next = f_t * c_prev + i_t * c_hat
+        h_next = o_t * self.activation(c_next)
+        return h_next, c_next
+
+
+class GRU(RecurrentLayer):
+    """Gated recurrent unit."""
+
+    def __init__(self, layer: layers.GRU):
+        super().__init__(layer)
+        self.recurrent_activation = self.get_activation(
+            self.config["recurrent_activation"]
+        )
+        self.reset_after: bool = self.config.get("reset_after", True)
+
+        weights = layer.get_weights()
+        kernel = weights[0]
+        recurrent_kernel = weights[1]
+
+        u = self.units
+        # keras stores the gates in the order update (z), reset (r), candidate (h)
+        self.W_z, self.W_r, self.W_h = (
+            kernel[:, :u],
+            kernel[:, u : u * 2],
+            kernel[:, u * 2 :],
+        )
+        self.U_z, self.U_r, self.U_h = (
+            recurrent_kernel[:, :u],
+            recurrent_kernel[:, u : u * 2],
+            recurrent_kernel[:, u * 2 :],
+        )
+
+        if len(weights) >= 3:
+            bias = weights[2]
+        elif self.reset_after:
+            bias = np.zeros((2, u * 3))
+        else:
+            bias = np.zeros(u * 3)
+
+        if self.reset_after:
+            # with reset_after, keras keeps separate input and recurrent biases
+            input_bias, recurrent_bias = bias[0], bias[1]
+            self.br_z, self.br_r, self.br_h = (
+                recurrent_bias[:u].reshape(1, -1),
+                recurrent_bias[u : u * 2].reshape(1, -1),
+                recurrent_bias[u * 2 :].reshape(1, -1),
+            )
+        else:
+            input_bias = bias
+            self.br_z = self.br_r = self.br_h = np.zeros((1, u))
+        self.b_z, self.b_r, self.b_h = (
+            input_bias[:u].reshape(1, -1),
+            input_bias[u : u * 2].reshape(1, -1),
+            input_bias[u * 2 :].reshape(1, -1),
+        )
+
+    @property
+    def number_of_states(self) -> int:
+        return 1
+
+    def step(self, x_t, h_prev):
+        z = self.recurrent_activation(
+            x_t @ self.W_z + self.b_z + h_prev @ self.U_z + self.br_z
+        )
+        r = self.recurrent_activation(
+            x_t @ self.W_r + self.b_r + h_prev @ self.U_r + self.br_r
+        )
+
+        if self.reset_after:
+            # the reset gate is applied after the matrix multiplication
+            recurrent_h = r * (h_prev @ self.U_h + self.br_h)
+        else:
+            recurrent_h = (r * h_prev) @ self.U_h
+        h_hat = self.activation(x_t @ self.W_h + self.b_h + recurrent_h)
+
+        h = z * h_prev + (1 - z) * h_hat
+        return (h,)
+
+
+class _ModelWrapper:
+    """Base class for nested keras models which are used as a layer."""
+
+    functional: ca.Function
+
+    def forward(self, *input):
+        result = self.functional(*input)
+        # a casadi function with a single output returns the MX directly, whereas
+        # multiple outputs are returned as a list. Nested models with multiple outputs
+        # are accessed through their tensor_index, so they have to stay a tuple.
+        if isinstance(result, (list, tuple)):
+            return tuple(result)
+        return result
+
+
+class FunctionalWrapper(_ModelWrapper):
 
     def __init__(self, functional: Functional):
         self.functional = CasadiANN.build_prediction_function_functionalAPI(functional)
 
-    def forward(self, input):
-        return self.functional(input)
-    
 
-class SequentialWrapper:
+class SequentialWrapper(_ModelWrapper):
 
     def __init__(self, sequential: Sequential):
         self.functional = CasadiANN.build_prediction_function_sequential(sequential)
-
-    def forward(self, input):
-        return self.functional(input)
 
 
 class CasadiANN(CasadiPredictor):
@@ -665,8 +887,13 @@ class CasadiANN(CasadiPredictor):
             fnodes[layer.get_config()['name']] = connections
 
         # Order Nodes
-        outputs = predictor_model.output_names
-        assert len(outputs) == 1, f"Error: Current version only supports Keras Models with one output"
+        # the keras history is used instead of 'output_names', because models with
+        # multiple outputs (e.g. a recurrent model returning its states) can have the
+        # same layer name multiple times in 'output_names'
+        outputs = [
+            (it._keras_history.operation.name, it._keras_history.node_index)
+            for it in predictor_model.outputs
+        ]
         ordering = []
         visited_notes = []
 
@@ -679,8 +906,9 @@ class CasadiANN(CasadiPredictor):
             visited_notes.append((name, depth))
             ordering.append((name, depth))
 
-        for output in outputs:
-            recursive_search(output, len(fnodes[output]) - 1)
+        for output_name, output_depth in outputs:
+            if (output_name, output_depth) not in visited_notes:
+                recursive_search(output_name, output_depth)
 
         # Update Forward
         for name, depth in ordering:
@@ -704,7 +932,10 @@ class CasadiANN(CasadiPredictor):
                     output = flayers[name].forward(input)
                 fmx[name, depth] = output
 
-        _input = [fmx[inp.name, 0] for inp in predictor_model.inputs]
+        _input = [
+            fmx[inp._keras_history.operation.name, 0]
+            for inp in predictor_model.inputs
+        ]
         prediction = []
         for it in predictor_model.outputs:
             keras_history = it._keras_history
@@ -717,6 +948,251 @@ class CasadiANN(CasadiPredictor):
             prediction.append(mx_var)
 
         return ca.Function("forward", _input, prediction)
+
+
+class CasadiRNN(CasadiPredictor):
+    """
+    Translates a trained multi step keras model (SimpleRNN / LSTM / GRU) into a
+    single step CasADi function.
+
+   	Only the recurrent cell of the model is translated here, and it is
+    translated for a sequence length of one. The hidden states of the recurrent layer
+    become additional in- and outputs of the prediction function, so the optimization
+    backend can treat them like any other state and link them over the horizon with
+    multiple shooting constraints.
+
+    The translated part of the keras model is the part which performs a single
+    recurrent step, i.e. the model that maps ``[sequence, *states]`` to
+    ``[prediction, *states]`` for a sequence of arbitrary length. Multi step models
+    are usually saved with that part as a nested model, next to a part that derives
+    the initial states from a warmup sequence. The latter is not used here, since the
+    optimization backend initializes the states with zeros and rolls them out over
+    measured past data instead.
+
+    The step model is identified by its signature. If a model contains several models
+    with that signature, the one to use has to be named in the serialized model.
+
+    Attributes:
+        step_model: The keras model that performs a single recurrent step.
+        state_dimensions: Number of units of each state tensor the model carries over.
+    """
+
+    def __init__(self, serialized_model: SerializedKerasRNN) -> None:
+        self.serialized_model: SerializedKerasRNN = serialized_model
+        self.predictor_model: Union[Sequential, Functional] = (
+            serialized_model.deserialize()
+        )
+        self.step_model: Functional = self._find_step_model(
+            self.predictor_model, name=serialized_model.step_model
+        )
+        (
+            self._sequence_input,
+            self._state_inputs,
+            self._sequence_output,
+            self._state_outputs,
+        ) = self._sort_step_model_signature(self.step_model)
+        self.state_dimensions: list[int] = [
+            int(self.step_model.inputs[i].shape[-1]) for i in self._state_inputs
+        ]
+        self.sym_input: ca.MX = self._get_sym_input()
+        self.prediction_function: ca.Function = self._build_prediction_function()
+
+    @property
+    def input_shape(self) -> tuple[int, int]:
+        """Input shape of one time step of the predictor."""
+        return 1, int(self.step_model.inputs[self._sequence_input].shape[-1])
+
+    @property
+    def output_shape(self) -> tuple[int, int]:
+        """Output shape of one time step of the predictor."""
+        return 1, int(self.step_model.outputs[self._sequence_output].shape[-1])
+
+    @property
+    def state_dimension(self) -> int:
+        """Total number of scalar hidden states carried between two time steps."""
+        return sum(self.state_dimensions)
+
+    def _get_sym_input(self):
+        """Returns the symbolic input of a single time step as a column vector."""
+        return ca.MX.sym("input", self.input_shape[1], 1)
+
+    @staticmethod
+    def _is_step_model(model) -> bool:
+        """Checks whether a keras model maps [sequence, *states] to
+        [prediction, *states] for a sequence of arbitrary length."""
+        if not isinstance(model, Functional):
+            return False
+        # next to the sequence, a step model takes and returns the hidden states
+        if len(model.inputs) < 2 or len(model.outputs) < 2:
+            return False
+        sequences = [inp for inp in model.inputs if len(inp.shape) == 3]
+        if len(sequences) != 1:
+            return False
+        # the length of the sequence has to be free, so it can be applied to a single
+        # time step. A model initializing the states takes a warmup sequence of fixed
+        # length instead.
+        return sequences[0].shape[1] is None
+
+    @classmethod
+    def _nested_models(cls, model) -> Iterator[Functional]:
+        """Yields all keras models nested inside the given model."""
+        for layer in getattr(model, "layers", ()):
+            if isinstance(layer, Functional):
+                yield layer
+                yield from cls._nested_models(layer)
+
+    @classmethod
+    def _find_step_model(cls, model, name: Optional[str] = None) -> Functional:
+        """Finds the keras model that performs a single recurrent step.
+
+        Args:
+            model: The saved multi step model.
+            name: Name of the step model. If None, it is identified by its signature.
+        """
+        if name is not None:
+            for candidate in itertools.chain([model], cls._nested_models(model)):
+                if candidate.name == name:
+                    cls._assert_step_model(candidate)
+                    return candidate
+            available = [nested.name for nested in cls._nested_models(model)]
+            raise ConfigurationError(
+                f"The serialized model declares '{name}' as the model performing a "
+                f"single recurrent step, but '{model.name}' does not contain a model "
+                f"of that name. Available: {available}."
+            )
+
+        if cls._is_step_model(model):
+            return model
+        candidates = [
+            nested for nested in cls._nested_models(model) if cls._is_step_model(nested)
+        ]
+        if len(candidates) == 1:
+            return candidates[0]
+
+        if not candidates:
+            raise ConfigurationError(
+                f'The keras model "{model.name}" does not contain a model which maps '
+                f"[sequence, *states] to [prediction, *states] for a sequence of "
+                f"arbitrary length, so it cannot be evaluated one step at a time. "
+                f"Please check that this is a multi step model."
+            )
+        raise ConfigurationError(
+            f'The keras model "{model.name}" contains more than one model which '
+            f"performs a single recurrent step: {[c.name for c in candidates]}. "
+            f"Please declare which one to use with 'step_model' in the serialized "
+            f"model."
+        )
+
+    @classmethod
+    def _assert_step_model(cls, model):
+        """Raises an error if the model does not perform a single recurrent step."""
+        if cls._is_step_model(model):
+            return
+        raise ConfigurationError(
+            f'The model "{model.name}" does not have the expected signature '
+            f"[sequence, *states] -> [prediction, *states] for a sequence of "
+            f"arbitrary length. Inputs: {[inp.shape for inp in model.inputs]}, "
+            f"outputs: {[out.shape for out in model.outputs]}."
+        )
+
+    @staticmethod
+    def _sort_step_model_signature(
+        step_model: Functional,
+    ) -> tuple[int, list[int], int, list[int]]:
+        """Sorts the in- and outputs of the step model into the sequence and the
+        hidden states, and returns their indices."""
+
+        def split(tensors, kind: str) -> tuple[int, list[int]]:
+            sequences = [i for i, t in enumerate(tensors) if len(t.shape) == 3]
+            states = [i for i, t in enumerate(tensors) if len(t.shape) == 2]
+            if len(sequences) != 1 or len(sequences) + len(states) != len(tensors):
+                raise NotImplementedError(
+                    f"Expected exactly one sequence and any number of states as the "
+                    f'{kind} of the recurrent model "{step_model.name}", but got '
+                    f"shapes {[t.shape for t in tensors]}."
+                )
+            return sequences[0], states
+
+        sequence_input, state_inputs = split(step_model.inputs, "inputs")
+        sequence_output, state_outputs = split(step_model.outputs, "outputs")
+
+        in_dims = [step_model.inputs[i].shape[-1] for i in state_inputs]
+        out_dims = [step_model.outputs[i].shape[-1] for i in state_outputs]
+        if in_dims != out_dims:
+            raise NotImplementedError(
+                f'The states of the recurrent model "{step_model.name}" do not match '
+                f"between in- and output. Got {in_dims} and {out_dims}."
+            )
+        return sequence_input, state_inputs, sequence_output, state_outputs
+
+    def _build_prediction_function(self) -> ca.Function:
+        """Builds a CasADi function performing one time step of the recurrent model.
+
+        The resulting function maps the input features and the hidden states at time k
+        to the prediction at time k+1 and the hidden states at time k+1. All vectors
+        are column vectors.
+        """
+        keras_function = CasadiANN.build_prediction_function_functionalAPI(
+            self.step_model
+        )
+
+        sym_states = [
+            ca.MX.sym(f"state_{i}", dim, 1)
+            for i, dim in enumerate(self.state_dimensions)
+        ]
+        # the layer implementations work on rows, the models in agentlib_mpc work on
+        # column vectors, so the inputs are transposed here and the outputs back
+        arguments: list[Union[ca.MX, None]] = [None] * len(self.step_model.inputs)
+        arguments[self._sequence_input] = self.sym_input.T
+        for slot, state in zip(self._state_inputs, sym_states):
+            arguments[slot] = state.T
+
+        results = keras_function(*arguments)
+        if not isinstance(results, (list, tuple)):
+            results = [results]
+
+        prediction = results[self._sequence_output].T
+        next_states = [results[slot].T for slot in self._state_outputs]
+
+        return ca.Function(
+            "rnn_step",
+            [self.sym_input, *sym_states],
+            [prediction, *next_states],
+            ["input", *[f"state_{i}" for i in range(len(sym_states))]],
+            ["output", *[f"next_state_{i}" for i in range(len(sym_states))]],
+        )
+
+    def predict(
+        self, x: Union[np.ndarray, ca.MX], states: Union[np.ndarray, ca.MX] = None
+    ) -> list[Union[ca.DM, ca.MX]]:
+        """
+        Performs one time step of the recurrent model.
+
+        Args:
+            x: input features of the current time step.
+            states: all hidden states of the current time step, stacked into a single
+                column vector. Defaults to zeros.
+
+        Returns:
+            A list holding the prediction for the next time step, followed by the
+            hidden states of the next time step stacked into a single column vector.
+        """
+        if states is None:
+            states = ca.DM.zeros(self.state_dimension, 1)
+        result = self.prediction_function(x, *self.split_states(states))
+        return [result[0], ca.vertcat(*result[1:])]
+
+    def split_states(
+        self, states: Union[np.ndarray, ca.MX]
+    ) -> list[Union[np.ndarray, ca.MX]]:
+        """Splits a stacked vector of hidden states into the state tensors of the
+        recurrent layer."""
+        split = []
+        offset = 0
+        for dim in self.state_dimensions:
+            split.append(states[offset : offset + dim])
+            offset += dim
+        return split
 
 
 ann_layer_types = {
@@ -737,6 +1213,9 @@ ann_layer_types = {
     ANNLayerTypes.RESCALING: Rescaling,
     ANNLayerTypes.RBF: RBF,
     ANNLayerTypes.AVERAGE: Average,
+    ANNLayerTypes.LSTM: LSTM,
+    ANNLayerTypes.GRU: GRU,
+    ANNLayerTypes.SIMPLERNN: SimpleRNN,
 }
 
 casadi_predictors = {
@@ -744,4 +1223,5 @@ casadi_predictors = {
     MLModels.GPR: CasadiGPR,
     MLModels.LINREG: CasadiLinReg,
     MLModels.KerasANN: CasadiANN,
+    MLModels.KerasRNN: CasadiRNN,
 }

@@ -8,6 +8,7 @@ import joblib
 output_type_pattern = r"Change\((.*)\)"  # Pattern to differentiate between 'absolute' and 'difference' outputs
 lag_pattern = r"_lag(\d+)$"  # Pattern to extract lag information from feature names
 preprocessing_training_info = ["test_size", "val_size", "random_state"]  # Define relevant preprocessing info keys
+multi_step_class_name = "PreprocessingMultiStep"  # physXAI preprocessing of multi step (recurrent) models
 
 
 def model_path_generation(run_id: str, output_name: str, sweep_id: str = '') -> str:
@@ -24,9 +25,15 @@ def model_path_generation(run_id: str, output_name: str, sweep_id: str = '') -> 
 
 
 def physXAI_2_agentlib_json(run_id: str, preprocessing_dict: dict, model_dict: Optional[dict] = None, training_dict: Optional[dict] = None,
-                           model_name: Optional[str] = None, model_type: str = 'ANN', sweep_id: str = '') -> dict:
+                           model_name: Optional[str] = None, model_type: str = 'ANN', sweep_id: str = '',
+                           warmup_steps: Optional[int] = None) -> dict:
     """
     Converts physXAI model configurations to an AgentLib-MPC compatible JSON format.
+
+    Single step models ('PreprocessingSingleStep') are translated into an 'ANN' or
+    'LinReg' config, multi step models ('PreprocessingMultiStep', i.e. RNN / LSTM /
+    GRU) into a 'KerasRNN' config.
+
     Args:
         run_id (str): The unique identifier for the mpc run.
         preprocessing_dict (dict): The preprocessing configuration from physXAI.
@@ -35,6 +42,9 @@ def physXAI_2_agentlib_json(run_id: str, preprocessing_dict: dict, model_dict: O
         model_name (str, optional): The save name of the model. Defaults to None. If None, the output feature name is used.
         model_type (str, optional): The type of model ('ANN' or 'LinReg'). Defaults to 'ANN'.
         sweep_id (str, optional): Optional sweep identifier to organize model save folder. Defaults to ''.
+        warmup_steps (int, optional): Multi step models only. Number of steps the hidden
+            states of the recurrent model are warmed up on past data before the
+            prediction horizon starts. Defaults to the warmup width used for training.
     Returns:
         dict: The converted configuration in AgentLib-MPC JSON format.
     """
@@ -65,6 +75,13 @@ def physXAI_2_agentlib_json(run_id: str, preprocessing_dict: dict, model_dict: O
     default_shift = preprocessing_dict.get("shift", 1)
     if default_shift != 1:
         raise ValueError(f"Config Translation Error: Shift should be 1 to be used in AgentLib, but was {default_shift}")
+
+    # Multi step (recurrent) models are handled separately, since they carry their
+    # memory in hidden states instead of lagged inputs
+    if preprocessing_dict.get("__class_name__") == multi_step_class_name:
+        return multi_step_2_agentlib_json(run_id, preprocessing_dict, target_dict, model_name=model_name,
+                                          sweep_id=sweep_id, warmup_steps=warmup_steps)
+
     if not isinstance(preprocessing_dict.get("output"), list) or len(preprocessing_dict["output"]) != 1:
         raise ValueError("Config Translation Error: Output should be a list with 1 element")
 
@@ -170,5 +187,85 @@ def physXAI_2_agentlib_json(run_id: str, preprocessing_dict: dict, model_dict: O
         if model_name is None:
             model_name = output_key_name
         target_dict["model_path"] = model_path_generation(run_id, model_name, sweep_id) + '.keras'
+
+    return target_dict
+
+
+def multi_step_2_agentlib_json(run_id: str, preprocessing_dict: dict, target_dict: dict,
+                               model_name: Optional[str] = None, sweep_id: str = '',
+                               warmup_steps: Optional[int] = None) -> dict:
+    """
+    Completes the AgentLib-MPC config of a multi step (recurrent) physXAI model.
+
+    The hidden states are warmed up on past data, which is expressed by 'warmup_steps'.
+    The initialization model physXAI trains alongside is not used by AgentLib-MPC,
+    hence 'init_features' does not appear in the result.
+
+    Args:
+        run_id (str): The unique identifier for the mpc run.
+        preprocessing_dict (dict): The preprocessing configuration from physXAI.
+        target_dict (dict): The config in AgentLib-MPC format, with the general
+            information already filled in.
+        model_name (str, optional): The save name of the model. Defaults to None. If None, the output feature name is used.
+        sweep_id (str, optional): Optional sweep identifier to organize model save folder. Defaults to ''.
+        warmup_steps (int, optional): Number of warmup steps. Defaults to the warmup
+            width used for training.
+    Returns:
+        dict: The converted configuration in AgentLib-MPC JSON format.
+    """
+
+    inputs = preprocessing_dict.get("inputs")
+    outputs = preprocessing_dict.get("output")
+    if not isinstance(inputs, list) or not inputs:
+        raise ValueError("Config Translation Error: Inputs should be a non empty list")
+    if not isinstance(outputs, list) or not outputs:
+        raise ValueError("Config Translation Error: Output should be a non empty list")
+
+    # A recurrent model is evaluated one step at a time, so lagged features cannot be
+    # translated. The memory of the model is expressed by the warmup instead.
+    lagged_inputs = [name for name in inputs if re.search(lag_pattern, name)]
+    if lagged_inputs:
+        raise ValueError(
+            f"Config Translation Error: Multi step models do not support lagged inputs, "
+            f"since their memory is held in the hidden states. Increase 'warmup_width' "
+            f"instead. Lagged inputs: {lagged_inputs}"
+        )
+
+    # Extract output types
+    output_features = dict()
+    for output_str in outputs:
+        output_type = "absolute"
+        output_name = output_str
+        change_match = re.match(output_type_pattern, output_str)
+        if change_match:
+            output_type = "difference"
+            output_name = change_match.group(1).strip()
+        # The output of a recurrent model is always a state of the MPC, since the
+        # recursion runs through the hidden states.
+        output_features[output_name] = {
+            "name": output_name,
+            "lag": 1,
+            "output_type": output_type,
+            "recursive": True,
+        }
+
+    # Inputs are only used at the current time step, hence they all have a lag of 1
+    for name in inputs:
+        if name in output_features:
+            continue
+        target_dict["input"][name] = {"name": name, "lag": 1}
+    target_dict["output"] = output_features
+
+    # The order of the features is the order the recurrent model expects them in
+    target_dict["rnn_inputs"] = list(inputs)
+
+    if warmup_steps is None:
+        warmup_steps = preprocessing_dict.get("warmup_width", 0)
+    target_dict["warmup_steps"] = warmup_steps
+
+    target_dict["model_type"] = "KerasRNN"
+    if model_name is None:
+        model_name = next(iter(output_features))
+    target_dict["model_path"] = model_path_generation(run_id, model_name, sweep_id) + '.keras'
 
     return target_dict
