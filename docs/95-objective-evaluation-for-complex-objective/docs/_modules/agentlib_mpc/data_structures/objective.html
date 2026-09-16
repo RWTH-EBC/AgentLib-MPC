@@ -290,6 +290,16 @@
     <span class="k">return</span> <span class="n">expr_str</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_coerce_bare_expression</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">required_attr</span><span class="p">,</span> <span class="n">wrap</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""If ``obj`` already looks like a wrapper object (i.e. it has</span>
+<span class="sd">    ``required_attr``), return it unchanged. Otherwise treat it as a bare</span>
+<span class="sd">    ``casadi.MX`` expression and wrap it using ``wrap``.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">required_attr</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">wrap</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">obj</span>
+
+
 <div class="viewcode-block" id="SubObjective"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.objective.SubObjective">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SubObjective</span><span class="p">:</span>
 
     <span class="n">_warned_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
@@ -555,7 +565,12 @@
 <span class="sd">            *objectives: Variable number of objective terms</span>
 <span class="sd">            normalization: Global normalization factor</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">objectives</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_coerce_bare_expression</span><span class="p">(</span>
+                <span class="n">obj</span><span class="p">,</span> <span class="s2">"get_weighted_expression"</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">expr</span><span class="p">:</span> <span class="n">SubObjective</span><span class="p">(</span><span class="n">expressions</span><span class="o">=</span><span class="n">expr</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objectives</span>
+        <span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">normalization</span> <span class="o">=</span> <span class="n">normalization</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_values</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -716,11 +731,24 @@
 <span class="sd">                and objective is a CombinedObjective</span>
 <span class="sd">            default_objective: The objective to use when all conditions are False</span>
 <span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">condition_objective_pairs</span> <span class="o">=</span> <span class="n">condition_objective_pairs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">default_objective</span> <span class="o">=</span> <span class="n">default_objective</span> <span class="ow">or</span> <span class="n">CombinedObjective</span><span class="p">()</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_coerce_to_combined</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">_coerce_bare_expression</span><span class="p">(</span>
+                <span class="n">obj</span><span class="p">,</span>
+                <span class="s2">"get_casadi_expression"</span><span class="p">,</span>
+                <span class="k">lambda</span> <span class="n">expr</span><span class="p">:</span> <span class="n">CombinedObjective</span><span class="p">(</span><span class="n">SubObjective</span><span class="p">(</span><span class="n">expressions</span><span class="o">=</span><span class="n">expr</span><span class="p">)),</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">condition_objective_pairs</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">_coerce_to_combined</span><span class="p">(</span><span class="n">objective</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">condition</span><span class="p">,</span> <span class="n">objective</span> <span class="ow">in</span> <span class="n">condition_objective_pairs</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">default_objective</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">default_objective</span> <span class="o">=</span> <span class="n">CombinedObjective</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">default_objective</span> <span class="o">=</span> <span class="n">_coerce_to_combined</span><span class="p">(</span><span class="n">default_objective</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">all_objectives</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">default_objective</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">objective</span> <span class="ow">in</span> <span class="n">condition_objective_pairs</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">objective</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">condition_objective_pairs</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">objective</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_objectives</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">all_objectives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">objective</span><span class="p">)</span>
 
