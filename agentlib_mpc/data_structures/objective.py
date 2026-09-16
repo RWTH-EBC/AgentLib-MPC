@@ -217,6 +217,16 @@ def _replace_sq_calls(expr_str):
     return expr_str
 
 
+def _coerce_bare_expression(obj, required_attr, wrap):
+    """If ``obj`` already looks like a wrapper object (i.e. it has
+    ``required_attr``), return it unchanged. Otherwise treat it as a bare
+    ``casadi.MX`` expression and wrap it using ``wrap``.
+    """
+    if not hasattr(obj, required_attr):
+        return wrap(obj)
+    return obj
+
+
 class SubObjective:
 
     _warned_names = set()
@@ -482,7 +492,12 @@ class CombinedObjective:
             *objectives: Variable number of objective terms
             normalization: Global normalization factor
         """
-        self.objectives = list(objectives)
+        self.objectives = [
+            _coerce_bare_expression(
+                obj, "get_weighted_expression", lambda expr: SubObjective(expressions=expr)
+            )
+            for obj in objectives
+        ]
         self.normalization = normalization
         self._values = {}
 
@@ -643,11 +658,24 @@ class ConditionalObjective:
                 and objective is a CombinedObjective
             default_objective: The objective to use when all conditions are False
         """
-        self.condition_objective_pairs = condition_objective_pairs
-        self.default_objective = default_objective or CombinedObjective()
+        def _coerce_to_combined(obj):
+            return _coerce_bare_expression(
+                obj,
+                "get_casadi_expression",
+                lambda expr: CombinedObjective(SubObjective(expressions=expr)),
+            )
+
+        self.condition_objective_pairs = tuple(
+            (condition, _coerce_to_combined(objective))
+            for condition, objective in condition_objective_pairs
+        )
+        if default_objective is None:
+            self.default_objective = CombinedObjective()
+        else:
+            self.default_objective = _coerce_to_combined(default_objective)
 
         self.all_objectives = [self.default_objective]
-        for _, objective in condition_objective_pairs:
+        for _, objective in self.condition_objective_pairs:
             if objective not in self.all_objectives:
                 self.all_objectives.append(objective)
 
