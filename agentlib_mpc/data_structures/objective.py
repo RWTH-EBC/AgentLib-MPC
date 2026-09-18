@@ -217,6 +217,106 @@ def _replace_sq_calls(expr_str):
     return expr_str
 
 
+_CASADI_REPLACEMENTS = {
+    "sq(": "(",
+    "fabs(": "abs(",
+    "sqrt(": "sqrt(",
+    "sin(": "sin(",
+    "cos(": "cos(",
+    "tan(": "tan(",
+    "asin(": "arcsin(",
+    "acos(": "arccos(",
+    "atan(": "arctan(",
+    "atan2(": "arctan2(",
+    "sinh(": "sinh(",
+    "cosh(": "cosh(",
+    "tanh(": "tanh(",
+    "asinh(": "arcsinh(",
+    "acosh(": "arccosh(",
+    "atanh(": "arctanh(",
+    "exp(": "exp(",
+    "log(": "log(",
+    "log10(": "log10(",
+    "pow(": "power(",
+    "floor(": "floor(",
+    "ceil(": "ceil(",
+    "sign(": "sign(",
+    "fmin(": "minimum(",
+    "fmax(": "maximum(",
+}
+
+_NUMPY_FUNCS = {
+    "abs": np.abs,
+    "sqrt": np.sqrt,
+    "sin": np.sin,
+    "cos": np.cos,
+    "tan": np.tan,
+    "arcsin": np.arcsin,
+    "arccos": np.arccos,
+    "arctan": np.arctan,
+    "arctan2": np.arctan2,
+    "sinh": np.sinh,
+    "cosh": np.cosh,
+    "tanh": np.tanh,
+    "arcsinh": np.arcsinh,
+    "arccosh": np.arccosh,
+    "arctanh": np.arctanh,
+    "exp": np.exp,
+    "log": np.log,
+    "log10": np.log10,
+    "power": np.power,
+    "floor": np.floor,
+    "ceil": np.ceil,
+    "round": np.round,
+    "sign": np.sign,
+    "minimum": np.minimum,
+    "maximum": np.maximum,
+    "max": np.maximum,
+    "min": np.minimum,
+    "where": np.where,
+}
+
+_CASADI_FUNCTION_NAMES = set(
+    [k.rstrip("(") for k in _CASADI_REPLACEMENTS]
+    + [v.rstrip("(") for v in _CASADI_REPLACEMENTS.values() if v.endswith("(")]
+    + ["round", "max", "min", "minimum", "maximum", "where", "abs", "power"]
+)
+
+
+def _compile_expression(expr):
+    """Translate a CasADi expression into a Python/NumPy eval string plus the
+    variable names it references. Depends only on the expression, never on the
+    data, so callers cache the result instead of redoing it per evaluation.
+    """
+    expr_str = str(expr)
+
+    if "@" in expr_str:
+        expr_str = _replace_subexpressions(expr_str)
+
+    if "?" in expr_str:
+        expr_str = _replace_ternary(expr_str)
+
+    # Replace logical NOT '!' with bitwise NOT '~' for NumPy arrays
+    expr_str = re.sub(r"(?<![<>=!])!(?!=)", "~", expr_str)
+
+    eval_str = _replace_sq_calls(expr_str)
+    for casadi_func, replacement in _CASADI_REPLACEMENTS.items():
+        if casadi_func != "sq(":  # already handled by _replace_sq_calls
+            eval_str = eval_str.replace(casadi_func, replacement)
+
+    # Remove outer parentheses if they wrap the entire expression
+    if eval_str.startswith("(") and eval_str.endswith(")"):
+        eval_str = eval_str[1:-1]
+
+    var_names = [
+        name
+        for name in re.findall(r"[a-zA-Z][a-zA-Z0-9_]*", expr_str)
+        if name not in _CASADI_FUNCTION_NAMES
+    ]
+
+    return eval_str, var_names
+
+
 def _coerce_bare_expression(obj, required_attr, wrap):
     """If ``obj`` already looks like a wrapper object (i.e. it has
     ``required_attr``), return it unchanged. Otherwise treat it as a bare
@@ -248,6 +348,7 @@ class SubObjective:
         self.expression = expressions
         self.weight = weight
         self.name = name or f"obj_{id(self)}"
+        self._compiled = None
 
     def __add__(self, other):
         """Add two objectives together to create a CombinedObjective"""
@@ -306,61 +407,9 @@ class SubObjective:
             if (col_type, var_name) in df.columns:
                 return df.loc[:, (col_type, var_name)].values[:-1]
 
-        expr_str = str(expr)
-
-        if "@" in expr_str:
-            expr_str = _replace_subexpressions(expr_str)
-
-        if "?" in expr_str:
-            expr_str = _replace_ternary(expr_str)
-            
-        # Replace logical NOT '!' with bitwise NOT '~' for NumPy arrays
-        expr_str = re.sub(r"(?<![<>=!])!(?!=)", "~", expr_str)
-
-        # Handle common CasADi functions with simple replacements
-        casadi_replacements = {
-            "sq(": "(",
-            "fabs(": "abs(",
-            "sqrt(": "sqrt(",
-            "sin(": "sin(",
-            "cos(": "cos(",
-            "tan(": "tan(",
-            "asin(": "arcsin(",
-            "acos(": "arccos(",
-            "atan(": "arctan(",
-            "atan2(": "arctan2(",
-            "sinh(": "sinh(",
-            "cosh(": "cosh(",
-            "tanh(": "tanh(",
-            "asinh(": "arcsinh(",
-            "acosh(": "arccosh(",
-            "atanh(": "arctanh(",
-            "exp(": "exp(",
-            "log(": "log(",
-            "log10(": "log10(",
-            "pow(": "power(",
-            "floor(": "floor(",
-            "ceil(": "ceil(",
-            "sign(": "sign(",
-            "fmin(": "minimum(",
-            "fmax(": "maximum(",
-        }
-
-        # Apply replacements
-        eval_str = _replace_sq_calls(expr_str)
-
-        for casadi_func, replacement in casadi_replacements.items():
-            if casadi_func != "sq(":  # already handled above
-                eval_str = eval_str.replace(casadi_func, replacement)
-
-        # Extract variable names, filtering out CasADi function names
-        base_funcs = [k.rstrip("(") for k in casadi_replacements.keys()]
-        replaced_funcs = [v.rstrip("(") for v in casadi_replacements.values() if v.endswith("(")]
-        extra_funcs = ["round", "max", "min", "minimum", "maximum", "where", "abs", "power"]
-        casadi_functions = list(set(base_funcs + replaced_funcs + extra_funcs))
-        
-        var_names = re.findall(r"[a-zA-Z][a-zA-Z0-9_]*", expr_str)
-        var_names = [name for name in var_names if name not in casadi_functions]
+        if self._compiled is None:
+            self._compiled = _compile_expression(expr)
+        eval_str, var_names = self._compiled
 
         values_found = {}
         for var_name in var_names:
@@ -370,49 +419,8 @@ class SubObjective:
                     break
 
         try:
-            safe_dict = values_found.copy()
-
-            # Handle common mathematical operations and numpy functions
-            safe_dict.update(
-                {
-                    "abs": np.abs,
-                    "sqrt": np.sqrt,
-                    "sin": np.sin,
-                    "cos": np.cos,
-                    "tan": np.tan,
-                    "arcsin": np.arcsin,
-                    "arccos": np.arccos,
-                    "arctan": np.arctan,
-                    "arctan2": np.arctan2,
-                    "sinh": np.sinh,
-                    "cosh": np.cosh,
-                    "tanh": np.tanh,
-                    "arcsinh": np.arcsinh,
-                    "arccosh": np.arccosh,
-                    "arctanh": np.arctanh,
-                    "exp": np.exp,
-                    "log": np.log,
-                    "log10": np.log10,
-                    "power": np.power,
-                    "floor": np.floor,
-                    "ceil": np.ceil,
-                    "round": np.round,
-                    "sign": np.sign,
-                    "minimum": np.minimum,
-                    "maximum": np.maximum,
-                    "max": np.maximum,
-                    "min": np.minimum,
-                    "where": np.where,
-                }
-            )
-
-            # Remove outer parentheses if they wrap the entire expression
-            if eval_str.startswith("(") and eval_str.endswith(")"):
-                eval_str = eval_str[1:-1]
-
-            result = eval(eval_str, {"__builtins__": {}}, safe_dict)
-
-            return result
+            safe_dict = {**values_found, **_NUMPY_FUNCS}
+            return eval(eval_str, {"__builtins__": {}}, safe_dict)
 
         except SyntaxError as e:
             if self.name not in SubObjective._warned_names:
@@ -778,10 +786,12 @@ class ConditionalObjective:
         if "?" in condition_str:
             condition_str = _replace_ternary(condition_str)
 
-        # Replace CasADi logical operators with Python equivalents for eval
-        condition_str = condition_str.replace("&&", " and ")
-        condition_str = condition_str.replace("||", " or ")
-        condition_str = re.sub(r"(?<![<>=!])!(?!=)", " not ", condition_str)
+        # Replace CasADi logical operators with NumPy's elementwise equivalents
+        # so the condition can be evaluated on whole arrays at once instead of
+        # per-row (Python's and/or/not only work on single truth values).
+        condition_str = condition_str.replace("&&", " & ")
+        condition_str = condition_str.replace("||", " | ")
+        condition_str = re.sub(r"(?<![<>=!])!(?!=)", " ~", condition_str)
 
         identifier_pattern = r'[a-zA-Z_][a-zA-Z0-9_]*'
         potential_vars = re.findall(identifier_pattern, condition_str)
@@ -817,19 +827,18 @@ class ConditionalObjective:
                     break
 
         n_rows = len(df)
-        mask = np.zeros(n_rows, dtype=bool)
 
-        for i in range(n_rows):
-            local_vars = {}
-            for var_name, values in values_dict.items():
-                local_vars[var_name] = values[i]
-            try:
-                eval_str = condition_str
-                result = eval(eval_str, {"__builtins__": {}, "abs": abs, "min": min, "max": max, "where": np.where}, local_vars)
-                mask[i] = bool(result)
-
-            except Exception as e:
-                print(f"Error evaluating condition at row {i}: {e}")
-                mask[i] = False
+        try:
+            result = eval(
+                condition_str,
+                {"__builtins__": {}, "abs": np.abs, "min": np.minimum, "max": np.maximum, "where": np.where},
+                values_dict,
+            )
+            # A condition with no per-row variables (e.g. a constant) evaluates
+            # to a plain bool instead of an array; broadcast it to full length.
+            mask = np.broadcast_to(np.asarray(result, dtype=bool), (n_rows,)).copy()
+        except Exception as e:
+            print(f"Error evaluating condition '{condition_str}': {e}")
+            mask = np.zeros(n_rows, dtype=bool)
 
         return pd.Series(mask, index=df.index)
