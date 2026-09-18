@@ -290,6 +290,106 @@
     <span class="k">return</span> <span class="n">expr_str</span>
 
 
+<span class="n">_CASADI_REPLACEMENTS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"sq("</span><span class="p">:</span> <span class="s2">"("</span><span class="p">,</span>
+    <span class="s2">"fabs("</span><span class="p">:</span> <span class="s2">"abs("</span><span class="p">,</span>
+    <span class="s2">"sqrt("</span><span class="p">:</span> <span class="s2">"sqrt("</span><span class="p">,</span>
+    <span class="s2">"sin("</span><span class="p">:</span> <span class="s2">"sin("</span><span class="p">,</span>
+    <span class="s2">"cos("</span><span class="p">:</span> <span class="s2">"cos("</span><span class="p">,</span>
+    <span class="s2">"tan("</span><span class="p">:</span> <span class="s2">"tan("</span><span class="p">,</span>
+    <span class="s2">"asin("</span><span class="p">:</span> <span class="s2">"arcsin("</span><span class="p">,</span>
+    <span class="s2">"acos("</span><span class="p">:</span> <span class="s2">"arccos("</span><span class="p">,</span>
+    <span class="s2">"atan("</span><span class="p">:</span> <span class="s2">"arctan("</span><span class="p">,</span>
+    <span class="s2">"atan2("</span><span class="p">:</span> <span class="s2">"arctan2("</span><span class="p">,</span>
+    <span class="s2">"sinh("</span><span class="p">:</span> <span class="s2">"sinh("</span><span class="p">,</span>
+    <span class="s2">"cosh("</span><span class="p">:</span> <span class="s2">"cosh("</span><span class="p">,</span>
+    <span class="s2">"tanh("</span><span class="p">:</span> <span class="s2">"tanh("</span><span class="p">,</span>
+    <span class="s2">"asinh("</span><span class="p">:</span> <span class="s2">"arcsinh("</span><span class="p">,</span>
+    <span class="s2">"acosh("</span><span class="p">:</span> <span class="s2">"arccosh("</span><span class="p">,</span>
+    <span class="s2">"atanh("</span><span class="p">:</span> <span class="s2">"arctanh("</span><span class="p">,</span>
+    <span class="s2">"exp("</span><span class="p">:</span> <span class="s2">"exp("</span><span class="p">,</span>
+    <span class="s2">"log("</span><span class="p">:</span> <span class="s2">"log("</span><span class="p">,</span>
+    <span class="s2">"log10("</span><span class="p">:</span> <span class="s2">"log10("</span><span class="p">,</span>
+    <span class="s2">"pow("</span><span class="p">:</span> <span class="s2">"power("</span><span class="p">,</span>
+    <span class="s2">"floor("</span><span class="p">:</span> <span class="s2">"floor("</span><span class="p">,</span>
+    <span class="s2">"ceil("</span><span class="p">:</span> <span class="s2">"ceil("</span><span class="p">,</span>
+    <span class="s2">"sign("</span><span class="p">:</span> <span class="s2">"sign("</span><span class="p">,</span>
+    <span class="s2">"fmin("</span><span class="p">:</span> <span class="s2">"minimum("</span><span class="p">,</span>
+    <span class="s2">"fmax("</span><span class="p">:</span> <span class="s2">"maximum("</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">_NUMPY_FUNCS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"abs"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span>
+    <span class="s2">"sqrt"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">,</span>
+    <span class="s2">"sin"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span>
+    <span class="s2">"cos"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">,</span>
+    <span class="s2">"tan"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">,</span>
+    <span class="s2">"arcsin"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">,</span>
+    <span class="s2">"arccos"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">,</span>
+    <span class="s2">"arctan"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">,</span>
+    <span class="s2">"arctan2"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">,</span>
+    <span class="s2">"sinh"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sinh</span><span class="p">,</span>
+    <span class="s2">"cosh"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">,</span>
+    <span class="s2">"tanh"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">,</span>
+    <span class="s2">"arcsinh"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsinh</span><span class="p">,</span>
+    <span class="s2">"arccosh"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arccosh</span><span class="p">,</span>
+    <span class="s2">"arctanh"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arctanh</span><span class="p">,</span>
+    <span class="s2">"exp"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">,</span>
+    <span class="s2">"log"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">,</span>
+    <span class="s2">"log10"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">,</span>
+    <span class="s2">"power"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">,</span>
+    <span class="s2">"floor"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">,</span>
+    <span class="s2">"ceil"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">,</span>
+    <span class="s2">"round"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">,</span>
+    <span class="s2">"sign"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">,</span>
+    <span class="s2">"minimum"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span>
+    <span class="s2">"maximum"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span>
+    <span class="s2">"max"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span>
+    <span class="s2">"min"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span>
+    <span class="s2">"where"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">_CASADI_FUNCTION_NAMES</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">"("</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_CASADI_REPLACEMENTS</span><span class="p">]</span>
+    <span class="o">+</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">"("</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_CASADI_REPLACEMENTS</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"("</span><span class="p">)]</span>
+    <span class="o">+</span> <span class="p">[</span><span class="s2">"round"</span><span class="p">,</span> <span class="s2">"max"</span><span class="p">,</span> <span class="s2">"min"</span><span class="p">,</span> <span class="s2">"minimum"</span><span class="p">,</span> <span class="s2">"maximum"</span><span class="p">,</span> <span class="s2">"where"</span><span class="p">,</span> <span class="s2">"abs"</span><span class="p">,</span> <span class="s2">"power"</span><span class="p">]</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_compile_expression</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Translate a CasADi expression into a Python/NumPy eval string plus the</span>
+<span class="sd">    variable names it references. Depends only on the expression, never on the</span>
+<span class="sd">    data, so callers cache the result instead of redoing it per evaluation.</span>
+<span class="sd">    """</span>
+    <span class="n">expr_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">"@"</span> <span class="ow">in</span> <span class="n">expr_str</span><span class="p">:</span>
+        <span class="n">expr_str</span> <span class="o">=</span> <span class="n">_replace_subexpressions</span><span class="p">(</span><span class="n">expr_str</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">"?"</span> <span class="ow">in</span> <span class="n">expr_str</span><span class="p">:</span>
+        <span class="n">expr_str</span> <span class="o">=</span> <span class="n">_replace_ternary</span><span class="p">(</span><span class="n">expr_str</span><span class="p">)</span>
+
+    <span class="c1"># Replace logical NOT '!' with bitwise NOT '~' for NumPy arrays</span>
+    <span class="n">expr_str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"(?&lt;![&lt;&gt;=!])!(?!=)"</span><span class="p">,</span> <span class="s2">"~"</span><span class="p">,</span> <span class="n">expr_str</span><span class="p">)</span>
+
+    <span class="n">eval_str</span> <span class="o">=</span> <span class="n">_replace_sq_calls</span><span class="p">(</span><span class="n">expr_str</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">casadi_func</span><span class="p">,</span> <span class="n">replacement</span> <span class="ow">in</span> <span class="n">_CASADI_REPLACEMENTS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">casadi_func</span> <span class="o">!=</span> <span class="s2">"sq("</span><span class="p">:</span>  <span class="c1"># already handled by _replace_sq_calls</span>
+            <span class="n">eval_str</span> <span class="o">=</span> <span class="n">eval_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">casadi_func</span><span class="p">,</span> <span class="n">replacement</span><span class="p">)</span>
+
+    <span class="c1"># Remove outer parentheses if they wrap the entire expression</span>
+    <span class="k">if</span> <span class="n">eval_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"("</span><span class="p">)</span> <span class="ow">and</span> <span class="n">eval_str</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">")"</span><span class="p">):</span>
+        <span class="n">eval_str</span> <span class="o">=</span> <span class="n">eval_str</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">var_names</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">name</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[a-zA-Z][a-zA-Z0-9_]*"</span><span class="p">,</span> <span class="n">expr_str</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_CASADI_FUNCTION_NAMES</span>
+    <span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">eval_str</span><span class="p">,</span> <span class="n">var_names</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_coerce_bare_expression</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">required_attr</span><span class="p">,</span> <span class="n">wrap</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""If ``obj`` already looks like a wrapper object (i.e. it has</span>
 <span class="sd">    ``required_attr``), return it unchanged. Otherwise treat it as a bare</span>
@@ -321,6 +421,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">expression</span> <span class="o">=</span> <span class="n">expressions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">"obj_</span><span class="si">{</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compiled</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Add two objectives together to create a CombinedObjective"""</span>
@@ -379,61 +480,9 @@
             <span class="k">if</span> <span class="p">(</span><span class="n">col_type</span><span class="p">,</span> <span class="n">var_name</span><span class="p">)</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="n">col_type</span><span class="p">,</span> <span class="n">var_name</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-        <span class="n">expr_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="s2">"@"</span> <span class="ow">in</span> <span class="n">expr_str</span><span class="p">:</span>
-            <span class="n">expr_str</span> <span class="o">=</span> <span class="n">_replace_subexpressions</span><span class="p">(</span><span class="n">expr_str</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="s2">"?"</span> <span class="ow">in</span> <span class="n">expr_str</span><span class="p">:</span>
-            <span class="n">expr_str</span> <span class="o">=</span> <span class="n">_replace_ternary</span><span class="p">(</span><span class="n">expr_str</span><span class="p">)</span>
-            
-        <span class="c1"># Replace logical NOT '!' with bitwise NOT '~' for NumPy arrays</span>
-        <span class="n">expr_str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"(?&lt;![&lt;&gt;=!])!(?!=)"</span><span class="p">,</span> <span class="s2">"~"</span><span class="p">,</span> <span class="n">expr_str</span><span class="p">)</span>
-
-        <span class="c1"># Handle common CasADi functions with simple replacements</span>
-        <span class="n">casadi_replacements</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">"sq("</span><span class="p">:</span> <span class="s2">"("</span><span class="p">,</span>
-            <span class="s2">"fabs("</span><span class="p">:</span> <span class="s2">"abs("</span><span class="p">,</span>
-            <span class="s2">"sqrt("</span><span class="p">:</span> <span class="s2">"sqrt("</span><span class="p">,</span>
-            <span class="s2">"sin("</span><span class="p">:</span> <span class="s2">"sin("</span><span class="p">,</span>
-            <span class="s2">"cos("</span><span class="p">:</span> <span class="s2">"cos("</span><span class="p">,</span>
-            <span class="s2">"tan("</span><span class="p">:</span> <span class="s2">"tan("</span><span class="p">,</span>
-            <span class="s2">"asin("</span><span class="p">:</span> <span class="s2">"arcsin("</span><span class="p">,</span>
-            <span class="s2">"acos("</span><span class="p">:</span> <span class="s2">"arccos("</span><span class="p">,</span>
-            <span class="s2">"atan("</span><span class="p">:</span> <span class="s2">"arctan("</span><span class="p">,</span>
-            <span class="s2">"atan2("</span><span class="p">:</span> <span class="s2">"arctan2("</span><span class="p">,</span>
-            <span class="s2">"sinh("</span><span class="p">:</span> <span class="s2">"sinh("</span><span class="p">,</span>
-            <span class="s2">"cosh("</span><span class="p">:</span> <span class="s2">"cosh("</span><span class="p">,</span>
-            <span class="s2">"tanh("</span><span class="p">:</span> <span class="s2">"tanh("</span><span class="p">,</span>
-            <span class="s2">"asinh("</span><span class="p">:</span> <span class="s2">"arcsinh("</span><span class="p">,</span>
-            <span class="s2">"acosh("</span><span class="p">:</span> <span class="s2">"arccosh("</span><span class="p">,</span>
-            <span class="s2">"atanh("</span><span class="p">:</span> <span class="s2">"arctanh("</span><span class="p">,</span>
-            <span class="s2">"exp("</span><span class="p">:</span> <span class="s2">"exp("</span><span class="p">,</span>
-            <span class="s2">"log("</span><span class="p">:</span> <span class="s2">"log("</span><span class="p">,</span>
-            <span class="s2">"log10("</span><span class="p">:</span> <span class="s2">"log10("</span><span class="p">,</span>
-            <span class="s2">"pow("</span><span class="p">:</span> <span class="s2">"power("</span><span class="p">,</span>
-            <span class="s2">"floor("</span><span class="p">:</span> <span class="s2">"floor("</span><span class="p">,</span>
-            <span class="s2">"ceil("</span><span class="p">:</span> <span class="s2">"ceil("</span><span class="p">,</span>
-            <span class="s2">"sign("</span><span class="p">:</span> <span class="s2">"sign("</span><span class="p">,</span>
-            <span class="s2">"fmin("</span><span class="p">:</span> <span class="s2">"minimum("</span><span class="p">,</span>
-            <span class="s2">"fmax("</span><span class="p">:</span> <span class="s2">"maximum("</span><span class="p">,</span>
-        <span class="p">}</span>
-
-        <span class="c1"># Apply replacements</span>
-        <span class="n">eval_str</span> <span class="o">=</span> <span class="n">_replace_sq_calls</span><span class="p">(</span><span class="n">expr_str</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">casadi_func</span><span class="p">,</span> <span class="n">replacement</span> <span class="ow">in</span> <span class="n">casadi_replacements</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">casadi_func</span> <span class="o">!=</span> <span class="s2">"sq("</span><span class="p">:</span>  <span class="c1"># already handled above</span>
-                <span class="n">eval_str</span> <span class="o">=</span> <span class="n">eval_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">casadi_func</span><span class="p">,</span> <span class="n">replacement</span><span class="p">)</span>
-
-        <span class="c1"># Extract variable names, filtering out CasADi function names</span>
-        <span class="n">base_funcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">"("</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">casadi_replacements</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
-        <span class="n">replaced_funcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">"("</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">casadi_replacements</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"("</span><span class="p">)]</span>
-        <span class="n">extra_funcs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"round"</span><span class="p">,</span> <span class="s2">"max"</span><span class="p">,</span> <span class="s2">"min"</span><span class="p">,</span> <span class="s2">"minimum"</span><span class="p">,</span> <span class="s2">"maximum"</span><span class="p">,</span> <span class="s2">"where"</span><span class="p">,</span> <span class="s2">"abs"</span><span class="p">,</span> <span class="s2">"power"</span><span class="p">]</span>
-        <span class="n">casadi_functions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">base_funcs</span> <span class="o">+</span> <span class="n">replaced_funcs</span> <span class="o">+</span> <span class="n">extra_funcs</span><span class="p">))</span>
-        
-        <span class="n">var_names</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[a-zA-Z][a-zA-Z0-9_]*"</span><span class="p">,</span> <span class="n">expr_str</span><span class="p">)</span>
-        <span class="n">var_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">var_names</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">casadi_functions</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compiled</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_compiled</span> <span class="o">=</span> <span class="n">_compile_expression</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+        <span class="n">eval_str</span><span class="p">,</span> <span class="n">var_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compiled</span>
 
         <span class="n">values_found</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="n">var_names</span><span class="p">:</span>
@@ -443,49 +492,8 @@
                     <span class="k">break</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">safe_dict</span> <span class="o">=</span> <span class="n">values_found</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-
-            <span class="c1"># Handle common mathematical operations and numpy functions</span>
-            <span class="n">safe_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                <span class="p">{</span>
-                    <span class="s2">"abs"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span>
-                    <span class="s2">"sqrt"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">,</span>
-                    <span class="s2">"sin"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">,</span>
-                    <span class="s2">"cos"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">,</span>
-                    <span class="s2">"tan"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">,</span>
-                    <span class="s2">"arcsin"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">,</span>
-                    <span class="s2">"arccos"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">,</span>
-                    <span class="s2">"arctan"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">,</span>
-                    <span class="s2">"arctan2"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">,</span>
-                    <span class="s2">"sinh"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sinh</span><span class="p">,</span>
-                    <span class="s2">"cosh"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">,</span>
-                    <span class="s2">"tanh"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">tanh</span><span class="p">,</span>
-                    <span class="s2">"arcsinh"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arcsinh</span><span class="p">,</span>
-                    <span class="s2">"arccosh"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arccosh</span><span class="p">,</span>
-                    <span class="s2">"arctanh"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arctanh</span><span class="p">,</span>
-                    <span class="s2">"exp"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">,</span>
-                    <span class="s2">"log"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">,</span>
-                    <span class="s2">"log10"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">,</span>
-                    <span class="s2">"power"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">,</span>
-                    <span class="s2">"floor"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">,</span>
-                    <span class="s2">"ceil"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">,</span>
-                    <span class="s2">"round"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">,</span>
-                    <span class="s2">"sign"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">,</span>
-                    <span class="s2">"minimum"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span>
-                    <span class="s2">"maximum"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span>
-                    <span class="s2">"max"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span>
-                    <span class="s2">"min"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span>
-                    <span class="s2">"where"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">,</span>
-                <span class="p">}</span>
-            <span class="p">)</span>
-
-            <span class="c1"># Remove outer parentheses if they wrap the entire expression</span>
-            <span class="k">if</span> <span class="n">eval_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"("</span><span class="p">)</span> <span class="ow">and</span> <span class="n">eval_str</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">")"</span><span class="p">):</span>
-                <span class="n">eval_str</span> <span class="o">=</span> <span class="n">eval_str</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
-            <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">eval_str</span><span class="p">,</span> <span class="p">{</span><span class="s2">"__builtins__"</span><span class="p">:</span> <span class="p">{}},</span> <span class="n">safe_dict</span><span class="p">)</span>
-
-            <span class="k">return</span> <span class="n">result</span>
+            <span class="n">safe_dict</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">values_found</span><span class="p">,</span> <span class="o">**</span><span class="n">_NUMPY_FUNCS</span><span class="p">}</span>
+            <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="n">eval_str</span><span class="p">,</span> <span class="p">{</span><span class="s2">"__builtins__"</span><span class="p">:</span> <span class="p">{}},</span> <span class="n">safe_dict</span><span class="p">)</span>
 
         <span class="k">except</span> <span class="ne">SyntaxError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SubObjective</span><span class="o">.</span><span class="n">_warned_names</span><span class="p">:</span>
@@ -851,10 +859,12 @@
         <span class="k">if</span> <span class="s2">"?"</span> <span class="ow">in</span> <span class="n">condition_str</span><span class="p">:</span>
             <span class="n">condition_str</span> <span class="o">=</span> <span class="n">_replace_ternary</span><span class="p">(</span><span class="n">condition_str</span><span class="p">)</span>
 
-        <span class="c1"># Replace CasADi logical operators with Python equivalents for eval</span>
-        <span class="n">condition_str</span> <span class="o">=</span> <span class="n">condition_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"&amp;&amp;"</span><span class="p">,</span> <span class="s2">" and "</span><span class="p">)</span>
-        <span class="n">condition_str</span> <span class="o">=</span> <span class="n">condition_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"||"</span><span class="p">,</span> <span class="s2">" or "</span><span class="p">)</span>
-        <span class="n">condition_str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"(?&lt;![&lt;&gt;=!])!(?!=)"</span><span class="p">,</span> <span class="s2">" not "</span><span class="p">,</span> <span class="n">condition_str</span><span class="p">)</span>
+        <span class="c1"># Replace CasADi logical operators with NumPy's elementwise equivalents</span>
+        <span class="c1"># so the condition can be evaluated on whole arrays at once instead of</span>
+        <span class="c1"># per-row (Python's and/or/not only work on single truth values).</span>
+        <span class="n">condition_str</span> <span class="o">=</span> <span class="n">condition_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"&amp;&amp;"</span><span class="p">,</span> <span class="s2">" &amp; "</span><span class="p">)</span>
+        <span class="n">condition_str</span> <span class="o">=</span> <span class="n">condition_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"||"</span><span class="p">,</span> <span class="s2">" | "</span><span class="p">)</span>
+        <span class="n">condition_str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"(?&lt;![&lt;&gt;=!])!(?!=)"</span><span class="p">,</span> <span class="s2">" ~"</span><span class="p">,</span> <span class="n">condition_str</span><span class="p">)</span>
 
         <span class="n">identifier_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">'[a-zA-Z_][a-zA-Z0-9_]*'</span>
         <span class="n">potential_vars</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">identifier_pattern</span><span class="p">,</span> <span class="n">condition_str</span><span class="p">)</span>
@@ -890,20 +900,19 @@
                     <span class="k">break</span>
 
         <span class="n">n_rows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_rows</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rows</span><span class="p">):</span>
-            <span class="n">local_vars</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">values_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">local_vars</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">eval_str</span> <span class="o">=</span> <span class="n">condition_str</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">eval_str</span><span class="p">,</span> <span class="p">{</span><span class="s2">"__builtins__"</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">"abs"</span><span class="p">:</span> <span class="nb">abs</span><span class="p">,</span> <span class="s2">"min"</span><span class="p">:</span> <span class="nb">min</span><span class="p">,</span> <span class="s2">"max"</span><span class="p">:</span> <span class="nb">max</span><span class="p">,</span> <span class="s2">"where"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">},</span> <span class="n">local_vars</span><span class="p">)</span>
-                <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error evaluating condition at row </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-                <span class="n">mask</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span>
+                <span class="n">condition_str</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">"__builtins__"</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">"abs"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span> <span class="s2">"min"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span> <span class="s2">"max"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span> <span class="s2">"where"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">},</span>
+                <span class="n">values_dict</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># A condition with no per-row variables (e.g. a constant) evaluates</span>
+            <span class="c1"># to a plain bool instead of an array; broadcast it to full length.</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">),</span> <span class="p">(</span><span class="n">n_rows</span><span class="p">,))</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Error evaluating condition '</span><span class="si">{</span><span class="n">condition_str</span><span class="si">}</span><span class="s2">': </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_rows</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span></div>
 </pre></div>
