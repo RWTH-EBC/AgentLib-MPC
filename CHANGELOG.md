@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.04
+- improve objective logging
+
 ## 1.0.3 
 - Bug fix: circular import of objective in casadi model
 

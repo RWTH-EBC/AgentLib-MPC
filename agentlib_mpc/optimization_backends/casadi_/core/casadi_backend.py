@@ -290,7 +290,13 @@ class CasADiBackend(OptimizationBackend):
 
         # Calculate objective values
         df = results.df
-        objective_names, objective_values = self.approximate_objective(df)
+        
+        # Skip objective calculation for legacy objectives
+        if getattr(self.system.objective, '_is_legacy_wrapped', False):
+            objective_names = []
+            objective_values = {}
+        else:
+            objective_names, objective_values = self.approximate_objective(df)
 
         if not self.results_folder_exists():
             if not self.config.save_only_stats:
