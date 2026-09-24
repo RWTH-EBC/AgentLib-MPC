@@ -78,7 +78,8 @@
 <p>To run a model predictive controller, a system model for use in optimization
 is required. What model types are available depends on the chosen
 optimization backend. In this section, creating an MPC with a CasADi backend
-is explained. Open the ‘examples/one_room_mpc/physical/simple_mpc.py’ example.</p>
+is explained. <span class="raw-html-m2r"><br></span>
+Open the ‘examples/one_room_mpc/physical/simple_mpc.py’ example.</p>
 <section id="imports">
 <h3>Imports<a class="headerlink" href="#imports" title="Permalink to this heading"></a></h3>
 <p>As usual, let’s look at the imports first.</p>
@@ -174,11 +175,13 @@ config for our CasadiModel.</p>
 <p>Our room model has four inputs. These include the inputs of the physical
 system, being the air mass flow from the AHU, the temperature of this mass flow and
 the load on the system. We also count the upper room temperature limit as an
-input, since it should be settable by the occupants of the room. To declare an input, we put a CasadiInput object into a list <em>inputs</em>. A
+input, since it should be settable by the occupants of the room. <span class="raw-html-m2r"><br></span>
+To declare an input, we put a CasadiInput object into a list <em>inputs</em>. A
 variable always needs a name. You can also give it a value, which will be
 used if no other value is provided at Runtime. The <em>unit</em> and <em>description</em>
 parameters currently serve no purpose, but can be helpful to readers of the
-model. Next we define the states. For one, that is the temperature of the room.
+model. <span class="raw-html-m2r"><br></span>
+Next we define the states. For one, that is the temperature of the room.
 Since we use soft constraints to enforce an adequate room temperature, we also have to include
 a slack variable.</p>
 <div class="admonition note">
@@ -199,7 +202,8 @@ associated with an algebraic equation.</p>
 <h4>Equation and constraints<a class="headerlink" href="#equation-and-constraints" title="Permalink to this heading"></a></h4>
 <p>After specifying a config, we can write the model class itself, which containts the
 dynamics. First, it is important to specify the <code class="docutils literal notranslate"><span class="pre">config_type</span></code> attribute of the
-class and set it to the config class we defined. The model equations and constraints are specified in the <code class="docutils literal notranslate"><span class="pre">setup_system</span></code> method.
+class and set it to the config class we defined. <span class="raw-html-m2r"><br></span>
+The model equations and constraints are specified in the <code class="docutils literal notranslate"><span class="pre">setup_system</span></code> method.
 We can access the variables defined above by referencing <code class="docutils literal notranslate"><span class="pre">self.&lt;name&gt;</span></code>.
 Differential equations are associated with a variable by setting the <code class="docutils literal notranslate"><span class="pre">ode</span></code>
 attribute of that variable. In the same way, algebraic equations can be
@@ -281,7 +285,7 @@ PID. It will also affect the sampling with which results are saved.</p>
 <p>Below is the config for the MPC agent. As before, we specify an “id” and a
 list of modules, with the first one being a local_broadcast communicator.
 Then, we add the MPC module. We specify “mpc” as the type, and then add the
-other options. A central part of the MPC is its _optimization<em>backend</em>. The
+other options. A central part of the MPC is its <em>optimization_backend</em>. The
 optimization backend is specified by another dictionary, always consisting
 of “type” and “model”. The model will usually be user-specified and usually
 is provided with the same syntax of “file” and “class_name” as the custom
@@ -323,7 +327,8 @@ The other options the MPC module takes are <code class="docutils literal notrans
 <code class="docutils literal notranslate"><span class="pre">states</span></code> . The time step should be provided
 in seconds. The states in the MPC config refer to differential variables,
 not to be confused with states in the model, which refer to any internal
-variables. Quantities declared in the module config are variables of the multi-agent-system and
+variables. <span class="raw-html-m2r"><br></span>
+Quantities declared in the module config are variables of the multi-agent-system and
 can be shared with other modules of the same agent, and communicated with
 other agents. All agent variables declared here must match - in name - their
 counterpart in the provided model. Controls, states and inputs must be
@@ -332,7 +337,8 @@ required. Finally, parameters can be omitted, if a default value is provided
 in the model definition. Here, the weight parameters in the cost function
 are provided, as it might be required to change them. However, physical
 parameters such as the thermal capacity of air are taken from the model, as
-they are not expected to change. A variable is given a name and a value. For states, the value will determine
+they are not expected to change. <span class="raw-html-m2r"><br></span>
+A variable is given a name and a value. For states, the value will determine
 the initial value of the differential variable, if it is not provided
 externally, for example by a simulation agent. Since controls and
 states are the variables of the optimization
@@ -386,7 +392,8 @@ and is consistent across agents for the same variable. By default, the name
 of a variable is also its alias. In the case of T_out however, we have to
 specify that this is the variable we want to send to the MPC for its initial
 state. Since the state in the MPC agent is named “T” (and by default has
-alias “T”), we have to set “T” as the alias for our model output. The model in turn takes the computed mass flow setpoint as input, hence we
+alias “T”), we have to set “T” as the alias for our model output. <span class="raw-html-m2r"><br></span>
+The model in turn takes the computed mass flow setpoint as input, hence we
 also have to declare the input. Since the names mDot already match between
 simulator and MPC, the explicit alias declaration is redundant in this case.
 Additionally, we set a default value for “mDot”, which is used before the

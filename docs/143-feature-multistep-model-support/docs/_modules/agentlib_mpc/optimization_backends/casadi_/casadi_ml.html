@@ -203,10 +203,29 @@
                 <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">rnn_state_variables</span><span class="p">,</span>
                 <span class="n">ref_list</span><span class="o">=</span><span class="p">[],</span>
                 <span class="n">use_in_stage_function</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">include_in_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_steps</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">rnn_warmup_steps</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_input_names</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">rnn_warmup_input_names</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_step</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">rnn_warmup_step_function</span>
+
+            <span class="c1"># the warmup runs on the measured past, which the MPC only collects for</span>
+            <span class="c1"># variables it knows</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_steps</span><span class="p">:</span>
+                <span class="n">unknown</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">name</span>
+                    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rnn_warmup_input_names</span>
+                    <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">var_ref</span><span class="o">.</span><span class="n">all_variables</span><span class="p">()</span>
+                <span class="p">]</span>
+                <span class="k">if</span> <span class="n">unknown</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"The inputs </span><span class="si">{</span><span class="n">unknown</span><span class="si">}</span><span class="s2"> of a recurrent ML-model are not part of "</span>
+                        <span class="sa">f</span><span class="s2">"the variables of the MPC module. Their measured past is "</span>
+                        <span class="sa">f</span><span class="s2">"needed to warm up the hidden states, so they have to be "</span>
+                        <span class="sa">f</span><span class="s2">"declared as states, controls, inputs or outputs of the MPC. "</span>
+                        <span class="sa">f</span><span class="s2">"Variables which only exist inside the model, such as "</span>
+                        <span class="sa">f</span><span class="s2">"algebraic ones, cannot be used by a recurrent model."</span>
+                    <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">sim_step</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">make_predict_function_for_mpc</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lags_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">lags_dict</span>
