@@ -98,7 +98,10 @@ def build_keras_model(rnn_type: str) -> keras.Model:
 
 def keras_rollout(model: keras.Model, sequence: np.ndarray) -> np.ndarray:
     """Predicts a sequence with the step model, starting with zero hidden states."""
-    step_model = model.get_layer("out_model")
+    try:
+        step_model = model.get_layer("out_model")
+    except ValueError:
+        step_model = model  # the model itself performs the recurrent step
     number_of_states = len(step_model.inputs) - 1
     zero_states = [
         np.zeros((1, UNITS), dtype="float32") for _ in range(number_of_states)
@@ -361,3 +364,74 @@ def test_model_without_recurrent_step_is_rejected(tmp_path):
 
     with pytest.raises(ConfigurationError, match="multi step model"):
         CasadiRNN(serialized_model(path))
+
+
+def test_warmup_inputs_have_to_be_known_to_the_mpc(keras_model_path):
+    """The warmup needs the measured past, which the MPC only collects for its own
+    variables. A model input that only exists inside the model is rejected."""
+    serialized = serialized_model(keras_model_path)
+    backend = CasADiBBBackend(
+        config={
+            "model": {
+                "type": {
+                    "file": Path(
+                        Path(__file__).parent, "fixtures", "recurrent_ml_model.py"
+                    ),
+                    "class_name": "RecurrentRoomModel",
+                },
+                "ml_model_sources": [serialized],
+            },
+            "discretization_options": {
+                "method": "multiple_shooting",
+                "time_step": TIME_STEP,
+                "prediction_horizon": HORIZON,
+            },
+        }
+    )
+    backend.register_logger(logging.getLogger(__name__))
+
+    # 'load' is a model variable, but it is not declared in the MPC module
+    with pytest.raises(ConfigurationError, match="warm up the hidden states"):
+        backend.setup_optimization(
+            VariableReference(
+                states=["T"],
+                controls=["mDot"],
+                inputs=["T_in", "T_upper"],
+                parameters=["s_T", "r_mDot"],
+                outputs=["T_out"],
+            )
+        )
+
+
+def test_batch_normalization_on_a_sequence(tmp_path):
+    """A layer inside a recurrent model has a free sequence length.
+
+    BatchNormalization has to determine the number of rows it normalizes when it is
+    evaluated, not from its static input shape.
+    """
+    keras.utils.set_random_seed(2)
+    sequence = keras.Input(shape=(None, len(FEATURES)))
+    state = keras.Input(shape=(UNITS,))
+    normalized = keras.layers.BatchNormalization()(sequence)
+    prediction, next_state = keras.layers.SimpleRNN(
+        UNITS, return_state=True, return_sequences=True
+    )(normalized, initial_state=state)
+    prediction = keras.layers.Dense(1)(prediction)
+    step = keras.Model([sequence, state], [prediction, next_state], name="step")
+
+    path = Path(tmp_path, "batch_norm.keras")
+    step.save(path)
+    predictor = CasadiRNN(serialized_model(path))
+
+    values = np.array(
+        [[TRAJECTORIES[name][t] for name in FEATURES] for t in GRID], dtype="float32"
+    )
+    expected = keras_rollout(keras.saving.load_model(path), values)
+
+    states = ca.DM.zeros(predictor.state_dimension, 1)
+    predictions = []
+    for index in range(values.shape[0]):
+        prediction, states = predictor.predict(ca.DM(values[index, :]), states)
+        predictions.append(float(prediction))
+
+    assert np.allclose(predictions, expected, atol=1e-4)

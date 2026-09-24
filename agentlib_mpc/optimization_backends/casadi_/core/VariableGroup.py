@@ -150,6 +150,7 @@ class OptimizationVariable(OptimizationQuantity):
 class OptimizationParameter(OptimizationQuantity):
     full_with_defaults: ca.MX
     add_default_values: ca.Function
+    include_in_results: bool = True
 
     @classmethod
     def declare(
@@ -159,6 +160,7 @@ class OptimizationParameter(OptimizationQuantity):
         ref_list: list[str],
         use_in_stage_function=True,
         assert_complete: bool = False,
+        include_in_results: bool = True,
     ):
         """
         Declares a group of optimization parameters that serve a purpose in
@@ -179,6 +181,9 @@ class OptimizationParameter(OptimizationQuantity):
                 the stage function at every point in the discretization function.
             assert_complete: If True, throws an error if the ref_list does
                 not contain all variables.
+            include_in_results: If False, the parameters are not added to the results
+                of the optimization. Useful for internal parameters, which would only
+                blow up the result files.
         """
         provided = []
         full_with_defaults = []
@@ -226,6 +231,7 @@ class OptimizationParameter(OptimizationQuantity):
             full_names=tuple(full_names),
             use_in_stage_function=use_in_stage_function,
             add_default_values=add_default_values,
+            include_in_results=include_in_results,
         )
 
     def __hash__(self):

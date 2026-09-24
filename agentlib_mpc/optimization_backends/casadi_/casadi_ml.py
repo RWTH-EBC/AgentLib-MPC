@@ -129,10 +129,29 @@ class CasadiMLSystem(FullSystem):
                 variables=model.rnn_state_variables,
                 ref_list=[],
                 use_in_stage_function=False,
+                include_in_results=False,
             )
             self.rnn_warmup_steps = model.rnn_warmup_steps
             self.rnn_warmup_input_names = model.rnn_warmup_input_names
             self.rnn_warmup_step = model.rnn_warmup_step_function
+
+            # the warmup runs on the measured past, which the MPC only collects for
+            # variables it knows
+            if self.rnn_warmup_steps:
+                unknown = [
+                    name
+                    for name in self.rnn_warmup_input_names
+                    if name not in var_ref.all_variables()
+                ]
+                if unknown:
+                    raise ConfigurationError(
+                        f"The inputs {unknown} of a recurrent ML-model are not part of "
+                        f"the variables of the MPC module. Their measured past is "
+                        f"needed to warm up the hidden states, so they have to be "
+                        f"declared as states, controls, inputs or outputs of the MPC. "
+                        f"Variables which only exist inside the model, such as "
+                        f"algebraic ones, cannot be used by a recurrent model."
+                    )
 
         self.sim_step = model.make_predict_function_for_mpc()
         self.lags_dict: dict[str, int] = model.lags_dict

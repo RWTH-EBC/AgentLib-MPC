@@ -456,6 +456,8 @@ class Discretization(abc.ABC):
             names_list = sys_pars.full_names
             if not names_list:
                 continue
+            if not sys_pars.include_in_results:
+                continue
 
             columns.extend(list(map(lambda x: ("parameter", x), names_list)))
             grid = self.grid(sys_pars)

@@ -353,30 +353,40 @@ class Flatten(Layer):
 
 class BatchNormalization(Layer):
     """
-    Batch Normalizing layer. Make sure the axis setting is set to two.
+    Batch Normalizing layer. The last axis is the normalized one.
     """
 
     def __init__(self, layer: layers.BatchNormalization):
         super(BatchNormalization, self).__init__(layer)
 
-        # weights and biases
-        self.gamma = ca.np.vstack([layer.get_weights()[0]] * self.input_shape[0])
-        self.beta = ca.np.vstack([layer.get_weights()[1]] * self.input_shape[0])
-        self.mean = ca.np.vstack([layer.get_weights()[2]] * self.input_shape[0])
-        self.var = ca.np.vstack([layer.get_weights()[3]] * self.input_shape[0])
+        # weights and biases, as rows so they can be repeated over the input
+        weights = layer.get_weights()
+        self.gamma = weights[0].reshape(1, -1)
+        self.beta = weights[1].reshape(1, -1)
+        self.mean = weights[2].reshape(1, -1)
+        self.var = weights[3].reshape(1, -1)
         self.epsilon = layer.get_config()["epsilon"]
 
         # check Dimensions
-        if self.input_shape != self.gamma.shape:
-            axis = self.config["axis"][0]
-            raise ValueError(f"Dimension mismatch. Normalized axis: {axis}")
-
+        if self.input_shape is not None and self.input_shape[1] != self.gamma.shape[1]:
+            raise ValueError(
+                f"Dimension mismatch in layer {self.name}. The layer normalizes "
+                f"{self.gamma.shape[1]} features, but its input has "
+                f"{self.input_shape[1]}. Normalized axis: {self.config['axis']}"
+            )
 
     def forward(self, input):
+        # CasADi does not broadcast, so the parameters are repeated over the rows of
+        # the input. The number of rows is only known here, because a layer inside a
+        # recurrent model has a free sequence length.
+        rows = input.shape[0]
+        gamma, beta, mean, var = (
+            np.repeat(param, rows, axis=0)
+            for param in (self.gamma, self.beta, self.mean, self.var)
+        )
+
         # forward pass
-        f = (input - self.mean) / (
-            ca.sqrt(self.var + self.epsilon)
-        ) * self.gamma + self.beta
+        f = (input - mean) / (ca.sqrt(var + self.epsilon)) * gamma + beta
 
         return f
 
