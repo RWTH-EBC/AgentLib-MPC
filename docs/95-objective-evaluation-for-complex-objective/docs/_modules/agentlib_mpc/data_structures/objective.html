@@ -290,6 +290,39 @@
     <span class="k">return</span> <span class="n">expr_str</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_replace_logical_ops</span><span class="p">(</span><span class="n">expr_str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Replace CasADi's (a&amp;&amp;b), (a||b) and (!a) with NumPy's logical_and/or/not</span>
+<span class="sd">    calls. Unlike &amp;, | and ~, these treat any non-zero number as True, so</span>
+<span class="sd">    float/int operands (e.g. a binary input stored as 0.0/1.0) work too.</span>
+<span class="sd">    Relies on CasADi wrapping every logical operation in its own parentheses.</span>
+<span class="sd">    """</span>
+    <span class="n">expr_str</span> <span class="o">=</span> <span class="n">expr_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"(!"</span><span class="p">,</span> <span class="s2">"logical_not("</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">op</span><span class="p">,</span> <span class="n">func</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">"&amp;&amp;"</span><span class="p">,</span> <span class="s2">"logical_and"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"||"</span><span class="p">,</span> <span class="s2">"logical_or"</span><span class="p">)):</span>
+        <span class="n">expr_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">expr_str</span><span class="si">}</span><span class="s2">)"</span>  <span class="c1"># guarantees an enclosing parenthesis</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">expr_str</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="c1"># Walk back to the opening parenthesis of the enclosing (a op b)</span>
+            <span class="n">depth</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">expr_str</span><span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="o">==</span> <span class="s2">")"</span><span class="p">:</span>
+                    <span class="n">depth</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">elif</span> <span class="n">expr_str</span><span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"("</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">depth</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">break</span>
+                    <span class="n">depth</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="n">expr_str</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">expr_str</span><span class="p">[:</span><span class="n">start</span><span class="p">]</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2">("</span>
+                <span class="o">+</span> <span class="n">expr_str</span><span class="p">[</span><span class="n">start</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="n">idx</span><span class="p">]</span>
+                <span class="o">+</span> <span class="s2">", "</span>
+                <span class="o">+</span> <span class="n">expr_str</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">op</span><span class="p">)</span> <span class="p">:]</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">expr_str</span>
+
+
 <span class="n">_CASADI_REPLACEMENTS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">"sq("</span><span class="p">:</span> <span class="s2">"("</span><span class="p">,</span>
     <span class="s2">"fabs("</span><span class="p">:</span> <span class="s2">"abs("</span><span class="p">,</span>
@@ -347,12 +380,16 @@
     <span class="s2">"max"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span>
     <span class="s2">"min"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span>
     <span class="s2">"where"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">,</span>
+    <span class="s2">"logical_and"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">,</span>
+    <span class="s2">"logical_or"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">,</span>
+    <span class="s2">"logical_not"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">_CASADI_FUNCTION_NAMES</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
     <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">"("</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">_CASADI_REPLACEMENTS</span><span class="p">]</span>
     <span class="o">+</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">"("</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_CASADI_REPLACEMENTS</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"("</span><span class="p">)]</span>
     <span class="o">+</span> <span class="p">[</span><span class="s2">"round"</span><span class="p">,</span> <span class="s2">"max"</span><span class="p">,</span> <span class="s2">"min"</span><span class="p">,</span> <span class="s2">"minimum"</span><span class="p">,</span> <span class="s2">"maximum"</span><span class="p">,</span> <span class="s2">"where"</span><span class="p">,</span> <span class="s2">"abs"</span><span class="p">,</span> <span class="s2">"power"</span><span class="p">]</span>
+    <span class="o">+</span> <span class="p">[</span><span class="s2">"logical_and"</span><span class="p">,</span> <span class="s2">"logical_or"</span><span class="p">,</span> <span class="s2">"logical_not"</span><span class="p">]</span>
 <span class="p">)</span>
 
 
@@ -369,8 +406,7 @@
     <span class="k">if</span> <span class="s2">"?"</span> <span class="ow">in</span> <span class="n">expr_str</span><span class="p">:</span>
         <span class="n">expr_str</span> <span class="o">=</span> <span class="n">_replace_ternary</span><span class="p">(</span><span class="n">expr_str</span><span class="p">)</span>
 
-    <span class="c1"># Replace logical NOT '!' with bitwise NOT '~' for NumPy arrays</span>
-    <span class="n">expr_str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"(?&lt;![&lt;&gt;=!])!(?!=)"</span><span class="p">,</span> <span class="s2">"~"</span><span class="p">,</span> <span class="n">expr_str</span><span class="p">)</span>
+    <span class="n">expr_str</span> <span class="o">=</span> <span class="n">_replace_logical_ops</span><span class="p">(</span><span class="n">expr_str</span><span class="p">)</span>
 
     <span class="n">eval_str</span> <span class="o">=</span> <span class="n">_replace_sq_calls</span><span class="p">(</span><span class="n">expr_str</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">casadi_func</span><span class="p">,</span> <span class="n">replacement</span> <span class="ow">in</span> <span class="n">_CASADI_REPLACEMENTS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -859,12 +895,7 @@
         <span class="k">if</span> <span class="s2">"?"</span> <span class="ow">in</span> <span class="n">condition_str</span><span class="p">:</span>
             <span class="n">condition_str</span> <span class="o">=</span> <span class="n">_replace_ternary</span><span class="p">(</span><span class="n">condition_str</span><span class="p">)</span>
 
-        <span class="c1"># Replace CasADi logical operators with NumPy's elementwise equivalents</span>
-        <span class="c1"># so the condition can be evaluated on whole arrays at once instead of</span>
-        <span class="c1"># per-row (Python's and/or/not only work on single truth values).</span>
-        <span class="n">condition_str</span> <span class="o">=</span> <span class="n">condition_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"&amp;&amp;"</span><span class="p">,</span> <span class="s2">" &amp; "</span><span class="p">)</span>
-        <span class="n">condition_str</span> <span class="o">=</span> <span class="n">condition_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"||"</span><span class="p">,</span> <span class="s2">" | "</span><span class="p">)</span>
-        <span class="n">condition_str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"(?&lt;![&lt;&gt;=!])!(?!=)"</span><span class="p">,</span> <span class="s2">" ~"</span><span class="p">,</span> <span class="n">condition_str</span><span class="p">)</span>
+        <span class="n">condition_str</span> <span class="o">=</span> <span class="n">_replace_logical_ops</span><span class="p">(</span><span class="n">condition_str</span><span class="p">)</span>
 
         <span class="n">identifier_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">'[a-zA-Z_][a-zA-Z0-9_]*'</span>
         <span class="n">potential_vars</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">identifier_pattern</span><span class="p">,</span> <span class="n">condition_str</span><span class="p">)</span>
@@ -904,7 +935,16 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span>
                 <span class="n">condition_str</span><span class="p">,</span>
-                <span class="p">{</span><span class="s2">"__builtins__"</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">"abs"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span> <span class="s2">"min"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span> <span class="s2">"max"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span> <span class="s2">"where"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">"__builtins__"</span><span class="p">:</span> <span class="p">{},</span>
+                    <span class="s2">"abs"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span>
+                    <span class="s2">"min"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span>
+                    <span class="s2">"max"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span>
+                    <span class="s2">"where"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">,</span>
+                    <span class="s2">"logical_and"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">,</span>
+                    <span class="s2">"logical_or"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">,</span>
+                    <span class="s2">"logical_not"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_not</span><span class="p">,</span>
+                <span class="p">},</span>
                 <span class="n">values_dict</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="c1"># A condition with no per-row variables (e.g. a constant) evaluates</span>
