@@ -217,6 +217,39 @@ def _replace_sq_calls(expr_str):
     return expr_str
 
 
+def _replace_logical_ops(expr_str):
+    """
+    Replace CasADi's (a&&b), (a||b) and (!a) with NumPy's logical_and/or/not
+    calls. Unlike &, | and ~, these treat any non-zero number as True, so
+    float/int operands (e.g. a binary input stored as 0.0/1.0) work too.
+    Relies on CasADi wrapping every logical operation in its own parentheses.
+    """
+    expr_str = expr_str.replace("(!", "logical_not(")
+    for op, func in (("&&", "logical_and"), ("||", "logical_or")):
+        expr_str = f"({expr_str})"  # guarantees an enclosing parenthesis
+        while True:
+            idx = expr_str.find(op)
+            if idx == -1:
+                break
+            # Walk back to the opening parenthesis of the enclosing (a op b)
+            depth = 0
+            for start in range(idx - 1, -1, -1):
+                if expr_str[start] == ")":
+                    depth += 1
+                elif expr_str[start] == "(":
+                    if depth == 0:
+                        break
+                    depth -= 1
+            expr_str = (
+                expr_str[:start]
+                + f"{func}("
+                + expr_str[start + 1 : idx]
+                + ", "
+                + expr_str[idx + len(op) :]
+            )
+    return expr_str
+
+
 _CASADI_REPLACEMENTS = {
     "sq(": "(",
     "fabs(": "abs(",
@@ -274,12 +307,16 @@ _NUMPY_FUNCS = {
     "max": np.maximum,
     "min": np.minimum,
     "where": np.where,
+    "logical_and": np.logical_and,
+    "logical_or": np.logical_or,
+    "logical_not": np.logical_not,
 }
 
 _CASADI_FUNCTION_NAMES = set(
     [k.rstrip("(") for k in _CASADI_REPLACEMENTS]
     + [v.rstrip("(") for v in _CASADI_REPLACEMENTS.values() if v.endswith("(")]
     + ["round", "max", "min", "minimum", "maximum", "where", "abs", "power"]
+    + ["logical_and", "logical_or", "logical_not"]
 )
 
 
@@ -296,8 +333,7 @@ def _compile_expression(expr):
     if "?" in expr_str:
         expr_str = _replace_ternary(expr_str)
 
-    # Replace logical NOT '!' with bitwise NOT '~' for NumPy arrays
-    expr_str = re.sub(r"(?<![<>=!])!(?!=)", "~", expr_str)
+    expr_str = _replace_logical_ops(expr_str)
 
     eval_str = _replace_sq_calls(expr_str)
     for casadi_func, replacement in _CASADI_REPLACEMENTS.items():
@@ -786,12 +822,7 @@ class ConditionalObjective:
         if "?" in condition_str:
             condition_str = _replace_ternary(condition_str)
 
-        # Replace CasADi logical operators with NumPy's elementwise equivalents
-        # so the condition can be evaluated on whole arrays at once instead of
-        # per-row (Python's and/or/not only work on single truth values).
-        condition_str = condition_str.replace("&&", " & ")
-        condition_str = condition_str.replace("||", " | ")
-        condition_str = re.sub(r"(?<![<>=!])!(?!=)", " ~", condition_str)
+        condition_str = _replace_logical_ops(condition_str)
 
         identifier_pattern = r'[a-zA-Z_][a-zA-Z0-9_]*'
         potential_vars = re.findall(identifier_pattern, condition_str)
@@ -831,7 +862,16 @@ class ConditionalObjective:
         try:
             result = eval(
                 condition_str,
-                {"__builtins__": {}, "abs": np.abs, "min": np.minimum, "max": np.maximum, "where": np.where},
+                {
+                    "__builtins__": {},
+                    "abs": np.abs,
+                    "min": np.minimum,
+                    "max": np.maximum,
+                    "where": np.where,
+                    "logical_and": np.logical_and,
+                    "logical_or": np.logical_or,
+                    "logical_not": np.logical_not,
+                },
                 values_dict,
             )
             # A condition with no per-row variables (e.g. a constant) evaluates

@@ -14,6 +14,7 @@ import unittest
 import warnings
 from pathlib import Path
 
+import casadi as ca
 import numpy as np
 import pandas as pd
 
@@ -24,6 +25,10 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from agentlib_mpc.data_structures.objective import (
+    CombinedObjective,
+    ConditionalObjective,
+    SubObjective,
+    _replace_logical_ops,
     _replace_subexpressions,
     _replace_sq_calls,
 )
@@ -152,6 +157,178 @@ class TestObjectiveEvaluation(unittest.TestCase):
         # row1: 1*0.01 + 3*0.5**2 + 2*(295-295)**2 =  0.76, ts=200
         expected_total = 18.02 * 100 + 0.76 * 200
         self.assertAlmostEqual(values["total"], expected_total)
+
+
+class TestBareMxAutoWrapping(unittest.TestCase):
+    """Regression tests for mixing raw casadi.MX expressions with wrapper
+    objects (SubObjective/CombinedObjective) inside CombinedObjective and
+    ConditionalObjective.
+
+    CasadiModel.__init__ already auto-wraps a single bare MX at the root of
+    the objective tree (backwards-compat shim for the deprecated notation).
+    This used to be the *only* place that happened, so mixing a bare MX
+    branch (e.g. from plain `sum([...]) / normalization` arithmetic) with a
+    wrapper branch built via create_combined_objective(...)/
+    create_conditional_objective(...) raised AttributeError deep inside
+    get_casadi_expression(). These tests cover the same auto-wrap now
+    happening at every level of the tree.
+    """
+
+    def test_combined_objective_mixes_bare_mx_and_sub_objective(self):
+        x = ca.MX.sym("x")
+        y = ca.MX.sym("y")
+        wrapped = SubObjective(expressions=y, weight=2, name="wrapped")
+
+        combined = CombinedObjective(x, wrapped, normalization=1.0)
+
+        self.assertIsInstance(combined.objectives[0], SubObjective)
+        self.assertIs(combined.objectives[1], wrapped)
+        self.assertIsInstance(combined.get_casadi_expression(), ca.MX)
+
+    def test_conditional_objective_mixes_bare_mx_and_combined_objective(self):
+        x = ca.MX.sym("x")
+        y = ca.MX.sym("y")
+        condition = ca.MX.sym("cond")
+
+        combined_branch = CombinedObjective(SubObjective(expressions=y))
+
+        conditional = ConditionalObjective(
+            (condition, x), default_objective=combined_branch
+        )
+
+        self.assertIsInstance(conditional.get_casadi_expression(), ca.MX)
+
+    def test_pure_wrapper_usage_is_unaffected(self):
+        x = ca.MX.sym("x")
+        sub = SubObjective(expressions=x, weight=1, name="sub")
+
+        combined = CombinedObjective(sub, normalization=1.0)
+
+        # Already a wrapper object -- must be stored unchanged, not re-wrapped.
+        self.assertIs(combined.objectives[0], sub)
+        self.assertIsInstance(combined.get_casadi_expression(), ca.MX)
+
+    def test_pure_bare_mx_default_objective_still_works(self):
+        # Mirrors the pre-existing root-level wrap in CasadiModel.__init__: a
+        # bare MX given as the sole (default) objective should still work.
+        x = ca.MX.sym("x")
+
+        conditional = ConditionalObjective(default_objective=x)
+
+        self.assertIsInstance(conditional.default_objective, CombinedObjective)
+        self.assertIsInstance(conditional.get_casadi_expression(), ca.MX)
+
+
+class TestReplaceLogicalOps(unittest.TestCase):
+    """Unit tests for the &&/||/! -> logical_and/or/not rewrite helper."""
+
+    def test_and(self):
+        self.assertEqual(
+            _replace_logical_ops("((1<x)&&(y<2))"),
+            "((logical_and((1<x), (y<2))))",
+        )
+
+    def test_nested_or_and(self):
+        self.assertEqual(
+            _replace_logical_ops("((1<x)||((y<2)&&u))"),
+            "((logical_or((1<x), logical_and((y<2), u))))",
+        )
+
+    def test_not_leaves_not_equal_untouched(self):
+        self.assertEqual(
+            _replace_logical_ops("((!u)&&(x!=1))"),
+            "((logical_and(logical_not(u), (x!=1))))",
+        )
+
+
+class TestConditionEvaluation(unittest.TestCase):
+    """Regression tests for the vectorized ConditionalObjective condition
+    evaluation. Mapping &&/||/! to NumPy's bitwise &/|/~ only works on boolean
+    arrays: a float operand (e.g. a binary input stored as 0.0/1.0) raised a
+    TypeError, which was swallowed and turned the whole mask False, and int
+    operands were combined bitwise (2 & True == 0)."""
+
+    def setUp(self):
+        self.x, self.y, self.u, self.k = (ca.MX.sym(n) for n in "xyuk")
+        self.df = _make_result_df(
+            np.array([0, 100, 200, 300]),
+            {
+                ("variable", "x"): [0.5, 1.5, 1.5, 0.5],
+                ("variable", "y"): [1.0, 3.0, 1.0, 1.0],
+                ("variable", "u"): [1.0, 1.0, 0.0, 0.0],
+                ("variable", "k"): [2, 0, 2, 0],
+            },
+        )
+
+    def _mask(self, condition):
+        mask = ConditionalObjective()._evaluate_condition(condition, self.df)
+        return mask.tolist()
+
+    def test_and_of_comparisons(self):
+        condition = ca.logic_and(self.x > 1, self.y < 2)
+        self.assertEqual(self._mask(condition), [False, False, True, False])
+
+    def test_and_with_float_operand(self):
+        condition = ca.logic_and(self.u, self.x > 1)
+        self.assertEqual(self._mask(condition), [False, True, False, False])
+
+    def test_not_of_float_operand(self):
+        condition = ca.logic_not(self.u)
+        self.assertEqual(self._mask(condition), [False, False, True, True])
+
+    def test_nested_or_and_with_float_operand(self):
+        condition = ca.logic_or(self.x > 1, ca.logic_and(self.y < 2, self.u))
+        self.assertEqual(self._mask(condition), [True, True, True, False])
+
+    def test_nonzero_operand_other_than_one_is_true(self):
+        # 2 is logically True, even though 2 & True == 0 bitwise.
+        condition = ca.logic_and(self.k, self.u > 0.5)
+        self.assertEqual(self._mask(condition), [True, False, False, False])
+
+    def test_not_inside_if_else_subexpression(self):
+        # CasADi prints this with an @1 subexpression, a ternary and a (!@1).
+        condition = ca.if_else(self.x > 1, self.y, self.u) > 0.5
+        self.assertEqual(self._mask(condition), [True, True, True, False])
+
+
+class TestSubObjectiveLogicalOps(unittest.TestCase):
+    """Regression tests for &&/||/! inside SubObjective expressions. &&/||
+    used to be left untranslated, so the term hit a SyntaxError and was
+    logged as 0, and ! became ~, which raised a TypeError on float data."""
+
+    def setUp(self):
+        self.x, self.y, self.u = (ca.MX.sym(n) for n in "xyu")
+        # Last row is dropped by the evaluation; ts is 100 for every step.
+        self.df = _make_result_df(
+            np.array([0, 100, 200, 300]),
+            {
+                ("variable", "x"): [0.5, 1.5, 1.5, 0.5],
+                ("variable", "y"): [1.0, 3.0, 1.0, 1.0],
+                ("variable", "u"): [1.0, 1.0, 0.0, 0.0],
+            },
+        )
+
+    def _value(self, expression, name):
+        objective = SubObjective(expressions=expression, name=name)
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", RuntimeWarning)
+            return objective.calculate_value(self.df, 1)
+
+    def test_and_of_comparisons(self):
+        expression = ca.if_else(ca.logic_and(self.x > 1, self.y < 2), self.x, 0)
+        self.assertAlmostEqual(self._value(expression, "and_cmp"), 1.5 * 100)
+
+    def test_and_with_float_operand(self):
+        expression = ca.if_else(ca.logic_and(self.u, self.x > 1), self.y, 0)
+        self.assertAlmostEqual(self._value(expression, "and_float"), 3.0 * 100)
+
+    def test_or_with_float_operand(self):
+        expression = ca.if_else(ca.logic_or(self.u, self.x > 1), self.y, 0)
+        self.assertAlmostEqual(self._value(expression, "or_float"), 5.0 * 100)
+
+    def test_not_of_float_operand(self):
+        expression = ca.if_else(ca.logic_not(self.u), self.y, 0)
+        self.assertAlmostEqual(self._value(expression, "not_float"), 1.0 * 100)
 
 
 if __name__ == "__main__":
