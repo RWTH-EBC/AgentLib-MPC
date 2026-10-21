@@ -83,22 +83,22 @@
 
 
 <div class="viewcode-block" id="FallbackPIDConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.deactivate_mpc.html#agentlib_mpc.modules.deactivate_mpc.fallback_pid.FallbackPIDConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">FallbackPIDConfig</span><span class="p">(</span><span class="n">PIDConfig</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Config for FallbackPID: Adds the MPC active flag.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Config for FallbackPID: Adds the MPC active flag."""</span>
 
     <span class="n">mpc_active_flag</span><span class="p">:</span> <span class="n">AgentVariable</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="n">AgentVariable</span><span class="p">(</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MPC_FLAG_ACTIVE</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">True</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MPC_FLAG_ACTIVE</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">"bool"</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">),</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Boolean variable indicating if MPC is active (True=MPC active, PID inactive).&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Boolean variable indicating if MPC is active (True=MPC active, PID inactive)."</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="FallbackPID"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.deactivate_mpc.html#agentlib_mpc.modules.deactivate_mpc.fallback_pid.FallbackPID">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">FallbackPID</span><span class="p">(</span><span class="n">PID</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    PID controller active only when the MPC (indicated by mpc_active_flag) is inactive.</span>
 <span class="sd">    Simplified error handling. Assumes configuration and data are valid.</span>
 <span class="sd">    Resets integral state and timing upon activation/deactivation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">config</span><span class="p">:</span> <span class="n">FallbackPIDConfig</span>
     <span class="n">_mpc_was_active</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Track previous MPC state</span>
@@ -108,11 +108,11 @@
         <span class="c1"># Initialize tracker, actual state checked in first callback</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mpc_was_active</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;FallbackPID initialized. Monitoring MPC flag &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">mpc_active_flag</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+            <span class="sa">f</span><span class="s2">"FallbackPID initialized. Monitoring MPC flag '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">mpc_active_flag</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">'."</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_siso_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handles input, checks MPC status, runs PID if MPC is inactive.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Handles input, checks MPC status, runs PID if MPC is inactive."""</span>
 
         <span class="c1"># 1. Get current MPC status (assume variable exists and is bool)</span>
         <span class="n">mpc_flag_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">mpc_active_flag</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -123,7 +123,7 @@
             <span class="c1"># First run: just store the state</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_mpc_was_active</span> <span class="o">=</span> <span class="n">mpc_is_active</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;First run detected. Initial MPC state: </span><span class="si">{</span><span class="n">mpc_is_active</span><span class="si">}</span><span class="s2">. Fallback PID active: </span><span class="si">{</span><span class="ow">not</span><span class="w"> </span><span class="n">mpc_is_active</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"First run detected. Initial MPC state: </span><span class="si">{</span><span class="n">mpc_is_active</span><span class="si">}</span><span class="s2">. Fallback PID active: </span><span class="si">{</span><span class="ow">not</span><span class="w"> </span><span class="n">mpc_is_active</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">mpc_is_active</span><span class="p">:</span>  <span class="c1"># If starting active (MPC inactive)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">last_time</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">timestamp</span>  <span class="c1"># Set time correctly for first step</span>
@@ -134,14 +134,14 @@
             <span class="k">if</span> <span class="n">mpc_is_active</span><span class="p">:</span>
                 <span class="c1"># Transition: Fallback PID -&gt; INACTIVE (MPC became Active)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;MPC flag &#39;</span><span class="si">{</span><span class="n">mpc_flag_var</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; became True. Deactivating FallbackPID.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"MPC flag '</span><span class="si">{</span><span class="n">mpc_flag_var</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">' became True. Deactivating FallbackPID."</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">integral</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># Reset integral</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">e_last</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># Reset last error</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Transition: Fallback PID -&gt; ACTIVE (MPC became Inactive)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;MPC flag &#39;</span><span class="si">{</span><span class="n">mpc_flag_var</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; became False. Activating FallbackPID.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"MPC flag '</span><span class="si">{</span><span class="n">mpc_flag_var</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">' became False. Activating FallbackPID."</span>
                 <span class="p">)</span>
                 <span class="c1"># Reset time to current input to avoid large dt spike on first step</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">last_time</span> <span class="o">=</span> <span class="n">inp</span><span class="o">.</span><span class="n">timestamp</span>
@@ -153,18 +153,18 @@
         <span class="c1"># 3. Execute PID logic only if MPC is inactive</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">mpc_is_active</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;MPC inactive. Running FallbackPID step for input </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">inp</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="sa">f</span><span class="s2">"MPC inactive. Running FallbackPID step for input </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">inp</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">."</span>
             <span class="p">)</span>
-            <span class="c1"># Call the generator&#39;s send method, executing do_step</span>
+            <span class="c1"># Call the generator's send method, executing do_step</span>
             <span class="n">out_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_step</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">out_val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">out_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">name</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sending FallbackPID output </span><span class="si">%s</span><span class="s2">=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">out_name</span><span class="p">,</span> <span class="n">out_val</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Sending FallbackPID output </span><span class="si">%s</span><span class="s2">=</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">out_name</span><span class="p">,</span> <span class="n">out_val</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">out_name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">out_val</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                    <span class="s2">&quot;FallbackPID do_step returned None (likely due to small t_sample). No output sent.&quot;</span>
+                    <span class="s2">"FallbackPID do_step returned None (likely due to small t_sample). No output sent."</span>
                 <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># MPC is active, PID is dormant</span>

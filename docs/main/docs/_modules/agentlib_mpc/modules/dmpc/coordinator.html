@@ -100,9 +100,9 @@
 
 
 <div class="viewcode-block" id="CoordinatorConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.CoordinatorConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CoordinatorConfig</span><span class="p">(</span><span class="n">BaseModuleConfig</span><span class="p">):</span>
-    <span class="n">maxIter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum number of iterations&quot;</span><span class="p">)</span>
+    <span class="n">maxIter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Maximum number of iterations"</span><span class="p">)</span>
     <span class="n">time_out_non_responders</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Maximum wait time for subsystems in seconds&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Maximum wait time for subsystems in seconds"</span>
     <span class="p">)</span>
     <span class="n">messages_in</span><span class="p">:</span> <span class="n">AgentVariables</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">AgentVariable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">cdt</span><span class="o">.</span><span class="n">REGISTRATION_A2C</span><span class="p">),</span>
@@ -114,11 +114,11 @@
         <span class="n">AgentVariable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">cdt</span><span class="o">.</span><span class="n">START_ITERATION_C2A</span><span class="p">),</span>
         <span class="n">AgentVariable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">cdt</span><span class="o">.</span><span class="n">OPTIMIZATION_C2A</span><span class="p">),</span>
     <span class="p">]</span>
-    <span class="n">shared_variable_fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;messages_out&quot;</span><span class="p">]</span></div>
+    <span class="n">shared_variable_fields</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"messages_out"</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="Coordinator"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Coordinator</span><span class="p">(</span><span class="n">BaseModule</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class implementing the base coordination for distributed MPC&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Class implementing the base coordination for distributed MPC"""</span>
 
     <span class="n">config</span><span class="p">:</span> <span class="n">CoordinatorConfig</span>
 
@@ -136,7 +136,7 @@
             <span class="c1"># start iteration</span>
             <span class="c1"># ------------------</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">cdt</span><span class="o">.</span><span class="n">CoordinatorStatus</span><span class="o">.</span><span class="n">init_iterations</span>
-            <span class="c1"># maybe this will hold information instead of &quot;True&quot;</span>
+            <span class="c1"># maybe this will hold information instead of "True"</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cdt</span><span class="o">.</span><span class="n">START_ITERATION_C2A</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
             <span class="c1"># check for all_finished here</span>
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -170,17 +170,17 @@
             <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Coordinator.trigger_optimizations"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator.trigger_optimizations">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">trigger_optimizations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Triggers the optimization for all agents with status ready.</span>
 <span class="sd">        Returns:</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">send</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">data_broker</span><span class="o">.</span><span class="n">send_variable</span>
         <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">agent</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">cdt</span><span class="o">.</span><span class="n">AgentStatus</span><span class="o">.</span><span class="n">ready</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">optimization_data</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sending to </span><span class="si">%s</span><span class="s2"> with source </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">agent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Set </span><span class="si">%s</span><span class="s2"> to busy.&quot;</span><span class="p">,</span> <span class="n">agent</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Sending to </span><span class="si">%s</span><span class="s2"> with source </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">agent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Set </span><span class="si">%s</span><span class="s2"> to busy."</span><span class="p">,</span> <span class="n">agent</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                 <span class="n">agent</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">cdt</span><span class="o">.</span><span class="n">AgentStatus</span><span class="o">.</span><span class="n">busy</span>
                 <span class="n">message</span> <span class="o">=</span> <span class="n">AgentVariable</span><span class="p">(</span>
                     <span class="n">name</span><span class="o">=</span><span class="n">cdt</span><span class="o">.</span><span class="n">OPTIMIZATION_C2A</span><span class="p">,</span>
@@ -207,14 +207,14 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Coordinator.optim_results_callback"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator.optim_results_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">optim_results_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Saves the results of a local optimization.</span>
 <span class="sd">        Args:</span>
 <span class="sd">            variable:</span>
 
 <span class="sd">        Returns:</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_dict</span><span class="p">[</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="p">]</span>
         <span class="n">entry</span><span class="o">.</span><span class="n">optimization_data</span> <span class="o">=</span> <span class="n">cdt</span><span class="o">.</span><span class="n">OptimizationData</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">variable</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
@@ -222,17 +222,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">received_variable</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Coordinator.init_iteration_callback"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator.init_iteration_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">init_iteration_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Processes and Agents InitIteration confirmation.</span>
 <span class="sd">        Args:</span>
 <span class="sd">            variable:</span>
 
 <span class="sd">        Returns:</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">cdt</span><span class="o">.</span><span class="n">CoordinatorStatus</span><span class="o">.</span><span class="n">init_iterations</span><span class="p">:</span>
             <span class="c1"># maybe set AgentStatus to something meaningful</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Agent did not respond in time!&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"Agent did not respond in time!"</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="n">variable</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
@@ -248,7 +248,7 @@
             <span class="k">return</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="s2">&quot;Received &#39;StartIteration&#39; confirmation from </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">variable</span><span class="o">.</span><span class="n">source</span>
+            <span class="s2">"Received 'StartIteration' confirmation from </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">variable</span><span class="o">.</span><span class="n">source</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">ag_dict_entry</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">cdt</span><span class="o">.</span><span class="n">AgentStatus</span><span class="o">.</span><span class="n">standby</span><span class="p">:</span>
             <span class="c1"># if the status is not standby, the agent might still be in registration</span>
@@ -259,12 +259,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">all_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            True, if there are no busy agents, else False</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">ag_entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">ag_entry</span><span class="o">.</span><span class="n">status</span> <span class="ow">is</span> <span class="n">cdt</span><span class="o">.</span><span class="n">AgentStatus</span><span class="o">.</span><span class="n">busy</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">False</span>
@@ -272,7 +272,7 @@
 
 <div class="viewcode-block" id="Coordinator.registration_callback"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.dmpc.html#agentlib_mpc.modules.dmpc.coordinator.Coordinator.registration_callback">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">registration_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;receiving </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"receiving </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> from </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="c1"># use information in message to set up coordinator</span>
 
@@ -282,15 +282,15 @@
                 <span class="n">status</span><span class="o">=</span><span class="n">AgentStatus</span><span class="o">.</span><span class="n">pending</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">agent_dict</span><span class="p">[</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="p">]</span> <span class="o">=</span> <span class="n">entry</span>
-            <span class="n">OptimOpts</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Nhor&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">}</span>
+            <span class="n">OptimOpts</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"Nhor"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">"dt"</span><span class="p">:</span> <span class="mi">60</span><span class="p">}</span>
             <span class="n">message</span> <span class="o">=</span> <span class="n">RegistrationMessage</span><span class="p">(</span>
                 <span class="n">agent_id</span><span class="o">=</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">agent_id</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="n">OptimOpts</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cdt</span><span class="o">.</span><span class="n">REGISTRATION_C2A</span><span class="p">,</span> <span class="n">asdict</span><span class="p">(</span><span class="n">message</span><span class="p">))</span>  <span class="c1"># {&quot;source&quot; :</span>
-            <span class="c1"># variable.source, &quot;status&quot; : True, &quot;opts&quot; : OptimOpts}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cdt</span><span class="o">.</span><span class="n">REGISTRATION_C2A</span><span class="p">,</span> <span class="n">asdict</span><span class="p">(</span><span class="n">message</span><span class="p">))</span>  <span class="c1"># {"source" :</span>
+            <span class="c1"># variable.source, "status" : True, "opts" : OptimOpts}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Coordinator got request agent </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2"> and set to &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;&#39;pending&#39;.&quot;</span>
+                <span class="sa">f</span><span class="s2">"Coordinator got request agent </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2"> and set to "</span>
+                <span class="sa">f</span><span class="s2">"'pending'."</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># process ready-flag</span>
             <span class="n">message</span> <span class="o">=</span> <span class="n">RegistrationMessage</span><span class="p">(</span><span class="o">**</span><span class="n">variable</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
@@ -299,7 +299,7 @@
                 <span class="c1"># change from</span>
                 <span class="c1"># pending to ready</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Coordinator successfully registered agent </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Coordinator successfully registered agent </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">."</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">agent_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">variable</span><span class="o">.</span><span class="n">source</span><span class="p">)</span>  <span class="c1"># delete agent from dict</span></div>
@@ -307,10 +307,10 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_wait_for_ready</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait until all coupling variables arrive from the other systems.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Wait until all coupling variables arrive from the other systems."""</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">received_variable</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Start waiting for agents to finish computation.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Start waiting for agents to finish computation."</span><span class="p">)</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="c1"># check exit conditions</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_finished</span><span class="p">:</span>
@@ -318,7 +318,7 @@
                 <span class="k">for</span> <span class="n">ag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_dict</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                     <span class="k">if</span> <span class="n">ag</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">cdt</span><span class="o">.</span><span class="n">AgentStatus</span><span class="o">.</span><span class="n">ready</span><span class="p">:</span>
                         <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Got variables from all (</span><span class="si">%s</span><span class="s2">) agents.&quot;</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Got variables from all (</span><span class="si">%s</span><span class="s2">) agents."</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
                 <span class="k">break</span>
 
             <span class="c1"># wait until a new item is put in the queue</span>
@@ -330,17 +330,17 @@
                 <span class="k">break</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_deregister_slow_participants</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets all agents that are still busy to standby, so they won&#39;t be</span>
-<span class="sd">        waited on again.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Sets all agents that are still busy to standby, so they won't be</span>
+<span class="sd">        waited on again."""</span>
         <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent_dict</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">agent</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">cdt</span><span class="o">.</span><span class="n">AgentStatus</span><span class="o">.</span><span class="n">busy</span><span class="p">:</span>
                 <span class="n">agent</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">cdt</span><span class="o">.</span><span class="n">AgentStatus</span><span class="o">.</span><span class="n">standby</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="s2">&quot;De-registered agent </span><span class="si">%s</span><span class="s2"> as it was too slow.&quot;</span><span class="p">,</span> <span class="n">agent</span><span class="o">.</span><span class="n">name</span>
+                    <span class="s2">"De-registered agent </span><span class="si">%s</span><span class="s2"> as it was too slow."</span><span class="p">,</span> <span class="n">agent</span><span class="o">.</span><span class="n">name</span>
                 <span class="p">)</span></div>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="k">pass</span>
 </pre></div>
 

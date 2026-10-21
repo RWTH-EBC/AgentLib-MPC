@@ -88,11 +88,11 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigDict</span>
 
 
-<span class="n">MPC_FLAG_ACTIVE</span> <span class="o">=</span> <span class="s2">&quot;MPC_FLAG_ACTIVE&quot;</span>
+<span class="n">MPC_FLAG_ACTIVE</span> <span class="o">=</span> <span class="s2">"MPC_FLAG_ACTIVE"</span>
 
 
 <div class="viewcode-block" id="InitStatus"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.InitStatus">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">InitStatus</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Keep track of the readyness status of the MPC.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Keep track of the readyness status of the MPC."""</span>
 
     <span class="n">pre_module_init</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">during_update</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
@@ -100,20 +100,20 @@
 
 
 <div class="viewcode-block" id="DiscretizationOptions"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.DiscretizationOptions">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DiscretizationOptions</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class defining the options to discretize an MPC. Can be extended for different</span>
-<span class="sd">    optimization implementations.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Class defining the options to discretize an MPC. Can be extended for different</span>
+<span class="sd">    optimization implementations."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s2">"allow"</span><span class="p">)</span>
 
     <span class="n">time_step</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
         <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Time step of the MPC.&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Time step of the MPC."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">prediction_horizon</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
         <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Prediction horizon of the MPC.&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Prediction horizon of the MPC."</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -127,13 +127,13 @@
 <div class="viewcode-block" id="BaseVariableReference"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.BaseVariableReference">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseVariableReference</span><span class="p">:</span>
 <div class="viewcode-block" id="BaseVariableReference.all_variables"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.BaseVariableReference.all_variables">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">all_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of all variables registered in the var_ref&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns a list of all variables registered in the var_ref"""</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span></div>
 
 <div class="viewcode-block" id="BaseVariableReference.from_config"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.BaseVariableReference.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">BaseModuleConfigClass</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates an instance from a pydantic values dict which includes lists of</span>
-<span class="sd">        AgentVariables with the keys corresponding to &#39;states&#39;, &#39;inputs&#39;, etc..&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Creates an instance from a pydantic values dict which includes lists of</span>
+<span class="sd">        AgentVariables with the keys corresponding to 'states', 'inputs', etc.."""</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">names_list</span><span class="p">(</span><span class="n">ls</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AgentVariable</span><span class="p">]):</span>
             <span class="k">return</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">ls</span><span class="p">]</span>
@@ -149,7 +149,7 @@
         <span class="k">return</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">all_variables</span></div>
 
 
-<span class="n">VariableReferenceT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;VariableReferenceT&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">BaseVariableReference</span><span class="p">)</span>
+<span class="n">VariableReferenceT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"VariableReferenceT"</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">BaseVariableReference</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="VariableReference"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.VariableReference">[docs]</a><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
@@ -178,8 +178,8 @@
     <span class="n">outputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MHEVariableReference.all_variables"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MHEVariableReference.all_variables">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">all_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of all variables registered in the var_ref which the MHE can</span>
-<span class="sd">        get from the config with get()&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns a list of all variables registered in the var_ref which the MHE can</span>
+<span class="sd">        get from the config with get()"""</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="nb">set</span><span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">all_variables</span><span class="p">())</span>
             <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">measured_states</span><span class="p">)</span>
@@ -189,14 +189,14 @@
 
 <div class="viewcode-block" id="MPCVariable"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.MPCVariable">[docs]</a><span class="nd">@attrs</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">weakref_slot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MPCVariable</span><span class="p">(</span><span class="n">AgentVariable</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;AgentVariable used to define input variables of MPC.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""AgentVariable used to define input variables of MPC."""</span>
 
     <span class="n">interpolation_method</span><span class="p">:</span> <span class="n">InterpolationMethods</span> <span class="o">=</span> <span class="n">attrs</span><span class="o">.</span><span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="n">InterpolationMethods</span><span class="o">.</span><span class="n">linear</span><span class="p">,</span>
         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Defines which method is used for interpolation of &quot;</span>
-            <span class="s2">&quot;boundaries or  values for this variable. Default is linear.&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Interpolation Method&quot;</span><span class="p">,</span>
+            <span class="s2">"description"</span><span class="p">:</span> <span class="s2">"Defines which method is used for interpolation of "</span>
+            <span class="s2">"boundaries or  values for this variable. Default is linear."</span><span class="p">,</span>
+            <span class="s2">"title"</span><span class="p">:</span> <span class="s2">"Interpolation Method"</span><span class="p">,</span>
         <span class="p">},</span>
     <span class="p">)</span></div>
 
@@ -206,12 +206,12 @@
 
 <div class="viewcode-block" id="stats_path"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.stats_path">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">stats_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
     <span class="n">res_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">res_file</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;stats_&quot;</span> <span class="o">+</span> <span class="n">res_file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">res_file</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">"stats_"</span> <span class="o">+</span> <span class="n">res_file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="cia_relaxed_results_path"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.mpc_datamodels.cia_relaxed_results_path">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">cia_relaxed_results_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
     <span class="n">res_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">res_file</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;relaxed_&quot;</span> <span class="o">+</span> <span class="n">res_file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">res_file</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">"relaxed_"</span> <span class="o">+</span> <span class="n">res_file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
 
 
 <span class="n">MPCValue</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>

@@ -121,42 +121,42 @@
 <div class="viewcode-block" id="BaseSystem.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.BaseSystem.initialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">CasadiModel</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">VariableReference</span><span class="p">):</span>
         <span class="c1"># define variables</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="n">OptimizationVariable</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
-            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;state&quot;</span><span class="p">,</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">"state"</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_states</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">states</span><span class="p">),</span>
             <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">states</span><span class="p">,</span>
             <span class="n">assert_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controls</span> <span class="o">=</span> <span class="n">OptimizationVariable</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
-            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;control&quot;</span><span class="p">,</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">"control"</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">controls</span><span class="p">),</span>
             <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">controls</span><span class="p">,</span>
             <span class="n">assert_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">algebraics</span> <span class="o">=</span> <span class="n">OptimizationVariable</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
-            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;z&quot;</span><span class="p">,</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">"z"</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">auxiliaries</span><span class="p">,</span>
             <span class="n">ref_list</span><span class="o">=</span><span class="p">[],</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="n">OptimizationVariable</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
-            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">"y"</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span>
             <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># define parameters</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">non_controlled_inputs</span> <span class="o">=</span> <span class="n">OptimizationParameter</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
-            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;d&quot;</span><span class="p">,</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">"d"</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">inputs</span><span class="p">),</span>
             <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">inputs</span><span class="p">,</span>
             <span class="n">assert_complete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_parameters</span> <span class="o">=</span> <span class="n">OptimizationParameter</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
-            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;parameter&quot;</span><span class="p">,</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">"parameter"</span><span class="p">,</span>
             <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
             <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">initial_state</span> <span class="o">=</span> <span class="n">OptimizationParameter</span><span class="o">.</span><span class="n">declare</span><span class="p">(</span>
-            <span class="n">denotation</span><span class="o">=</span><span class="s2">&quot;initial_state&quot;</span><span class="p">,</span>  <span class="c1"># append the 0 as a convention to get initial guess</span>
+            <span class="n">denotation</span><span class="o">=</span><span class="s2">"initial_state"</span><span class="p">,</span>  <span class="c1"># append the 0 as a convention to get initial guess</span>
             <span class="n">variables</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">get_states</span><span class="p">(</span><span class="n">var_ref</span><span class="o">.</span><span class="n">states</span><span class="p">),</span>
             <span class="n">ref_list</span><span class="o">=</span><span class="n">var_ref</span><span class="o">.</span><span class="n">states</span><span class="p">,</span>
             <span class="n">use_in_stage_function</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -186,10 +186,10 @@
 
 <div class="viewcode-block" id="DirectCollocation"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.DirectCollocation">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">DirectCollocation</span><span class="p">(</span><span class="n">Discretization</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_discretize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Defines a direct collocation discretization.</span>
 <span class="sd">        # pylint: disable=invalid-name</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># setup the polynomial base</span>
         <span class="n">collocation_matrices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collocation_polynomial</span><span class="p">()</span>
@@ -247,7 +247,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span><span class="o">*</span><span class="n">constraint</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_construct_stage_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Combine information from the model and the var_ref to create CasADi</span>
 <span class="sd">        functions which describe the system dynamics and constraints at each</span>
 <span class="sd">        stage of the optimization problem. Sets the stage function. It has</span>
@@ -256,17 +256,17 @@
 <span class="sd">        per constraint (constraint, lb_constraint, ub_constraint).</span>
 
 <span class="sd">        In the basic case, it has the form:</span>
-<span class="sd">        CasadiFunction: [&#39;x&#39;, &#39;z&#39;, &#39;u&#39;, &#39;y&#39;, &#39;d&#39;, &#39;p&#39;] -&gt;</span>
-<span class="sd">            [&#39;ode&#39;, &#39;cost_function&#39;, &#39;model_constraints&#39;,</span>
-<span class="sd">            &#39;ub_model_constraints&#39;, &#39;lb_model_constraints&#39;]</span>
+<span class="sd">        CasadiFunction: ['x', 'z', 'u', 'y', 'd', 'p'] -&gt;</span>
+<span class="sd">            ['ode', 'cost_function', 'model_constraints',</span>
+<span class="sd">            'ub_model_constraints', 'lb_model_constraints']</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            system</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">all_system_quantities</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">OptimizationQuantity</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">system</span><span class="o">.</span><span class="n">quantities</span>
         <span class="p">}</span>
-        <span class="n">constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model_constraints&quot;</span><span class="p">:</span> <span class="n">system</span><span class="o">.</span><span class="n">model_constraints</span><span class="p">}</span>
+        <span class="n">constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"model_constraints"</span><span class="p">:</span> <span class="n">system</span><span class="o">.</span><span class="n">model_constraints</span><span class="p">}</span>
 
         <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">q</span><span class="o">.</span><span class="n">full_symbolic</span>
@@ -279,7 +279,7 @@
             <span class="k">for</span> <span class="n">denotation</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">all_system_quantities</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">q</span><span class="o">.</span><span class="n">use_in_stage_function</span>
         <span class="p">]</span>
-        <span class="n">input_denotations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+        <span class="n">input_denotations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"time"</span><span class="p">)</span>
 
         <span class="c1"># aggregate constraints</span>
         <span class="n">constraints_func</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">function</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">constraints</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
@@ -298,8 +298,8 @@
             <span class="o">*</span><span class="n">constraints_ub</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="n">output_denotations</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;ode&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;cost_function&quot;</span><span class="p">,</span>
+            <span class="s2">"ode"</span><span class="p">,</span>
+            <span class="s2">"cost_function"</span><span class="p">,</span>
             <span class="o">*</span><span class="n">constraint_denotations</span><span class="p">,</span>
             <span class="o">*</span><span class="n">constraint_lb_denotations</span><span class="p">,</span>
             <span class="o">*</span><span class="n">constraint_ub_denotations</span><span class="p">,</span>
@@ -307,7 +307,7 @@
 
         <span class="c1"># function describing system dynamics and cost function</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stage_function</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span>
-            <span class="s2">&quot;f&quot;</span><span class="p">,</span>
+            <span class="s2">"f"</span><span class="p">,</span>
             <span class="n">inputs</span><span class="p">,</span>
             <span class="n">outputs</span><span class="p">,</span>
             <span class="c1"># input handles to make kwarg use possible and to debug</span>
@@ -317,8 +317,8 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="DirectCollocation.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.DirectCollocation.initialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">,</span> <span class="n">solver_factory</span><span class="p">:</span> <span class="n">SolverFactory</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the trajectory optimization problem, creating all symbolic</span>
-<span class="sd">        variables of the OCP, the mapping function and the numerical solver.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Initializes the trajectory optimization problem, creating all symbolic</span>
+<span class="sd">        variables of the OCP, the mapping function and the numerical solver."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_construct_stage_function</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">system</span><span class="o">=</span><span class="n">system</span><span class="p">,</span> <span class="n">solver_factory</span><span class="o">=</span><span class="n">solver_factory</span><span class="p">)</span></div>
 
@@ -331,7 +331,7 @@
         <span class="n">opt_pars</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">OptimizationParameter</span><span class="p">],</span>
         <span class="n">const</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">OptimizationQuantity</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Constructs the inner loop of a collocation discretization. Takes the</span>
 
 <span class="sd">        Args</span>
@@ -348,7 +348,7 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            state_k_end[MX]: state at the end of collocation interval</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">constraints</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">constants</span> <span class="o">=</span> <span class="p">{</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">mx</span> <span class="k">for</span> <span class="n">var</span><span class="p">,</span> <span class="n">mx</span> <span class="ow">in</span> <span class="n">const</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
@@ -369,19 +369,19 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span> <span class="o">=</span> <span class="n">start_time</span> <span class="o">+</span> <span class="n">collocation</span><span class="o">.</span><span class="n">root</span><span class="p">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">ts</span>
 
             <span class="c1"># differential state</span>
-            <span class="n">state_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">post_den</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">state_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">states</span><span class="p">,</span> <span class="n">post_den</span><span class="o">=</span><span class="sa">f</span><span class="s2">"_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="n">state_collocation</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state_kj</span><span class="p">)</span>
 
             <span class="n">opt_vars_collocation</span><span class="o">.</span><span class="n">append</span><span class="p">({})</span>
             <span class="k">for</span> <span class="n">opt_var</span> <span class="ow">in</span> <span class="n">opt_vars</span><span class="p">:</span>
-                <span class="n">var_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">opt_var</span><span class="p">,</span> <span class="n">post_den</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">var_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">opt_var</span><span class="p">,</span> <span class="n">post_den</span><span class="o">=</span><span class="sa">f</span><span class="s2">"_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="n">opt_vars_collocation</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">opt_var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">var_kj</span><span class="p">})</span>
 
             <span class="n">opt_pars_collocation</span><span class="o">.</span><span class="n">append</span><span class="p">({})</span>
             <span class="k">for</span> <span class="n">opt_par</span> <span class="ow">in</span> <span class="n">opt_pars</span><span class="p">:</span>
-                <span class="n">par_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">opt_par</span><span class="p">,</span> <span class="n">post_den</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">par_kj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">opt_par</span><span class="p">,</span> <span class="n">post_den</span><span class="o">=</span><span class="sa">f</span><span class="s2">"_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
                 <span class="n">opt_pars_collocation</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">opt_par</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">par_kj</span><span class="p">})</span>
-            <span class="n">opt_pars_collocation</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span><span class="p">})</span>
+            <span class="n">opt_pars_collocation</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"time"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span><span class="p">})</span>
 
         <span class="c1"># Loop over collocation points</span>
         <span class="n">state_k_end</span> <span class="o">=</span> <span class="n">collocation</span><span class="o">.</span><span class="n">D</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">state_at_beginning</span>
@@ -398,12 +398,12 @@
                 <span class="o">**</span><span class="n">constants</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="n">constraints</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ts</span> <span class="o">*</span> <span class="n">stage</span><span class="p">[</span><span class="s2">&quot;ode&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">xp</span><span class="p">,))</span>
+            <span class="n">constraints</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">ts</span> <span class="o">*</span> <span class="n">stage</span><span class="p">[</span><span class="s2">"ode"</span><span class="p">]</span> <span class="o">-</span> <span class="n">xp</span><span class="p">,))</span>
             <span class="n">constraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="p">(</span>
-                    <span class="n">stage</span><span class="p">[</span><span class="s2">&quot;model_constraints&quot;</span><span class="p">],</span>
-                    <span class="n">stage</span><span class="p">[</span><span class="s2">&quot;lb_model_constraints&quot;</span><span class="p">],</span>
-                    <span class="n">stage</span><span class="p">[</span><span class="s2">&quot;ub_model_constraints&quot;</span><span class="p">],</span>
+                    <span class="n">stage</span><span class="p">[</span><span class="s2">"model_constraints"</span><span class="p">],</span>
+                    <span class="n">stage</span><span class="p">[</span><span class="s2">"lb_model_constraints"</span><span class="p">],</span>
+                    <span class="n">stage</span><span class="p">[</span><span class="s2">"ub_model_constraints"</span><span class="p">],</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -411,12 +411,12 @@
             <span class="n">state_k_end</span> <span class="o">=</span> <span class="n">state_k_end</span> <span class="o">+</span> <span class="n">collocation</span><span class="o">.</span><span class="n">D</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">state_collocation</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
 
             <span class="c1"># Add contribution to quadrature function</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">collocation</span><span class="o">.</span><span class="n">B</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">stage</span><span class="p">[</span><span class="s2">&quot;cost_function&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ts</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">collocation</span><span class="o">.</span><span class="n">B</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">stage</span><span class="p">[</span><span class="s2">"cost_function"</span><span class="p">]</span> <span class="o">*</span> <span class="n">ts</span>
 
         <span class="k">return</span> <span class="n">state_k_end</span><span class="p">,</span> <span class="n">constraints</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_collocation_polynomial</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CollocationMatrices</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the matrices needed for direct collocation discretization.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Returns the matrices needed for direct collocation discretization."""</span>
         <span class="c1"># Degree of interpolating polynomial</span>
         <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">collocation_order</span>
         <span class="n">polynomial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">collocation_method</span>
@@ -468,13 +468,13 @@
 
 <div class="viewcode-block" id="MultipleShooting"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.MultipleShooting">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MultipleShooting</span><span class="p">(</span><span class="n">Discretization</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_discretize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Defines a multiple shooting discretization</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">vars_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="p">{}}</span>
         <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">prediction_horizon</span>
         <span class="n">ts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">time_step</span>
-        <span class="n">opts</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;t0&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;tf&quot;</span><span class="p">:</span> <span class="n">ts</span><span class="p">}</span>
+        <span class="n">opts</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"t0"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"tf"</span><span class="p">:</span> <span class="n">ts</span><span class="p">}</span>
         <span class="c1"># Initial State</span>
         <span class="n">x0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_par</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">initial_state</span><span class="p">)</span>
         <span class="n">xk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="p">,</span> <span class="n">lb</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span> <span class="n">ub</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="n">x0</span><span class="p">)</span>
@@ -498,33 +498,33 @@
                 <span class="n">sys</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">uk</span><span class="p">,</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">non_controlled_inputs</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">dk</span><span class="p">,</span>
                 <span class="n">sys</span><span class="o">.</span><span class="n">model_parameters</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">const_par</span><span class="p">,</span>
-                <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span><span class="p">,</span>
+                <span class="s2">"time"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span><span class="p">,</span>
             <span class="p">}</span>
             <span class="c1"># get stage</span>
             <span class="n">stage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stage_function</span><span class="p">(</span><span class="o">**</span><span class="n">stage_arguments</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span>
-                <span class="n">stage</span><span class="p">[</span><span class="s2">&quot;model_constraints&quot;</span><span class="p">],</span>
-                <span class="n">lb</span><span class="o">=</span><span class="n">stage</span><span class="p">[</span><span class="s2">&quot;lb_model_constraints&quot;</span><span class="p">],</span>
-                <span class="n">ub</span><span class="o">=</span><span class="n">stage</span><span class="p">[</span><span class="s2">&quot;ub_model_constraints&quot;</span><span class="p">],</span>
+                <span class="n">stage</span><span class="p">[</span><span class="s2">"model_constraints"</span><span class="p">],</span>
+                <span class="n">lb</span><span class="o">=</span><span class="n">stage</span><span class="p">[</span><span class="s2">"lb_model_constraints"</span><span class="p">],</span>
+                <span class="n">ub</span><span class="o">=</span><span class="n">stage</span><span class="p">[</span><span class="s2">"ub_model_constraints"</span><span class="p">],</span>
             <span class="p">)</span>
             <span class="n">fk</span> <span class="o">=</span> <span class="n">opt_integrator</span><span class="p">(</span>
                 <span class="n">x0</span><span class="o">=</span><span class="n">xk</span><span class="p">,</span>
                 <span class="n">p</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">vertcat</span><span class="p">(</span><span class="n">uk</span><span class="p">,</span> <span class="n">dk</span><span class="p">,</span> <span class="n">const_par</span><span class="p">,</span> <span class="n">zk</span><span class="p">,</span> <span class="n">yk</span><span class="p">),</span>
             <span class="p">)</span>
-            <span class="n">xk_end</span> <span class="o">=</span> <span class="n">fk</span><span class="p">[</span><span class="s2">&quot;xf&quot;</span><span class="p">]</span>
+            <span class="n">xk_end</span> <span class="o">=</span> <span class="n">fk</span><span class="p">[</span><span class="s2">"xf"</span><span class="p">]</span>
             <span class="c1"># calculate model constraint</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pred_time</span> <span class="o">=</span> <span class="n">ts</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span>
             <span class="n">xk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_opt_var</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="p">)</span>
             <span class="n">vars_dict</span><span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">xk</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_constraint</span><span class="p">(</span><span class="n">xk_end</span> <span class="o">-</span> <span class="n">xk</span><span class="p">,</span> <span class="n">gap_closing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">stage</span><span class="p">[</span><span class="s2">&quot;cost_function&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ts</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">objective_function</span> <span class="o">+=</span> <span class="n">stage</span><span class="p">[</span><span class="s2">"cost_function"</span><span class="p">]</span> <span class="o">*</span> <span class="n">ts</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_ode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sys</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">,</span> <span class="n">opts</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">integrator</span><span class="p">:</span> <span class="n">Integrators</span><span class="p">):</span>
         <span class="c1"># dummy function for empty ode, since ca.integrator would throw an error</span>
         <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">full_symbolic</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;xf&quot;</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="s2">&quot;xk_end&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)}</span>
+            <span class="k">return</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="p">{</span><span class="s2">"xf"</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">MX</span><span class="o">.</span><span class="n">sym</span><span class="p">(</span><span class="s2">"xk_end"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)}</span>
 
         <span class="n">ode</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">ode</span>
         <span class="c1"># create inputs</span>
@@ -537,20 +537,20 @@
             <span class="n">sys</span><span class="o">.</span><span class="n">algebraics</span><span class="o">.</span><span class="n">full_symbolic</span><span class="p">,</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">full_symbolic</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">integrator_ode</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="n">p</span><span class="p">,</span> <span class="s2">&quot;ode&quot;</span><span class="p">:</span> <span class="n">ode</span><span class="p">}</span>
+        <span class="n">integrator_ode</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"x"</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">"p"</span><span class="p">:</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"ode"</span><span class="p">:</span> <span class="n">ode</span><span class="p">}</span>
 
         <span class="k">if</span> <span class="n">integrator</span> <span class="o">==</span> <span class="n">Integrators</span><span class="o">.</span><span class="n">euler</span><span class="p">:</span>
-            <span class="n">xk_end</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">ode</span> <span class="o">*</span> <span class="n">opts</span><span class="p">[</span><span class="s2">&quot;tf&quot;</span><span class="p">]</span>
+            <span class="n">xk_end</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">ode</span> <span class="o">*</span> <span class="n">opts</span><span class="p">[</span><span class="s2">"tf"</span><span class="p">]</span>
             <span class="n">opt_integrator</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span>
-                <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">],</span> <span class="p">[</span><span class="n">xk_end</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;x0&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;xf&quot;</span><span class="p">]</span>
+                <span class="s2">"system"</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">],</span> <span class="p">[</span><span class="n">xk_end</span><span class="p">],</span> <span class="p">[</span><span class="s2">"x0"</span><span class="p">,</span> <span class="s2">"p"</span><span class="p">],</span> <span class="p">[</span><span class="s2">"xf"</span><span class="p">]</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># rk, cvodes</span>
-            <span class="n">opt_integrator</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">integrator</span><span class="p">(</span><span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="n">integrator</span><span class="p">,</span> <span class="n">integrator_ode</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
+            <span class="n">opt_integrator</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">integrator</span><span class="p">(</span><span class="s2">"system"</span><span class="p">,</span> <span class="n">integrator</span><span class="p">,</span> <span class="n">integrator_ode</span><span class="p">,</span> <span class="n">opts</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">opt_integrator</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_construct_stage_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Combine information from the model and the var_ref to create CasADi</span>
 <span class="sd">        functions which describe the system dynamics and constraints at each</span>
 <span class="sd">        stage of the optimization problem. Sets the stage function. It has</span>
@@ -559,17 +559,17 @@
 <span class="sd">        per constraint (constraint, lb_constraint, ub_constraint).</span>
 
 <span class="sd">        In the basic case, it has the form:</span>
-<span class="sd">        CasadiFunction: [&#39;x&#39;, &#39;z&#39;, &#39;u&#39;, &#39;y&#39;, &#39;d&#39;, &#39;p&#39;] -&gt;</span>
-<span class="sd">            [&#39;ode&#39;, &#39;cost_function&#39;, &#39;model_constraints&#39;,</span>
-<span class="sd">            &#39;ub_model_constraints&#39;, &#39;lb_model_constraints&#39;]</span>
+<span class="sd">        CasadiFunction: ['x', 'z', 'u', 'y', 'd', 'p'] -&gt;</span>
+<span class="sd">            ['ode', 'cost_function', 'model_constraints',</span>
+<span class="sd">            'ub_model_constraints', 'lb_model_constraints']</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            system</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">all_system_quantities</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">OptimizationQuantity</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">system</span><span class="o">.</span><span class="n">quantities</span>
         <span class="p">}</span>
-        <span class="n">constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model_constraints&quot;</span><span class="p">:</span> <span class="n">system</span><span class="o">.</span><span class="n">model_constraints</span><span class="p">}</span>
+        <span class="n">constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"model_constraints"</span><span class="p">:</span> <span class="n">system</span><span class="o">.</span><span class="n">model_constraints</span><span class="p">}</span>
 
         <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">q</span><span class="o">.</span><span class="n">full_symbolic</span>
@@ -582,7 +582,7 @@
             <span class="k">for</span> <span class="n">denotation</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">all_system_quantities</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">q</span><span class="o">.</span><span class="n">use_in_stage_function</span>
         <span class="p">]</span>
-        <span class="n">input_denotations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;__time&quot;</span><span class="p">)</span>
+        <span class="n">input_denotations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"__time"</span><span class="p">)</span>
 
         <span class="c1"># aggregate constraints</span>
         <span class="n">constraints_func</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">function</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">constraints</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
@@ -601,8 +601,8 @@
             <span class="o">*</span><span class="n">constraints_ub</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="n">output_denotations</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;ode&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;cost_function&quot;</span><span class="p">,</span>
+            <span class="s2">"ode"</span><span class="p">,</span>
+            <span class="s2">"cost_function"</span><span class="p">,</span>
             <span class="o">*</span><span class="n">constraint_denotations</span><span class="p">,</span>
             <span class="o">*</span><span class="n">constraint_lb_denotations</span><span class="p">,</span>
             <span class="o">*</span><span class="n">constraint_ub_denotations</span><span class="p">,</span>
@@ -610,7 +610,7 @@
 
         <span class="c1"># function describing system dynamics and cost function</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stage_function</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">Function</span><span class="p">(</span>
-            <span class="s2">&quot;f&quot;</span><span class="p">,</span>
+            <span class="s2">"f"</span><span class="p">,</span>
             <span class="n">inputs</span><span class="p">,</span>
             <span class="n">outputs</span><span class="p">,</span>
             <span class="c1"># input handles to make kwarg use possible and to debug</span>
@@ -620,16 +620,16 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="MultipleShooting.initialize"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.MultipleShooting.initialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">BaseSystem</span><span class="p">,</span> <span class="n">solver_factory</span><span class="p">:</span> <span class="n">SolverFactory</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the trajectory optimization problem, creating all symbolic</span>
-<span class="sd">        variables of the OCP, the mapping function and the numerical solver.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Initializes the trajectory optimization problem, creating all symbolic</span>
+<span class="sd">        variables of the OCP, the mapping function and the numerical solver."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_construct_stage_function</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">system</span><span class="o">=</span><span class="n">system</span><span class="p">,</span> <span class="n">solver_factory</span><span class="o">=</span><span class="n">solver_factory</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="CasADiBaseBackend"><a class="viewcode-back" href="../../../../code/agentlib_mpc.optimization_backends.casadi_.html#agentlib_mpc.optimization_backends.casadi_.basic.CasADiBaseBackend">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CasADiBaseBackend</span><span class="p">(</span><span class="n">CasADiBackend</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Class doing optimization of ADMM subproblems with CasADi.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">system_type</span> <span class="o">=</span> <span class="n">BaseSystem</span>
     <span class="n">discretization_types</span> <span class="o">=</span> <span class="p">{</span>

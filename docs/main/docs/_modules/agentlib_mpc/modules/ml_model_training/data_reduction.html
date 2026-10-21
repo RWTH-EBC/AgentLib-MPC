@@ -72,7 +72,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for agentlib_mpc.modules.ml_model_training.data_reduction</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Code stolen from Max Berktold&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""Code stolen from Max Berktold"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="kn">import</span> <span class="n">kernel_approximation</span>
@@ -81,7 +81,7 @@
 
 
 <div class="viewcode-block" id="InducingPoints"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.ml_model_training.html#agentlib_mpc.modules.ml_model_training.data_reduction.InducingPoints">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">InducingPoints</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    The idea is to reduce the effective number of input data points x to the GP</span>
 <span class="sd">    from n to m, with m&lt;n, where the set of m points are called inducing points.</span>
 <span class="sd">     Since this makes the effective covariance matrix K smaller,</span>
@@ -89,7 +89,7 @@
 <span class="sd">     The smaller m is, the bigger the speed up.</span>
 
 <span class="sd">     Source: https://bwengals.github.io/inducing-point-methods-to-speed-up-gps.html</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
@@ -126,14 +126,14 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nystroem</span><span class="o">.</span><span class="n">components_</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nystroem</span><span class="o">.</span><span class="n">component_indices_</span><span class="p">]</span></div></div>
 
 
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.gaussian_process</span><span class="w"> </span><span class="kn">import</span> <span class="n">GaussianProcessRegressor</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
     <span class="n">n_components</span> <span class="o">=</span> <span class="mi">25</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-        <span class="s2">&quot;some more or less complex output function&quot;</span>
+        <span class="s2">"some more or less complex output function"</span>
 
         <span class="k">return</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
 
@@ -142,7 +142,7 @@
         <span class="n">gpr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">gpr</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="s2">&quot;samples:&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="s2">"samples:"</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">s</span>
 
@@ -161,14 +161,14 @@
             <span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span>
         <span class="p">)</span>
 
-        <span class="n">score_before</span> <span class="o">=</span> <span class="n">get_score</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="s2">&quot;before&quot;</span><span class="p">)</span>
-        <span class="n">score_after</span> <span class="o">=</span> <span class="n">get_score</span><span class="p">(</span><span class="n">x_red</span><span class="p">,</span> <span class="n">y_red</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="s2">&quot;after&quot;</span><span class="p">)</span>
+        <span class="n">score_before</span> <span class="o">=</span> <span class="n">get_score</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="s2">"before"</span><span class="p">)</span>
+        <span class="n">score_after</span> <span class="o">=</span> <span class="n">get_score</span><span class="p">(</span><span class="n">x_red</span><span class="p">,</span> <span class="n">y_red</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="s2">"after"</span><span class="p">)</span>
 
         <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_train</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x_train</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">y_train</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_red</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x_red</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;reduced_data&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x_red</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x_red</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s2">"black"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"reduced_data"</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;score_before: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">score_before</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">, score_after: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">score_after</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2"> n_components: </span><span class="si">{</span><span class="n">n_components</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"score_before: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">score_before</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">, score_after: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">score_after</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2"> n_components: </span><span class="si">{</span><span class="n">n_components</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>

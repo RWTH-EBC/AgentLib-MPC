@@ -72,7 +72,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for agentlib_mpc.modules.mpc.mpc_full</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Holds the class for full featured MPCs.&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""Holds the class for full featured MPCs."""</span>
 
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
@@ -88,16 +88,16 @@
 
 
 <div class="viewcode-block" id="MPCConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.mpc_full.MPCConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MPCConfig</span><span class="p">(</span><span class="n">BaseMPCConfig</span><span class="p">,</span> <span class="n">SkippableMixinConfig</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Pydantic data model for MPC configuration parser</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<span class="sd">    """</span></div>
 
 
 <div class="viewcode-block" id="MPC"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.mpc_full.MPC">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MPC</span><span class="p">(</span><span class="n">BaseMPC</span><span class="p">,</span> <span class="n">SkippableMixin</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A model predictive controller.</span>
 <span class="sd">    More info to follow.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">config</span><span class="p">:</span> <span class="n">MPCConfig</span>
 
@@ -117,8 +117,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_remove_old_values_from_history</span><span class="p">()</span></div>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_remove_old_values_from_history</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clears the history of all entries that are older than current time minus</span>
-<span class="sd">        horizon length.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Clears the history of all entries that are older than current time minus</span>
+<span class="sd">        horizon length."""</span>
         <span class="c1"># iterate over all variables which save lag</span>
         <span class="k">for</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">lag_in_seconds</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lags_dict_seconds</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">var_history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span>
@@ -129,8 +129,8 @@
                     <span class="n">var_history</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">timestamp</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_callback_hist_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variable</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds received measured inputs to the past trajectory.&quot;&quot;&quot;</span>
-        <span class="c1"># if variables are intentionally sent as series, we don&#39;t need to store them</span>
+<span class="w">        </span><span class="sd">"""Adds received measured inputs to the past trajectory."""</span>
+        <span class="c1"># if variables are intentionally sent as series, we don't need to store them</span>
         <span class="c1"># ourselves</span>
         <span class="c1"># only store scalar values</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">variable</span><span class="o">.</span><span class="n">value</span>
@@ -155,9 +155,9 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
 <div class="viewcode-block" id="MPC.register_callbacks_for_lagged_variables"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.mpc_full.MPC.register_callbacks_for_lagged_variables">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">register_callbacks_for_lagged_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Registers callbacks which listen to the variables which have to be saved as</span>
+<span class="w">        </span><span class="sd">"""Registers callbacks which listen to the variables which have to be saved as</span>
 <span class="sd">        time series. These callbacks save the values in the history for use in the</span>
-<span class="sd">        optimization.&quot;&quot;&quot;</span>
+<span class="sd">        optimization."""</span>
 
         <span class="k">for</span> <span class="n">lagged_input</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lags_dict_seconds</span><span class="p">:</span>
             <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">lagged_input</span><span class="p">)</span>
@@ -174,8 +174,8 @@
 <div class="viewcode-block" id="MPC.collect_variables_for_optimization"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.mpc_full.MPC.collect_variables_for_optimization">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">collect_variables_for_optimization</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">var_ref</span><span class="p">:</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">VariableReference</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AgentVariable</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets all variables noted in the var ref and puts them in a flat</span>
-<span class="sd">        dictionary.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Gets all variables noted in the var ref and puts them in a flat</span>
+<span class="sd">        dictionary."""</span>
         <span class="k">if</span> <span class="n">var_ref</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">var_ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_ref</span>
 
@@ -192,7 +192,7 @@
             <span class="c1"># create copy to not mess up scalar value of original variable in case</span>
             <span class="c1"># fallback is needed</span>
             <span class="n">updated_var</span> <span class="o">=</span> <span class="n">variables</span><span class="p">[</span><span class="n">hist_var</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span>
-                <span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">past_values</span><span class="p">)</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()}</span>
+                <span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">"value"</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">past_values</span><span class="p">)</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()}</span>
             <span class="p">)</span>
             <span class="n">variables</span><span class="p">[</span><span class="n">hist_var</span><span class="p">]</span> <span class="o">=</span> <span class="n">updated_var</span>
 

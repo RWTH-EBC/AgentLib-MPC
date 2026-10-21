@@ -85,28 +85,28 @@
 <div class="viewcode-block" id="SkippableMixinConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.skippable_mixin.SkippableMixinConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SkippableMixinConfig</span><span class="p">(</span><span class="n">agentlib</span><span class="o">.</span><span class="n">BaseModuleConfig</span><span class="p">):</span>
     <span class="n">enable_deactivation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;If true, the MPC module uses an AgentVariable `active` which&quot;</span>
-        <span class="s2">&quot;other modules may change to disable the MPC operation &quot;</span>
-        <span class="s2">&quot;temporarily&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"If true, the MPC module uses an AgentVariable `active` which"</span>
+        <span class="s2">"other modules may change to disable the MPC operation "</span>
+        <span class="s2">"temporarily"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">deactivation_source</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">agentlib</span><span class="o">.</span><span class="n">Source</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Source for the deactivation signal.&quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Source for the deactivation signal."</span>
     <span class="p">)</span>
     <span class="n">active</span><span class="p">:</span> <span class="n">AgentVariable</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="n">AgentVariable</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MPC_FLAG_ACTIVE</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;MPC is active&quot;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s2">"MPC is active"</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">"bool"</span><span class="p">,</span>
             <span class="n">value</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">shared</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="n">validate_default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Variable used to activate or deactivate the MPC operation&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Variable used to activate or deactivate the MPC operation"</span><span class="p">,</span>
     <span class="p">)</span>
 
-<div class="viewcode-block" id="SkippableMixinConfig.add_deactivation_source"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.skippable_mixin.SkippableMixinConfig.add_deactivation_source">[docs]</a>    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;active&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SkippableMixinConfig.add_deactivation_source"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.skippable_mixin.SkippableMixinConfig.add_deactivation_source">[docs]</a>    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"active"</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_deactivation_source</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">active</span><span class="p">:</span> <span class="n">AgentVariable</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">FieldValidationInfo</span><span class="p">):</span>
-        <span class="n">source</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;deactivation_source&quot;</span><span class="p">)</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"deactivation_source"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">active</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
         <span class="k">return</span> <span class="n">active</span></div></div>
@@ -116,7 +116,7 @@
     <span class="n">config</span><span class="p">:</span> <span class="n">SkippableMixinConfig</span>
 
 <div class="viewcode-block" id="SkippableMixin.check_if_should_be_skipped"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.skippable_mixin.SkippableMixin.check_if_should_be_skipped">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_if_should_be_skipped</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if mpc steps should be skipped based on external activation flag.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Checks if mpc steps should be skipped based on external activation flag."""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">enable_deactivation</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="n">active</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MPC_FLAG_ACTIVE</span><span class="p">)</span>
@@ -124,9 +124,9 @@
         <span class="k">if</span> <span class="n">active</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="n">source</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">active</span><span class="o">.</span><span class="n">source</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;None_None&quot;</span><span class="p">:</span>
-            <span class="n">source</span> <span class="o">=</span> <span class="s2">&quot;unknown (not specified in config)&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;MPC was deactivated by source </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="o">==</span> <span class="s2">"None_None"</span><span class="p">:</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="s2">"unknown (not specified in config)"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"MPC was deactivated by source </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span></div></div>
 </pre></div>
 

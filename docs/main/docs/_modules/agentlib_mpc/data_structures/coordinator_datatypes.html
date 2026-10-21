@@ -79,46 +79,46 @@
 
 
 <span class="c1"># Parameter names</span>
-<span class="n">PREDICTION_HORIZON</span> <span class="o">=</span> <span class="s2">&quot;prediction_horizon&quot;</span>
-<span class="n">TIME_STEP</span> <span class="o">=</span> <span class="s2">&quot;time_step&quot;</span>
+<span class="n">PREDICTION_HORIZON</span> <span class="o">=</span> <span class="s2">"prediction_horizon"</span>
+<span class="n">TIME_STEP</span> <span class="o">=</span> <span class="s2">"time_step"</span>
 
 
 <span class="c1"># Communication names / aliases</span>
-<span class="n">REGISTRATION</span> <span class="o">=</span> <span class="s2">&quot;registration&quot;</span>
-<span class="n">REGISTRATION_C2A</span> <span class="o">=</span> <span class="s2">&quot;registration_coordinator_to_agent&quot;</span>
-<span class="n">REGISTRATION_A2C</span> <span class="o">=</span> <span class="s2">&quot;registration_agent_to_coordinator&quot;</span>
-<span class="n">START_ITERATION</span> <span class="o">=</span> <span class="s2">&quot;startIteration&quot;</span>
-<span class="n">START_ITERATION_C2A</span> <span class="o">=</span> <span class="s2">&quot;startIteration_coordinator_to_agent&quot;</span>
-<span class="n">START_ITERATION_A2C</span> <span class="o">=</span> <span class="s2">&quot;startIteration_agent_to_coordinator&quot;</span>
-<span class="n">OPTIMIZATION</span> <span class="o">=</span> <span class="s2">&quot;optimization&quot;</span>
-<span class="n">OPTIMIZATION_C2A</span> <span class="o">=</span> <span class="s2">&quot;optimization_coordinator_to_agent&quot;</span>
-<span class="n">OPTIMIZATION_A2C</span> <span class="o">=</span> <span class="s2">&quot;optimization_agent_to_coordinator&quot;</span>
+<span class="n">REGISTRATION</span> <span class="o">=</span> <span class="s2">"registration"</span>
+<span class="n">REGISTRATION_C2A</span> <span class="o">=</span> <span class="s2">"registration_coordinator_to_agent"</span>
+<span class="n">REGISTRATION_A2C</span> <span class="o">=</span> <span class="s2">"registration_agent_to_coordinator"</span>
+<span class="n">START_ITERATION</span> <span class="o">=</span> <span class="s2">"startIteration"</span>
+<span class="n">START_ITERATION_C2A</span> <span class="o">=</span> <span class="s2">"startIteration_coordinator_to_agent"</span>
+<span class="n">START_ITERATION_A2C</span> <span class="o">=</span> <span class="s2">"startIteration_agent_to_coordinator"</span>
+<span class="n">OPTIMIZATION</span> <span class="o">=</span> <span class="s2">"optimization"</span>
+<span class="n">OPTIMIZATION_C2A</span> <span class="o">=</span> <span class="s2">"optimization_coordinator_to_agent"</span>
+<span class="n">OPTIMIZATION_A2C</span> <span class="o">=</span> <span class="s2">"optimization_agent_to_coordinator"</span>
 
 
 <div class="viewcode-block" id="CoordinatorStatus"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.CoordinatorStatus">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">CoordinatorStatus</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum used to keep track of the status of a DMPC-Coordinator.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Enum used to keep track of the status of a DMPC-Coordinator."""</span>
 
-    <span class="n">sleeping</span> <span class="o">=</span> <span class="s2">&quot;sleeping&quot;</span>
-    <span class="n">init_iterations</span> <span class="o">=</span> <span class="s2">&quot;init_iterations&quot;</span>
-    <span class="n">optimization</span> <span class="o">=</span> <span class="s2">&quot;optimization&quot;</span>
-    <span class="n">updating</span> <span class="o">=</span> <span class="s2">&quot;updating&quot;</span></div>
+    <span class="n">sleeping</span> <span class="o">=</span> <span class="s2">"sleeping"</span>
+    <span class="n">init_iterations</span> <span class="o">=</span> <span class="s2">"init_iterations"</span>
+    <span class="n">optimization</span> <span class="o">=</span> <span class="s2">"optimization"</span>
+    <span class="n">updating</span> <span class="o">=</span> <span class="s2">"updating"</span></div>
 
 
 <div class="viewcode-block" id="AgentStatus"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.AgentStatus">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AgentStatus</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum used within a DMPC-Coordinator to keep track of the statuses of its</span>
-<span class="sd">    participating agents.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Enum used within a DMPC-Coordinator to keep track of the statuses of its</span>
+<span class="sd">    participating agents."""</span>
 
-    <span class="n">pending</span> <span class="o">=</span> <span class="s2">&quot;pending&quot;</span>  <span class="c1"># agent is not yet fully registered</span>
-    <span class="n">standby</span> <span class="o">=</span> <span class="s2">&quot;standby&quot;</span>  <span class="c1"># agent is fully registered but not initialized for opt</span>
-    <span class="n">ready</span> <span class="o">=</span> <span class="s2">&quot;ready&quot;</span>  <span class="c1"># agent is ready to start a local optimization</span>
-    <span class="n">busy</span> <span class="o">=</span> <span class="s2">&quot;busy&quot;</span>  <span class="c1"># agent is performing task</span></div>
+    <span class="n">pending</span> <span class="o">=</span> <span class="s2">"pending"</span>  <span class="c1"># agent is not yet fully registered</span>
+    <span class="n">standby</span> <span class="o">=</span> <span class="s2">"standby"</span>  <span class="c1"># agent is fully registered but not initialized for opt</span>
+    <span class="n">ready</span> <span class="o">=</span> <span class="s2">"ready"</span>  <span class="c1"># agent is ready to start a local optimization</span>
+    <span class="n">busy</span> <span class="o">=</span> <span class="s2">"busy"</span>  <span class="c1"># agent is performing task</span></div>
 
 
 <div class="viewcode-block" id="OptimizationData"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.OptimizationData">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">OptimizationData</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Contains specific variables (or time series) of the agent</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]))</span>
     <span class="n">u</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]))</span>
@@ -142,8 +142,8 @@
 
 <div class="viewcode-block" id="RegistrationMessage"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.RegistrationMessage">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">RegistrationMessage</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass structuring the communication during registration between a</span>
-<span class="sd">    participating agent and the coordinator in DMPC.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Dataclass structuring the communication during registration between a</span>
+<span class="sd">    participating agent and the coordinator in DMPC."""</span>
 
     <span class="n">status</span><span class="p">:</span> <span class="n">AgentStatus</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">opts</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span>
@@ -154,7 +154,7 @@
 <span class="c1"># EXECUTION</span>
 <div class="viewcode-block" id="AgentDictEntry"><a class="viewcode-back" href="../../../code/agentlib_mpc.data_structures.html#agentlib_mpc.data_structures.coordinator_datatypes.AgentDictEntry">[docs]</a><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AgentDictEntry</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass holding the status of a participating agent in DMPC.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Dataclass holding the status of a participating agent in DMPC."""</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">optimization_data</span> <span class="o">=</span> <span class="n">OptimizationData</span><span class="p">()</span>

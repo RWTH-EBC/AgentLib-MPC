@@ -89,13 +89,13 @@
 
 
 <div class="viewcode-block" id="MINLPMPCConfig"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPCConfig">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MINLPMPCConfig</span><span class="p">(</span><span class="n">BaseMPCConfig</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Pydantic data model for MPC configuration parser</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># AgentVariables for the controls to be optimized</span>
     <span class="n">binary_controls</span><span class="p">:</span> <span class="n">mpc_datamodels</span><span class="o">.</span><span class="n">MPCVariables</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;List of all binary control variables of the MPC. &quot;</span>
+        <span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">description</span><span class="o">=</span><span class="s2">"List of all binary control variables of the MPC. "</span>
     <span class="p">)</span></div>
 
 
@@ -106,25 +106,25 @@
         <span class="k">return</span> <span class="n">MINLPVariableReference</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MINLPMPC.assert_mpc_variables_are_in_model"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPC.assert_mpc_variables_are_in_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">assert_mpc_variables_are_in_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Checks whether all variables of var_ref are contained in the model.</span>
 <span class="sd">        Returns names of model variables not contained in the var_ref,</span>
-<span class="sd">        sorted by keys: &#39;states&#39;, &#39;inputs&#39;, &#39;outputs&#39;, &#39;parameters&#39;.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        sorted by keys: 'states', 'inputs', 'outputs', 'parameters'.</span>
+<span class="sd">        """</span>
 
         <span class="c1"># arguments for validation function:</span>
         <span class="c1"># (key in var_ref, model names, str for head error message)</span>
         <span class="n">args</span> <span class="o">=</span> <span class="p">[</span>
             <span class="p">(</span>
-                <span class="s2">&quot;states&quot;</span><span class="p">,</span>
+                <span class="s2">"states"</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_state_names</span><span class="p">(),</span>
-                <span class="s2">&quot;Differential variables / States&quot;</span><span class="p">,</span>
+                <span class="s2">"Differential variables / States"</span><span class="p">,</span>
             <span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;controls&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_input_names</span><span class="p">(),</span> <span class="s2">&quot;Controls&quot;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;binary_controls&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_input_names</span><span class="p">(),</span> <span class="s2">&quot;Binary Controls&quot;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_input_names</span><span class="p">(),</span> <span class="s2">&quot;Inputs&quot;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;outputs&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_output_names</span><span class="p">(),</span> <span class="s2">&quot;Outputs&quot;</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;parameters&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_parameter_names</span><span class="p">(),</span> <span class="s2">&quot;Parameters&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"controls"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_input_names</span><span class="p">(),</span> <span class="s2">"Controls"</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"binary_controls"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_input_names</span><span class="p">(),</span> <span class="s2">"Binary Controls"</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"inputs"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_input_names</span><span class="p">(),</span> <span class="s2">"Inputs"</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"outputs"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_output_names</span><span class="p">(),</span> <span class="s2">"Outputs"</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">"parameters"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_parameter_names</span><span class="p">(),</span> <span class="s2">"Parameters"</span><span class="p">),</span>
         <span class="p">]</span>
 
         <span class="c1"># perform validations and make a dictionary of unassigned variables</span>
@@ -135,24 +135,24 @@
 
         <span class="c1"># fix unassigned values for inputs</span>
         <span class="n">intersection_input</span> <span class="o">=</span> <span class="nb">set</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span>
-            <span class="n">unassigned_by_mpc_var</span><span class="p">[</span><span class="s2">&quot;controls&quot;</span><span class="p">],</span>
-            <span class="n">unassigned_by_mpc_var</span><span class="p">[</span><span class="s2">&quot;inputs&quot;</span><span class="p">],</span>
-            <span class="n">unassigned_by_mpc_var</span><span class="p">[</span><span class="s2">&quot;binary_controls&quot;</span><span class="p">],</span>
+            <span class="n">unassigned_by_mpc_var</span><span class="p">[</span><span class="s2">"controls"</span><span class="p">],</span>
+            <span class="n">unassigned_by_mpc_var</span><span class="p">[</span><span class="s2">"inputs"</span><span class="p">],</span>
+            <span class="n">unassigned_by_mpc_var</span><span class="p">[</span><span class="s2">"binary_controls"</span><span class="p">],</span>
         <span class="p">)</span>
 
         <span class="c1"># return dict should have model variables as keys, not mpc variables</span>
         <span class="n">unassigned_by_model_var</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;states&quot;</span><span class="p">:</span> <span class="n">unassigned_by_mpc_var</span><span class="p">[</span><span class="s2">&quot;states&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="n">intersection_input</span><span class="p">,</span>
-            <span class="s2">&quot;outputs&quot;</span><span class="p">:</span> <span class="n">unassigned_by_mpc_var</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">],</span>
-            <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="n">unassigned_by_mpc_var</span><span class="p">[</span><span class="s2">&quot;parameters&quot;</span><span class="p">],</span>
+            <span class="s2">"states"</span><span class="p">:</span> <span class="n">unassigned_by_mpc_var</span><span class="p">[</span><span class="s2">"states"</span><span class="p">],</span>
+            <span class="s2">"inputs"</span><span class="p">:</span> <span class="n">intersection_input</span><span class="p">,</span>
+            <span class="s2">"outputs"</span><span class="p">:</span> <span class="n">unassigned_by_mpc_var</span><span class="p">[</span><span class="s2">"outputs"</span><span class="p">],</span>
+            <span class="s2">"parameters"</span><span class="p">:</span> <span class="n">unassigned_by_mpc_var</span><span class="p">[</span><span class="s2">"parameters"</span><span class="p">],</span>
         <span class="p">}</span>
 
         <span class="k">return</span> <span class="n">unassigned_by_model_var</span></div>
 
 <div class="viewcode-block" id="MINLPMPC.set_actuation"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.mpc.html#agentlib_mpc.modules.mpc.minlp_mpc.MINLPMPC.set_actuation">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_actuation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Takes the solution from optimization backend and sends the first</span>
-<span class="sd">        step to AgentVariables.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Takes the solution from optimization backend and sends the first</span>
+<span class="sd">        step to AgentVariables."""</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">set_actuation</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">b_control</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_ref</span><span class="o">.</span><span class="n">binary_controls</span><span class="p">:</span>
             <span class="c1"># take the first entry of the control trajectory</span>
