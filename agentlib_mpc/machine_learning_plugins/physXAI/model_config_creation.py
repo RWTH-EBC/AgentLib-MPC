@@ -159,8 +159,8 @@ def physXAI_2_agentlib_json(run_id: str, preprocessing_dict: dict, model_dict: O
         target_dict["parameters"] = {
             "coef": model.coef_.tolist(),
             "intercept": model.intercept_.tolist(),
-            "n_features_in": model.n_features_in_,
-            "rank": model.rank_,
+            "n_features_in": int(model.n_features_in_),
+            "rank": int(model.rank_),
             "singular": model.singular_.tolist(),
         }
 
