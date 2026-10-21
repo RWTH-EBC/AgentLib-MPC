@@ -67,7 +67,7 @@
             <a id="nextFileLink" class="nav" href="d_014fb264957712c8___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.4">coverage.py v7.4.4</a>,
-            created at 2026-10-21 21:18 +0000
+            created at 2026-10-21 21:20 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -165,7 +165,7 @@
     <p class="mis show_mis"><span class="n"><a id="t81" href="#t81">81</a></span><span class="t">        <span class="nam">start_loc</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_data</span><span class="op">.</span><span class="nam">index</span><span class="op">.</span><span class="nam">get_loc</span><span class="op">(</span><span class="nam">self</span><span class="op">.</span><span class="nam">env</span><span class="op">.</span><span class="nam">now</span><span class="op">,</span> <span class="nam">method</span><span class="op">=</span><span class="str">"pad"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t82" href="#t82">82</a></span><span class="t">        <span class="nam">start_time</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_data</span><span class="op">.</span><span class="nam">index</span><span class="op">[</span><span class="nam">start_loc</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t83" href="#t83">83</a></span><span class="t">        <span class="nam">end_time</span> <span class="op">=</span> <span class="nam">start_time</span> <span class="op">+</span> <span class="nam">self</span><span class="op">.</span><span class="nam">config</span><span class="op">.</span><span class="nam">prediction_length</span> <span class="op">*</span> <span class="num">3600</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t84" href="#t84">84</a></span><span class="t">        <span class="key">for</span> <span class="nam">measurement_name</span><span class="op">,</span> <span class="nam">measurement_data</span> <span class="key">in</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_data</span><span class="op">.</span><span class="nam">iteritems</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t84" href="#t84">84</a></span><span class="t">        <span class="key">for</span> <span class="nam">measurement_name</span><span class="op">,</span> <span class="nam">measurement_data</span> <span class="key">in</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_data</span><span class="op">.</span><span class="nam">items</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t85" href="#t85">85</a></span><span class="t">            <span class="nam">self</span><span class="op">.</span><span class="nam">set</span><span class="op">(</span><span class="nam">measurement_name</span><span class="op">,</span> <span class="nam">measurement_data</span><span class="op">.</span><span class="nam">loc</span><span class="op">[</span><span class="nam">start_time</span><span class="op">:</span><span class="nam">end_time</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t86" href="#t86">86</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t87" href="#t87">87</a></span><span class="t">    <span class="key">def</span> <span class="nam">send_measurement</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -181,7 +181,7 @@
             <a id="nextFileLink" class="nav" href="d_014fb264957712c8___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.4">coverage.py v7.4.4</a>,
-            created at 2026-10-21 21:18 +0000
+            created at 2026-10-21 21:20 +0000
         </p>
     </div>
 </footer>

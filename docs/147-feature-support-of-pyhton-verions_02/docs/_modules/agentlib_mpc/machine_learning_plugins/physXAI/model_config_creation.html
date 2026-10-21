@@ -232,8 +232,8 @@
         <span class="n">target_dict</span><span class="p">[</span><span class="s2">"parameters"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">"coef"</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
             <span class="s2">"intercept"</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">intercept_</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-            <span class="s2">"n_features_in"</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">n_features_in_</span><span class="p">,</span>
-            <span class="s2">"rank"</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">rank_</span><span class="p">,</span>
+            <span class="s2">"n_features_in"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">n_features_in_</span><span class="p">),</span>
+            <span class="s2">"rank"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">rank_</span><span class="p">),</span>
             <span class="s2">"singular"</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">singular_</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
         <span class="p">}</span>
 
