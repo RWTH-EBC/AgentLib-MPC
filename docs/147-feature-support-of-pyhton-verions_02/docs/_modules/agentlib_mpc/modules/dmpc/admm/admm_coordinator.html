@@ -265,7 +265,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_algorithm</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registration_lock</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_realtime_step</span><span class="p">()</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_algorithm</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_algorithm</span><span class="o">.</span><span class="n">isSet</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="s2">"</span><span class="si">%s</span><span class="s2">: Start of ADMM round was requested before "</span>
                     <span class="s2">"last one finished. Skipping cycle."</span>
