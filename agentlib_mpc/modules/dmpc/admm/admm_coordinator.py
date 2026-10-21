@@ -190,7 +190,7 @@ class ADMMCoordinator(Coordinator):
             self._start_algorithm.clear()
             with self._registration_lock:
                 self._realtime_step()
-            if self._start_algorithm.is_set():
+            if self._start_algorithm.isSet():
                 self.logger.error(
                     "%s: Start of ADMM round was requested before "
                     "last one finished. Skipping cycle."

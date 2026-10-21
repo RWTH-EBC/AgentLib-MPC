@@ -13,7 +13,7 @@ jobs:
     with:
       PYTHON_PACKAGE_NAME: "agentlib_mpc"
       PYTHON_VERSION: "3.12"
-      PYTHON_TEST_MATRIX: '["3.11", "3.12", "3.13", "3.14"]'
+      PYTHON_TEST_MATRIX: '["3.9", "3.10", "3.11", "3.12"]'
       USE_PYLINT: true
       USE_RUFF: true
       BUILD_PACKAGE: true
