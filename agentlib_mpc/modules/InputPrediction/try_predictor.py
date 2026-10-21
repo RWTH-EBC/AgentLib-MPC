@@ -81,7 +81,7 @@ class TRYPredictor(TRYSensor):
         start_loc = self._data.index.get_loc(self.env.now, method="pad")
         start_time = self._data.index[start_loc]
         end_time = start_time + self.config.prediction_length * 3600
-        for measurement_name, measurement_data in self._data.iteritems():
+        for measurement_name, measurement_data in self._data.items():
             self.set(measurement_name, measurement_data.loc[start_time:end_time])
 
     def send_measurement(self):

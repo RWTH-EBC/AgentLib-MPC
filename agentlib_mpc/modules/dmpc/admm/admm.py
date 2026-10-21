@@ -171,7 +171,7 @@ class ADMM(DistributedMPC):
             self.start_step.wait()
             self.start_step.clear()
             self.admm_step()
-            if self.start_step.isSet():
+            if self.start_step.is_set():
                 self.logger.error(
                     "%s: Start of ADMM round was requested before "
                     "last one finished. Waiting until next "
