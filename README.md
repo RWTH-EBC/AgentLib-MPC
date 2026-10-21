@@ -55,4 +55,3 @@ When using AgentLib-MPC, please remember to cite other tools that you are using,
 We gratefully acknowledge the financial support by Federal Ministry \\ for Economic Affairs and Climate Action (BMWK), promotional reference 03ET1495A.
 
 <img src="./docs/source/images/BMWK_logo.png" alt="BMWK" width="200"/>
-
