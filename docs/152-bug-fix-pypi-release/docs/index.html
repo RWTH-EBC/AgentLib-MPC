@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to agentlib_mpc’s documentation! &mdash; agentlib_mpc 1.1.0 documentation</title>
+  <title>Welcome to agentlib_mpc’s documentation! &mdash; agentlib_mpc 1.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
@@ -128,6 +128,19 @@ Best example to start is an MPC for <a class="reference external" href="https://
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">agentlib_mpc</span><span class="p">[</span><span class="n">ml</span><span class="p">]</span>
 </pre></div>
 </div>
+<p>Some features depend on packages which are not available on PyPI and have to be installed from git:</p>
+<ul>
+<li><p><strong>physXAI</strong>: Use models trained with physXAI (<a class="reference external" href="https://github.com/RWTH-EBC/physXAI">https://github.com/RWTH-EBC/physXAI</a>). Requires the <strong>ml</strong> dependencies.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">agentlib_mpc</span><span class="p">[</span><span class="n">ml</span><span class="p">]</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">RWTH</span><span class="o">-</span><span class="n">EBC</span><span class="o">/</span><span class="n">physXAI</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>cia</strong>: Use combinatorial integral approximation for mixed-integer MPC. Installs pycombina (<a class="reference external" href="https://github.com/adbuerger/pycombina">https://github.com/adbuerger/pycombina</a>).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">adbuerger</span><span class="o">/</span><span class="n">pycombina</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+</li>
+</ul>
 </section>
 <section id="citing-agentlib-mpc">
 <h2>Citing AgentLib_MPC<a class="headerlink" href="#citing-agentlib-mpc" title="Permalink to this heading"></a></h2>
