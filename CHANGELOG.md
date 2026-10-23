@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0
+- Add support for Python 3.13 and 3.14. Python 3.9 and 3.10 are no longer supported (requires Python >= 3.11).
+- Require agentlib >= 0.9.0.
+- Replace APIs removed in newer Python and pandas versions (``threading.Event.isSet``, ``DataFrame.iteritems``).
+- Cast scikit-learn model attributes to ``int`` in the physXAI model config creation, so they can be serialized.
+
 ## 1.0.3 
 - Bug fix: circular import of objective in casadi model
 
