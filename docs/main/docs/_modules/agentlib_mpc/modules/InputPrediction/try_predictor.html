@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>agentlib_mpc.modules.InputPrediction.try_predictor &mdash; agentlib_mpc 1.0.3 documentation</title>
+  <title>agentlib_mpc.modules.InputPrediction.try_predictor &mdash; agentlib_mpc 1.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/autodoc_pydantic.css" />
@@ -155,7 +155,7 @@
         <span class="n">start_loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">now</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">"pad"</span><span class="p">)</span>
         <span class="n">start_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">start_loc</span><span class="p">]</span>
         <span class="n">end_time</span> <span class="o">=</span> <span class="n">start_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">prediction_length</span> <span class="o">*</span> <span class="mi">3600</span>
-        <span class="k">for</span> <span class="n">measurement_name</span><span class="p">,</span> <span class="n">measurement_data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">measurement_name</span><span class="p">,</span> <span class="n">measurement_data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">measurement_name</span><span class="p">,</span> <span class="n">measurement_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">start_time</span><span class="p">:</span><span class="n">end_time</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="TRYPredictor.send_measurement"><a class="viewcode-back" href="../../../../code/agentlib_mpc.modules.InputPrediction.html#agentlib_mpc.modules.InputPrediction.try_predictor.TRYPredictor.send_measurement">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">send_measurement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
