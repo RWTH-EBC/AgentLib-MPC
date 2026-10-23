@@ -39,6 +39,17 @@ Install these like
 pip install agentlib_mpc[ml]
 ````
 
+Some features depend on packages which are not available on PyPI and have to be installed from git:
+
+ - **physXAI**: Use models trained with physXAI (https://github.com/RWTH-EBC/physXAI). Requires the **ml** dependencies.
+   ````
+   pip install agentlib_mpc[ml] git+https://github.com/RWTH-EBC/physXAI.git
+   ````
+ - **cia**: Use combinatorial integral approximation for mixed-integer MPC. Installs pycombina (https://github.com/adbuerger/pycombina).
+   ````
+   pip install git+https://github.com/adbuerger/pycombina.git
+   ````
+
 
 ## Citing AgentLib_MPC
 

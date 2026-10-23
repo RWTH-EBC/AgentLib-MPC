@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.1
+- Fix PyPI release: Remove the optional dependencies ``physXAI`` and ``cia``, as PyPI does not allow dependencies on git repositories. Install physXAI and pycombina manually from git instead (see README).
+
 ## 1.1.0
 - Add support for Python 3.13 and 3.14. Python 3.9 and 3.10 are no longer supported (requires Python >= 3.11).
 - Require agentlib >= 0.9.0.
