@@ -191,6 +191,27 @@ def physXAI_2_agentlib_json(run_id: str, preprocessing_dict: dict, model_dict: O
     return target_dict
 
 
+def _warmup_in_steps(warmup, time_step: Optional[float]) -> int:
+    """
+    Converts the warmup width of physXAI into steps. physXAI accepts it in steps or as a time
+    delta string ('6h') and saves it as given, AgentLib-MPC needs the number of steps.
+    """
+    if warmup is None:
+        return 0
+    if isinstance(warmup, str):
+        if not time_step:
+            raise ValueError(f"Config Translation Error: the warmup width '{warmup}' is a time delta, "
+                             f"but the preprocessing config has no time step to convert it into steps.")
+        import pandas as pd
+        steps = pd.Timedelta(warmup).total_seconds() / time_step
+    else:
+        steps = float(warmup)
+    if not steps.is_integer() or steps < 0:
+        raise ValueError(f"Config Translation Error: the warmup width {warmup} is not a whole, "
+                         f"non negative number of steps (time step {time_step} s).")
+    return int(steps)
+
+
 def multi_step_2_agentlib_json(run_id: str, preprocessing_dict: dict, target_dict: dict,
                                model_name: Optional[str] = None, sweep_id: str = '',
                                warmup_steps: Optional[int] = None) -> dict:
@@ -261,7 +282,7 @@ def multi_step_2_agentlib_json(run_id: str, preprocessing_dict: dict, target_dic
 
     if warmup_steps is None:
         warmup_steps = preprocessing_dict.get("warmup_width", 0)
-    target_dict["warmup_steps"] = warmup_steps
+    target_dict["warmup_steps"] = _warmup_in_steps(warmup_steps, preprocessing_dict.get("time_step"))
 
     target_dict["model_type"] = "KerasRNN"
     if model_name is None:

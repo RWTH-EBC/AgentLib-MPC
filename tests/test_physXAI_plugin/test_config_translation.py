@@ -278,6 +278,17 @@ def test_physXAI_multi_step_options():
     assert serialized.rnn_inputs == ["TDryBul", "QTabs_set", "T_room"]
 
 
+def test_physXAI_multi_step_warmup_time_delta():
+    """physXAI saves a warmup given as time delta as it is, the plugin converts it into steps."""
+    config = physXAI_2_agentlib_json("01", multi_step_source(warmup_width="6h"))
+    assert config["warmup_steps"] == 24
+    assert isinstance(config["warmup_steps"], int)
+    SerializedMLModel.load_serialized_model(config)
+
+    with pytest.raises(ValueError, match="whole"):
+        physXAI_2_agentlib_json("01", multi_step_source(warmup_width="10min"))
+
+
 def test_physXAI_multi_step_errors():
     """Lagged inputs cannot be expressed by a recurrent model."""
     with pytest.raises(ValueError, match="lagged inputs"):
